@@ -8,9 +8,9 @@ from docx import Document
 from googletrans import Translator
 from tqdm import tqdm
 
-input_path = "./anderson/"
-output_path = "./anderson-ja/"
-temp = "./temp/"
+input_path = "../anderson/"
+output_path = "../anderson-ja/"
+temp = "../temp/"
 
 
 def remove_temp(temp, debug=False):

@@ -5,11 +5,4 @@
     <orderEntry type="jdk" jdkName="Python 3.6 (translator_for_pdf)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
-  <component name="TemplatesService">
-    <option name="TEMPLATE_FOLDERS">
-      <list>
-        <option value="$MODULE_DIR$/venv/lib/python3.6/site-packages/docx/templates" />
-      </list>
-    </option>
-  </component>
 </module>
