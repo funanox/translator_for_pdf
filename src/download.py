@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 base_url = "https://www.cl.cam.ac.uk/~rja14/"
 extension = ".pdf"
-path = "../anderson/"
+path = os.path.join(os.path.dirname(__file__),"../anderson/")
 
 # スクレイピング先URL (*.pdf)
 url = "https://www.cl.cam.ac.uk/~rja14/book.html"
