@@ -1,0 +1,309 @@
+Chapter 1What Is SecurityEngineering?Out of the crooked timber of humanity, no straightthing was ever made.
+– IMMANUEL KANTThe world is never going to be perfect, either on- or o✏ine; solet’s not set impossibly high standards for online.
+– ESTHER DYSON1.
+1IntroductionSecurity engineering is about building systems to remain dependable in the faceof malice, error, or mischance.
+ As a discipline, it focuses on the tools, processes,and methods needed to design, implement, and test complete systems, and toadapt existing systems as their environment evolves.
+Security engineering requires cross-disciplinary expertise, ranging from cryp-tography and computer security through hardware tamper-resistance to a knowl-edge of economics, applied psychology, organisations and the law.
+ System en-gineering skills, from business process analysis through software engineering toevaluation and testing, are also important; but they are not su�cient, as theydeal only with error and mischance rather than malice.
+ The security engineeralso needs some skill at adversarial thinking, just like a chess player; you needto have studied lots of attacks that worked in the past, from their openingsthrough their development to the outcomes.
+Many systems have critical assurance requirements.
+ Their failure may en-danger human life and the environment (as with nuclear safety and control sys-tems), do serious damage to major economic infrastructure (cash machines andonline payment systems), endanger personal privacy (medical record systems),undermine the viability of whole business sectors (prepayment utility meters),and facilitate crime (burglar and car alarms).
+ Security and safety are becoming221.
+2.
+ A FRAMEWORKever more intertwined as we get software in everything.
+ Even the perceptionthat a system is more vulnerable or less reliable than it really is can have realsocial costs.
+The conventional view is that while software engineering is about ensuringthat certain things happen (“John can read this ﬁle”), security is about ensur-ing that they don’t (“The Chinese government can’t read this ﬁle”).
+ Reality ismuch more complex.
+ Security requirements di↵er greatly from one system to an-other.
+ You typically need some combination of user authentication, transactionintegrity and accountability, fault-tolerance, message secrecy, and covertness.
+But many systems fail because their designers protect the wrong things, orprotect the right things but in the wrong way.
+Getting protection right thus depends on several di↵erent types of process.
+You have to ﬁgure out what needs protecting, and how to do it.
+ You also need toensure that the people who will guard the system and maintain it are properlymotivated.
+ In the next section, I’ll set out a framework for thinking about this.
+Then, in order to illustrate the range of di↵erent things that security and safetysystems have to do, I will take a quick look at four application areas: a bank,a military base, a hospital, and the home.
+ Once we’ve given concrete examplesof the stu↵ that security engineers have to understand and build, we will be ina position to attempt some deﬁnitions.
+1.
+2A frameworkTo build really dependable systems, you need four things to come together.
+There’s policy: what you’re supposed to achieve.
+ There’s mechanism: the ci-phers, access controls, hardware tamper-resistance and other machinery thatyou use to implement the policy.
+ There’s assurance: the amount of relianceyou can place on each particular mechanism, and how well they work together.
+Finally, there’s incentive: the motive that the people guarding and maintainingthe system have to do their job properly, and also the motive that the attackershave to try to defeat your policy.
+ All of these interact (see Fig 1.
+1).
+As an example, let’s think of the 9/11 terrorist attacks.
+ The hijackers’ suc-cess in getting knives through airport security was not a mechanism failure but apolicy one; the screeners did their job of keeping out guns and explosives, but atthat time, knives with blades up to three inches were permitted.
+ Policy changedquickly: ﬁrst to prohibit all knives, then most weapons (baseball bats are nowforbidden but whiskey bottles are OK); it’s ﬂip-ﬂopped on many details (butanelighters forbidden then allowed again).
+ Mechanism is weak, because of thingslike composite knives and explosives that don’t contain nitrogen.
+ Assurance isalways poor; many tons of harmless passengers’ possessions are consigned tothe trash each month, while less than half of all the real weapons taken throughscreening (whether accidentally or for test purposes) are spotted and conﬁscated.
+Most governments have prioritised visible measures over e↵ective ones.
+ Forexample, the TSA has spent billions on passenger screening, which is fairlyine↵ective, while the $100m spent on reinforcing cockpit doors removed most ofthe risk [1523].
+ The President of the Airline Pilots Security Alliance noted thatSecurity Engineering23Ross Anderson1.
+3.
+ EXAMPLE 1 – A BANKmost ground sta↵ aren’t screened, and almost no care is taken to guard aircraftparked on the ground overnight.
+ As most airliners don’t have door locks, there’snot much to stop a bad guy wheeling steps up to a plane and placing a bombon board; if he had piloting skills and a bit of chutzpah, he could ﬁle a ﬂightplan and make o↵ with it [1202].
+ Yet screening sta↵ and guarding planes arejust not a priority.
+Why are such policy choices made?Quite simply, the incentives on thedecision makers favour visible controls over e↵ective ones.
+ The result is whatBruce Schneier calls ‘security theatre’ – measures designed to produce a feelingof security rather than the reality.
+ Most players also have an incentive to exag-gerate the threat from terrorism: politicians to ‘scare up the vote’ (as PresidentObama put it), journalists to sell more papers, companies to sell more equip-ment, government o�cials to build their empires, and security academics to getgrants.
+ The upshot is that most of the damage done by terrorists to democraticcountries comes from the overreaction.
+ Fortunately, electorates ﬁgure this outover time, and now – nineteen years after 9/11 – less money is wasted.
+Ofcourse, we have just learned that much more of our society’s resilience budgetshould have been spent on preparing for pandemic disease.
+ It was at the topof Britain’s risk register, but terrorism was politically more sexy.
+ The countriesthat managed their priorities more rationally got much better outcomes.
+Security engineers need to understand all this; we need to be able to put risksand threats in context, make realistic assessments of what might go wrong,and give our clients good advice.
+ That depends on a wide understanding ofwhat has gone wrong over time with various systems; what sort of attacks haveworked, what their consequences were, and how they were stopped (if it wasworthwhile to do so).
+ History also matters because it leads to complexity, andcomplexity causes many failures.
+ Knowing the history of modern informationsecurity enables us to understand its complexity, and navigate it better.
+So this book is full of case histories.
+ To set the scene, I’ll give a few briefexamples here of interesting security systems and what they’re designed to pre-vent.
+1.
+3Example 1 – a bankBanks operate a lot of security-critical computer systems.
+1.
+ A bank’s operations rest on a core bookkeeping system.
+ This keeps cus-tomer account master ﬁles plus a number of journals that record incomingand outgoing transactions.
+ The main threat here is the bank’s own sta↵;about one percent of bank branch sta↵ are ﬁred each year, mostly for pettydishonesty (the average theft is only a few thousand dollars).
+ The tradi-tional defence comes from bookkeeping procedures that have evolved overcenturies.
+ For example, each debit against one account must be matchedby a credit against another; so money can only be moved within a bank,never created or destroyed.
+ In addition, large transfers typically need twoSecurity Engineering24Ross Anderson1.
+3.
+ EXAMPLE 1 – A BANKPolicyIncentivesMechanismAssurance66--⇢⇢⇢⇢⇢⇢⇢⇢>ZZZZZZZZ~??��ZZZZZZZZ}⇢⇢⇢⇢⇢⇢⇢⇢=Figure 1.
+1: – Security Engineering Analysis Frameworkpeople to authorize them.
+ There are also alarms that look for unusualvolumes or patterns of transactions, and sta↵ are required to take regularvacations with no access to the bank’s systems.
+2.
+ One public face is the bank’s automatic teller machines.
+ Authenticatingtransactions based on a customer’s card and personal identiﬁcation num-ber – so as to defend against both outside and inside attack – is harderthan it looks! There have been many epidemics of ‘phantom withdrawals’in various countries when local villains (or bank sta↵) have found and ex-ploited loopholes in the system.
+ Automatic teller machines are also inter-esting as they were the ﬁrst large-scale commercial use of cryptography,and they helped establish a number of crypto standards.
+The mecha-nisms developed for ATMs have been extended to point-of-sale terminalsin shops, where card payments have largely displaced cash; and they’vebeen adapted for other applications such as prepayment utility meters.
+3.
+ Another public face is the bank’s website and mobile phone app.
+ Most cus-tomers now do their routine business, such as bill payments and transfersbetween savings and checking accounts, online rather than at a branch.
+Bank websites have come under heavy attack since 2005 from phishing –where customers are invited to enter their passwords at bogus websites.
+The standard security mechanisms designed in the 1990s turned out to beless e↵ective once criminals started attacking the customers rather thanthe bank, so many banks now send you a text message with an authen-tication code.
+ The crooks’ reaction is to go to a phone shop, pretend tobe you, and buy a new phone that steals your phone number.
+ This armsrace poses many fascinating security engineering problems mixing elementsfrom authentication, usability, psychology, operations and economics.
+4.
+ Behind the scenes are high-value messaging systems, used to move largesums between banks; to trade in securities; to issue letters of credit andSecurity Engineering25Ross Anderson1.
+4.
+ EXAMPLE 2 – A MILITARY BASEguarantees; and so on.
+ An attack on such a system is the dream of thehigh-tech criminal – and we hear that the government of North Korea hasstolen many millions by attacks on banks.
+ The defence is a mixture ofbookkeeping controls, access controls, and cryptography.
+5.
+ The bank’s branches may seem large, solid and prosperous, reassuring cus-tomers that their money is safe.
+ But the stone facade is theatre rather thanreality.
+ If you walk in with a gun, the tellers will give you all the cash youcan see; and if you break in at night, you can cut into the safe in minuteswith an abrasive wheel.
+ The e↵ective controls center on alarm systems,which are connected to a security company’s control center, whose sta↵check things out by video and call the police if they have to.
+ Cryptographyis used to prevent a robber manipulating the communications and makingthe alarm appear to say ‘all’s well’ when it isn’t.
+I’ll look at these applications in later chapters.
+ Banking computer security isimportant: until the early 2000s, banks were the main civilian market for manycomputer security products, so they had a huge inﬂuence on security standards.
+1.
+4Example 2 – a military baseMilitary systems were the other technology driver back in the 20th century, asthey motivated much of the academic research that governments funded intocomputer security from the early 1980s onwards.
+ As with banking, there’s notone application but many.
+1.
+ Military communications drove the development of cryptography, goingright back to ancient Egypt and Mesopotamia.
+ But it is often not enoughto just encipher messages: an enemy who sees tra�c encrypted with some-body else’s keys may simply locate and attack the transmitter.
+Low-probability-of-intercept (LPI) radio links are one answer; they use tricksthat are now adopted in everyday communications such as Bluetooth.
+2.
+ Starting in the 1940s, governments spent a lot of money on electronicwarfare systems.
+The arms race of trying to jam enemy radars whilepreventing the enemy from jamming yours has led to many sophisticateddeception tricks, countermeasures, and counter-countermeasures – with adepth, subtlety and range of strategies that are still not found elsewhere.
+Spooﬁng and service-denial attacks were a reality there long before black-mailers started targeting the websites of bankers, bookmakers and gamers.
+3.
+ Military organisations need to hold some information close, such as intelli-gence sources and plans for future operations.
+ These are typically labeled‘Top Secret’ and handled on separate systems; they may be further re-stricted in compartments, so that the most sensitive information is knownto only a handful of people.
+ For years, attempts were made to enforceinformation ﬂow rules, so you could copy a ﬁle from a Secret stores systemto a Top Secret command system, but not vice versa.
+ Managing multipleSecurity Engineering26Ross Anderson1.
+5.
+ EXAMPLE 3 – A HOSPITALsystems with information ﬂow restrictions is a hard problem, and the bil-lions that were spent on attempting to automate military security helpeddevelop the access-control technology you now have in your mobile phoneand laptop.
+4.
+ The problems of protecting nuclear weapons led to the invention of a lotof cool security technology, ranging from provably-secure authenticationsystems, through optical-ﬁbre alarm sensors, to methods of identifyingpeople using biometrics – including the iris patterns now used to identifyall citizens of India.
+The security engineer can still learn a lot from this.
+ For example, the militarywas until recently one of the few customers for software systems that had to bemaintained for decades.
+ Now that software and Internet connectivity are ﬁndingtheir way into safety-critical consumer goods such as cars, software sustainabilityis becoming a much wider concern.
+ In 2019, the European Union passed a lawdemanding that if you sell goods with digital components, you must maintainthose components for two years, or for longer if that’s a reasonable expectationof the customer – which will mean ten years for cars and white goods.
+ If you’rewriting software for a car or fridge that will be on sale for seven years, you’llhave to maintain it for almost twenty years.
+ What tools should you use?1.
+5Example 3 – a hospitalFrom bankers and soldiers we move on to healthcare.
+ Hospitals have a numberof interesting protection requirements – mostly to do with patient safety andprivacy.
+1.
+ Safety usability is important for medical equipment, and is by no meansa solved problem.
+ Safety usability failures are estimated to kill about asmany people as road tra�c accidents – a few tens of thousands a year inthe USA, for example, and a few thousand in the UK.
+ The biggest singleproblem is with the infusion pumps used to drip-feed patients with drugs;a typical hospital might have half-a-dozen makes, all with somewhat dif-ferent controls, making fatal errors more likely.
+ Safety usability interactswith security: unsafe devices that are also found to be hackable are muchmore likely to have product recalls ordered as regulators know that thepublic’s appetite for risk is a lot lower when hostile action becomes a pos-sibility.
+ So as more and more medical devices acquire not just softwarebut radio communications, security sensitivities may lead to better safety.
+2.
+ Patient record systems should not let all the sta↵ see every patient’s record,or privacy violations can be expected.
+ In fact, since the second editionof this book, the European Court has ruled that patients have a rightto restrict their personal health information to the clinical sta↵ involvedin their care.
+That means that systems have to implement rules suchas “nurses can see the records of any patient who has been cared for intheir department at any time during the previous 90 days”.
+ This can beSecurity Engineering27Ross Anderson1.
+6.
+ EXAMPLE 4 – THE HOMEharder than it looks.
+ (The US HIPAA legislation sets easier standards forcompliance but is still a driver of information security investment.
+)3.
+ Patient records are often anonymized for use in research, but this is hard todo well.
+ Simply encrypting patient names is not enough: an enquiry suchas “show me all males born in 1953 who were treated for atrial ﬁbrillationon October 19th 2003” should be enough to target former Prime MinisterTony Blair, who was rushed to hospital that day to be treated for anirregular heartbeat.
+ Figuring out what data can be anonymized e↵ectivelyis hard, and it’s also a moving target as we get more and more social andcontextual data – not to mention the genetic data of relatives near andfar.
+4.
+ New technology can introduce poorly-understood risks.
+ Hospital admin-istrators understand the need for backup procedures to deal with outagesof power; hospitals are supposed to be able to deal with casualties even iftheir mains electricity and water supplies fail.
+ But after several hospitalsin Britain had machines infected by the Wannacry malware in May 2017,they closed down their networks to limit further infection, and then foundthat they had to close their accident and emergency departments – asX-rays no longer travel from the X-ray machine to the operating theatrein an envelope, but via a server in a distant town.
+ So a network failurecan stop doctors operating when a power failure would not.
+ There werestandby generators, but no standby network.
+ Cloud services can makethings more reliable on average, but the failures can be bigger, more com-plex, and correlated.
+ An issue surfaced by the coronavirus pandemic isaccessory control: some medical devices authenticate their spare parts,just as printers authenticate ink cartridges.
+ Although the vendors claimthis is for safety, it’s actually so they can charge more money for spares.
+But it introduces fragility: when the supply chain gets interrupted, thingsare a lot harder to ﬁx.
+We’ll look at medical system security (and safety too) in more detail later.
+This is a younger ﬁeld than banking IT or military systems, but as healthcareaccounts for a larger proportion of GNP than either of them in all developedcountries, its importance is growing.
+ It’s also consistently the largest source ofprivacy breaches in countries with mandatory reporting.
+1.
+6Example 4 – the homeYou might not think that the typical family operates any secure systems.
+ Butjust stop and think.
+1.
+ You probably use some of the systems I’ve already described.
+ You mayuse a web-based electronic banking system to pay bills, and you may haveonline access to your doctor’s surgery so you can order repeat prescrip-tions.
+ If you’re diabetic then your insulin pump may communicate with adocking station at your bedside.
+ Your home burglar alarm may send anSecurity Engineering28Ross Anderson1.
+6.
+ EXAMPLE 4 – THE HOMEencrypted ‘all’s well’ signal to the security company every few minutes,rather than waking up the neighborhood when something happens.
+2.
+ Your car probably has an electronic immobilizer.
+ If it was made beforeabout 2015, the car unlocks when you press a button on the key, whichsends an encrypted unlock command.
+ If it’s a more recent model, whereyou don’t have to press any buttons but just have the key in your pocket,the car sends an encrypted challenge to the key and waits for the rightresponse.
+ But eliminating the button press meant that if you leave yourkey near the front door, a thief might use a radio relay to steal your car.
+Car thefts have shot up since this technology was introduced.
+3.
+ Your mobile phone authenticates itself to the network by a cryptographicchallenge-response protocol similar to the ones used in car door locks andimmobilizers, but the police can use a false base station (known in Europeas an IMSI-catcher, and in America as a Stingray) to listen in.
+ And, asI mentioned above, many phone companies are relaxed about selling newSIM cards to people who claim their phones have been stolen; so a crookmight steal your phone number and use this to raid your bank account.
+4.
+ In over 100 countries, households can get prepayment meters for electricityand gas, which they top up using a 20-digit code that they buy from anATM or an online service.
+It even works o↵-grid; in Kenyan villages,people who can’t a↵ord $200 to buy a solar panel can get one for $2 aweek and unlock the electricity it generates using codes they buy withtheir mobile phones.
+5.
+ Above all, the home provides a haven of physical security and seclusion.
+This is changing in a number of ways.
+ Burglars aren’t worried by locksas much as by occupants, so alarms and monitoring systems can help;but monitoring is also becoming pervasive, with many households buyingsystems like Alexa and Google Home that listen to what people say.
+ Allsorts of other gadgets now have microphones and cameras as voice andgesture interfaces become common, and the speech processing is typicallydone in the cloud to save battery life.
+ By 2015, President Obama’s councilof advisers on science and technology was predicting that pretty soon everyinhabited space on earth would have microphones that were connected toa small number of cloud service providers.
+ (The USA and Europe havequite di↵erent views on how privacy law should deal with this.
+) One wayor another, the security of your home may come to depend on remotesystems over which you have little control.
+Over the next few years, the number of such systems is going to increaserapidly.
+ On past experience, many of them will be badly designed.
+ For example,in 2019, Europe banned a children’s watch that used unencrypted communica-tions to the vendor’s cloud service; a wiretapper could download any child’s loca-tion history and cause their watch to phone any number in the world.
+ When thiswas discovered, the EU ordered the immediate safety recall of all watches [901].
+This book aims to help you avoid such outcomes.
+ To design systems thatare safe and secure, an engineer needs to know about what systems there are,how they work, and – at least as important – how they have failed in the past.
+Security Engineering29Ross Anderson1.
+7.
+ DEFINITIONSCivil engineers learn far more from the one bridge that falls down than from thehundred that stay up; exactly the same holds in security engineering.
+1.
+7DeﬁnitionsMany of the terms used in security engineering are straightforward, but someare misleading or even controversial.
+There are more detailed deﬁnitions oftechnical terms in the relevant chapters, which you can ﬁnd using the index.
+ Inthis section, I’ll try to point out where the main problems lie.
+The ﬁrst thing we need to clarify is what we mean by system.
+ In practice,this can denote:1.
+ a product or component, such as a cryptographic protocol, a smartcard,or the hardware of a phone, a laptop or server;2.
+ one or more of the above plus an operating system, communications andother infrastructure;3.
+ the above plus one or more applications (banking app, health app, mediaplayer, browser, accounts / payroll package, and so on – including bothclient and cloud components);4.
+ any or all of the above plus IT sta↵;5.
+ any or all of the above plus internal users and management;6.
+ any or all of the above plus customers and other external users.
+Confusion between the above deﬁnitions is a fertile source of errors andvulnerabilities.
+ Broadly speaking, the vendor and evaluator communities focuson the ﬁrst and (occasionally) the second of them, while a business will focuson the sixth (and occasionally the ﬁfth).
+ We will come across many examples ofsystems that were advertised or even certiﬁed as secure because the hardwarewas, but that broke badly when a particular application was run, or when theequipment was used in a way the designers didn’t anticipate.
+Ignoring thehuman components, and thus neglecting usability issues, is one of the largestcauses of security failure.
+ So we will generally use deﬁnition 6; when we take amore restrictive view, it should be clear from the context.
+The next set of problems comes from lack of clarity about who the players areand what they’re trying to prove.
+ In the literature on security and cryptology,it’s a convention that principals in security protocols are identiﬁed by nameschosen with (usually) successive initial letters – much like hurricanes, exceptthat we use alternating genders.
+ So we see lots of statements such as “Aliceauthenticates herself to Bob”.
+ This makes things much more readable, but cancome at the expense of precision.
+ Do we mean that Alice proves to Bob thather name actually is Alice, or that she proves she’s got a particular credential?Do we mean that the authentication is done by Alice the human being, or by asmartcard or software tool acting as Alice’s agent? In that case, are we sure it’sSecurity Engineering30Ross Anderson1.
+7.
+ DEFINITIONSAlice, and not perhaps Carol to whom Alice lent her card, or David who stoleher phone, or Eve who hacked her laptop?By a subject I will mean a physical person in any role including that of anoperator, principal or victim.
+ By a person, I will mean either a physical personor a legal person such as a company or government1.
+A principal is an entity that participates in a security system.
+ This entity canbe a subject, a person, a role, or a piece of equipment such as a laptop, phone,smartcard, or card reader.
+ A principal can also be a communications channel(which might be a port number, or a crypto key, depending on the circumstance).
+A principal can also be a compound of other principals; examples are a group(Alice or Bob), a conjunction (Alice and Bob acting together), a compound role(Alice acting as Bob’s manager) and a delegation (Bob acting for Alice in herabsence).
+Beware that groups and roles are not the same.
+ By a group I will mean a setof principals, while a role is a set of functions assumed by di↵erent persons insuccession (such as ‘the o�cer of the watch on the USS Nimitz’ or ‘the presidentfor the time being of the Icelandic Medical Association’).
+ A principal may beconsidered at more than one level of abstraction: e.
+g.
+ ‘Bob acting for Alice inher absence’ might mean ‘Bob’s smartcard representing Bob who is acting forAlice in her absence’ or even ‘Bob operating Alice’s smartcard in her absence’.
+When we have to consider more detail, I’ll be more speciﬁc.
+The meaning of the word identity is controversial.
+ When we have to be care-ful, I will use it to mean a correspondence between the names of two principalssignifying that they refer to the same person or equipment.
+ For example, it maybe important to know that the Bob in ‘Alice acting as Bob’s manager’ is thesame as the Bob in ‘Bob acting as Charlie’s manager’ and in ‘Bob as branchmanager signing a bank draft jointly with David’.
+ Often, identity is abused tomean simply ‘name’, an abuse entrenched by such phrases as ‘user identity’ and‘citizen identity card’.
+The deﬁnitions of trust and trustworthy are often confused.
+ The followingexample illustrates the di↵erence: if an NSA employee is observed in a toiletstall at Baltimore Washington International airport selling key material to aChinese diplomat, then (assuming his operation was not authorized) we candescribe him as ‘trusted but not trustworthy’.
+ I use the NSA deﬁnition that atrusted system or component is one whose failure can break the security policy,while a trustworthy system or component is one that won’t fail.
+There are many alternative deﬁnitions of trust.
+In the corporate world,trusted system might be ‘a system which won’t get me ﬁred if it gets hackedon my watch’ or even ‘a system which we can insure’.
+ But when I mean anapproved system, an insurable system or an insured system, I’ll say so.
+The deﬁnition of conﬁdentiality versus privacy versus secrecy opens anothercan of worms.
+ These terms overlap, but are not exactly the same.
+ If my neighborcuts down some ivy at our common fence with the result that his kids can lookinto my garden and tease my dogs, it’s not my conﬁdentiality that has been1The law around companies may come in handy when we start having to develop rulesaround AI.
+ A company, like a robot, may be immortal and have some functional intelligence– but without consciousness.
+ You can’t jail a company but you can ﬁne it.
+Security Engineering31Ross Anderson1.
+7.
+ DEFINITIONSinvaded.
+ And the duty to keep quiet about the a↵airs of a former employer is aduty of conﬁdence, not of privacy.
+The way I’ll use these words is as follows.
+• Secrecy is an engineering term that refers to the e↵ect of the mechanismsused to limit the number of principals who can access information, suchas cryptography or computer access controls.
+• Conﬁdentiality involves an obligation to protect some other person’s ororganisation’s secrets if you know them.
+• Privacy is the ability and/or right to protect your personal informationand extends to the ability and/or right to prevent invasions of your per-sonal space (the exact deﬁnition of which varies from one country to an-other).
+ Privacy can extend to families but not to legal persons such ascorporations.
+For example, hospital patients have a right to privacy, and in order to up-hold this right the doctors, nurses and other sta↵ have a duty of conﬁdencetowards their patients.
+ The hospital has no right of privacy in respect of itsbusiness dealings but those employees who are privy to them may have a dutyof conﬁdence (unless they invoke a whistleblowing right to expose wrongdoing).
+Typically, privacy is secrecy for the beneﬁt of the individual while conﬁdentialityis secrecy for the beneﬁt of the organisation.
+There is a further complexity in that it’s often not su�cient to protect data,such as the contents of messages; we also have to protect metadata, such aslogs of who spoke to whom.
+ For example, many countries have laws makingthe treatment of sexually transmitted diseases secret, and yet if a private eyecould observe you exchanging encrypted messages with a sexually-transmitteddisease clinic, he might infer that you were being treated there.
+ In fact, a keyprivacy case in the UK turned on such a fact: a model in Britain won a privacylawsuit against a tabloid newspaper which printed a photograph of her leavinga meeting of Narcotics Anonymous.
+ So anonymity can be just as important afactor in privacy (or conﬁdentiality) as secrecy.
+ But anonymity is hard.
+ It’sdi�cult to be anonymous on your own; you usually need a crowd to hide in.
+Also, our legal codes are not designed to support anonymity: it’s much easier forthe police to get itemized billing information from the phone company, whichtells them who called whom, than it is to get an actual wiretap.
+ (And it’s oftenmore useful.
+)The meanings of authenticity and integrity can also vary subtly.
+ In the aca-demic literature on security protocols, authenticity means integrity plus fresh-ness: you have established that you are speaking to a genuine principal, not areplay of previous messages.
+ We have a similar idea in banking protocols.
+ Iflocal banking laws state that checks are no longer valid after six months, a sevenmonth old uncashed check has integrity (assuming it’s not been altered) but isno longer valid.
+ However, there are some strange edge cases.
+ For example, apolice crime scene o�cer will preserve the integrity of a forged check – by plac-ing it in an evidence bag.
+ (The meaning of integrity has changed in the newcontext to include not just the signature but any ﬁngerprints.
+)Security Engineering32Ross Anderson1.
+7.
+ DEFINITIONSThe things we don’t want are often described as hacking.
+ I’ll follow BruceSchneier and deﬁne a hack as something a system’s rules permit, but which wasunanticipated and unwanted by its designers [1679].
+ For example, tax attorneysstudy the tax code to ﬁnd loopholes which they develop into tax avoidancestrategies; in exactly the same way, black hats study software code to ﬁndloopholes which they develop into exploits.
+ Hacks can target not just the taxsystem and computer systems, but the market economy, our systems for electingleaders and even our cognitive systems.
+ They can happen at multiple layers:lawyers can hack the tax code, or move up the stack and hack the legislature,or even the media.
+ In the same way, you might try to hack a cryptosystemby ﬁnding a mathematical weakness in the encryption algorithm, or you cango down a level and measure the power drawn by a device that implements itin order to work out the key, or up a level and deceive the device’s custodianinto using it when they shouldn’t.
+This book contains many examples.
+Inthe broader context, hacking is sometimes a source of signiﬁcant innovation.
+If a hack becomes popular, the rules may be changed to stop it; but it mayalso become normalised (examples range from libraries through the ﬁlibuster tosearch engines and social media).
+The last matter I’ll clarify here is the terminology that describes what we’retrying to achieve.
+ A vulnerability is a property of a system or its environmentwhich, in conjunction with an internal or external threat, can lead to a securityfailure, which is a breach of the system’s security policy.
+ By security policy Iwill mean a succinct statement of a system’s protection strategy (for example,“in each transaction, sums of credits and debits are equal, and all transactionsover $1,000,000 must be authorized by two managers”).
+A security target isa more detailed speciﬁcation which sets out the means by which a securitypolicy will be implemented in a particular product – encryption and digitalsignature mechanisms, access controls, audit logs and so on – and which willbe used as the yardstick to evaluate whether the engineers have done a properjob.
+ Between these two levels you may ﬁnd a protection proﬁle which is like asecurity target, except written in a su�ciently device-independent way to allowcomparative evaluations among di↵erent products and di↵erent versions of thesame product.
+ I’ll elaborate on security policies, security targets and protectionproﬁles in Part 3.
+ In general, the word protection will mean a property such asconﬁdentiality or integrity, deﬁned in a su�ciently abstract way for us to reasonabout it in the context of general systems rather than speciﬁc implementations.
+This somewhat mirrors the terminology we use for safety-critical systems,and as we are going to have to engineer security and safety together in evermore applications it is useful to keep thinking of the two side by side.
+In the safety world, a critical system or component is one whose failure couldlead to an accident, given a hazard – a set of internal conditions or external cir-cumstances.
+ Danger is the probability that a hazard will lead to an accident,and risk is the overall probability of an accident.
+ Risk is thus hazard level com-bined with danger and latency – the hazard exposure and duration.
+ Uncertaintyis where the risk is not quantiﬁable, while safety is freedom from accidents.
+ Wethen have a safety policy which gives us a succinct statement of how risks will bekept below an acceptable threshold (and this might range from succinct, suchas “don’t put explosives and detonators in the same truck”, to the much moreSecurity Engineering33Ross Anderson1.
+8.
+ SUMMARYcomplex policies used in medicine and aviation); at the next level down, wemight ﬁnd a safety case having to be made for a particular component such asan aircraft, an aircraft engine or even the control software for an aircraft engine.
+1.
+8Summary‘Security’ is a terribly overloaded word, which often means quite incompatiblethings to di↵erent people.
+ To a corporation, it might mean the ability to monitorall employees’ email and web browsing; to the employees, it might mean beingable to use email and the web without being monitored.
+As time goes on, and security mechanisms are used more and more by thepeople who control a system’s design to gain some commercial advantage overthe other people who use it, we can expect conﬂicts, confusion and the deceptiveuse of language to increase.
+One is reminded of a passage from Lewis Carroll:“When I use a word,” Humpty Dumpty said, in a rather scornfultone, “it means just what I choose it to mean – neither more norless.
+” “The question is,” said Alice, “whether you can make wordsmean so many di↵erent things.
+” “The question is,” said HumptyDumpty, “which is to be master – that’s all.
+”The security engineer must be sensitive to the di↵erent nuances of meaningthat words acquire in di↵erent applications, and be able to formalize what thesecurity policy and target actually are.
+ That may sometimes be inconvenientfor clients who wish to get away with something, but, in general, robust securitydesign requires that the protection goals are made explicit.
+Security Engineering34Ross Anderson

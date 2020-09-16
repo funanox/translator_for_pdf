@@ -1,0 +1,950 @@
+Chapter 22PhonesI rarely had to resort to a technical attack.
+ Companies can spendmillions of dollars toward technological protections and that’swasted if somebody can basically call someone on the telephoneand either convince them to do something on the computerthat lowers the computer’s defenses or revealsthe information they were seeking.
+– KEVIN MITNICKPrivacy is not about hiding – privacy is abouthuman growth and agency.
+– CHRISTOPHER WYLIEThe protection of phones, the app ecosystem they support and the telecom-munications networks on which they rely, is central to the modern world.
+ First,in the decade after the launch of the iPhone, the world moved from accessingthe Internet via PCs or laptops to using smartphones instead, and added bil-lions of new users too.
+ Whole business sectors are being revolutionised as theymove to apps; of the 5.
+5bn adults on earth, 5bn have phones, and 4bn of themhave smartphones.
+ Second, the new generation of connected devices, from smartspeakers to cars, are very much like phones, often using the same platforms andsharing the same vulnerabilities.
+ Third, phones now provide the bedrock forauthentication: if you forget your password, you get an SMS to recover it – sosomeone who can steal an SMS from you may be able to spend your money.
+Fourth, mobile networks are critical to other infrastructure: electricity compa-nies rely on mobile phones to direct their engineers when repairing faults, so ifthe phone system goes down a few hours after the power does, there’s a realproblem.
+ Finally, there’s public policy.
+ While smartphones have revolutionisedthe lives of the third-world poor by giving access to services such as banking,they also facilitate surveillance and control.
+The phone ecosystem is mind-numbingly complex, and to master it the se-curity engineer needs not just general security knowledge such as crypto andaccess controls, and knowledge of speciﬁc platforms such as Android and iOS,but of mobile and ﬁxed-line networks too.
+ The history of telecomms security66822.
+1.
+ ATTACKS ON PHONE NETWORKSis instructive.
+ Early attacks were carried out on phone companies by enthusi-asts (‘phone phreaks’) to get free calls; then the phone system’s vulnerabilitieswere exploited by crooks to evade police wiretapping; then premium rate callswere introduced, which brought in large-scale fraud; then when telecomms mar-kets were liberalized, some phone companies started conducting attacks on eachother’s customers; and some phone companies have even attacked each other.
+At each stage the defensive measures undertaken tended to be inadequate forvarious reasons.
+ The same cycle of exploitation then repeated with the Internet– amateur hackers followed by debates about wiretaps followed by fraud andtussles between companies and users; and as the two came together we’ve seenlots of complex interactions.
+ Now we see rapidly growing phone-based fraudagainst banking systems, bad apps stealing people’s personal information andhigh policy debates on the national security implications of 5G infrastructure.
+How is the security engineer to navigate this?The security of the phone as a platform depends on a number of things,which I’ll deal with under two main headings.
+1.
+ First, there’s whether the network to which it’s attached has somehowbeen compromised, whether by some kind of wiretap or by a SIM swapattack which undermines the phone’s network identity.
+2.
+ Second, there’s the question of whether the device itself has been com-promised, whether by malware rooting the operating system, or by theinstallation of a potentially hostile application or library.
+Phone security used to be all about the ﬁrst of these, but by now it’s mostlyabout the second.
+22.
+1Attacks on phone networksThe abuse of communications goes back centuries.
+Before Sir Rowland Hillinvented the postage stamp, postage was paid by the recipient.
+Unsolicitedmail became a huge problem – especially for famous people – so recipients wereallowed to inspect a letter and reject it rather than paying for it.
+ People soonworked out schemes to send short messages on the covers of letters which theircorrespondents rejected.
+ Regulations were brought in to stop this, but werenever really e↵ective [1460].
+A second set of abuses developed with the telegraph.
+Early optical tele-graphs worked using semaphores or heliographs; people would bribe operators,or ‘hack the local loop’ by observing the last heliograph station through a tele-scope, to learn which horse had won before the local bookmaker did.
+ Here too,attempts to legislate the problem away were a failure [1818].
+ The problems gotworse when the electric telegraph brought costs down; the greater volumes ofcommunication, and the greater ﬂexibility that got built into and on top of theservice, led to more complexity and more abuse.
+The telephone was to be no di↵erent.
+Security Engineering669Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKS22.
+1.
+1Attacks on phone-call meteringEarly phone-call metering systems were open to creative abuse.
+• In the 1950’s, the operator in some systems had to listen for the sound ofcoins dropping on a metal plate to tell that a callbox customer had paid,so people practised hitting the coinbox with a piece of metal that struckthe right note.
+• Initially, the operator had no way of knowing which phone a call had comefrom, so she had to ask the caller his number.
+ He could give the number ofsomeone else – who would then be charged.
+ Operators started calling backto verify the number for international calls, so people worked out socialengineering attacks (‘This is IBM here, we’d like to book a call to SanFrancisco and because of the time di↵erence can our Managing Directortake it at home tonight? His number’s xxx-yyyy’).
+ So payphone lines hada warning to alert the operator.
+ But the UK implementation had a bug: acustomer who had called the operator from a payphone could depress therest brieﬂy, whereupon he’d be reconnected (often to di↵erent operator),with no warning this time that the call was from a payphone.
+ He couldthen call anywhere and bill it to any local number.
+• Early systems also signalled the entry of a coin by one or more pulses, eachof which consisted of the insertion of a resistance in the line followed by abrief open circuit.
+ At a number of colleges, enterprising students installed‘magic buttons’ which could simulate this in a callbox in the student unionso people could phone for free.
+ (The bill in this case went to the studentunion, for which the magic button was not quite so amusing.
+)Attacks on toll metering have continued for over a century now.
+ Most coun-tries moved their payphones from coins to chip cards in the 1990s to cut thecosts of coin collection and vandalism, but as I remarked in section 18.
+5, thedesign was often poor at ﬁrst and villains sold lots of bogus phone cards untilit got ﬁxed.
+Other attacks involve what’s called clip-on: physically attaching a phone tosomeone else’s line to steal their service.
+ In the 1970s through the 1990s, wheninternational phone calls were very expensive, some foreign students would clip aphone on to a residential line in order to call home, and the unsuspecting homeowner could get a huge bill.
+The Norwegian phone company had customerpremises equipment authenticate itself to the exchange before a dial tone wasgiven [994].
+The UK phone company was not as enlightened as its Norwegian counter-part, and had a policy of denying that wiretaps were possible, so it could justcollect the call charges from victim households.
+ This occasionally caused col-lateral damage, as a family in Cramlington was to ﬁnd out.
+ The ﬁrst sign theyhad of trouble was hearing a conversation on their line.
+ The next was a visitfrom the police who said there’d been complaints of nuisance phone calls.
+ Thecomplainants were three ladies, all of whom had a number one digit di↵erentfrom a number to which this family had supposedly made a huge number ofSecurity Engineering670Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKScalls.
+ When the family’s bill was examined, there were also calls to clusters ofnumbers that turned out to be payphones; these had started quite suddenly atthe same time as the nuisance calls.
+ When the family had complained later tothe phone company about a fault, their connection was rerouted and this hadsolved the problem.
+A report from the phone company’s maintenance engineer noted that thefamily’s line had been tampered with at the distribution cabinet, but this wasagainst doctrine and the company later claimed the report was in error.
+Itturned out that a drug dealer had lived close by, and it seemed a reasonableinference that he’d tapped their line in order to call his couriers at the payphones.
+By using an innocent family’s phone line instead of his own, he not only savedon the phone bill, but also had a better chance of evading police surveillance.
+But both the police and the local phone company refused to go into the housewhere the dealer had lived, claiming it was too dangerous – even though thedealer had by now got six years in jail.
+ The Norwegian phone company declinedan invitation to testify about clip-on for the defence.
+The upshot was thatthe subscriber was convicted of making harassing phone calls, in a case widelybelieved to have been a miscarriage of justice.
+Stealing dial tone from cordless phones was another variant on the theme.
+In the 1990s, this became so widespread in Paris that France Telecom brokewith phone company tradition and announced that it was happening, claim-ing that the victims were using illegally imported cordless phones which wereeasy to spoof [1097].
+ That was a bit cheeky, as most equipment seems to sim-ply send a handset serial number to the base station rather than using theDECT security mechanisms, which use cryptography patented by the Frenchcompany Alcatel.
+ These mechanisms were proprietary but turned out to havemultiple weaknesses, as Erik Tews documented in 2012 after reverse engineeringthem [1871].
+ DECT authentication is based on a weak block cipher; conﬁden-tiality uses a weak stream cipher (a slightly more complicated version of A5/1which I describe below in section 22.
+2.
+1) which can be broken with typically 234e↵ort; there are weak random number generators; while protocol failures includea man-in-the middle attack, and a replay attack where you make a silent callto collect keystream to decrypt a call you recorded earlier.
+ It’s said that theGerman intelligence services used DECT to train recruits in signal collectionand cryptanalysis.
+ Since Tews’ work was published, the DECT standards bodysuggests using AES instead but it’s not clear how many vendors can be both-ered.
+ The takeaway is that a cordless phone gives you no security against acapable opponent nearby, and as the standard emerged during the Crypto Warsof the 1990s you should have expected nothing else.
+ As for clip-on fraud, it haslargely disappeared since services like Skype and WhatsApp made long-distancecalls cheap.
+Social engineering gives another way in.
+ A crook calls you pretending tobe from AT&T and asks whether you made a large number of calls to Peru onyour calling card.
+ When you deny this, they say that, in order to reverse outthe charges, can you conﬁrm that your card number is 123-456-7890-6543? No,you say (if you’re not really alert), it’s 123-456-7890-5678.
+ Now 123-456-7890 isyour phone number and 5678 your password, so that crook can now bill calls toyou.
+Security Engineering671Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKSPremium-rate phone services grew rapidly during the 1990s, leading scam-sters to develop all sorts of tricks to get people to call them: pager messages, jobads, fake emergency messages about relatives, ‘low cost’ calling cards with 0900access numbers, you name it.
+ Indeed the business of tricking people into callingpremium numbers enabled crooks to hone the techniques they now use in phish-ing attacks.
+ The 809 area code for the Caribbean used to be a favourite coverfor crooks targeting US subscribers; many people weren’t aware that ‘domestic’numbers (numbers within the USA’s +1 international direct dialling code) in-clude countries other than the relatively cheap USA and Canada.
+ Even thoughmany people have now learned that +1 809 is ‘foreign’ and more expensive, theintroduction of still more Caribbean area codes, such as +1 345 for the CaymanIslands, has made it even harder to spot such scams.
+Phone companies advised their customers ‘Do not return calls to unfamiliartelephone numbers’ – but how practical is that? Just as banks now train theircustomers to click on links in marketing emails and thus make them vulnerableto phishing attacks, so I’ve had junk marketing calls from my phone company– even though I’m on the do-not-call list.
+ Governments typically set up weakregulators who avoid trying to regulate premium-rate operators, claiming it’stoo hard; and from time to time it all blows up.
+ In the late 2000s, all the majorUK TV companies (including the state-owned BBC) ended up getting ﬁned forgetting viewers to phone in and vote, in all sorts of shows.
+ Many of these arerecorded, so the calls were futile [1323].
+ Phone scams by broadcast stationshave been a recurring problem worldwide since radio broadcasting took o↵ inthe 1920s, and got worse when TV went mainstream in the 1950s [2050].
+ It’salso a recurring pattern that the biggest scams are often run by ‘respectable’companies rather than by Russian gangsters.
+22.
+1.
+2Attacks on signalingThe term ‘phone phreaking’ refers to attacks on signaling as well as pure tollfraud.
+ Until the 1980s, phone companies used signalling systems that workedin-band by sending tone pulses in the same circuit that carried the speech.
+ Theﬁrst attack I’ve heard of dates back to 1952, and by the mid-to-late 1960s manyenthusiasts in both America and Britain had worked out ways of reroutingcalls.
+ One of the pioneers, Joe Engresia, had perfect pitch and discovered asa child that he could make free phone calls by whistling a tone he’d heard inthe background of a long-distance call.
+ His less gifted colleagues used home-made tone generators, of which the most common were called blue boxes.
+ Thetrick was to call an 0800 number and then send a 2600Hz tone that would cleardown the line at the far end – that is, disconnect the called party while leavingthe caller with a trunk line connected to the exchange.
+ The caller could nowenter the number he really wanted and be connected without paying.
+ Phonephreaking was one of the roots of the computer hacker culture that took root inthe Bay Area and was formative in the development and evolution of personalcomputers [1222].
+ Steve Jobs and Steve Wozniak ﬁrst built blue boxes beforethey diversiﬁed into computers [722].
+Phone phreaking started out with a strong ideological element.
+ In those daysmost phone companies were monopolies – large, faceless and unresponsive.
+ InSecurity Engineering672Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKSAmerica, AT&T was such an abusive monopoly that the courts eventually brokeit up; most phone companies in Europe were government departments.
+ Peoplewhose domestic phone lines had been involved in a service theft found they werestuck with the charges.
+ If the young man who had courted your daughter was(unknown to you) a phone phreak who hadn’t paid for the calls he made to her,you would suddenly ﬁnd the company trying to extort either the young man’sname or a payment.
+ Phone companies were also aligned with state security.
+Phone phreaks in many countries discovered signalling codes or switch featuresthat would enable the police or the spooks to tap your phone from the comfortof their desks, without having to send out a lineman to clip on a wiretap.
+ Backin the days of the Vietnam war and student protests, this was inﬂammatorystu↵.
+ Phone phreaks were counterculture heroes, while phone companies werehand-in-hand with the forces of darkness.
+As there was no way to stop blue-box attacks so long as telephone signallingwas carried in-band, the phone companies spent years and many billions ofdollars moving to a signaling system called SS7 which is out-of-band, in e↵ect ona private Internet to which normal subscribers had no easy access.
+ Gradually,region by region, the world was closed o↵ to blue-box attacks.
+This forcedattackers to become insiders.
+22.
+1.
+3Attacks on switching and conﬁgurationOnce telephone exchange switches became programmable, a second wave ofattacks targeted the computers.
+ Typically these were Unix machines on a LANin the exchange, which also had machines with administrative functions such asscheduling maintenance.
+ By hacking one of these less well guarded machines,a phreak could go across the LAN and break into the switching equipment –or into other secondary systems such as subscriber databases.
+ For a survey ofPacBell’s experience of this, see [388]; for Bellcore’s, see [1059].
+Using these techniques, unlisted phone numbers could be found, calls couldbe forwarded without a subscriber’s knowledge, and all sorts of mischief becamepossible.
+A Californian phone phreak called Kevin Poulsen got root accessto many of PacBel’s switches and other systems in 1985–88: this apparentlyinvolved burglary as much as hacking (he was eventually convicted of conspiringto possess ﬁfteen or more counterfeit, unauthorized and stolen access devices).
+He did petty things like obtaining unlisted phone numbers for celebrities andwinning a Porsche from Los Angeles radio station KIIS-FM.
+ Each week KIISwould give a Porsche to the 102nd caller, so Poulsen and his accomplices blockedout all calls to the radio station’s 25 phone lines save their own, made the 102ndcall and collected the Porsche.
+ He was also accused of unlawful wiretapping andespionage; these charges were dismissed.
+ In fact, the FBI came down on himso heavily that there were allegations of an improper relationship between theagency and the phone companies, along the lines of ‘you scratch our backs withwiretaps when needed, and we’ll investigate your hacker problems’ [690].
+The FBI’s sensitivity does highlight the fact that attacks on phone companycomputers are used by foreign intelligence agencies to conduct remote wiretaps.
+Some of the attacks mentioned in [388] were from overseas, and the possibilitythat such tricks might be used to crash the whole phone system in the contextSecurity Engineering673Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKSof an information warfare attack worried the NSA [727, 1106].
+ Countries thatimport their telephone exchanges rather than building their own just have toassume that their telephone switchgear has vulnerabilities known to the sup-plier’s government.
+ (During the invasion of Afghanistan in 2001, Kabul had twoexchanges: an old electromechanical one and a new electronic one.
+ The USAFbombed only the ﬁrst.
+)Many real attacks involved insiders, who misconﬁgured systems to providefree calls through special numbers.
+ This didn’t matter much when the phonecompany’s marginal cost of servicing an extra phone call was zero, but withthe proliferation of value-added services in the 1990s, and with deregulationgiving rise to cash payments between phone companies, it got serious [460].
+ Ina hack reminiscent of Poulsen, two sta↵ at British Telecom were dismissed afterthey each won ten tickets for Concorde from a phone-in o↵er at which only onerandomly selected call in a thousand was supposed to get through [1914].
+As for outsiders, the other ‘arch-hacker’ apart from Poulsen was Kevin Mit-nick, who got arrested and convicted following a series of break-ins which madehim too the target of an FBI manhunt.
+ They initially thought he was a foreignagent who was abusing the US phone system to wiretap sensitive US targets.
+ AsI mentioned in Chapter 3, he testiﬁed after his release from prison that almostall of his exploits had involved social engineering.
+ He wrote a book on deceptionthat became a classic [1325].
+ In congressional testimony, he came up with thequote at the head of this chapter: “Companies can spend millions of dollarstoward technological protections and that’s wasted if somebody can basicallycall someone on the telephone and either convince them to do something on thecomputer that lowers the computer’s defenses or reveals the information theywere seeking”.
+Phone companies, like other ﬁrms, are vulnerable to carelessinsiders as well as malicious insiders.
+Fast forward to 2020, and one worrying development is the growth of switch-ing exploits.
+ A number of telcos now give SS7 access to corporate customers,for example if they want to send bulk SMS messages to authenticate customers.
+Access to the switch fabric lets them play the kind of games that Poulsen andMitnick got up to in the 1980s.
+ For example, if I want to hack your Gmailaccount, I send a message to your mobile service provider saying that you’veroamed into my network.
+ I then start an account recovery at Google, whichsends an SMS to reset your password.
+ As I noted in sections 3.
+4.
+1 and 12.
+7.
+4,this is now in active use for bank fraud; the ﬁrst instance of its use to stealmoney from bank customers was in Germany in 2016, when they were movedwithout their knowledge to another network; there was a similar fraud in Lon-don in 2019 [489].
+ SS7 has also been abused by Saudi Arabian MNOs to trackSaudi dissidents in the USA [1054].
+ Most major telcos in developed countriesnow use some SS7 ﬁrewalling, and allow or deny remote access depending ontheir roaming agreements.
+ If there is such an agreement, a ﬁrm given SS7 accessby the remote telco can either steal a phone to get its SMS messages, or get itto do premium fraud.
+ Forensics can be hard if there’s a complaint from a singleuser; the best you can do may be to look for roaming charges.
+ If there are athousand cases the bank might be motivated to go to the operator.
+ But banksand their bulk SMS contractors are paying operators for SS7 access, opening upthe formerly closed system.
+ In short, we used to think that attacks involvingSecurity Engineering674Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKSSS7 were the preserve of nation states, but that is no longer the case.
+22.
+1.
+4Insecure end systemsThe next major vulnerabilities of modern phone networks were insecure terminalequipment and feature interaction.
+There have been many exploits of voicemail, whether implemented as ananswering machine on customer premises or, as common now, a cloud service.
+Exploits start with tricking someone into calling a premium-rate number, andescalate to journalists and others hacking voicemail via the default PINs thatmany people don’t bother to change.
+ The most notorious case was the murder,on the 21st of March 2002, of the English schoolgirl Millie Dowler.
+ In 2011 ittranspired that an investigator working for the News of the World, then theUK ﬂagship of the Murdoch empire, had hacked Millie’s voicemail, interferedwith the police investigation in the process, and may have caused some of hermessages to be deleted, giving Millie’s family a false hope that she might still bealive.
+ The resulting outrage led to the closure of the newspaper, several criminalconvictions – including the imprisonment in 2014 of David Cameron’s publicistAndy Coulson, a former News of the World editor – and a public inquiry intopress standards.
+But the really big frauds that exploit insecure end systems tend to targetcompanies and government departments, as they have the ability to pay bigphone bills.
+ Attacks on corporate private branch exchange systems (PBXes)had become big business by the mid-1990’s and cost business billions of dollarsa year [467].
+ PBXes are usually supplied with facilities for reﬁling calls, alsoknown as direct inward system access (DISA).
+ The company’s sales force couldcall in to an 0800 number, enter a PIN or password, and then call out againtaking advantage of the low rates a large company can get for long-distance calls.
+As you’d expect, these PINs become known and get traded by villains [1352].
+The result is known as dial-through fraud.
+In many cases, the PINs are set to a default by the manufacturer, and neverchanged by the customer.
+ Many PBX designs also have ﬁxed engineering pass-words that allow remote maintenance access, and prudent people reckon thatany PBX will have at least one back door to give easy access to law enforcementand intelligence agencies (it’s said, as a condition of export licensing).
+ Suchfeatures get discovered and abused.
+ In one case, the PBX at Scotland Yard wascompromised and used by criminals to reﬁle calls, costing the Yard a millionpounds, for which they sued their telephone installer.
+ The crooks were nevercaught [1868].
+ One of the criminals’ motivations is to get access to communi-cations that will not be tapped.
+ Businesses who’re the victims of such crimesﬁnd the police reluctant to investigate, and the phone companies aren’t helpful– they don’t like having their bills disputed [1624].
+In a notorious case, Chinese gangsters involved in labour market racketeer-ing – smuggling illegal immigrants from Fujian, China, into Britain – hacked thePBX of an English district council and used it to reﬁle over a million pounds’worth of calls to China.
+ The gang was tackled by the police after a number ofits labourers died; they were picking shellﬁsh in Morecambe Bay when the tideSecurity Engineering675Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKScame in and drowned them.
+ The council had by now discovered the discrep-ancy in its phone bills and sued the phone company for its money back.
+ Thephone company argued that it wasn’t to blame, even though it had suppliedthe insecure PBX.
+ Here, too, the gangsters were interested not just in savingmoney but in evading surveillance.
+ (Indeed, they routed their calls to China viaa compromised PBX in Albania, so the cross-border segment of the call, whichis most likely to be monitored by the agencies, was between numbers their col-lection systems wouldn’t touch; the same trick seems to have been used in theScotland Yard case, where the crooks made their calls via the USA.
+)Such cases apart, dial-through fraud is mostly driven by premium rate ser-vices and the crooks are in cahoots with premium line operators.
+ Most compa-nies don’t understand the need to guard their ‘dial tone’ and don’t know how toeven if they wanted to.
+ PBXes are typically run by company telecomms man-agers who know little about security, while the security manager often knowslittle about phones.
+ This is changing as company phone networks adopt VOIPtechnologies and merge with the data network.
+ Estimates of the losses from PBXfraud sustained by business worldwide fell from $4.
+96bn in 2011 to $3.
+88bn in2017, with about half the latter ﬁgure now VOIP rather than classical PBX [91].
+Exploits of insecure end-systems a↵ect domestic subscribers too.
+ Premium-rate mobile malware arrived in 2006, when the Red Browser worm cashed out bysending $5 SMSs to Russia [941]; this scaled up after Android came along, andwe’ll discuss mobile malware in section 22.
+3.
+1.
+4.
+ And now that phones are usedmore and more for tasks such as voting, securing entry into apartment buildings,checking that o↵enders are observing their parole terms, and authenticatingﬁnancial transactions, more motives are created for ever more creative kindsof mischief, and especially for hacks that defeat caller-line ID.
+ Since the early2000s, there have been warnings that caller-line ID hacks, SMS spooﬁng andattacks on the SS7 signaling could be used for fraud.
+ This is now reality, andwe’ll discuss it in more detail later in this chapter.
+22.
+1.
+5Feature interactionPhone manipulation often involves feature interaction.
+• Inmates at the Clallam Bay Correctional Center in Washington state, whowere only allowed to make collect calls, found an interesting exploit of asystem which the phone company (‘Fone America’) introduced to handlecollect calls automatically.
+ The system would call the dialled number and asynthesised voice would say: “If you will accept a collect call from.
+.
+.
+(nameof caller).
+.
+.
+please press the number 3 on your telephone twice.
+” Prisonerswere supposed to state their name for the machine to record and insert.
+The system had, as an additional feature, the ability to have the greetingdelivered in Spanish.
+ Inmates did so, and when asked to identify them-selves, said “If you want to hear this message in English, press 33.
+” Thisworked often enough that they could get through to corporate PBXesand talk the operator into giving them an outside line.
+ The University ofWashington was hit several times by this scam [696].
+• Many directory-enquiry services will connect you to the number they’veSecurity Engineering676Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKSjust given you, as a premium service for motorists who can’t dial whiledriving.
+ It can also be used to defeat mechanisms that rely on endpointidentiﬁcation.
+ Naughty children use it to call sex lines despite call barring,while naughty grown-ups use it to prevent their spouses seeing lovers’numbers on the family phone bill [1456].
+• Call forwarding is a source of many scams.
+ In the old days, it was usedfor pranks, such as kids social-engineering a phone company operator toforward their teacher’s calls to a sex line.
+Nowadays, it can be bothprofessional and nasty.
+For example, a fraudster may tell a victim toconﬁrm their phone number with the bank by dialing a sequence of digits– which forwards incoming calls to a number controlled by the attacker.
+So the bank’s callback mechanisms are defeated.
+• Conference calls can be exploited in all sorts of ways.
+ For example, foot-ball hooligans in some countries are placed under a curfew that requiresthem to be at home during a match, and to prove this by calling the pro-bation service, which veriﬁes their caller ID.
+ So you get your partner toset up a conference call with the probation service and your mobile.
+ If theprobation o�cer asks about the crowd noise, you tell him it’s the TV andyou can’t turn it down or your mates will kill you.
+ (And if he wants tocall you back, you get your partner to forward the call.
+)22.
+1.
+6VOIPIn voice over IP (VOIP), voice tra�c is digitised, compressed and routed over theInternet.
+ This had experimental beginnings in the 1970s; products started ap-pearing in the 1990s, and it became big business from the mid-2000s.
+ Nowadays,most traditional phone calls are digitized and sent over IP networks belongingto the phone companies, so in a technical sense almost all phone calls are now‘VOIP’.
+ But though my home phone pretends to be a plain old telephone, mylab phone is now a born-VOIP device that o↵ers conference calling and all sortsof other complicated features that I don’t understand.
+The most popular VOIP protocol, the Session Initiation Protocol (SIP), hashad its share of vulnerabilities [2069] but is mostly attacked through poor con-ﬁgurations, for which many actors are constantly scanning; a PBX can get overa million messages a day trying to register as an extension, and then attempt-ing to call high-cost numbers in less developed countries [1271].
+ As I noted insection 22.
+1.
+4, the VOIP segment of frauds against corporate PBX systems wasabout $2bn a year by 2017 [91].
+ The broader interaction with security is compli-cated.
+ Corporate security policies can result in ﬁrewalls refusing to pass VOIPtra�c.
+ The current political tussle is over robocalls, which can hide caller IDmore easily if they go over VOIP.
+ The FCC voted in 2020 to insist that telcosimplement by the end of June 2021 a suite of protocols, STIR/SHAKEN, whichauthenticate callers over SIP [326].
+ Another regulatory issue is that govern-ments want emergency calls made through VOIP services to work reliably, andprovide information about the location of the caller.
+ But an IP packet streamcan come from anywhere, and no-one owns enough of the Internet to guaranteequality of service.
+ And although a VOIP handset looks like a phone and worksSecurity Engineering677Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKSlike a phone, if the power goes o↵, so does your service.
+ Then you’re forced tofall back on the mobile network.
+ So now it’s the mobile network rather than thetraditional one that is the default emergency system.
+22.
+1.
+7Frauds by phone companiesPhone fraud is not just a story of crooked customers committing toll fraudagainst telcos, and defrauding other customers by exploiting mechanisms thatthe telcos have no real incentive to harden, There are many scams by unscrupu-lous telcos.
+ The classic scam is cramming, where a rogue phone company billslots of small sums to unwitting users.
+ Billing was designed in the days whenphone companies were monopolies, usually state-owned, and assumes that phonecompanies trust each other: if company A creates a call data record (CDR) say-ing that a customer of telco B called their subscriber, they just pass it on totelco B, which pays up.
+ (It has no incentive to quibble, as it gets a cut.
+)I was myself the victim of an attempt at cramming.
+ On holiday in Barcelona,my wife’s bag was snatched, so we called up and cancelled the phone thatshe’d had in it.
+ Several months later, we got a demand to pay a few tens ofdollars roaming charges recently incurred by that SIM card in Spain.
+ In allprobability, the Spanish phone company was simply cramming a few charges toa number that they’d seen previously, in the knowledge that they’d usually getaway with it.
+ My wife’s former MNO insisted that even though she’d cancelledthe number, she was still liable for calls billed to it months afterwards and hadto pay up.
+We got out of the charges only because I’d met the company’sCEO at an academic seminar and was able to get his private o�ce to ﬁx theproblem.
+ Customers without such access usually get the short end of the stick.
+Indeed, UK phone companies’ response to complaints has been to o↵er customers‘insurance’ against fraudulent charges.
+ That they can get away with this is aclear regulatory failure.
+ There are many variants: if you call an 800 numberin the USA, the company may say “Can we call you right back?” and if youagree then you’re deemed to have accepted the charges, which can be at a highpremium rate.
+ The same can happen if you respond to voice prompts as thecall progresses.
+Another problem is slamming – the unauthorized change of a subscriber’sservice provider without their consent.
+ It would be a mistake to assume thatcramming and slamming are just done by small ﬂy-by-night operators.
+ AT&Twas one of the worst o↵enders, having been ﬁned not only for slamming, but forforging signatures of subscribers to make it look as if they had agreed to switchto their service.
+ They got caught when they forged a signature of the deceasedspouse of a subscriber in Texas.
+Yet another is the exploitation of international calls for premium-rate scams.
+The abuse of domestic premium-rate numbers led regulators in many countriesto force phone companies to o↵er premium-rate number blocking to subscribers.
+The telcos got round this by disguising premium rate numbers as internationalones.
+ I mentioned scams with Caribbean numbers in section 22.
+1.
+1, and manyother phone companies from small countries got into the act.
+ Such scams bene-ﬁt from an international agreement (the Nairobi Convention) that stops phonecompanies selectively blocking international destinations.
+ Advisories from gov-Security Engineering678Ross Anderson22.
+1.
+ ATTACKS ON PHONE NETWORKSernments still warn of ‘wangiri’ scams where you get a call that rings once, inthe hope you’ll call back – to an international premium number.
+ However theseseem to have stopped; an extensive study of robocalls in 2020 found no evidenceof them any more [1543].
+ There are many reasons why scams may be movingaway from the telco platform to the app ecosystem; the interaction betweenscams and regulation is complex.
+By the time smartphones came along, the phone companies had got usedto taking a cut of high-value service delivery, ranging from parking meters inLondon to ferry tickets in Finland.
+ As malware became widespread on mobilephones, the botnet herders who control subverted phones could pay for goodsand services by SMS.
+ Many new services were made possible by the smartphonerevolution and payment moved from SMS to payments via apps.
+ SMS abuseshave got to the point that neither Google nor Apple allows normal apps to sendor receive text messages.
+ We might pause to think of the industry’s economics.
+Why have telcos never felt a duty of care towards their customers?22.
+1.
+8Security economics of telecommsPhone and cable companies have extremely high ﬁxed costs and very low marginalcosts.
+ Building a nationwide network costs billions and yet the cost of handlingan additional phone call or movie download is essentially zero.
+ As I discussedin the chapter on Economics, this has a couple of implications.
+First, there’s a tendency towards dominant-ﬁrm markets.
+ For many yearstelephone service was considered in most countries to be a ‘natural monopoly’and operated by the government; the main exception was the USA where the oldAT&T system was heavily regulated.
+ After the breakup of AT&T following anantitrust case, and Margaret Thatcher’s privatisation of BT in the UK, the worldmoved to a di↵erent model, of regulated competition.
+ The details vary from onecountry to another but, in general, some sectors (such as mobile phones) hada ﬁxed number of allowed competitors; others (such as long-distance provision)were free for companies to compete in; and others (such as local loop provision)remained monopolies but were regulated.
+Second, the competitive sectors (such as long-distance calling) saw pricesdrop quickly to near zero.
+ Some sectors were made competitive by apps: Skypeand WhatsApp made international calls essentially free.
+In many telecomms markets, the outcome is confusion pricing – productsare continually churned, with new o↵erings giving generous introductory dis-counts to compete with the low-cost providers, but with rates sneakily raisedafterwards.
+ There is constant bundling of broadband access with mobile serviceand TV o↵erings.
+ If you can be bothered to continually check prices, you canget good deals, but often at the cost of indi↵erent service.
+ If you don’t have thetime to keep scrutinising your broadband and mobile phone bills, you can getsome unpleasant surprises.
+Security Engineering679Ross Anderson22.
+2.
+ GOING MOBILE22.
+2Going mobileSince their beginnings as an expensive luxury in 1981, mobile phones have be-come one of the big technological success stories.
+ By 2020, we now have overﬁve billion subscribers; it’s said that over a billion phones were sold in 2019alone.
+ In developed countries, most people have at least one mobile, and manynew electronic services are being built on top of them.
+ Growth has been rapidin developing countries too, where the wireline network is often dilapidated andpeople used to wait years for phone service.
+ In many places it’s the arrival ofmobile networks that connected villages to the world.
+ This has brought manybeneﬁts, and new crimes too.
+ Both developed steadily as the technology wasevolved and deployed.
+Mobile phone security has developed as the abuse has.
+ The ﬁrst generationof mobile phones (1G) used analog signals and the handset simply sent its serialnumbers in clear over the air link1.
+ So villains built devices to capture thesenumbers from calls in the neighborhood, or reprogrammed phones to steal IDfrom other phones nearby.
+ One of the main customers was the call-sell opera-tion that would steal phone service and resell it cheaply, often to immigrantsor students who wanted to call home.
+ The call-sell operators would hang outat known pitches with cloned mobiles, and their customers would queue up tophone home for a few dollars.
+ The call-sell market was complemented by thecriminal market for anonymous communications: people hacked mobile phonesto use a di↵erent identity for each call.
+ Known as tumblers, these were particu-larly hard for the police to track [944].
+ 1G phones did not encrypt voice tra�c,so anyone could casually eavesdrop on calls with a radio receiver, yet despitethis the possibility of caller anonymity led to their use in crime.
+ The demand forserial numbers grew rapidly and satisfying it was increasingly di�cult, even bysnooping at places like airports where lots of mobiles get turned on.
+ So pricesrose, and as well as passive listening, active methods started to get used.
+Mobile phones are cellular: the operator divides the service area up intocells, each covered by a base station.
+ The mobile uses the base station with thestrongest signal, and there are protocols for handing o↵ calls from one cell toanother as the customer moves about.
+ Early active attacks consisted of a fakebase station, typically at a place with a lot of passing tra�c such as a freewaybridge.
+ As phones passed by, they heard a stronger signal and attempted toregister by sending their serial numbers and passwords.
+Various mechanisms were tried to cut the volume of fraud.
+Most oper-ators ran intrusion-detection systems to watch out for suspicious patterns ofactivity, such as too-rapid movement or a rapid increase in call volume or du-ration.
+ Vodafone also used RF ﬁngerprinting, a military technology in whichsignal characteristics arising from manufacturing variability in the handset’sradio transmitter are used to identify individual devices and tie them to theclaimed serial numbers [776].
+1In the US system, there were two of them:one for the equipment, and one for thesubscriber.
+Security Engineering680Ross Anderson22.
+2.
+ GOING MOBILE22.
+2.
+1GSMThe second generation of mobile phones (2G) adopted digital technology.
+ TheGlobal System for Mobile Communications (GSM) was founded when 15 com-panies signed up to the GSM Association in 1987 and secured political supportfrom the EU; service was launched in 1992.
+ The designers of GSM set out tosecure the system against cloning and other attacks: their goal was that GSMshould be at least as secure as the wireline system.
+ What they did, how theysucceeded and where they failed, make an interesting case history.
+The industry initially tried to keep secret the cryptographic and other pro-tection mechanisms which form the core of the GSM protocols.
+This didn’twork: some eventually leaked and the rest were discovered by reverse engineer-ing.
+ I’ll describe them brieﬂy here.
+ Mobile networks consist of a radio accessnetwork (RAN) and a core network (CN), and each mobile network has twodatabases, a home location register (HLR) that contains the location of its ownmobiles, and a visitor location register (VLR) for the location of mobiles whichhave roamed in from other networks.
+ These databases enable incoming calls tobe forwarded to the correct cell.
+The handsets are commodity items, personalised using a subscriber identitymodule (SIM) – a smartcard you get when you sign up for a network service,and which you load into your handset.
+ The SIM can be thought of as containingthree numbers:1.
+ there may be a personal identiﬁcation number that you use to unlock thecard;2.
+ there’s an international mobile subscriber identiﬁcation (IMSI), a uniquenumber that maps on to your mobile phone number;3.
+ ﬁnally there is a subscriber authentication key Ki, a 128-bit number thatserves to authenticate that IMSI and is known to your home network.
+There is also a handset serial number, the international mobile equipmentidentiﬁcation (IMEI).
+ The protocol used to authenticate the handset to thenetwork runs as follows (see Figure 22.
+1).
+ On power-up, the SIM emits theIMSI, which the handset sends to the nearest base station along with the IMEI.
+The IMSI is relayed to the subscriber’s HLR, which generates ﬁve triplets.
+ Eachtriplet consists of:• RAND, a random challenge;• SRES, a response; and• Kc, a ciphering key.
+The algorithm is that RAND is encrypted under the SIM’s authenticationkey Ki, giving SRES concatenated with Kc:{RAND}Ki = (SRES|Kc)Security Engineering681Ross Anderson22.
+2.
+ GOING MOBILEHLR�VLR�BSC�SIM�Mobile�Figure 22.
+1: – GSM authentication system componentsThe encryption method is up to the issuer; an early standard called Comp128turned out to be insecure [1971, 1972], so issuers nowadays use hash functionsor constructions using AES.
+Anyway, the triplets are sent to the base station controller (BSC), whichnow presents the ﬁrst RAND to the mobile.
+ It passes this to the SIM, whichcomputes SRES.
+ The mobile returns this to the base station and if it’s correctthe mobile and the base station can now communicate using the ciphering keyKc.
+ So the whole authentication protocol runs as in Figure 22.
+2.
+SIM ! HLRIMSIHLR ! BSC(RAND, SRES, Kc), .
+.
+.
+BSC ! SIMRANDSIM ! BSCSRESBSC ! mobile{tra�c}KcFigure 22.
+2 – GSM authentication protocolThere are several vulnerabilities in this protocol.
+ First, the base station isn’tauthenticated, so it’s easy for a wiretapper to use a false base station to interceptcalls.
+ Such devices, known as IMSI catchers in Europe and StingRays in theUSA, are now standard law-enforcement equipment2.
+ Second, in most countriesthe communications between base stations and the VLR pass unencrypted onmicrowave links3.
+ This allows bulk interception by intelligence agencies, and inmany cases access to the triples needed to spoof or decrypt tra�c.
+The introduction of GSM caused signiﬁcant shifts in patterns of crime.
+ Theauthentication mechanisms made phone cloning di�cult, so the villains switchedto buying phones using stolen credit cards, using stolen identities or bribing in-siders [2034].
+ Robbery was the next issue, with a spate of media stories aboutkids being mugged for their phones.
+ Mobile phone crime did indeed increase190% between 1995 and 2002, but to keep this in context, the number of sub-scribers went up 600% in the same period [865].
+ Some of the theft is bullying –kids taking smaller kids’ phones; some is insurance fraud by subscribers who’vedropped their phones in the toilet and report them as stolen as their insurancedoesn’t cover accidental damage; but there is a hard core of theft where muggerstake phones and sell them to fences.
+ Many of the fences either work at mobilephone shops that have authorised access to tools for reprogramming the IMEI,2When 2G was designed, a base station ﬁlled a whole room and cost $100k, so it might haveseemed reasonable to ignore man-in-the-middle attacks.
+ Nowadays all it takes is a low-costsoftware radio.
+3The equipment can encrypt tra�c, but the average phone company has no incentive toswitch the cryptography on.
+Security Engineering682Ross Anderson22.
+2.
+ GOING MOBILEthe serial number in the handset, or else have links to organised criminals whoship the handsets abroad4.
+Prepaid mobile phones appeared from about 1997, enabling the industry toexpand rapidly to people without credit ratings, including both poor peoplein rich countries and everyone in poor countries.
+ By 2008, prepaids made up90% of the market in Mexico but 15% in the USA.
+ During the 2010s, billionsof people got access not just to calls and texts but to online information andpayment services.
+Prepaid phones also made anonymous communication practical.
+ The issuesinclude not just evading police wiretapping but fraud, stalking, extortion, bul-lying and other kinds of harassment.
+ However, prepaid phones only protect youfrom the police if they don’t try very hard.
+ Most criminals don’t have any clueof the level of operational discipline needed to stop tra�c analysis.
+ As I alreadyremarked, one alleged 9/11 mastermind was caught when he used a prepaidSIM from the same batch as one that had been used by another Al-Qaida mem-ber; and after the failed 21/7 London bombings, one would-be bomber ﬂed toRome, where he was promptly caught.
+ He had changed the SIM in his mobilephone en route; but call records show not just the IMSI from the SIM, butalso the IMEI from the handset.
+ If you’ve got all the world’s police after you,just changing the SIM isn’t anything like enough.
+ Operational security requiressome understanding of how networks operate.
+In addition to authentication, 2G was supposed to provide two further kindsof protection – location security and call content conﬁdentiality.
+The location security mechanism is that when a mobile is registered to anetwork, it is issued with a temporary mobile subscriber identiﬁcation (TMSI),which acts as its address in that network.
+ This is a lightweight mechanism; itis defeated trivially by IMSI catchers, which pretend to be a base station in adi↵erent network.
+2G GSM also provides some call content conﬁdentiality by encrypting thetra�c between the handset and the base station once authentication and reg-istration are completed.
+ The speech is digitized, compressed and chopped intopackets; each packet is encrypted by xor-ing it with a pseudorandom sequencegenerated from the ciphering key Kc and the packet number.
+ The algorithmcommonly used in Europe is A5/1.
+ This is a stream cipher that, like Comp128,was originally secret; like Comp128, it was leaked and attacks were quicklyfound on it [248].
+By the mid-2000s, law enforcement suppliers were sellingdevices that would break the key in under a second, enabling a surveillanceteam to hoover up all the GSM tra�c and decrypt it, so they could then pickout conversations of interest.
+ Phones also supported an even weaker algorithmcalled A5/2, which was licensed for export to non-EU countries5 and which canbe broken almost instantly.
+ As I mentioned above in section 22.
+1.
+1, the DECTstandard for cordless phones is somewhat similar, and also weak.
+ The embassiesof major powers round the world have roof structures that indicate antennas forcapturing local telephone tra�c, and the Snowden papers conﬁrm that the NSA4In recent smartphone designs, the IMEI is supposed to be unalterable; some Androidphones keep it in TrustZone.
+5There was a row when it emerged that Australia was using A5/2.
+Security Engineering683Ross Anderson22.
+2.
+ GOING MOBILEcollects local phone tra�c at US diplomatic missions.
+In addition to passive bulk collection, targeted active collection can exploitprotocol tricks.
+GSM vendors introduced a third cipher, A5/3, which is based on a strongblock cipher known as Kasumi and became standard in third-generation mobilephones.
+ But there’s the bidding-down attack which exploits the fact that theinitial algorithm negotiation is in plaintext.
+ The IMSI catcher simply tells thehandset to use a weaker cipher.
+ Elad Barkan, Eli Biham and Nathan Kellerrealised that this can be done retrospectively [171].
+ If you’re following a suspectwho uses his mobile, you record the call, including the initial protocol exchangeof challenge and response.
+ Once he’s ﬁnished, you switch on your IMSI-catcherand cause him to register with your bogus base station.
+ The IMSI-catcher tellshis phone to use A5/2 rather than A5/1, and a key is duly set up – with theIMSI-catcher sending the challenge that was used before.
+ So the mobile phonegenerates the same key Kc as before.
+ As this is now being used in a weak cipher,it can be cracked quickly, giving access to the conversation already recorded.
+A5/2 has now been retired; handsets that cannot use A5/1 or A5/3 communicatein plaintext.
+ However A5/1 is easy to break with modern equipment.
+Phone companies, equipment vendors and ISPs are now compelled to pro-vide for local law-enforcement access, but other countries often want accesstoo and the wiretap facilities are often so poorly engineered that they can beabused [1707].
+ In 2004-5, persons unknown (but presumed to be from the NSAor CIA) tapped the mobile phones of the Greek Prime Minister and about ahundred of that country’s political, law enforcement and military elite duringthe Athens Olympics, by subverting the wiretapping facilities built into Voda-fone’s Greek network.
+ Both Vodafone, and their equipment supplier Ericsson,were heavily ﬁned [1550].
+ Colleagues and I warned about this problem yearsago [4] and the Snowden disclosures suggest that it has got steadily worse.
+ I’lldiscuss it at greater length in Part III.
+Anyway, the net e↵ect is while the 2G GSM security mechanisms were de-signed to provide slightly better protection than the wireline network in coun-tries allowed to use A5/1, and somewhat worse protection elsewhere, they nowprovide slightly worse protection everywhere because of the range of exploitsthat can be industrialised by third parties.
+22.
+2.
+23GThe third generation of digital mobile phones was initially known as the Uni-versal Mobile Telecommunications System (UMTS) and now as the Third Gen-eration Partnership Project (3gpp, or just 3G).
+ The acronym 3gpp is still usedfor the standards body working on 4G, 5G and beyond.
+ 3G entered servicein 2003–2004 and is due to be retired in 2022, after which mobile devices thatcannot use 4G or 5G are supposed to fall back to 2G.
+ This may happen mostlyin sparsely-populated rural areas where it is uneconomic to install the newer4G and 5G technologies and the far greater backhaul transmission they need.
+3G uses spread-spectrum technology on the radio access network, and insteadof the 9.
+6kb/s of standard 2G and the tens of kilobits per second of the 2.
+5GSecurity Engineering684Ross Anderson22.
+2.
+ GOING MOBILEvariant (GPRS), 3G data rates are in the hundreds of thousands of bits per sec-ond.
+ 3G’s vision was to enable all sorts of mobile services, from mobile TV tolaptops that just go online anywhere.
+ It laid the foundation for the smartphonerevolution.
+The overall security strategy is described in [1976], and the security archi-tecture is at [1961].
+ The crypto algorithms A5/1 and A5/2 are replaced by A3,based on a block cipher called Kasumi [1021], which in turn is based on a designby Mitsuru Matsui called Misty, which has now withstood public scrutiny fortwo decades [1245].
+ All keys are now 128 bits.
+ Cryptography is used to protectthe integrity and conﬁdentiality of both message content and signalling data,rather than just content conﬁdentiality, and the protection runs from the hand-set to the core network, rather than simply to the local base station.
+ So pickingup the keys, or the plaintext, from the base station or microwave backhaul is nolonger an attack.
+ The authentication is now two-way rather than one-way.
+ Thetheory was that this would end the vulnerability to rogue base stations, andIMSI catchers wouldn’t work any more.
+ In practice, they work ﬁne as they justtell the target handset to fall back to 2G operation.
+ 3G also has also a properinterface for local interception [1962].
+In the basic 3G authentication and key agreement (AKA) protocol, the au-thentication runs from the handset to the visitor location register.
+ The homelocation register is now known as the home environment (HE) and the SIM asthe UMTS SIM (USIM).
+ The home environment chooses a random challengeRAND as before and enciphers it with the USIM authentication key Ki to gen-erate a response RES, a conﬁdentiality key CK, and integrity key IK, and ananonymity key AK.
+{RAND}K = (RES|CK|IK|AK)There is also a sequence number SEQ known to the HE and the USIM.
+ AMAC is computed on RAND and SEQ, and then the sequence number is maskedby exclusive-or’ing it with the anonymity key.
+The challenge, the expectedresponse, the conﬁdentiality key, the integrity key, and the masked sequencenumber made up into an authentication vector AV which is sent from the HEto the VLR.
+ The VLR then sends the USIM the challenge, the masked sequencenumber and the MAC; the USIM computes the response and the keys, unmasksthe sequence number, veriﬁes the MAC, and if it’s correct returns the responseto the VLR.
+USIM ! HEIMSI (this can optionally be encrypted)HE ! VLRRAND, XRES, CK, IK, SEQ � AK, MACVLR ! USIMRAND, SEQ � AK, MACUSIM ! VLRRESFig 20.
+4 – 3gpp authentication protocolThe 3G standards set out many other features, including identity and lo-cation privacy mechanisms, backwards compatibility with 2G, mechanisms forencrypting authentication vectors in transit from HEs to VLRs, and negotiationof various optional cryptographic mechanisms.
+Security Engineering685Ross Anderson22.
+2.
+ GOING MOBILEAs with 2G, its design goal was that security should be comparable withthat of the wired network [922] and the net e↵ect was a modest improvement:bulk eavesdropping on the air link is prevented by higher-quality mechanisms,although targeted attacks by IMSI catchers still work by exploiting fallback.
+ Ina number of countries, third-generation mobiles were hard for the police to tapin the ﬁrst few years, as they had to integrate their systems with those of thenetwork operators to operate at any scale greater than tactically.
+22.
+2.
+34GFourth-generation mobile networks were ﬁrst rolled out in 2009, and accountedfor most mobile subscriptions (4.
+2bn of the 8bn) by 2019 [981].
+ They use IPthroughout, unlike 2G and 3G which had circuit-switched core networks.
+ Theradio access network changed from 3G’s spread spectrum to frequency-domainequalization (FDE) schemes, making very high bit rates possible despite multi-path radio propagation (echoes).
+The higher data rates made apps such asGoogle Maps and Snapchat work much better, and made video streaming appspossible.
+ There is actually a family of standards that has evolved during the2010s, supporting bandwidths in the megabits up to tens of megabits per second.
+The 4G security standards rowed back from 3G by limiting encryption to thelink between the handset and the base station, though to be fair most apps nowencrypt data at the application layer.
+ The authentication and key agreement(AKA) protocol is very similar to 3G, although the nomenclature has changed.
+The handset is now the UE or user equipment while the HE/HLR is now thehome subscriber server (HSS).
+ The base station functionality is split into anEvolved NodeB (eNodeB) base station and a smaller number of Mobility Man-agement Entities (MMEs), which handle the AKA exchange, make admissiondecisions, supply session keys to the base stations and handle law enforcementaccess.
+ The idea was that the MMEs can be housed in protected spaces or atleast made tamper-resistant (people talked about TPMs but no operator seemsto have implemented them).
+The three main weaknesses in 4G are that local tra�c at a base station(or MME) can still be monitored by anyone who can take it over; that theuser equipment’s identity is sent to the network in the clear, or masked usinga Globally Unique Temporary Identity (GUTI) which is fairly weak, like itspredecessor the TMSI [918]; and that the home network delegates authenticationto the serving network [362].
+ SS7 is replaced by a control protocol suite calledDiameter, where messages can be optionally encrypted, but as the operatorstrust each other it’s vulnerable to many of the same types of attack [426].
+ Itstarted o↵ with fewer abusable functions, but they got put back in followingbusiness pressure.
+Rich Communications Services (RCS) became widely available during 2019thanks to support from Google in its Messages app.
+ It is intended to replaceSMS with richer chat features including geolocation exchange, social presenceinformation and voice-over-IP.
+ Also known as SMS+, +Message or joyn, it pro-vides many of the same services as WhatsApp, but without the end-to-endencryption, as it’s a telco hosted product.
+ Many of the initial implementationsare insecure as the telcos haven’t conﬁgured them correctly [1696].
+Security Engineering686Ross Anderson22.
+2.
+ GOING MOBILEFor decades, phone security has been kept weak at the behest of the secu-rity and intelligence community.
+ Yet this strategy blew back when it turnedout that Russian agents in the USA compromised the communications of FBIcounterintelligence agents who used push-to-talk cellphones [579].
+ We haven’tbeen told whether they were 3G or 4G, or what the speciﬁc exploits were, but itwas so bad that in December 2016 the Obama administration kicked out threedozen Russian diplomats.
+ They had also been obsessed with getting premiseswith line of sight to the CIA HQ at Langley, Virginia.
+22.
+2.
+45G and beyondFifth-generation networks entered service in 2019, promising a further signiﬁcantimprovement over 4G in terms of bandwidth and latency.
+ The main driver atpresent is bandwidth; mobile tra�c grew by 68% between Q3 2018 and Q32019, mostly from video, and growth at over 25% is anticipated up till 2025, bywhich time almost half the tra�c worldwide will be 5G [981].
+ Again, there’san evolving family of standards, with complexity increasing still further.
+ Initialdeployments use non-standalone mode (NSA) which reuse the 4G control plane(and even the 4G towers) but boost the data rate.
+ The real excitement is aboutstandalone mode (SA) which will follow.
+ 5G makes it cheaper and easier formobile network operators to build new capacity, not just at existing frequencies,but at millimeter-wave frequencies over 20GHz, which will mean much largernumbers of small base stations on lamp posts, bus stops and so on (this willalso limit the time available to do authentication handshakes).
+ Network energye�ciency and area tra�c capacity could be up two orders of magnitude, whileconnection density, mobility and data rates could go up one order.
+ Availabilityis a high priority; after the 2016 Brussels bombings, the police couldn’t getnetwork service on their phones because of congestion, and had to ﬁnd wiﬁhotspots to talk to each other.
+The terminology changes yet again.
+ Each tiny base station is now a dis-tributed unit (DU) and is controlled by a centralised unit (CU), which is also inthe ﬁeld but counted as part of the core network.
+ The encryption goes from yourdevice to the CU, and from there it’s protected using IPSec to the access man-agement function (AMF), which replaces the MME boxes.
+ The authenticationand key agreement protocols are much the same (XRES is renamed HXRES).
+One material improvement is that your device identity is sent to your home net-work encrypted under its public key, so location privacy will be harder to break;and we’re told that IMSI catchers won’t work any more6.
+ Passive and activeattacks by fake base stations seem still possible, including man-in-the-middleattacks that downgrade a device to a previous generation of technology, andcould be used to deplete the batteries of energy-critical devices [1712].
+However the whole core network moves to the cloud, including all the law-enforcement access mechanisms.
+ Instead of defending familiar technologies, mo-bile network operators will depend on new ones that they don’t understand andwhich most will just buy from the cheapest vendor.
+One mistake in conﬁg-uration, and things could be world readable; and unless something like SGX6We heard that before with 3G: the wiretappers just forced fallback to 2G.
+ We hear thatthe intelligence agencies are lobbying to break this, in alliance with the big data carriers.
+Security Engineering687Ross Anderson22.
+2.
+ GOING MOBILEcan be made to work, the cloud providers’ governments may well be able toget access by serving warrants on them rather than on the operators.
+ The useof SDN in the core cloud network opens up still more questions, of which themost troublesome long-term may be whether 5G becomes an end-run round netneutrality, enabling network operators to customise o↵erings to each applicationby performance (and price).
+ Meanwhile the speciﬁcations are complex and theimplementations are still ﬂaky.
+ As the standards evolve, one ﬁght is betweenthe big data carriers who want to manipulate tra�c to break net neutrality andclaw their way up the value chain, versus the big mobile network operators whowant end-to-end trust.
+ In theory tra�c edits will be signed by the ﬁrm thatdoes the editing, but nobody seems to know how that will work.
+ Another isthat the US government is trying to prevent Huawei getting a critical mass ofinstallations outside China; the 2019 annual report of the UK National CyberSecurity Centre (part of GCHQ) noted that signiﬁcant supply-chain risks havedeveloped over 2010–19, for which market drivers were insu�cient to ensure anadequate response [1393].
+ In 2020, with anti-Chinese sentiment rising with thecoronavirus pandemic and the end of ‘one country two systems’ in Hong Kong,the UK government decided to ban Huawei from selling 5G network equipmentfrom the end of 2020 and remove its existing equipment by 2027.
+ A longer-term resolution may depend on a third tussle, between the ‘bellheads’ and the‘netheads’: between ﬁrms like Nokia and Huawei who take a phone-industry ap-proach and culture, and insurgents such as Rakuten whose culture is from thecomputer industry and which will happily virtualise everything in sight once it’sin the cloud [609].
+What about 6G and 7G? Telecomms researchers talk about the former see-ing evolution in the radio access network to support a diversity of apps withdi↵erent requirements for peak bandwidth, latency, service quality and powerconsumption [1454]; and the latter having thousands of micro-satellites to de-ploy 200Mbps broadband over all the earth’s surface.
+ The arrival of stream-ing games, augmented reality and (perhaps) autonomous vehicles will createdemand for ultra-low-latency cloud services, so rather than having our datashipped o↵ to a few dozen data centres run by Google, Facebook, Microsoft andAmazon, we may see edge clouds with clusters of servers in each town, perhapseven in the buildings that used to house the old telephone exchanges.
+ Then,just as the dotcom boom in the late 1990s forced us to partition web servicesinto the active processes at the core and the rest that could be served more orless statically and thus cached locally in CDNs, we’ll have to host some of theactive stu↵ locally too.
+22.
+2.
+5General MNO failingsRegardless of the generation of radio link technology in use, there are somecommon failings of MNOs whose root causes lie in the economics and regu-lation of the industry.
+ One is the rapidly growing attacks on authenticationfunctions supported by mobile phones.
+ In addition to the SS7 security issueswe discussed in section 22.
+1.
+3, which apply also to wireline telcos, the mobileworld has brought us SIM swapping, channel jacking and the theft of cookiesfrom authenticator apps.
+ Many of these have security economics at their root:Security Engineering688Ross Anderson22.
+2.
+ GOING MOBILEthere is some misalignment of incentives between the various principals in thesystem.
+In section 3.
+4.
+1 we introduced SIM swap attacks, where the attacker per-suades the victim’s telco to issue a new SIM card on the victim’s account.
+ Thiscan open the door to all sorts of mayhem; individuals can have their lives trashedby attackers who take over their online accounts.
+ Celebrities are targets: in Au-gust 2019, Twitter CEO Jack Dorsey had his account taken over for an hourand used to send racist and antisemitic tweets, causing commentators to wonderwhether someone who took over President Trump’s twitter account might startWorld War 3 [1340].
+ As I mentioned in section 12.
+7.
+4, SIM-swap attacks aremostly used in 2020 against the customers of banks and bitcoin exchanges, andoften involve phone company insiders.
+ Yet the response of phone companies hasbeen at best patchy.
+ The only major US MNO making SIM swapping harder isVerizon [712].
+ But not all countermeasures help all users: if they are optional,then the company can more easily disclaim losses by the customers who don’topt to use them.
+ The ﬁrst MNO to take action was MTN in South Africa in2003, which enabled users to designate a second SIM to authorise SIM replace-ment; curiously, this was the phone company involved in the ﬁrst SIM-swapfraud case in 2007, which I described in section 12.
+7.
+4.
+ Phone companies canalso help relying parties detect SIM swaps by sending a hash of the IMSI as aresponse to the second-factor SMS; but few do so.
+ We discussed the often ad-versarial attitude of phone companies toward their customers in section 22.
+1.
+8;MNOs are no di↵erent in this respect from legacy wireline phone companies.
+Indeed, they may be worse because most of their customers in most countriesare prepayment customers.
+Another example of MNOs and their suppliers feeling unable to do customersecurity properly is SIMjacking.
+ In 2013, Karsten Nohl warned that many SIMsin use were easy to hijack, because of features built in to facilitate over-the airsoftware update.
+ The industry retorted that it wasn’t a problem as SIM cardscould run only signed software [1582].
+ In 2019, it emerged that governments hadbeen using this for surveillance [1107].
+ MNOs’ relationship with their customershas always been somewhat adversarial, and they are compelled in many coun-tries to run middleperson attacks on demand.
+ When a suspect’s mobile phonebrowser visits an unencrypted URL, the MNO serves police malware instead.
+Such network injection attacks can be done tactically, with IMSI-catchers, butdoing them at the MNO is more convenient.
+ This practice started in less devel-oped countries but has now spread as far as Germany [1443].
+ We will discussgovernment surveillance, and the tensions it has generated with security sincethe crypto wars, in section 26.
+2.
+7.
+3.
+The real underlying problem for the MNOs is that they lost control of ser-vices.
+For various reasons, they were unable to engage with developers andpromote an app ecosystem from which they could extract value.
+ They ended upbeing commoditised – bit shifters who have to maintain the infrastructure, butwho see the monopoly proﬁts they used to enjoy being creamed o↵ by others.
+Security Engineering689Ross Anderson22.
+3.
+ PLATFORM SECURITY22.
+3Platform securityThe second part of the phone story is the app ecosystems.
+These ﬁx someproblems, and create others: the most acute security problem is whether theplatform itself is trustworthy, or whether your phone might act against yourinterests.
+ This has been a growing concern since programmable phones camealong in the early 2000s.
+For the back story see the second edition of mybook which describes the state of play in 2007.
+ Brieﬂy, before the iPhone camealong, security was fragmented along the supply chain, with chip designers, chipmakers, OS vendors, handset OEMs and MNOs passing the buck while theytussled over DRM and over control.
+ MNOs refused to allow OEMs to have anyrelationship with the customer.
+ As I remarked in the chapter on Access Control,Arm launched TrustZone in 2004; by 2007, several hundred viruses and wormswere being detected in Symbian phones each year, and vendors responded withaccess controls, code signing, and so on.
+Apple changed the world in several ways at once.
+ First, it broke the taboo onOEMs having a relationship with the customer.
+ Second, it made it much easierfor third party vendors to write apps.
+ Third, it made the App Store central to aplatform strategy, which it monetised by taking a share of both music downloadsand software.
+ This entailed a semi-closed platform.
+ Devices could go onlineeither through an MNO or via wiﬁ, and could switch easily between the two asneeded.
+ The e↵ect was to shift power from the MNO to Apple.
+ Google launchedAndroid the following year, with a strategy of making a similar platform as openas possible7, allowing anyone to write apps for Android phones.
+ They aimedto provide a minimum level of trust, to enable the ecosystem to grow.
+ Theyremembered that Microsoft had grabbed most of the PC software market fromApple in the early 1980s by o↵ering a more open platform that got the networke↵ects going in their favour and hoped to do the same with phones, leaving theiPhone as a niche product for the rich.
+ This did not in the end happen, andwe now have two large ecosystems that have converged in a number of ways.
+But Apple’s monetisation strategy does give it a better incentive to maintainits platforms, and iPhones are typically patched for at least ﬁve years whileAndroid products are patched for three, and often less.
+Both the iPhone and Android launched with security architectures I describein the chapter on Access Control; both approaches aim to separate apps fromeach other and to prevent them from subverting the platform itself.
+ The mainprocessor is not the whole story, as phones contain dozens of other CPUs, andthere have been vulnerabilities discovered in DSPs too which can a↵ect handsetsfrom multiple OEMs [1212].
+ I also discussed in the chapter on Side Channelshow a bad app could, for example, use the phone’s accelerometer and gyro towork out a password or PIN being entered into another app, even if denieddirect access to the screen.
+ The combination of rich sensors and a huge rangeof applications makes security and privacy services at the platform level rathercomplex.
+ Both the Android and iPhone security mechanisms have been reﬁnedover time, with more controls added to block or mitigate the more ﬂagrantabuses.
+ However they can best be understood as an ecosystem, rather than as7subject to the regulators’ insistence that the baseband software which controls the device’sRF behaviour had to be locked downSecurity Engineering690Ross Anderson22.
+3.
+ PLATFORM SECURITYa list of protection options.
+This ecosystem is truly immense.
+ By 2019, 56% of all Internet access globallywas from mobile devices, but 63% in the USA and 80% in India [1252].
+Itconsists at the very least of the apps that run on the two families of mobiledevices themselves, and the back-end services they rely on.
+The boundariesare hard to deﬁne.
+ We probably have to include the ad ecosystems that appdevelopers bundle with their products.
+ Do we include the web services thatmobile devices access from browser apps? Do we include voice telephony, nowthat this is migrating to apps like WhatsApp, Skype and Signal? What aboutother devices, from watches to cars, that run mobile operating systems andapps? It may be simplest to start with the app families.
+22.
+3.
+1The Android app ecosystemAndroid is the most widely deployed end-user operating system, found not justin phones but in tablets, watches, TVs, cars and other devices – a total of over2bn monthly active devices.
+ Its platform security model is described by Ren´eMayrhofer and colleagues from Google in [1252], and in section 6.
+2.
+8 I discussedthe technical architecture.
+ Actions are based on three-party consent: the user,the developer and Google should all agree.
+ The implementation is that ratherthan giving a userid to the end user, as in a conventional *nix system, Androidruns each app with a separate userid; data in private app directories is controlledby the app, while data in shared storage is controlled by the end user, and thereare mandatory access control mechanisms to ensure that critical system dataremain under the control by the platform, unless it’s rooted.
+ So long as thisdoes not happen, the user cannot be tricked into letting a bad app access oroverwrite the data of other apps.
+ The threat model includes everything fromphysical attacks and wiretapping through the exploitation of vulnerabilities inthe operating system, libraries and other apps; it’s assumed that users will betricked into installing malicious apps [1252].
+ Apps sold via Google’s Play storeare scanned for malware (though the scanning isn’t perfect).
+However, Google takes 30% of revenues from sales of apps, and refuses tohost adult apps.
+ This has driven many vendors of paid and adult apps to use lesssecure distribution channels such as OEM deals, third-party stores and their ownwebsites [1823].
+ Since 2014 Google has o↵ered to upload non-Play-store apps forscanning when they’re ﬁrst run, but the risk of evil apps is ever present.
+ Manymore apps are somewhat predatory, even if they’re distributed by apparentlyrespectable businesses such as hardware vendors, MNOs and security ﬁrms.
+ Thesad fact is that user data has become a major commodity; little else might havebeen expected given that most apps are free and the ecosystem is driven asmuch by ad revenue as anything else.
+ One major consequence is that Androiddoes not support the most critical permission for privacy – allowing the user tocontrol Internet access for an app.
+ (Blackberry allowed users to deny Internetaccess.
+)This pleases ad companies as otherwise many users would turn o↵internet access for the ﬂashlight/game/compass app the moment they installedit.
+ If this displeases you, you can get ﬁrewall apps that pretend to be VPNs andcan block other apps’ access to the Internet.
+ But of course most users go withthe default, of letting the ad ecosystems harvest just about everything.
+Security Engineering691Ross Anderson22.
+3.
+ PLATFORM SECURITY22.
+3.
+1.
+1App markets and developersApp markets mitigate some security problems while amplifying others.
+ As theAndroid ecosystem is open, anyone can be a developer and distribute the soft-ware they write through the Play Store.
+ This makes a huge market available tonovice developers, who can get simple apps running with little e↵ort.
+ The factyou have to use the framework with the Android SDK constrains developers inpotentially useful ways.
+ Although fragmentation greatly impedes the updateprocess for operating systems, app updates are easy if you use an app store thatpushes updates.
+However the developer rapidly encounters both technical and business com-plexity.
+ Some simple apps are little more than a customised browser for anonline back end; others exercise a single feature of the phone in new ways, asﬂashlight apps do.
+ But how uniform is that feature? How many versions ofAndroid do you need to support? Do you need to test on hundreds of di↵erenthandsets? There are now test frameworks to help, but fragmentation is a realissue if your app uses the rich hardware features on many modern phones.
+ Forexample, people developing contact-tracing apps for coronavirus have struggledwith the variation in bluetooth performance between di↵erent handsets.
+ An-other example is where developers want to protect really sensitive information,such as key material in banking apps.
+ Arm hoped that developers would useTrustZone but this turned out to be so hard given the variation between OEMs,handsets and software versions, that most turned to obfuscation instead.
+ An-droid then provided KeyStore, which lets an app store its keys in TrustZone or aSecure Element or other cryptoprocessor if available, and block other apps fromusing them.
+ Some developers prefer obfuscation in the hope of blocking mal-ware that roots the phone and can thus pretend to be the app; as I mentionedin section 12.
+7.
+4, some banking regulators insist on this.
+Business complexity can come from the application itself, or from the ecosys-tem’s underlying economics: platform companies, device vendors, app develop-ers, app publishers (who add all sorts of ads), ad networks, toolsmiths and endusers all have di↵erent incentives.
+ There are di↵erent rules for paid apps, appsallowing in-app purchases and free apps.
+ The rules for identifying users are com-plex: the user’s consent is needed to use some UIDs (IMEI, IMSI, phone numberand ad ID) but not others such as MAC address and hardware ﬁngerprint.
+22.
+3.
+1.
+2Bad Android implementationsThe ﬁrst bundle of systemic security problems to become obvious as Androidbecame widespread around 2010 was the poor quality of the engineering workby many of the OEMs who licensed it.
+ One example was factory reset.
+ There’sa thriving trade in second-hand phones, as rich users buy the latest modelsand their old phones end up being sold.
+ You might think that when you do afactory reset on your phone, that clears all your personal information, not justfrom shared storage but from app storage as well.
+ But it’s hard to get this rightbecause of all the interactions with how Flash memory is organised on a typicalphone; there may be an embedded multimedia card (eMMC) and virtual SDcard, with their own wear-levelling mechanisms.
+ If the OEM’s engineers don’tSecurity Engineering692Ross Anderson22.
+3.
+ PLATFORM SECURITYtake the trouble to implement secure deletion, then the all-too-common outcomeis that someone who buys your phone second-hand can retrieve the Googlemaster cookie and access the Gmail account associated with the phone [1757].
+For several years I bought Google’s own-brand Nexus and Pixel phones andnever sold them after use, but many people get phones subsidised by a contractand locked to the MNO, which sells them in second-hand markets afterwards –often in less developed countries.
+ (It is prudent to assume that Android phonesin LDCs have been rooted and had remote access Trojans installed by localdistributors.
+)These quality problems extend to TrustZone and its Trusted Execution En-vironment (TEE), as implemented by various chipset vendors.
+ For example,Qualcomm’s TEE system lets a trusted app (TA) map in memory regions of thehost OS, and as a result any insecure TA can let an adversary root the device.
+Other problems allow attacks on the TEEs of the other four vendors: the soft-ware security mechanisms used in trusted environments lag the state of the artby several years, with absent or weak ASLR, excessively large TCBs, informa-tion leaks through debugging channels, no execution prevention, multiple sidechannels and no good ways to revoke wicked or vulnerable TAs – of which thereare plenty.
+ See David Cerdeira and colleagues for a survey of these issues [403].
+However the biggest security problem with Android implementations is poorafter-sales support.
+ Many OEMs only support the version that’s currently beingactively marketed; they are reluctant to spend engineer time backporting ﬁxes toold versions.
+ A 2015 survey revealed that 87% of active devices were insecure,averaged over 2011–15, because they were running versions of the operatingsystem that contained known vulnerabilities.
+ In many cases, the OEM simplydid not make ﬁxes available [1880].
+ This had already been identiﬁed as a problemby Google by 2011; the company o↵ered OEMs access to cut-price componentsif they undertook to patch their systems, but this got little traction.
+ Googlenow o↵ers certiﬁcation programs for both vendors and apps, but the problemsgo deeper than just OEM engineering e↵ort.
+ If a vulnerability is found in, say,the OpenSSL or Bouncy Castle cryptographic library, this ﬁx has to propagateto Linux, then to Android, them to each OEM, and then in many cases to eachmobile network operator – as the MNOs control updates for phones that arelocked to the network.
+ Each of these steps can take several months, and eachcan be neglected for commercial reasons [1880].
+ This raises thorny issues aroundcoordinated disclosure, which we’ll discuss in section 27.
+5.
+7.
+2, and regulation,which we’ll discuss in the last chapter of this book.
+22.
+3.
+1.
+3PermissionsConsent has been a wicked problem from the beginning, as we noted in thechapter on Access Control.
+In early versions of Android, an app’s manifestspeciﬁed the access rights it demanded and the user would have to approvethem all on installation in order to run it.
+ This led to widespread abuse, asmost users would just click approval to get the installation done, and a lot ofutility apps became machines for harvesting and reselling your address book,browser history and other personal data.
+ Already in 2012, research showed thatonly 17% of users paid attention during installation, and only 3% could answerSecurity Engineering693Ross Anderson22.
+3.
+ PLATFORM SECURITYbasic questions about what was going on [676].
+ In 2015, Android 6 moved tothe Apple model of approving access to such resources on ﬁrst use.
+ Indeed,progressive restrictions of the more dangerous permissions have driven platformevolution more than anything else.
+ Android 6 also made ﬁne-grained locationaccess a separate permission; Android 7 limited apps’ access to the metadataof other apps; Android 8 randomised MAC addresses and mandated the use ofa single Advertising ID for monetisation; Android 9 limited access to sensorswhen an app is in background mode and restricted access to the phone and calllogs; and Android 10 restricted location access in background mode.
+Google now provides several dozen permissions, and developers have alwaysbeen able to deﬁne custom permissions when making services available to otherapps; thousands of these are deﬁned by hardware vendors, MNOs, security ﬁrmsand Internet browsers [741].
+ These further balkanise the ecosystem and make iteven harder for users (and developers) to understand.
+An analysis of the consent problem by Yasemin Acar and colleagues breaksit up into comprehension of permissions, and attention to permissions, by bothusers and developers [10].
+ There are both usability and incentive failures onboth sides.
+ It’s clear enough why a predatory ﬂashlight app wants access tomy address book; many failures are more subtle.
+ Developers are just trying tomake stu↵ work so they can ship it, while users are just trying to access someservice or other.
+ Developer usability is a signiﬁcant source of bugs; we’ve notedthis elsewhere (e.
+g.
+ in section 5.
+5) but it looms larger in appiﬁed ecosystems asthe developers have to drive the application framework APIs to get useful workdone.
+ A substantial minority of developers request more permission than theyneed out of ignorance or confusion, and this holds even for system apps whosedevelopers should know better.
+ Google failed to implement fail-safe defaults;the APIs are confusing and poorly documented.
+ This drove developers to copyeach others’ code via fora such as stackexchange, to an even greater extent thanwith conventional development8.
+22.
+3.
+1.
+4Android malwareAs Android is an open platform, for which anyone can write apps, it has at-tracted a lot of harmful software.
+ As we mentioned in section 22.
+1.
+4, premium-rate phone malware arrived in 2006 with the Red Browser worm; Android’sarrival turned mobile malware from a niche activity into a mainstream prob-lem.
+ Deﬁnitions here are hard, as many apps are harmful in di↵erent ways to atleast some people; here I focus on apps that act secretly against the interests ofthe user that installed them.
+ I’ll discuss bad programs installed by OEMs andMNOs later in section 22.
+3.
+1.
+6.
+Malware can be bulk or targeted, and it can come from private-sector crim-inals or state actors.
+ Most of it by volume is of the bulk private-sector variety,and most of that comes through regular distribution channels.
+ As well as themillions of apps in the Play Store, alternative markets are widely used, espe-cially in countries like China and Iran where the Play Store is censored.
+ The8It also drove Acar and her colleagues to look at usability from the developers’ view-point [11], creating an important new area of security research which I mentioned in theresearch problems section at the end of the chapter on Access Control.
+Security Engineering694Ross Anderson22.
+3.
+ PLATFORM SECURITYlargest single source of malware has been the Play Store, with a signiﬁcant mi-nority of apps being harmful at some times, while some alternative markets haveon occasion removed most of their apps for being harmful.
+ Apps may be bornharmful, or libraries on which they rely may become bad, or the bad guys maybuy failing app companies, just as they snap up domains of former banks.
+ Oneof the biggest crime rings exposed recently did hundreds of millions of dollars ofad fraud by buying Android apps and using their user data to train bots thatthen clicked on ads [1738]; such scams exploit other kinds of malware too.
+ Themeasurement problems are non-trivial, as over 60 anti-virus ﬁrms label apps us-ing di↵erent criteria and classify them into di↵erent families.
+ There are severalhundred families active at any one time.
+A 2018 survey by Guillermo Suarez-Tanguil and Gianluca Stringhini anal-ysed 1.
+2m samples collected over 2010–17, and classiﬁed them into over a thou-sand families [1842].
+ Since 2012, most of them have involved repackaging, wherethe malware dev takes a legitimate app (the carrier) and adds harmful code (therider).
+ This is industrialised by repackaging many benign carriers with variantsof the same malicious rider.
+ The riders may try to root the phone for persis-tent access, and drop a remote access Trojan (RAT) that can earn money atthe direction of a command-and-control server, just as with regular PC mal-ware.
+ Monetisation strategies have evolved; in 2010 the focus was on makingpremium-rate calls, but by 2018 it had shifted to ad fraud and the exﬁltration ofpersonal information.
+ The great majority of riders use obfuscation tricks suchas encryption, while only a quarter of benign apps do this (Facebook’s app usesobfuscation as a defence against user data and keys being stolen by malware,particularly RATs in less developed countries).
+ Riders are mostly native coderather than Java (or Kotlin, which replaced it as the o�cial Android languageof choice in 2019).
+Banking Trojans stand out among the more targeted varieties of private-sector malware.
+ A common approach is the overlay attack where the malwaretricks the user into allowing it to use Android Accessibility Services, whichenables it to build an overlay over (for example) your banking app so it cancapture the screen and input data, under the control of a remote commandserver [396].
+ Android malware has been stealing bank SMSes for some time,and Google has pushed back by allowing only approved apps the permissionto read SMSes; the latest development in 2020 is that the Cerberus bankingmalware can now steal Google authenticator cookies too [431].
+States already used targeted malware in intelligence and law-enforcementmissions, and by 2012 vendors such as Gamma had produced mobile-phoneversions of their products that were found in multiple jurisdictions [1231].
+ Suchmalware also seeks root access but implants spyware.
+ Recent examples of bulkmalware deployment come from Turkey, which in 2018 was using man-in-the-middle devices on the T¨urk Telekom network to deploy spyware [1218], andChina, which sets website traps for Uighurs’ phones [393].
+Bulk state-actormalware can include mandating doctored versions of apps in some jurisdictions;Skype was available in China from 2005 only through a local distributor, TomOnline, which repackaged it to scan for words forbidden by Chinese censors.
+After Microsoft bought Skype, they took back control from 2013, but the appwas banned from app stores accessible in China from 2017 [1347].
+Security Engineering695Ross Anderson22.
+3.
+ PLATFORM SECURITYThere are technical abuses where apps defeat the permission framework whilestopping short of rooting your phone.
+ Joel Reardon and colleagues ran 88,000Android apps in an instrumented virtual environment to look for apps abus-ing side channels [1588].
+ They found two large Chinese companies, Baidu andSalmonads, using the SD card as a covert channel, so that ads which could readthe phone’s IMEI could store it for those which could not.
+ They also found 42apps getting the IMEI when they shouldn’t, using ioctl system calls, and over12,000 with the code to do so.
+22.
+3.
+1.
+5Ads and third-party servicesMobile phone apps typically incorporate third-party services to support ads,social network integration and analytics for a range of purposes from crash re-porting to A/B testing.
+ Such services can track users across multiple apps, evenwithout their consent.
+ An example of what can go wrong comes from Cam-Scanner, an app downloaded by over 100m people for scanning and managingdocuments.
+At some point, the app was updated to add a new advertisingnetwork that contained a malicious module.
+ Negative reviews led antivirus re-searchers to take a look, and it turned out that the module was dropping Trojanson to people’s phones [796].
+Third-party services are a fairly opaque part of the ecosystem, as they arenot directly visible to the user.
+ Some light has been shed by a survey carriedout by Abbas Razaghpanah and colleagues, using a VPN app used by 11,000volunteers to monitor tra�c to and from their phones [1586].
+ They mappedover 2,000 advertising and tracking services (ATS), including hundreds that hadnot previously been reported, and found that a substantial minority (39%) didcross-device tracking; 17 of the top 20 had a presence on the web as well as inthe app ecosystem.
+ Eight of the top ten reserved the right, in their privacy poli-cies, to share data with other organisations.
+ The largest of all were Alphabetand Facebook, but ﬁrms whose whole business consists of ATS, such as Chart-boost, Vungle and Adjust, have a signiﬁcant share and are relatively unknownto users.
+ App developers often use several such services simultaneously.
+ Paidapps have the fewest trackers, free apps have more, and free apps that allowin-app purchases, often of premium services, tend to have the most.
+Mutual trust issues are discussed by Yasemin Acar and colleagues [10].
+ Appdevelopers have to trust ad networks, as they execute in the app sandbox andinherit its permissions.
+ Ad libraries exploit apps in various ways, such as loadinginsecure code from web services and stealing users’ private information; appdevelopers return the compliment by stealing money from the networks withfake click events, just like malware developers.
+ (The boundaries are a bit fuzzy,as they were before in the world of the PC; there’s predatory behaviour at justabout every layer of the stack.
+)There are many examples of children’s apps collecting personal data with-out parental consent, contrary to the US Children’s Online Privacy ProtectionAct (COPPA): Irwin Reyes and colleagues scanned 5,855 of the most popularfree children’s apps and found that most of them potentially violated COPPAbecause of the way they used third-party SDKs; these typically enable devel-opers to disable third-party tracking and advertising but most developers don’tSecurity Engineering696Ross Anderson22.
+3.
+ PLATFORM SECURITYbother.
+ Worse, 19% of the apps were collecting personally identiﬁable informa-tion using SDKs that banned this in children’s apps [1599].
+ This study led tolegal action by state attorneys general, which might encourage app developersto take the law more seriously.
+ There are other practices contrary to the EUGDPR and its ePrivacy Directive, but EU regulators seem reluctant to get en-gaged, as the ATS industry is overwhelmingly based in the USA, and amountsto a substantial invisible export.
+ Even from the viewpoint of the US authorities,most of the ATS specialists don’t even have a COPPA policy, leaving regulatorycompliance to their customers.
+Most people expect that if they pay for an app, they get more privacy.
+ Butgiven that developers rely on third-party services for analytics as well as ads, thiscosts e↵ort, which many developers can’t be bothered to make.
+ Catherine Hanand colleagues compared free and paid versions of the same app and found thata third of the paid versions were just as predatory in terms of data collection;another sixth collected at least some of the same data; three-quarters used thesame permissions; and almost all had the same security policy.
+Looking atpaid/free app pairs designed for families, she found that the majority of paidapps violated COPPA in the same way as the free versions [859].
+22.
+3.
+1.
+6Pre-installed appsJulien Gamba and colleagues studied the ﬁrmware distributed by over 200 ven-dors worldwide [741].
+ Distributions typically reﬂect a partnership between ahandset OEM and an MNO, with various a�liated developers, ad networks anddistributors.
+ They can be poorly controlled; there have been multiple cases ofmalware ﬁnding its way in, as well as software to do mass-scale data collectionfor commercial or regulatory reasons.
+ Some phones also have diagnostic or sup-port modes that could be exploited by wicked apps.
+ Most of the pre-installedapps are not available in the Play Store and thus appear to fall outside theconventional framework.
+ Some are from ﬁrms like Facebook and AccuWeatherwhich are known to collect personal data aggressively; many of these are not thepublic versions of these ﬁrms’ apps; and many pre-installed apps use mobile an-alytics or targeted advertisement libraries.
+ What’s more, 74% of the non-publicapps do not seem to get updated, and 41% remained unpatched for 5 yearsor more [741].
+Many have sensitive custom permissions in order to performsuch tasks as mobile device management for enterprise customers, call block-ing, and VPN services.
+ Behavioral analysis showed that a signiﬁcant proportionof pre-installed apps could access and disseminate user and device identiﬁers,conﬁguration and current location.
+ The domains most contacted by such appswere Alphabet, Facebook, Amazon, Microsoft and Adobe.
+ Some pre-installedapps, particularly in cheaper phones, have components in the system partitionthat the user cannot easily remove, and which serve annoying ads or even actas loaders for Trojans [1109].
+22.
+3.
+2Apple’s app ecosystemApple has led from the start on security usability, providing ﬁne-grained accesscontrols long before Android, but its ecosystem has always been more closed.
+Security Engineering697Ross Anderson22.
+3.
+ PLATFORM SECURITYWhen the Mac was competing with the PC it was one hardware platform againstmany OEMs; the same pattern followed with the iPod, where Apple demanded30% of music sales, and it continued when Apple launched the iPhone.
+ Thebusiness model was much the same as a gaming console.
+Apple is the onlyhardware vendor and demands 30% of software revenues, as well as 30% of in-app purchases of online goods and services.
+ Now that Apple has half the marketin developed countries (and three-quarters of teens) this is becoming a antitrustissue.
+ Every developer has horror stories, and although Amazon was allowedin April 2020 to sell movies on Apple devices without giving Apple a cut [836],this just highlights the arbitrary nature of Apple’s rules.
+ Why should datingsites like match.
+com have to hand it 30% of their sales, while Uber does not?Apple treats dating as a digital good, but Uber tries to avoid taxi regulationby claiming it’s the same, a mere matchmaking service between drivers andriders.
+ The rules appear to hit smaller ﬁrms particularly hard, and imposed an‘Apple tax’ on people like musicians, ﬁtness instructors and yoga teachers whowent online because of the pandemic, if people booked them via an iPhone app.
+All this has led to an antitrust lawsuit in the USA from Epic Games, and acompetition policy investigation by the EU [888].
+Apple also used its control of the hardware and the operating system toimplement rights-management mechanisms to protect its aftermarket revenue;competing app stores are not allowed.
+The company does due diligence ondevelopers, requiring them to pay $99 a year for a license.
+Its app vettingprocess is a lot tougher than Google’s: there’s extensive automated securitytesting, followed by manual review to ensure that apps follow Apple policyon matters such as payment, content and abuse.
+ To support this, iOS appssubmitted to the App Store are only allowed to use the publicly-documentedAPIs [1812].
+ Academic researchers have therefore dug into the iOS ecosystem alot less, but nevertheless a few things can be said.
+The overall protection against malware is the best of any mass-market sys-tem, with zero-day remote exploits of iOS trading for multiple millions of dollarsand being patched as soon as they’re used at scale.
+ Indeed, when our own uni-versity’s ﬁnance division has asked for advice on how to protect really high-valuetransactions against phishing, my advice has been simple: buy an iPad on whichyou run the bank’s authenticator app to release payments, use it only for pay-ments, and keep it in a safe the rest of the time.
+However, the protection isn’t entirely bulletproof, and various actors havefound workarounds.
+First, there’s a long history of of hobbyists and others ‘jailbreaking’ Appledevices, starting with people who objected to DRM or who wanted to sideloadtheir own apps without paying Apple $99 tax, as they can with Android.
+ Asjailbreaks come out, Apple patches them; so at least the company has an in-centive to patch its devices up to date, rather than abandon them after sale asthe typical Android OEM does.
+ Sometimes patching isn’t possible, as when theexploit is of the device’s boot ROM; for example, the 2019 Checkra1n jailbreakwill liberate most devices sold before 2017 [798], and the forensics industry usesthe Checkm8 jailbreak, which exploits the boot ROM of all iPhones from the4S to the X [798]; this is used widely in the forensic ‘kiosks’ sold to the world’spolice forces, as I describe in section 26.
+5.
+1.
+ Although ROM exploits cannotSecurity Engineering698Ross Anderson22.
+3.
+ PLATFORM SECURITYdefeat the user PIN on devices later than the 5s, thanks to the secure element,they can access those user data that are made accessible after ﬁrst unlock, asdescribed in section 6.
+2.
+7.
+ There’s also a market for carrier unlocking, whereyou can also assume that the phone is in the physical custody of the attacker.
+Attacks that can exploit iOS remotely are more valuable, as state actors arewilling to pay millions of dollars for them.
+ We described in section 2.
+2.
+4 howthe UAE used such a tool to target dissidents, and how Saudi Arabia used oneagainst Je↵ Bezos, whose newspaper the Washington Post they detested; theSaudis also hacked their regional rival, the King of Qatar.
+ Cybercriminals alsodo it: in 2019, Google’s Project Zero revealed iOS exploits that were being usedin the wild to infect iPhones [204].
+ Apple always patches such exploits quickly,so your millions only give you access to a handful of targets.
+ If someone’s likelyto spend a million dollars to compromise your phone, you’d better have severaland not tell your enemies the number of your private phone that contains thedata you really care about9Second, Apple sells large ﬁrms ‘enterprise certiﬁcates’ which let iOS develop-ers bypass the app review process.
+ This led to abuse and spats, with Facebook’senterprise cert being suspended until their app stopped infringing App store pol-icy; Google’s app on the iPhone had a similar experience, and suddenly lots ofabuse by porn, gambling and spyware apps came to light.
+ They had been abus-ing enterprise certiﬁcates and hiding in plain sight in the app store [1697].
+ Manyof the bad actors had got their enterprise certs by pretending to be helpline appsfrom MNOs in less developed countries [1170].
+Third, Apple is like Android in that it doesn’t allow the user to block anapp’s access to the Internet.
+ So we ﬁnd ﬁrewall apps for iOS too, but this is oneway in which the iOS privacy mechanisms get in the way of privacy.
+ One appcan’t even see another let alone block it, so all the iOS ﬁrewalls can do on theiPhone is block access to ad servers.
+Although the malware issues are less serious than with Android, the samemarket forces apply, and so ad abuse still happens.
+ Many popular apps (in-cluding dating apps such as Grindr and OkCupid) share a lot of data withadvertisers, and are still allowed in the Apple ecosystem [1762].
+ The same holdsfor apps you might expect to be more privacy conscious, such as VPNs and adblockers – where the privacy exploits come in through embedded ad networks, asin the Android ecosystem [1739].
+ In one case, an advertising SDK let its authorssteal clicks from the 1,200 apps that used it and were installed on 300m iPhones;its code had stealth features that may have helped it past the app review pro-cess [1314].
+ And although more apps are paid for in the Apple App Store than inthe Google Play Store (6% rather than 4.
+4%) and people assume that paid appsthat don’t show apps don’t track you, such an expectation may be optimistic –in both ecosystems.
+ In section 22.
+3.
+1.
+5 I mentioned research showing how thepaid versions of Android apps often still track you.
+ One might expect similarresults for Apple, but the iPhone is a harder platform to do research on.
+9I know of one tycoon who would borrow the mobile phone of a di↵erent employee eachday and get the switchboard to forward his calls.
+ If that’s your strategy you’d better assumeit may occasionally double as a listening device and have your PA carry it for you.
+Andagainst a state adversary, maintaining separation between a hot phone and a cold one is notstraightforward: see the cotraveler system described in section 2.
+2.
+1.
+10.
+Security Engineering699Ross Anderson22.
+3.
+ PLATFORM SECURITYApple, like Google, has been progressively tightening up the permissionsapps need.
+ For example, iOS13 reﬁnes geodata from ‘allow’ on installation to‘allow once’ and ‘allow while using app’, and also curtails the use of wiﬁ andBluetooth to determine location – causing the same kind of complaints fromdevelopers [434].
+ From September 2020, iOS14 will turn identiﬁcation for ad-vertisers (IDFA) from opt-out to opt-in, essentially killing it, and underminingadvertisers’ ability to track the e↵ectiveness of campaigns – supposedly for pri-vacy, but it also looks set to promote Apple’s ad business at the expense ofGoogle, Facebook and third-party ad service ﬁrms [1073].
+The two stores share some political problems, such as the fact that they bothallowed an app used by men in Saudi Arabia to control the movements of theirwives, daughters and servants, as I discussed in section 2.
+5.
+4.
+ Occasionally, theydo diverge.
+ Apple is more aggressive than Google at removing ‘bad’ apps, thoughthis can sometimes get them a bad press.
+ During the 2019 protests in HongKong, Apple banned a crowdsourced protest safety app that demonstrators wereusing to avoid the police, claiming “Your app contains content – or facilitates,enables, and encourages an activity – that is not legal .
+.
+.
+ speciﬁcally, the appallowed users to evade law enforcement”, while Google left the Android versionup [1253].
+Another political controversy arose with coronavirus contact tracing.
+InFebruary 2020 the government of Singapore announced an app that would useBluetooth to record which phones had been near each other, so that whensomeone tested positive for the virus, public health o�cials could trace possiblecontacts automatically rather than just asking the patient who they’d met overthe past week.
+ This turned out to not work very well, as Bluetooth isn’t a goodranging technology.
+ If you set the volume to be sure to see people 2m away,you see a fair number 10m away – which greatly increases the number of falsealarms that contact tracers have to deal with.
+ What’s more, if the proportionof the population running the app is p then the probability that both a patientand their contact were both running it is p2 and the missed alarm rate is 1�p2;for Singapore, p was 12% so over 98% of contacts were missed.
+ By the time thiswas reported in April, a number of other countries, including the UK, France,Germany, Latvia and Australia, had started to develop contact tracing appstoo.
+ They discovered that the restrictions on Bluetooth use made such appstricky to write for Android phones and essentially impossible for iPhones [437].
+When they asked for better access Google and Apple refused, citing the privacyrisk to their customers if all apps could do Bluetooth contact tracing.
+ Googleand Apple made available an API for anonymous contact tracing, but fromthe epidemiologists’ point of view this is even less useful [1799].
+ This led tocriticism of Google and especially Apple for taking policy decisions that are thejob of elected politicians [955].
+ Germany switched to the Google/Apple APIbut started requiring pubs and restaurants to keep lists of customers’ contactdetails, so that if one customer gets sick, people who sat nearby can be tracedusing traditional methods.
+Security Engineering700Ross Anderson22.
+3.
+ PLATFORM SECURITY22.
+3.
+3Cross-cutting issuesThe convergence of the two ecosystems is leading to a growing number of cross-cutting issues.
+ These apply not just to phones but to other IoT devices, manyof which are either in the iOS ecosystem – such as Apple watches – or theAndroid one – including thermostats, doorbell cameras, building sensors andGoogle Home smart speakers.
+ The other notable ecosystem is probably that ofthe Amazon Alexa, which kickstarted the smart speaker product category (thiscategory has grown extremely quickly, taking 4 years to be adopted by half theUS population rather than 8 for the smartphone).
+ Many of these devices arealso designed to support an ecosystem of apps, although the number and usagevaries by product.
+In addition to the issues that stem from the MNOs, which we discussed insection 22.
+2.
+5, and the rapacious ad ecosystems, which we discussed in the abovesection, a major problem is poorly engineered apps.
+Quite simply, when billions of people entrust their ﬁnancial lives, their sociallives and even their sex lives to apps, then poorly-written apps can cause realharm.
+ Speciﬁc application issues have been discussed in many other chaptersof this book.
+ Here, one example may su�ce to put things in context.
+ It illus-trates a problem that many app developers just don’t think through – that ofrevocation.
+ In fact, when assisting in the design of a payment app, we spentabout half of the security-engineering time working out in detail how we’d copewith stolen phones: how payments could be blocked quickly when alerts came infrom di↵erent stakeholders, what would happen when the crime victim walkedinto a shop the following day and bought a new phone, whether you’d relyon the phone shop to authenticate them or make them call a bank contractor,how you’d deal with phone OEMs who had their own backup and recovery ser-vices – an absolute mass of mind-numbing detail.
+ That’s what real engineeringcomes down to: working with your supply chain and thinking through both thecustomer experience and the possible abuse cases.
+My example of what can happen when you don’t pay enough attention isFordPass, an app that enables you to control a rental car so you can track it, lockand unlock it, and start the engine – even several months after you’ve returnedit to the rental lot [794].
+ There are many more cases, but this is enough toillustrate that poorly designed apps can expose other systems, including safety-critical ones.
+The threats from poorly written apps cover the whole spectrum of conﬁden-tiality, integrity and availability.
+ The consequences of goods relying on appsthat are no longer maintained are such that the EU passed the Sales of GoodsDirective in 2019 requiring vendors of goods with digital components to main-tain these components for at least two years and for longer if that is a reasonableexpectation of the customer.
+ From January 2022, phone apps supplied alongwith a durable good such as a car or washing machine will have to be maintainedfor ten years after the last of these products leaves the showroom.
+ We’ll discusssustainability further in the last chapter of this book.
+Security Engineering701Ross Anderson22.
+4.
+ SUMMARY22.
+4SummaryPhone security is a fascinating case study.
+ People have been cheating phonecompanies for a century, and since deregulation the phone companies have beenvigorously returning the compliment.
+ To start o↵ with, systems were not reallyprotected at all, and it was easy to evade charges and redirect calls.
+ The mech-anism adopted to prevent this – out-of-band signalling – proved inadequate asthe rapidly growing complexity of the system opened up many more vulnerabil-ities.
+ These range from social engineering attacks on users through poor designand management of terminal equipment such as PBXes to the exploitation ofvarious hard-to-predict feature interactions.
+ The main disruptive force was thedevelopment of premium-rate services that enabled people to steal real money.
+On the mobile front, the attempts to secure GSM and its third, fourth andﬁfth generation successors make an interesting case study.
+ Their engineers con-centrated on communications security threats rather than computer securitythreats, and on the phone companies’ interests at the expense of the customers’.
+Their e↵orts were not entirely in vain but have led to an immensely complexglobal ecosystem that has become the subject of signiﬁcant political tussles,particularly over the control of 5G infrastructure.
+The dominating factor in 2020 is the mobile app ecosystems.
+ The Androidecosystem has attracted hundreds of thousands of developers, ranging from ﬁrmslike Uber that have built apps into major international businesses, through appso↵ered by many established businesses and a host of specialist tools, to a sub-stantial criminal fringe.
+ The Apple ecosystem is more regulated but similar in anumber of respects.
+ Many apparently innocuous apps in both ecosystems can beabused in interesting ways, and the ad networks they use are a pervasive threatto privacy.
+ The ecosystems of mobile apps, apps on more traditional platformssuch as laptops, and apps on devices such as watches and cars converge andoverlap in various ways, but insofar as they are still distinct, mobile platformsprotect apps from each other more robustly than laptops do and the platformoperators make signiﬁcant security e↵orts at the ecosystem level.
+ Indeed, asmost Android phones are not patched up to date and are therefore insecure,the heavy lifting isn’t done at the level of technical platform security but at thelevel of the ecosystem.
+Research ProblemsThe interaction between communications, mobility, platforms, and apps contin-ues to be fertile ground for both interesting research and expensive engineeringerrors.
+ We have explored a lot of the issues over the past ten years in the mobilephone app ecosystem, mostly in the Android part of it where most of the prob-lems occur.
+ Mobility is now extending to all sorts of other devices, from yourwatch to your car, and many of the issues around app ecosystems are arisingwith smart speakers and other domestic devices.
+ Given the sheer scale of thesenew emerging ecosystems, we will need innovative ways to automate the huntfor both threats and vulnerabilities.
+ One approach is to build honeypots andlook for attack tra�c; a somewhat more forward defence may be to analyseSecurity Engineering702Ross Anderson22.
+4.
+ SUMMARYthe companion apps used to control IoT devices and infer vulnerabilities fromthem [1978].
+Further ReadingInformation about the world’s phone systems is scattered across a large numberof standards documents that can be rather heavy going, while app platforms atleast have o�cial guides, white papers and developer communities.
+ Keeping upwith the latest exploits is a matter of following the security blogs and tech press.
+There are some good surveys of speciﬁc subproblems, which I’ve cited in therelevant sections, but I’m not aware of any good books or survey papers of theoverall phone security scene.
+ Perhaps that’s inevitable; now that more people goonline via mobile devices then from laptops or desktops, mobile security touchesone way or another on much of the subject matter of this book.
+Security Engineering703Ross Anderson

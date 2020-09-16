@@ -1,0 +1,688 @@
+Chapter 10BoundariesThey constantly try to escapeFrom the darkness outside and withinBy dreaming of systems so perfect that no one will need to be good– TS EliotAnything your computer can do for you it can potentially do forsomeone else.
+– Alan CoxYou have zero privacy anyway.
+ Get over it.
+– SCOTT MCNEALY10.
+1IntroductionWhen we restrict information ﬂows to protect privacy or conﬁdentiality, a policygoal is usually not to prevent information ﬂowing ‘down’ a hierarchy but toprevent it ﬂowing ‘across’ between smaller groups.
+1.
+ If you give the million US Federal employees and contractors with a TopSecret clearance access to too much Top Secret data, then you get awhistleblower like Ed Snowden if you’re lucky, or a traitor like AldrichAmes if you’re not.
+2.
+ As mobile phones spread round the world, they’ve made wildlife crimeeasier.
+ Game rangers and others who ﬁght poaching face organised crime,violence and insider threats at all levels, but unlike in national intelligencethere’s no central authority to manage clearances and counterintelligence.
+3.
+ If you let too many people in a health service see patient records, you getscandals where sta↵ look up data on celebrities.
+ And the existence of bigcentral systems can lead to big scandals, such as where a billion Englishmedical records going back a decade were sold to multiple drug companies.
+32210.
+1.
+ INTRODUCTION4.
+ Similar issues arise in social care and in education.
+ There are frequentcalls for data sharing, yet attempts to do it in practice cause all sorts ofproblems.
+5.
+ If you let everyone in a bank or an accountancy ﬁrm see all the customerrecords, then an unscrupulous manager could give really good advice to aclient by looking at the conﬁdential ﬁnancial information of that client’scompetitors.
+The basic problem is that if you centralise systems containing sensitive infor-mation, you create a more valuable asset and simultaneously give more peopleaccess to it.
+ Just as the beneﬁts of networks can scale more than linearly, socan the harms.
+A common mitigation is to restrict how much information any individualsees.
+ In our ﬁve example cases above:1.
+ Intelligence services put sensitive information into compartments, so thatan analyst working on Argentina might see only the Top Secret reportsrelating to Argentina and its neighbouring countries;2.
+ Systems that support game conservation have to do something similar, butaccess control has to be a federated e↵ort involving multiple conservancies,researchers, rangers and other actors;3.
+ Many hospital systems limit sta↵ access to the wards or departments wherethey work, to the extent that this is reasonably practical, and patients havea right to forbid the use of their data outside their direct care.
+ Both arebecoming more di�cult to implement as systems get more complex andtheir operators lack the incentive to make the e↵ort;4.
+ In 2010, the UK parliament closed down a system that was supposed togive doctors, teachers and social workers shared access to all childrens’data, as they realised it was both unsafe and illegal.
+ Yet there’s constantpressure for information sharing, and all sorts of issues with schools andother institutions using dubious cloud services;5.
+ Financial ﬁrms have ‘Chinese walls’ between di↵erent parts of the business,and bank sta↵ are now often limited to accessing records for which theyhave a recent customer authorisation, such as by the customer answeringsecurity questions over the phone.
+We will discuss these kinds of access control in this chapter.
+There areseveral aspects: what sort of technical designs are feasible, the operational coststhey impose on the organisation, and – often the critical factor – whether theorganisation is motivated to implement and police them properly.
+In the last chapter, we discussed multilevel security and saw that it canbe hard to get the mechanisms right.
+ In this chapter, we’ll see that when wego for ﬁne-grained access controls, it’s also hard to get the policy right.
+ Arethe groups or roles static or dynamic?Are they set by national policy, bycommercial law, by professional ethics, or – as with your group of FacebookSecurity Engineering323Ross Anderson10.
+1.
+ INTRODUCTIONfriends – by the system’s users?What happens when people ﬁght over therules, or deceive each other? Even where everyone is working for the same boss,di↵erent parts of an organisation can have quite di↵erent incentives.
+Someproblems can be technically complex but simple in policy terms (wildlife) whileothers use standard mechanisms but have wicked policy problems (healthcare).
+To start with a simpler case, suppose you’re trying to set security policy atthe tax collection o�ce.
+ Sta↵ have been caught in the past making improperaccess to the records of celebrities, selling data to outsiders, and leaking incomedetails in alimony cases [188].
+ How might you go about stopping that?TOP SECRETSECRETCONFIDENTIALOPENFig 9.
+1 – multilevel securityYour requirement might be to stop sta↵ looking at tax records belonging toa di↵erent geographical region, or a di↵erent industry – except under strict con-trols.
+ Thus instead of the information ﬂow control boundaries being horizontalas we saw in the classic civil service model in Figure 9.
+1, we actually need theboundaries to be mostly vertical, as shown in Figure 9.
+2.
+ABCDEshared dataFig 9.
+2 – multilateral securityLateral information ﬂow controls may be organizational, as when an in-telligence agency keeps the names of agents working in one foreign countrysecret from the department responsible for spying on another.
+ They may berelationship-based, as in a law ﬁrm where di↵erent clients’ a↵airs, and theclients of di↵erent partners, must be kept separate.
+ They may be a mixtureof the two, as in medicine where patient conﬁdentiality is based in law on therights of the patient but may be enforced by limiting access to a particular hos-pital department or medical practice.
+ They may be volumetric, as when a gameconservancy doesn’t mind declassifying a handful of leopard photos but doesn’twant the poachers to get the whole collection, as that would let them work outthe best places to set traps.
+Doctors, bankers and spies have all learned that as well as preventing overtinformation ﬂows, they also have to prevent information leakage through side-channels such as billing data.
+The mere fact that patient X paid doctor Ysuggests that X su↵ered from something in Y’s speciality.
+Security Engineering324Ross Anderson10.
+2.
+ COMPARTMENTATION AND THE LATTICE MODEL10.
+2Compartmentation and the lattice modelThe United States and its allies restrict access to secret information by codewordsas well as classiﬁcations.
+ These are pre-computer mechanisms for expressing anaccess control group, such as the codeword Ultra in World War 2, which referredto British and American decrypts of messages that had been enciphered usingthe German Enigma machine.
+The fact that the Enigma had been brokenwas worth protecting at almost any cost.
+ So Ultra clearances were given toonly a small group of people – in addition to the cryptologists, translators andanalysts, the list included the Allied leaders and their senior generals.
+ No-onewho had ever held an Ultra clearance could be placed at risk of capture; andthe intelligence could never be used in such a way as to let Hitler suspect thathis principal cipher had been broken.
+ So when Ultra told of a target, such asan Italian convoy to North Africa, the Allies would send over a plane to ‘spot’it an hour or so before the attack.
+ This policy was enforced by special handlingrules; for example, Churchill got his Ultra summaries in a special dispatch boxto which he had a key but his sta↵ did not.
+ (Ultra security is described byDavid Kahn [1002] and Gordon Welchman [2007].
+)Much the same precautions are in place today.
+ Information whose compro-mise could expose intelligence sources or methods is marked TS/SCI for ‘TopSecret – Special Compartmented Intelligence’ and may have one or more code-words.
+ A classiﬁcation plus a set of codewords gives a compartment or securitycontext.
+ So if you have N codewords, you can have 2N compartments; someintelligence agencies have had over a million of them active.
+ This caution wasa reaction to a series of disastrous insider threats.
+ Aldrich Ames, a CIA o�cerwho had accumulated access to a large number of compartments by virtue oflong service and seniority, and because he worked in counterintelligence, wasable to betray almost the entire US agent network in Russia.
+ The KGB’s over-seas operations were similarly compromised by Vassily Mitrokhin – an o�cerwho’d become disillusioned with communism and who was sent to work in thearchives while waiting for his pension [118].
+ There was an even earlier precedentin the Walker spy case.
+ There, an attempt to keep naval vessels in compart-ments just didn’t work, as a ship could be sent anywhere without notice, andfor a ship to have no local key material was operationally unacceptable.
+ So theUS Navy’s 800 ships all ended up with the same set of cipher keys, which theWalker family sold to the Russians [876].
+ You clearly don’t want anybody tohave access to too much, but how can you do that?Attempts were made to implement compartments using mandatory accesscontrols, leading to the lattice model.
+ Classiﬁcations together with codewordsform a lattice – a mathematical structure in which any two objects A and Bcan be in a dominance relation A > B or B > A.
+ They don’t have to be: Aand B could simply be incomparable (but in this case, for the structure to be alattice, they will have a least upper bound and a greatest lower bound).
+ As anillustration, suppose we have a codeword, say ‘Crypto’.
+ Then someone clearedto ‘Top Secret’ would be entitled to read ﬁles classiﬁed ‘Top Secret’ and ‘Secret’,but would have no access to ﬁles classiﬁed ‘Secret Crypto’ unless he also had acrypto clearance.
+ This can be expressed as shown in Figure 10.
+3.
+As it happens, the Bell-LaPadula model can work more or less unchanged.
+Security Engineering325Ross Anderson10.
+2.
+ COMPARTMENTATION AND THE LATTICE MODEL(TOP SECRET, {CRYPTO, FOREIGN})(TOP SECRET, {CRYPTO})(TOP SECRET, {})(SECRET, {})(UNCLASSIFIED, {})(SECRET, {CRYPTO, FOREIGN})(SECRET, {CRYPTO})Figure 10.
+3: – a lattice of security labelsWe still have information ﬂows between High and Low as before, where High isa compartment that dominates Low.
+ If two nodes in a lattice are incompatible— as with ‘Top Secret’ and ‘Secret Crypto’ in ﬁgure 10.
+3 – then there should beno information ﬂow between them at all.
+ In fact, the lattice and Bell-LaPadulamodels are essentially equivalent, and were developed in parallel.
+ Most productsbuilt in the 20th century for the multilevel secure market could be used incompartmented mode.
+ For a fuller history, see the second edition of this book.
+In practice, mandatory access control products turned out to be not thate↵ective for compartmentation.
+ It is easy to use such a system to keep data indi↵erent compartments separate – just give them incompatible labels (‘SecretTulip’, ‘Secret Da↵odil’, ‘Secret Crocus’, .
+.
+.
+).
+ But the operating system has nowbecome an isolation mechanism, rather than a sharing mechanism; and the realproblems facing users of intelligence systems have to do with combining data indi↵erent compartments, and downgrading it after sanitization.
+ Lattice securitymodels o↵er little help here.
+There was a sea change in the US intelligence community after 9/11.
+ Leadersclaimed that the millions of compartments had got in the way of the war on ter-ror, and that better information sharing might have enabled the community toforestall the attack, so President Bush ordered more information sharing withinthe intelligence community.
+ There was a drive by NSA Director Keith Alexan-der to ‘collect it all’, and rather than minimising data collection to maximise itinstead and make everything searchable.
+ So nowadays, government systems usemandatory access control to keep the Secret systems apart from the unclassiﬁedstu↵, and the Top Secret systems from both, using data diodes and other mech-anisms that we discussed in the previous chapter.
+ The stu↵ above Top Secretnow appears to be mostly managed using discretionary access controls.
+The Snowden revelations have told us all about search systems such asXKeyscore, which search over systems that used to have many compartments.
+ Ifa search can throw up results with many codewords attached, then reading thatresult would require all those clearances.
+ In such a world, local labels just getin the way; but without them, as I asked in the second edition of this book, howdo you forestall a future Aldrich Ames? Perhaps the US intelligence communitySecurity Engineering326Ross Anderson10.
+3.
+ PRIVACY FOR TIGERSwas lucky that the failure mode was Ed Snowden instead.
+ As a system admin-istrator he was in a position to circumvent the discretionary access controls andaccess a large number of compartments.
+We later learned that at the CIA, too, compartmentation was not alwayse↵ective.
+ In 2017, its hacking tools were leaked in the Vault 7 incident, and aredacted version of the internal report into that was published in 2020 after thetrial of the alleged leaker.
+ It revealed that most sensitive cyberweapons were notcompartmented, users shared sysadmin passwords, there was no user activitymonitoring and historical data were available indeﬁnitely.
+ They did not noticethe loss until the tools ended up on Wikileaks a year later.
+ In fact, the Jointworldwide Intel Communications System (JWICS), which the intel communityuses for Top Secret data, did not yet use two-factor authentication [2051].
+There are a few compartments Ed Snowden didn’t get to, such as the de-tails of which cryptographic systems the NSA can exploit and how – this wasmarked ‘extremely compartmented information’ (ECI).
+ Commercial ﬁrms mayalso have special mechanisms for protecting material such as unpublished ﬁnan-cial results; at my university we compile exam papers on machines that are noteven attached to the network.
+ In such cases, what’s happening may be not somuch a compartment as a whole new level above Top Secret.
+10.
+3Privacy for TigersPeople involved in ﬁghting wildlife crime face a fascinating range of problems.
+The threats range from habitat encroachment through small-scale poaching forbushmeat to organised crime gangs harvesting ivory, rhino horn and tiger bodyparts on an industrial scale.
+ The gangs may be protected by disa↵ected com-munities; even heads of government can be a threat, whether by underminingenvironmental laws or even by protecting poaching gangs.
+ And often the bestpoacher is a former ranger.
+Even where sovereign threats are absent, public-sector defenders often workfor mutually suspicious governments; protecting the snow leopard from poach-ers involves rangers in India, Pakistan, China, Nepal and Tajikistan, while theillegal ivory trade in East Africa spills over borders from Kenya down to SouthAfrica.
+ And technology is making matters worse; as mobile phone masts havegone up in less developed countries, so has poaching.
+ Its military, insider-threatand political aspects are thus similar in many ways to traditional security andintelligence work.
+ The critical di↵erence is that the defenders are a loose coali-tion of NGOs, park rangers and law-enforcement agencies.
+ There isn’t a centralbureaucracy to manage classiﬁcations, clearances and counterintelligence.
+We had a project with Tanya Berger-Wolf, the leader of Wildbook, an eco-logical information management system that uses image recognition to matchand analyse data collected on animals via tourist photos, camera traps, dronesand other data sources [92].
+ Her idea was that if we could link up the many pho-tographs taken of individual wild animals, we could dramatically improve thescience of ecology and population biology, together with the resource manage-ment, biodiversity, and conservation decisions that depend on them.
+ ModernSecurity Engineering327Ross Anderson10.
+3.
+ PRIVACY FOR TIGERSimage-recognition software makes this feasible, particularly for large animalswith distinctive markings, such as elephants, gira↵es and zebras.
+ Wildbook isnow deployed for over a dozen species at over a dozen locations.
+In 2015, two Spanish citizens were arrested in Namibia’s Knersvlagte naturereserve with 49 small succulent plants; a search of their hotel room revealed 2000more, of which hundreds were threatened species.
+ It turned out that they soldthese plants through a website, had made numerous collecting trips, and foundrare specimens via botanical listservs and social networks.
+ They pleaded guilty,paid a $160,000 ﬁne and were banned from the country for life.
+ It turned out thatthey had also used another citizen-science website, iSpot [2009].
+ Incidents likethis showed that wildlife aggregators need access control, and are also leadingto a rethink among botanists, zoologists and others about open data [1166].
+ Sowhat should the policy be?What one needs to protect varies by species and location.
+ With rare plants,we don’t want thieves to learn the GPS location of even a single specimen.
+ Withendangered Coahuilan box tortoises, we don’t want thieves stealing them fromthe wild and selling them as pets with false documents claiming they were bredin captivity.
+ There, the goal is a public database of all known tortoises, andconservators are busy photographing all the wild specimens in their range, a360 km2 region of Mexico.
+ This will enable the US Fish and Wildlife Service tocheck shipments.
+ With the snow leopard, Wildbook had three years of camera-trap data from one Nepal conservancy, and wanted a security policy to help thisscale to ﬁve locations in Nepal, India and Pakistan.
+ This is a Red List specieswith only a few hundred individuals in each of these three countries.
+ In Africathe picture is similar; Wildbook started out by tracking zebras, of which theGr´evy’s zebra is endangered.
+ Animals cross borders between mutually suspiciouscountries, and tourists post tagged photos despite leaﬂets and warnings thatthey should not geotag [2074].
+ Some tourists simply don’t know how to turno↵ tagging; some are so dumb they get out of their cars and get eaten.
+ Theprotection requirements also vary by country; in Namibia the authorities arekeen to stop tourists posting tagged photos of rhino, while in Kenya the rhinosall have their own armed guards and the authorities are less bothered.
+The new wildlife aggregation sites can use image recognition to identify in-dividual animals and link up sightings into location histories; other machine-learning techniques then aggregate these histories into movement models.
+ Werapidly ﬁnd sensitive outputs, such as which waterhole has lots of leopards, orwhich island has lots of breeding whales.
+ This is one of the ways animal privacydi↵ers from the human variety: highly abstracted data are often more sensitiverather than less.
+ In e↵ect, our machine-learning models acquire the ‘lore’ thatan individual ranger might learn after a decade working at a conservancy.
+ Assuch individuals make the best poachers if they go over to the dark side, weneed to keep models that learn their skills out of the poachers’ hands.
+ And weneed to be smart about sensitivity: it’s not enough to protect only the data andmovement models of snow leopards, if a poacher can also track them by trackingthe mountain goats that they eat.
+Our primary protection goal is to not give wildlife criminals actionable in-telligence, such as “an animal of species A is more likely to be at location X attime T”.
+ In particular, we don’t want the citizen-science data platforms we buildSecurity Engineering328Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYto make the situation worse.
+ Our starting point is to use an operations-researchmodel as a guide to derive access rules for (a) recent geotagged photos, (b) pre-dictive models and (c) photo collections.
+ And we need to be able to tweak therules by species and location.
+There are four levels of access.
+ The core Wildbook team maintains the soft-ware and has operational access to almost everything; we might call this levelzero.
+ At level one are the admins of whom there might be maybe 20 per species;as access control is delegated there will be further admins per conservancy or perreserve.
+ At level two are hundreds of people who work for conservancies collect-ing and contributing data, and who at present are sort-of known to Wildbook;as the system scales up, we need to cope with delegated administration.
+ Atlevel three there are thousands of random citizens who contribute photos andare rewarded with access to non-sensitive outputs.
+ Our threat model is thatthe set of citizen scientists at level 3 will always include poachers; the set ofconservancy sta↵ at level 2 will include a minority who are careless or disloyal;and we hope that the level 1 admins usually won’t be in cahoots with poachers.
+The focus of our insider threat mitigation is conservancy sta↵ who may betempted to defect.
+ Given that conservancies often operate in weak states, thethreat of eventual detection and imprisonment can seem remote.
+ The most pow-erful deterrent available is the social pressure from conservancy peers: loyaltyto colleagues, a sense of teamwork and a sense of mission.
+ The task is to ﬁnda technical means of supporting group cohesion and loyalty.
+ The civil-serviceapproach of having a departmental security o�cer who looks over everyone’sshoulder all the time is not feasible anyway in a ﬁnancially-stretched conser-vancy employing ten or twenty people on low wages in less-developed country(LDC) conditions.
+The problem is not just one of providing analytics so that we can alarm if amember of sta↵ starts looking at lots of records of rhino, or lots of records ata Serengeti waterhole.
+ We already have admins per species and per location.
+The problem is motivating people to pay attention and take action.
+ Our corestrategy is local public auditability for situational awareness and deterrence,based on two-dimensional transparency.
+ All conservancy sta↵ are in at leastone group, relating to the species of interest to them or the park where theywork.
+ Sta↵ in the rhino group therefore see who’s been looking at rhino records– including individual sighting records and models – while sta↵ working in theSerengeti see who’s interested in data and models there.
+ In e↵ect it’s a matrixsystem for level 2 sta↵; you get to see Serengeti rhinos if you’re there or if you’rea rhino expert, and in either case you share ﬁrst-line responsibility for vigilance.
+Level 1 sta↵ can enrol level 2 sta↵ and make peering arrangements with otherconservancies, but their relevant actions are visible to level 2 colleagues.
+ Wewill have to see how this works in the ﬁeld.
+10.
+4Health record privacyPerhaps the most complex and instructive example of security policies whereaccess control supports privacy is found in clinical information systems.
+ Thehealthcare sector spends a much larger share of national income than the mili-Security Engineering329Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYtary in all developed countries, and although hospitals are still less automated,they are catching up fast.
+ The protection of medical information is thus animportant case study for us all, with many rich and complex tradeo↵s.
+Many countries have laws regulating healthcare safety and privacy, whichhelp shape the health IT sector.
+ In the USA, the Health Insurance Portabilityand Accountability Act (HIPAA) was passed by Congress in 1996 followinga number of privacy failures.
+ In one notorious case, a convicted child rapistworking as an orthopedic technician at Newton-Wellesley Hospital in Newton,Massachusetts, was caught using a former employee’s password to go throughthe records of 954 patients (mostly young females) to get the phone numbersof girls to whom he then made obscene phone calls [317].
+ He ended up doingjail time, and the Massachusetts senator Edward Kennedy was one of HIPAA’ssponsors.
+The HIPAA regulations have changed over time.
+ The ﬁrst set, issued by theClinton administration in December 2000, were moderately robust, and basedon assessment of the harm done to people who were too afraid to seek treat-ment in time because of privacy concerns.
+ In the run-up to the rulemaking,HHS estimated that privacy concerns led 586,000 Americans to delay seekingcancer treatment, and over 2 million to delay seeking mental health treatment.
+Meanwhile, over 1 million simply did not seek treatment for sexually transmit-ted infections [873].
+ In 2002, President Bush rewrote and relaxed them to the‘Privacy Rule’; this requires covered entities such as hospitals and insurers tomaintain certain security standards and procedures for protected health informa-tion (PHI), with both civil and criminal penalties for violations (although veryfew penalties were imposed in the ﬁrst few years).
+ The rule also gave patientsthe right to demand copies of their records.
+ Covered entities can disclose infor-mation to support treatment or payment, but other disclosures require patientconsent; this led to complaints by researchers.
+ The privacy rule was followedby further ‘administrative simpliﬁcation’ rules in 2006 to promote healthcaresystems interoperability.
+This got a further boost when President Obama’sstimulus bill allocated billions of dollars to health IT, and slightly increasedthe penalties for privacy violations; in 2013 his administration extended therules to the business associates of covered entities.
+ But grumbling continues.
+Health privacy advocates note that the regime empowered health data holdersto freely and secretly aggregate and broker protected health information, whilehospitals complain that it adds to their costs and patient advocates have beencomplaining for over a decade that it’s often used by hospital sta↵ as an excuseto be unhelpful – such as by preventing people tracing injured relatives [827].
+Although HIPAA regulation gives much less privacy than in Europe, it is stillthe main driver for information security in healthcare, which accounts for over10% of the U.
+S.
+ economy.
+ Another driver is local market e↵ects: in the USA,for example, systems are driven to some extent by the need to generate billingrecords, and the market is also concentrated with Epic having a 29% marketshare for electronic medical record systems in 2019 while Cerner had 26% [1351].
+In Europe, data-protection law sets real boundaries.
+ In 1995, the UK govern-ment attempted to centralise all medical records, which led to a confrontationwith the doctors’ professional body, the British Medical Association (BMA).
+The BMA hired me to devise a policy for safety and privacy of clinical informa-Security Engineering330Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYtion, which I’ll discuss later in this chapter.
+ The evolution of medical privacyover the 25 years since is a valuable case study; it’s remarkable how little theissues have changed despite the huge changes in technology.
+Debates about the safety and privacy tradeo↵s involved with medical infor-mation started around this time in other European countries too.
+ The Germansput summary data such as current prescriptions and allergies on the medicalinsurance card that residents carry; other countries held back, reasoning thatif emergency data are moved from a human-readable MedAlert bracelet to asmartcard, this could endanger patients who fall ill on an airplane or a foreignholiday.
+ There was a series of scandals in which early centralised systems wereused to get information on celebrities.
+ There were also sharp debates aboutwhether people could stop their records being used in research, whether out ofprivacy concerns or for religious reasons – for example, a Catholic woman mightwant to forbid her gynaecological records being sold to a drug company doingresearch on abortion pills.
+European law around consent and access to records was clariﬁed in 2010 bythe European Court of Human Rights in the case I v Finland.
+ The complainantwas a nurse at a Finnish hospital, and also HIV-positive.
+ Word of her conditionspread among colleagues, and her contract was not renewed.
+The hospital’saccess controls were not su�cient to prevent colleagues accessing her record,and its audit trail was not su�cient to determine who had compromised herprivacy.
+ The court’s view was that health care sta↵ who are not involved inthe care of a patient must be unable to access that patient’s electronic medicalrecord: “What is required in this connection is practical and e↵ective protectionto exclude any possibility of unauthorised access occurring in the ﬁrst place.
+”This judgment became ﬁnal in 2010, and since then health providers have beensupposed to design their systems so that patients can opt out e↵ectively fromsecondary uses of their data.
+10.
+4.
+1The threat modelThe appropriate context to study health IT threats is not privacy alone, butsafety and privacy together.
+ The main objective is safety, and privacy is oftensubordinate.
+ The two are also intertwined, though in many ways.
+There are various hazards with medical systems, most notably safety us-ability failures, which are reckoned to kill about as many people as road tra�caccidents.
+ I will discuss these issues in Part 3 in the chapter on System Eval-uation and Assurance.
+ They interact directly with security; vulnerabilities areparticularly likely to result in the FDA mandating recalls of products such asinfusion pumps.
+ The public are much more sensitive to safety issues if they havea security angle; we have much less tolerance of hostile action than of impersonalrisk.
+A second hazard is that loss of conﬁdence in medical privacy causes peopleto avoid treatment, or to seek it too late.
+1.
+ The most comprehensive data were collected by the US Department ofHealth and Human Services prior to the HIPAA rulemaking under Pres-Security Engineering331Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYident Clinton.
+ HHS estimated that privacy concerns led 586,000 Ameri-cans to delay seeking cancer treatment, and over 2 million to delay seekingmental health treatment.
+ Meanwhile, over 1 million simply did not seektreatment for sexually transmitted infections [873];2.
+ The Rand corporation found that over 150,000 soldiers who served in Iraqand Afghanistan failed to seek treatment for post-traumatic stress disorder(PTSD), which is believed to contribute to the suicide rate among veteransbeing about double that of comparable civilians – a signiﬁcant barrierbeing access to conﬁdential treatment [1861];3.
+ The most authoritative literature review concluded that many patients,particularly teenagers, gay men and prostitutes, withheld informationor simply failed to seek treatment because of conﬁdentiality concerns.
+Anonymised HIV testing more than doubled the testing rate among gaymen [1650].
+So poor privacy is a safety issue, as well as a critical factor in providing equalhealthcare access to a range of citizens, from veterans to at-risk and marginalisedgroups.
+ The main privacy threat comes from insiders, with a mix of negligenceand malice, in roughly three categories:1.
+ There are targeted attacks on speciﬁc individuals, ranging from creepydoctors looking up the records of a date on a hospital computer, to jour-nalists stalking a politician or celebrity.
+ These cause harm to individualsdirectly;2.
+ There are bulk attacks, as where governments or hospitals sell millionsof records to a drug company, sometimes covertly and sometimes withthe claim that the records have been ‘anonymised’ and are thus no longerpersonal health information;3.
+ Most of the reported breaches are accidents, for example where a doctorleaves a laptop on a train, or when a misconﬁgured cloud server leaves mil-lions of people’s records online [767].
+ These are reported at ﬁve times therate of breaches at private ﬁrms, as healthcare providers have a reportingduty.
+ Sometimes accidental leaks lead to opportunistic attacks.
+The resulting press coverage, which is mostly of bulk attacks and accidents,causes many to fear for the privacy of their health data, although they may notbe directly at risk.
+ The bulk attacks also o↵end many people’s sense of justice,violate their autonomy and agency, and undermine trust in the system.
+So how big is the direct risk? And how much of the risk is due to technology?As things get centralised, we hit a fundamental scaling problem.
+ The likelihoodthat a resource will be abused depends on its value and on the number ofpeople with access to it.
+ Aggregating personal information into large databasesincreases both these risk factors at the same time.
+Over the past 25 years,we’ve moved from a world in which each doctor’s receptionist had access tomaybe 5,000 patients’ records in a paper library or on the practice PC, to onein which the records of thousands of medical practices are hosted on commonSecurity Engineering332Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYplatforms.
+ Some shared systems give access to data on many patients and havebeen abused.
+ This was already a concern 25 years ago as people started buildingcentralised systems to support emergency care, billing and research, and it hasbecome a reality since.
+ Even local systems can expose data at scale: a largedistrict hospital is likely to have records on over a million former patients.
+ Andprivacy issues aren’t limited to organizations that treat patients directly: someof the largest collections of personal health information are in the hands ofhealth insurers and research organizations.
+To prevent abuses scaling, lateral information ﬂow controls are needed.
+ Earlyhospital systems that gave all sta↵ access to all records led to a number of privacyincidents, of which the most notable was the one that led to the I v Finlandjudgment of the European court; but there were similar incidents in the UKgoing back to the mid-1990s.
+ All sorts of ad-hoc privacy mechanisms had beentried, but by the mid-1990s we felt the need for a proper access control policy,thought through from ﬁrst principles and driven by a realistic model of thethreats.
+10.
+4.
+2The BMA security policyBy 1995, most medical practices had computer systems to keep records; thesuppliers were small ﬁrms that had often been started by doctors whose hobbywas computing rather than golf or yachting, and they were attuned to doctors’practical needs.
+ Hospitals had central administrative systems to take care ofbilling, and some were moving records from paper to computers.
+ There waspressure from the government, which pays for about 90% of medical care inBritain through the National Health Service; o�cials believed that if they hadaccess to all the information, they could manage things better, and this causedtension with doctors who cared about professional autonomy.
+ One of the lastthings done by Margaret Thatcher’s government, in 1991, had been to createan ‘internal market’ in the health service where regional commissioners act likeinsurers and hospitals bill them for treatments; implementing this was a work inprogress, both messy and contentious.
+ So the Department of Health announcedthat it wanted to centralise all medical records.
+ The Internet boom had juststarted, and medics were starting to send information around by private email;enthusiasts were starting to build systems to get test results electronically fromhospitals to medical practices.
+ The BMA asked whether personal health infor-mation should be encrypted on networks, but the government refused to evenconsider this (the crypto wars were getting underway; see 26.
+2.
+7.
+3 for that story).
+This was the last straw; the BMA realised they’d better get an expert and askedme what their security policy should be.
+ I worked with their sta↵ and membersto develop one.
+We rapidly hit a problem.
+ The government strategy assumed a single elec-tronic patient record (EPR) that would follow the patient around from concep-tion to autopsy, rather than the traditional system of having di↵erent recordson the same patient at di↵erent hospitals and doctors’ o�ces, with informationﬂowing between them in the form of referral and discharge letters.
+ An attemptto devise a security policy for the EPR that would observe existing ethical normsbecame unmanageably complex [821], with over 60 rules.
+ Di↵erent people haveSecurity Engineering333Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYaccess to your record at di↵erent stages of your life; your birth record is alsopart of your mother’s record, your record while you’re in the army or in jailmight belong to the government, and when you get treatment for a sexuallytransmitted disease you may have the right to keep that completely private.
+The Department of Health next proposed a multilevel security policy: sex-ually transmitted diseases would be at a level corresponding to Secret, normalpatient records at Conﬁdential and administrative data such as drug prescrip-tions and invoices at Restricted.
+But this was obviously a non-starter.
+Forexample, how should a prescription for anti-retroviral drugs be classiﬁed? Asit’s a prescription, it should be Restricted; but as it identiﬁes a person as HIVpositive, it should be Secret.
+ It was wrong in all sorts of other ways too; somepeople with HIV are open about their condition while others with minor con-ditions are very sensitive about them.
+ Sensitivity is a matter for the patientto decide, not the Prime Minister.
+ Patient consent is central: records can onlybe shared with third parties if the patient agrees, or in a limited range of legalexceptions, such as contact tracing for infectious diseases like TB.
+Medical colleagues and I realised that we needed a security context withﬁner granularity than a lifetime record, so we decided to let existing law andpractice set the granularity, then build the policy on that.
+ We deﬁned a recordas the maximum set of facts to which the same people have access: patient +doctor, patient + doctor plus surgery sta↵, patient + patient’s mother + doctor+ sta↵, and so on.
+ So a patient will usually have more than one record, andthis o↵ended the EPR advocates.
+A really hard problem was the secondary use of records.
+ In the old days,this meant a researcher or clinical auditor sitting in the library of a hospital ormedical practice, patiently collecting statistics; consent consisted of a notice inthe waiting room saying something like ‘We use our records in medical researchto improve care for all; if you don’t want your records used in this way, pleasespeak to your doctor.
+’ By 1995, we’d already seen one company o↵ering sub-sidised computers to General Practitioners (GPs)1 in return for allowing remotequeries by drug companies to return supposedly anonymous data.
+The goals of the BMA security policy were therefore to enforce the principleof consent, and to prevent too many people getting access to too many records.
+It did not try to do anything new, but merely to codify existing best practice,and to boil it down into a page of text that everyone – doctor, engineer oradministrator – could understand.
+Starting from these principles and insights, we proposed a policy of nineprinciples.
+1.
+ Access control: each identiﬁable clinical record shall be marked with anaccess control list naming the people who may read it and append datato it.
+2.
+ Record opening: a clinician may open a record with herself and the patient1Britain’s GPs are the equivalent of family doctors in the USA; they have historicallyacted as gatekeepers to the system and as custodians of each patient’s lifetime medical record.
+They also act as the patient’s advocate and join up care between medical practice, hospitaland community.
+ This helps keeps healthcare costs down in the UK, compared with the USA.
+Security Engineering334Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYon the access control list.
+ Where a patient has been referred, she mayopen a record with herself, the patient and the referring clinician(s) onthe access control list.
+3.
+ Control: One of the clinicians on the access control list must be markedas being responsible.
+ Only she may alter the access control list, and shemay only add other health care professionals to it.
+4.
+ Consent and notiﬁcation: the responsible clinician must notify the patientof the names on his record’s access control list when it is opened, of allsubsequent additions, and whenever responsibility is transferred.
+ His con-sent must also be obtained, except in emergency or in the case of statutoryexemptions.
+5.
+ Persistence: no-one shall have the ability to delete clinical informationuntil the appropriate time period has expired.
+6.
+ Attribution: all accesses to clinical records shall be marked on the recordwith the subject’s name, as well as the date and time.
+ An audit trail mustalso be kept of all deletions.
+7.
+ Information ﬂow: Information derived from record A may be appended torecord B if and only if B’s access control list is contained in A’s.
+8.
+ Aggregation control: there shall be e↵ective measures to prevent the ag-gregation of personal health information.
+In particular, patients mustreceive special notiﬁcation if any person whom it is proposed to add totheir access control list already has access to personal health informationon a large number of people.
+9.
+ Trusted computing base: computer systems that handle personal healthinformation shall have a subsystem that enforces the above principles inan e↵ective way.
+ Its e↵ectiveness shall be subject to evaluation by inde-pendent experts.
+From the technical viewpoint, this policy is strictly more expressive thanthe Bell-LaPadula model of the last chapter, as it contains an information ﬂowcontrol mechanism in principle 7, but also contains state.
+In fact, it takescompartmentation to the logical limit, as there are more compartments thanpatients.
+ A discussion for a technical audience can be found at [59].
+ The fullpolicy dealt with a lot more issues, such as access to records by vulnerablepatients who might be coerced [58].
+Similar policies were developed by other medical bodies including the Swedishand German medical associations; the Health Informatics Association of Canada,and an EU project (these are surveyed in [1077]).
+ The BMA model was adoptedby the Union of European Medical Organisations (UEMO) in 1996, and feedbackfrom public consultation on the policy can be found in [60].
+10.
+4.
+3First practical stepsFeedback from the ﬁeld came from a pilot implementation in a medical prac-tice [870], which was positive, and from a hospital system developed in Hastings,Security Engineering335Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYwhich controlled access using a mixture of roles and capabilities, rather than theACLs in which the BMA model was expressed.
+ It turned out that the practicalway to do access control at hospital scale was by rules such as ‘a ward nursecan see the records of all patients who have within the previous 90 days beenon her ward’, ‘a junior doctor can see the records of all patients who have beentreated in her department’, and ‘a senior doctor can see the records of all pa-tients, but if she accesses the record of a patient who has never been treated inher department, then the senior doctor responsible for that patient’s care willbe notiﬁed’2.
+The technical lessons learned are discussed in [535, 536, 870].
+ With hindsight,the BMA model was a lossless compression of what doctors said they did whilethe role-based model was a slightly lossy version but which implemented whathospitals do in practice and worked well in that context.
+One of the BMArules, though, created di�culty in both contexts: the desire for a small trustedcomputing base.
+ GPs ended up having to trust all the application code thatthey got from their suppliers, and while they could inﬂuence its evolution, therewas no useful trusted subset.
+ The hospital records system was much worse: ithad to rely on the patient administrative system (PAS) to tell it which patients,and which nurses, are on which ward.
+The PAS was ﬂaky and often down,so it wasn’t acceptable to make a safety-critical system depend on it.
+Thenext iteration was to give each hospital sta↵ member a smartcard containingcredentials for their departments or wards.
+The policy response from the Department of Health was to set up a com-mittee of inquiry under Dame Fiona Caldicott.
+ She acknowledged that some60 established ﬂows of information within the NHS were unlawful, and rec-ommended the appointment of a responsible privacy o�cer in each healthcareorganisation [367].
+ This was at least a start, but it created a moral hazard:while the privacy o�cer, typically a senior nurse, was blamed when things wentwrong, the actual policy was set by ministers – leading to the classic security-economics gotcha we discussed in chapter 8, of Bob guarding the system whileAlice pays the cost of failure.
+ Anyway, the government changed, and the newadministration of Tony Blair went for a legal rather than a technical ﬁx – witha data-protection law that allowed data controllers to pretend that data wereanonymous so long as they themselves could not re-identify them, even if otherscould re-identify them by matching them with other data3.
+ We will discuss thelimits of anonymisation in the following chapter.
+10.
+4.
+4What actually goes wrongIn his second term as Prime Minister, Tony Blair announced a £6bn plan tomodernise health service computing in England.
+ The National Programme forIT (NPfIT), as it came to be known, turned out to be the world’s most expensive2The Hastings system was initially designed independently of the BMA project.
+ When welearned of each other we were surprised at how much our approaches coincided, and reassuredthat we had captured the profession’s expectations in a reasonably consistent way.
+3The UK law was supposed to transpose the EU Data Protection Directive (95/46/EC)into UK law to provide a level playing ﬁeld on privacy; this loophole was one of several thatallowed UK ﬁrms a lot of wriggle room, annoying the French and Germans [597].
+ The EUeventually pushed through the stricter General Data Protection Regulation (2016/679).
+Security Engineering336Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYcivilian IT disaster.
+ After David Cameron came to power in 2010, an inquiryfrom the National Audit O�ce noted of a total expenditure of about £10bn,some £2bn spent on broadband networking and digital X-ray imaging resultedin largely working systems, while the rest didn’t give value for money, and thecore aim that every patient should have an electronic care record would not beachieved [1390].
+ Cameron formally killed the project, but its e↵ects continuedfor years because of entrenched supplier contracts, and health IT was held upfor a decade [1559].
+NPfIT had called for all hospital systems to be replaced during 2004–2010with standard ones, to give each NHS patient a single electronic care record.
+The security policy had three main mechanisms.
+1.
+ There are role-based access controls like those pioneered at Hastings.
+2.
+ In order to access patient data, a sta↵ member also needs a legitimaterelationship.
+ This abstracts the Hastings idea of ‘her department’.
+3.
+ There was a plan that patients would be able to seal certain parts of theirrecords, making them visible only to a particular care team.
+ However, theproviders never got round to implementing this.
+ It wasn’t consistent withthe doctrine of a single electronic health record, which had been repeatedso often by ministers that it had become an article of religious faith.
+ Aslate as 2007, Parliament’s Health Committee noted that suppliers hadn’teven got a speciﬁcation yet [925].
+As a result, patients receiving outpatient psychiatric care at a hospital foundthat the receptionist could see their case notes.
+ Formerly, the notes were keptin paper in the psychiatrist’s ﬁling cabinet; all the receptionist got to know wasthat Mrs Smith was seen once a month by Dr Jones.
+ But now the reception-ist role had to be given access to patient records so that they could see andamend administrative data such as appointment times; and everyone workingreception in the hospital wing where Dr Jones had his o�ce had a legitimaterelationship.
+ So they all got access to everything.
+ This illustrates why the doc-trine of a single record with a single security context per patient was a bad idea.
+Thanks to project mismanagement, less than ten percent of England’s hospitalsactually installed these systems, though the doctrine of ‘RBAC + relationship’has a↵ected others since.
+ It now looks like the failure to support multiple secu-rity contexts per patient is about to become an issue in the USA as ﬁrms startpushing health apps supported by the FIHR standard, to which I’ll return insection 10.
+4.
+5.
+10.
+4.
+4.
+1Emergency careThe next thing to go wrong was emergency medical records.
+ One of the storiesused by politicians to sell NPfIT had been ‘Suppose you fall ill in Aberdeen andthe hospital wants access to your records in London .
+.
+.
+’.
+ This was, and remains,bogus.
+ Paramedics and emergency-room physicians are trained to treat whatthey see, and assume nothing; the idea that they’d rely on a computer to tell theblood group of an unconscious patient is simply daft.
+ But policy was policy, andSecurity Engineering337Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYin Scotland the government created an ‘emergency care record’ of prescriptionsand allergies that is kept on a central database for use by emergency room clin-icians, paramedics and the operators of out-of-hours medical helpline services.
+Sensitive information about 2.
+5 million people was made available to tens ofthousands of people, and the inevitable happened; one doctor of Queen Mar-garet Hospital in Dunfermline was arrested and charged for browsing the healthrecords of then Prime Minister Gordon Brown, First Minister Alex Salmond andvarious sports and TV personalities.
+ The case was eventually dropped as ‘notin the public interest’ to prosecute [1741].
+ Patients had been o↵ered the rightto opt out of this system, but it was a very odd opt-out: if you did nothing,your data were collected from your GP and made available to the Department ofHealth in Edinburgh and also to the ambulance service.
+ If you opted out, yourdata were still collected from your GP and made available to the Departmentof Health; they just weren’t shared with the ambulance crew.
+This was also policy in England where it was called ‘consent-to-view’: thestate would collect everything and show users only what they were allowed tosee.
+ Everybody’s records would be online, and doctors would only be allowedto look at them if they claimed the patient had consented.
+ O�cials assuredParliament that this was the only practical way to build NPfIT; they describedthis as ‘an electronic version of the status quo’ [925].
+ The English emergencysystem, the Summary Care Record (SCR), also has sensitive data on most cit-izens, is widely accessible, but is little used; if you end up in an ambulance,they’ll take a medical history from you en route to hospital, just as they alwayshave4.
+ Something similar also happened in the Netherlands, where a databaseof citizens’ medical insurance details ended up being accessible not just by doc-tors and pharmacists but alternative healers and even taxi ﬁrms, with entirelypredictable results [186].
+10.
+4.
+4.
+2ResilienceThe move to centralised systems typically makes failures rarer but larger, andhealth systems are no exception.
+ The NPfIT’s only real achievement was tostandardise all X-ray imaging in England using digital machines and cloud stor-age.
+ An early warning of fragility came on 11th December 2005, when a leakof 250,000 litres of petrol at the Bunceﬁeld oil storage depot formed a vapourcloud and detonated – the largest peacetime explosion in Europe.
+ Oil compa-nies were later ﬁned millions of pounds for safety breaches.
+ Our local hospitallost X-ray service as both the primary and backup network connections to thecloud service passed nearby.
+ A further warning came when the Wannacry worminfected machines at another nearby hospital in 2017; managers foolishly closeddown the network, in the hope of preventing further infection, and then foundthat they had to close the emergency room and send patients elsewhere.
+ Withno network they could do no X-rays (and get no pathology test results either,even from the hospital’s own lab).
+ There have been further incidents of hospitalsclosed by ransomware since, particularly in the USA.
+4In the coronavirus crisis, the SCR was ‘enriched’ by adding a lot of data from the GPrecord, making it available to planners, and making it opt-out by default.
+ It’s still not clearthat any worthwhile use has been made of it.
+Security Engineering338Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACY10.
+4.
+4.
+3Secondary usesDatabases relating to payment usually don’t allow a real opt-out, and the UKexample is the Hospital Episode Statistics (HES) database, which collects billssent by hospitals to the commissioning bodies that pay them, and has exten-sive information on every state-funded hospital visit and test in England andWales since 1998 – about a billion records in total5.
+ These records have provedimpossible to protect, not just because anonymisation of complete records is im-practical but because of the intense political pressure for access by researchers.
+More and more people had got access under the 1997–2010 Labour government;and after David Cameron became Prime Minister in 2010, the ﬂoodgates opened.
+Cameron hired a ‘transparency tsar’ who’d previously run a health IT business,and announced ‘Open Data measures’ in 2011 which the goal that every NHSpatient would be a research patient, in order to make Britain a world leader inpharmaceutical research.
+ O�cials claimed that ‘All necessary safeguards wouldbe in place to ensure protection of patients’ details – the data will be anonymisedand the process will be carefully and robustly regulated’ [1807].
+ Anonymisationmeant that your personal details were redacted down to your postcode and dateof birth; this is quite inadequate, as we’ll discuss in the next chapter.
+In 2013 the government announced that records would also be harvestedfrom GP systems; GPs were given eight weeks to inform their patients ofthe impending upload.
+This caused enough disquiet that privacy campaign-ers, GPs and others got together to set up a medical privacy campaign group,medConfidential.
+org.
+ The initial impetus was consent, and in particular thatpatients who tried to exercise their European-law rights to opt out of suchsystems have ended up being ignored or even de-registered from the healthservice.
+ Campaigners pushed for the government to obey the newly clariﬁedEuropean law on consent; the government wriggled and evaded.
+How coulddoctors’ bonuses be calculated if some of their records could not be uploaded?In January 2014, some digging revealed that the HES data had been sold toover 1000 drug companies, universities and others round the world – often in theform of a set of DVDs containing a billion episodes going back to 1998.
+ A medicrevealed that the data had appeared online; it was quickly taken down [1800].
+This ‘care.
+data’ scandal, as it became known after the proposal to collect allthe GP data, went mainstream.
+ Surveys show that most people are preparedto let their data be used in academic research, so long as they’re asked; butmost are not prepared to share it with for-proﬁt researchers, and most objectto having it simply taken.
+ On inspection, it turned out to be easy to re-identifypatients, even if their postcode and date of birth had not been included in thedataset; we’ll discuss the technical details in the following chapter.
+ There wasa ﬁnancial scandal: despite ministers talking of the huge value of research datato the health service, the data had been sold on a cost-recovery basis, for a5HES is advertised as ‘a data warehouse containing details of all admissions, outpatientappointments and A and E attendances at NHS hospitals in England’ including private andforeign patients treated at NHS hospitals, and treatments at private hospitals for which theNHS pays.
+ It is now claimed that ‘We apply a strict statistical disclosure control in accordancewith the NHS Digital protocol, to all published HES data.
+ This suppresses small numbers tostop people identifying themselves and others, to ensure that patient conﬁdentiality is main-tained.
+’.
+See https://digital.
+nhs.
+uk/data-and-information/data-tools-and-services/data-services/hospital-episode-statistics.
+Security Engineering339Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYfew thousand dollars a set.
+ There was also an issue of jurisdiction: it turnedout that PA Consulting had loaded the HES data to a Google cloud system forresale to its clients, as at 20Gb it was too big for Excel.
+But hang on, said members of parliament, how can that be legal? Googledidn’t have any data centres in the UK, and there are all sorts of regulationsagainst taking NHS data overseas [1573].
+ Also, o�cials had promised that UKdata wouldn’t be sold overseas, yet they were advertised in the USA; and itturned out that even the regulator, the Medicines and Healthcare ProductsRegulatory Agency (MHRA)6, had been selling personal data [1645].
+ Ministerswent into damage-containment mode; the privacy regulator was persuaded tobelieve that the exported data were anonymous enough, and the UK websiteof a ﬁrm claiming to be able to identify patients from these records was takeno✏ine [1574].
+ Ministers talked of lessons being learned, and a review of all datareleases was commissioned; but when this appeared, it only investigated whetherinternal guidelines had been followed, not whether they were legal [1496].
+UK health privacy scandals have continued at the rate of about once a yearsince then:• In 2015, Google Deepmind obtained a copy of all the 1.
+6m patient recordsfrom the Royal Free Hospital in London, claiming that it wanted to de-velop an app to detect acute kidney injury (it took all the records, notjust those of kidney patients).
+ Patient consent was not sought, the dealwas later found to be unlawful, and when the app was developed usingUS data obtained from the VA instead, it was unimpressive [1541].
+ TheInformation Commissioner reprimanded the hospital but failed to orderGoogle Deepmind to delete the data.
+ Eventually Deepmind transferredthe records to Google, contrary to previous assurances [1281].
+• Also in 2015, a tabloid newspaper discovered the online pharmacy Phar-macy2U selling thousands of patients’ details to predatory marketers, in-cluding lottery fraudsters who targeted unwell elderly men and a health-care supplement vendor that had already been sanctioned for mislead-ing advertising and unauthorised health claims [662].
+ The ﬁrm was ﬁned£130,000 and its commercial director suspended by the General Pharma-ceutical Council.
+ A major backer, the UK’s largest GP software supplierEMIS, sold its shareholding.
+• SCR data were also sold to Boots, a high-street pharmacy chain that pres-sures its sta↵ to market aggressively, leading to regulatory hearings [405].
+• In 2017, leading GP software supplier TPP which has 6,000 customersincluding 2,700 GP practices – a third of all practices in England, withrecords on 26 million patients – switched on ‘enhanced data sharing’ sothat records could be seen by doctors at local hospitals.
+ It was soon noticedthat records could be seen at all other practices that were TPP customers;GPs had not been aware of this [577].
+ The records were also visible to6The MHRA had also been a lot less keen about making data about adverse clinical trialresults available to medics who wanted it.
+ The essence of the complaint against it was that itacted more in the interests of the drug companies and medical device makers rather than inthe interest of patients, becoming in e↵ect a captured regulator.
+Security Engineering340Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYTPP customers in care homes, prisons and immigration detention centres.
+TPP failed to answer questions about whether any of its customers inIndia, China and the UAE had access.
+• In 2018, the records of all 180,000 lung cancer patients diagnosed in Eng-land from 2008-2013 were given to a tobacco company by Public HealthEngland, which had claimed that cancer registry data would only be soldfor a ‘medical purpose’.
+Standard central systems do have real advantages.
+ In the USA, the Veterans’Administration runs such systems for its hospital network; after Hurricane Ka-trina, veterans from Louisiana who’d ended up as refugees in Texas or Florida,or even Minnesota, could go straight to local VA hospitals and ﬁnd their notesthere at the doctor’s ﬁngertips, when patients of many other hospitals in NewOrleans lost their notes altogether.
+But there have also been controversies in the USA.
+ In November 2019, itemerged that Google had done an outsourcing deal to process the medicalrecords of 50 million Americans on behalf of Ascension, and a whistleblowerrevealed that the data were not even being lightly de-identiﬁed; sta↵ at bothGoogle and Ascension had full access to patient data.
+ A federal inquiry wasstarted into whether the arrangement was HIPAA compliant [121].
+Google also got VA data from the USA, which it used in place of the Lon-don data once the ICO ruled against it there.
+ With a few such exceptions inegregious cases, policymakers ﬁnd it hard to resist lobbying from marketers andresearchers for access.
+ The EU General Data Protection Regulation has a con-venient exemption for ‘research’, put there by the pharma lobby, which doesn’texclude market research.
+ And, of course, law enforcement and intelligence agen-cies demand access.
+ This started o↵ in the 1990s with the collection of opiateprescribing records and has greatly expanded.
+10.
+4.
+5Conﬁdentiality – the futureWhat can we say about healthcare privacy now, almost a quarter of a centuryafter the BMA policy? Well, some things change, but a surprising number ofthings stay the same.
+ We noted in chapter 2 that the cybercrime ecosystem hadnot been changed much by the huge technological changes of the past decade;much the same holds for the health privacy ecosystem.
+ The move to cloud-based medical records is hard to resist as it saves individual care providers thetrouble and expense of maintaining servers and backups.
+ The move to ever morecomplex outsourcing also seems inexorable; we can expect that specialist ﬁrmswill handle X-ray images, pathology tests and the like, while subject specialistswill support care for speciﬁc diseases such as diabetes.
+Since 2014, there has emerged a draft standard for Fast Healthcare Interop-erability Resources (FHIR, pronounced ‘ﬁre’) which describes how two systemstalk to each other, once you’ve allowed them to do so.
+ The security engineeringis outside this standard; Deepmind’s smartphone apps, for example, use OAuth2.
+ FIHR has been mandated in the NHS from 2021.
+ In America, new federalinformation-sharing rules may require providers to send your record to third-Security Engineering341Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYparty apps, like Apple’s Health Records, after you have authorized the dataexchange.
+ The details alarm doctors who note that once you do that you’ll beopen to serious abuse, as the data will fall outside HIPAA and the apps can sellit o↵ as they please.
+ Data such as substance abuse could not only limit accessto insurance but even be demanded by employers and others.
+ The governmentresponds that opening up health data will enable people to manage their carebetter and understand costs, while opening the sector up to competitive inno-vation [1815].
+ Quite apart from whether people would trust Microsoft, Amazonand Google with their health data, you have to share it all or not at all; thereis no provision for ﬁner-grained access control than your whole lifetime record.
+The last 25 years’ experience suggests that this will not be satisfactory.
+In the UK, the medical professors and drug companies are having anotherpush to collect all the GP data, talking about three big new health industries,based on medical records, AI and genomics.
+ Research policy is that while R&Dshould be 2% of GDP, only a third of that should be from the state and the restfrom industry.
+ It was announced in 2019 that ﬁve hospitals had done deals witha pharmaceutical company run by a former minister: they supply ‘anonymised’data for research in return for an equity stake [500].
+ On the other hand, the UK’sbiggest medical-research charity, the Wellcome Trust, is predicting that as manyas 40% of patients might opt out of having their data being used in research ifthere’s another scandal on the scale of care.
+data.
+ Certainly the data show thatwhile about 80% of people trust doctors with their health data, this falls to justover 50% for health insurers and pharmacies, around 40% for researchers, 20%for drug companies and 10% for tech [1100].
+ How can we navigate this thicket?The view of the UK campaign group medConﬁdential is that three thingsare needed.
+1.
+ First, to enable us to enforce our rights under European law, there mustbe real patient consent.
+ This means a single opt-out from secondary uses,rather than the current Facebook-like approach of changing the opt-outmechanisms every year or two and forcing people to opt out all over again.
+2.
+ Second, it should not be the patient’s job to defend their data, so boththe privacy architecture and the security engineering must be safe by de-fault.
+ People must not be quietly opted in to secondary data uses thatare misdescribed or not mentioned at all; and there must be appropriatesecurity mechanisms about which patients are told the truth, particularlywhen they fail.
+3.
+ Third, there must still be real transparency.
+ At present my GP can seewho has had access to my record, but I want to see too.
+ If tens of millionsof patients can audit access, then even if only a few hundred thousandactually do so, this should deter most of the abuse.
+History should have taught us that it’s best to be honest with patients.
+ Inthe UK we’ve wasted 20 years: a decade with NPfIT and a further decade tryingto sell data while pretending not to.
+ Yet hospitals that set out to get positiveconsent for the use of data in research get it 70–80% of the time, and we havehad large collaborative research projects such as UK Biobank where 500,000Security Engineering342Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYpeople not only consented in 2006–10 to lifetime monitoring but also providedblood samples, so that researchers could sequence their DNA and correlate thatwith health outcomes.
+ There’s a further research database of 100,000 genomescollected from other patients who consented.
+Another development is the OpenSAFELY collaboration, which has beenpioneering rapid analysis of the Covid-19 epidemic by working in situ with thelive medical records held by TPP, a large provider of cloud electronic healthrecord services which supports about 40% of GPs in England.
+ They imported alist of death notiﬁcations and were able to analyse mortality not just by age andsex, as in o�cial statistics, but by social deprivation, race, smoking history, bodymass index and speciﬁc comorbidities, establishing risk factors over more than17 million patients and over 6,000 deaths over February to April 2020 [2025].
+They were ﬁrst to establish, for example, that the excess mortality observed inblack and Asian patients was signiﬁcantly greater than could be explained bysocial deprivation alone, The speed and scale of this study were unprecedentedand make the case for taking ethically-approved queries directly to the live dataand taking away only statistics, rather than abstracting anonymised subsets foro↵site use that still carry privacy hazards (as we’ll discuss at length in the nextchapter).
+ The privacy risks may be more controllable as there are fewer copiesof the data and as patient opt-outs can be enforced.
+ And although this mightbe seen as a ‘new’ research technique, enabled by the emergence of cloud-basedmedical records, it’s actually a very old technique.
+ In the days before computers,observational epidemiology meant sitting in the library of a hospital or surgery,sifting through thousands of paper records, looking for diagnoses of interest,and departing after weeks or months of work with statistical tables rather thanwith identiﬁable personal information.
+10.
+4.
+5.
+1EthicsSo researchers working with health data had better pay attention to ethics.
+In 2014–5, the Nu�eld Bioethics Council commissioned a dozen of us from avariety of backgrounds in tech, genetics, medicine, insurance and ethics to writea detailed report on what happens to medical ethics in a world of cloud-basedmedical records and pervasive genomics [1600].
+ Historically, it was a series ofethical abuses in medical research that drove the development of research ethicsmore generally.
+• In the Tuskegee syphilis experiment, US doctors studied the progression ofuntreated syphilis in rural African-American men who were led to believethey were getting free healthcare.
+ The experiment ran from 1932 to 1972,but even after e↵ective antibiotic treatments became available in 1947,infected men were not treated.
+• Dr Karl Brandt was Hitler’s personal physician, and ran a euthanasiaprogram from 1939.
+ He also did human experiments on prisoners of warand the civilians of occupied countries without their consent, as did hiscolleague Dr Josef Mengele who experimented on twins at Birkenau from1943–5; subjects were often killed and dissected afterwards.
+ Brandt wasconvicted at the Nuremberg trials and hanged in 1948.
+Security Engineering343Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACY• In the UK Alder Hey scandal, the press discovered that pathologists wereroutinely saving ‘interesting’ body samples from patients living and dead,without any kind of consent.
+ Parents discovered that body parts of theirdead children had been kept without their knowledge.
+ This did seriousdamage to public trust and the consequences impaired research in pathol-ogy in the UK.
+ There was a similar scandal in Ireland.
+The Nazi doctors’ trial led to the Nuremberg code in 1948, under whichthe voluntary and informed consent of subjects is essential.
+ The subject musthave the freedom to choose, without deceit or duress, and must be able toexit from the experiment at any time.
+This led later to the Declaration ofHelsinki on ethics in medical research in 1964, which was revised in 1975 afterTuskegee to incorporate the need for an independent institutional review boardor ethics committee, and subsequently in 1983, 1989, 1996, 2000 and 2008.
+The Declaration is managed by the World Medical Association and is ethicallybinding on physicians.
+ The Declaration upholds the right of patients to makeinformed decisions about participation in research, both initially and afterwards.
+Until about the mid-1990s, the main ethical debates were related to drugtrials: was it wrong to give placebos to HIV su↵erers once e↵ective anti-retroviraldrugs existed? And was it ethical to test drugs in less developed countries iftheir citizens or health services could not a↵ord them? Since then, the growingissues have been informational: is it ethical to use whole populations as subjectsin observational epidemiology and research, without giving them a right to optout? And what are the ethical issues arising from low-cost sequencing of thehuman genome?After spending a year considering in detail the history and issues I’ve sum-marised in this section, we concluded that, when working in such a complexand fast-moving ethical ﬁeld, that holds a lot of promise but is also riven withvested interests and political chicanery, it’s not enough for researchers to hidebehind the law or just act in accordance with this year’s government guidelines.
+A morally reasonable set of expectations should embody four principles.
+ Toquote the report:1.
+ The set of expectations about how data will be used in a data initiativeshould be grounded in the principle of respect for persons.
+ This includesrecognition of a person’s profound moral interest in controlling others’ ac-cess to and disclosure of information relating to them held in circumstancesthey regard as conﬁdential.
+2.
+ The set of expectations about how data will be used in a data initiativeshould be determined with regard to established human rights.
+ This willinclude limitations on the power of states and others to interfere with theprivacy of individual citizens in the public interest (including to protectthe interests of others).
+3.
+ The set of expectations about how data will be used (or re-used) in a datainitiative, and the appropriate measures and procedures for ensuring thatthose expectations are met, should be determined with the participationof people with morally relevant interests.
+ This participation should in-volve giving and receiving public account of the reasons for establishing,Security Engineering344Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYconducting and participating in the initiative in a form that is accepted asreasonable by all.
+ Where it is not feasible to engage all those with relevantinterests – which will often be the case in practice – the full range of valuesand interests should be fairly represented.
+4.
+ A data initiative should be subject to e↵ective systems of governance andaccountability that are themselves morally justiﬁed.
+ This should includeboth structures of accountability that invoke legitimate judicial and politi-cal authority, and social accountability arising from engagement of peoplein a society.
+ Maintaining e↵ective accountability must include e↵ectivemeasures for communicating expectations and failures of governance, ex-ecution and control to people a↵ected and to the society more widely.
+In short, you have to treat people as ends rather than means, and not justtreat their data as an industrial raw material; you have to tell people in advancewhat you’re doing, and if you can’t tell everyone you must tell a good sample,not just some friends on your ethics committee; you have to obey the law,including the di�cult bits of human-rights law; and you have to tell peoplewhat you’ve done afterwards – which includes public breach disclosure [1600].
+Beware, though, that there is a lot of moral hazard around ethics processes; bigﬁrms who abuse data routinely set up ethics bodies to excuse what they do.
+ I’llreturn to this ethics washing in section 11.
+4.
+4.
+Since then we have used this model to guide our own research in cybercrime,which is similar in a number of ways.
+For example, we may sometimes usedata that may be of questionable origin and from which it may be possibleto draw inferences about living people who did not give consent.
+ However, inmany cases, an ethical case for an investigation can be made but the processesfor taking and recording such decisions need careful thought.
+ Transparency isvital; we put all the papers we write on our website, so everyone can see what’sbeen done with the data.
+The same principles may be a good starting point for thinking about theethics of machine learning.
+ Many if not most of the AI ethics controversies inthe real world so far have been around health data.
+10.
+4.
+6Social care and educationThe same issues have spilled over into education and social care.
+ While buildingthe NHS national programme for IT, the UK government also started to builda national database of all children, for child-protection and welfare purposes,containing a list of all professionals with which each child has contact.
+ In 2006,the UK Information Commissioner asked a group of us to study the safety andprivacy aspects of this.
+ Now the fact that child X is registered with family doctorY may be innocuous, but a child’s registration with a social work departmentis di↵erent; teachers have lower expectations of children whom they know tohave been in contact with social workers.
+ And a record of contact with drug-addiction services or prostitution services is highly stigmatizing.
+ We concludedthat the failure to keep such metadata private is both unsafe and unlawful [101].
+This became an even hotter political issue in November 2007, when the taxSecurity Engineering345Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYauthorities lost two DVDs containing the UK’s entire child beneﬁt database –personal information on every family in Britain with children.
+ A charity asso-ciated with the Liberal Democrat party commissioned a further report entitled‘Database State’ on the safety, privacy and legality of a range of public-sectorsystems [102]; the coalition government of which the Liberal Democrats werepart after the 2010 election killed the children’s database as well as discontinu-ing NPfIT, repealing the previous Labour government’s legislation to make IDcards compulsory, and destroying the data and hardware associated with thatproject.
+ After a further review, it also abandoned a plan for a new ‘eCaf’ systemto organise social workers involved in child protection.
+ There the issue was notjust privacy but also poor design, as eCaf demanded so much information thatsocial workers were starting to spend more time ‘feeding the beast’ than theydid actually talking to children and their families [1354].
+Attempts to share data between medicine and social care by direct electronicaccess threw up issues of integrity as well as privacy.
+ As an example, when socialworkers in Oxford were given access to GP records, a social worker could enter‘diabetic?’ directly into a GP system – which would interpret this as a diagnosisand start trying to schedule all the rest of the diabetes care machinery.
+ TheGP would have their work cut out stopping this, as medical records are append-only; and they might start failing to meet their targets for scheduling eye testsfor diabetics, which would cut their income.
+There are also problems withautomating exchanges between care services and schools; in fact, any automatedinteraction between di↵erent types of professional practice needs to be designedwith extensive consultation and exploration of a lot of edge cases.
+The ‘Database State’ report also highlighted privacy in education.
+ In Eng-land, the Department for Education had set up a National Pupil Database thatinitially held census data but gradually accreted test results, behaviour and at-tendance data, whether the child was poor enough to get free school meals andwhether they were in care.
+ In addition, schools started adding further surveil-lance ranging from ﬁngerprint scanners to record attendance and library bookloans, to CCTV recording the classroom continuously (with the sales pitch thatteachers could defend themselves against false accusations by children).
+In Scotland, the government proposed a ‘named person’ scheme in 2014,whereby each child would be allocated one public-sector worker (typically ateacher or health visitor) to promote and safeguard their wellbeing.
+ Rather thanstigmatising the poor children who have a social worker, why not give everybodyone? This aroused widespread opposition, was defeated in the Supreme Courtin 2016, and ﬁnally abandoned in 2019 after ministers couldn’t ﬁgure out a wayto do it that was both legal and politically acceptable.
+ A body set up to devise astatutory code of practice decided it ‘would not be desirable as the complexity ofthis would mean it would not be easy to understand or apply in practice’ [520].
+Following sporadic protests by parents, there is now at least one NGO work-ing for children’s rights7.
+ Concerns range from biometrics to the widespreadadoption of cloud services in education, with numerous small providers selling ahuge range of teaching support and other services, and children’s data gettingeverywhere.
+ Even the privacy regulator, the Information Commissioner, has7https://www.
+defenddigitalme.
+orgSecurity Engineering346Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYbeen criticised for being blind to children’s issues, for example using Vimeo tomake instructional videos available on her website, when its terms of serviceprohibit use by under-13s.
+ If even the regulator can’t manage her own web-site, what chance does the average school have? More fundamentally, should aschool treat each pupil as a citizen/customer – responsible and in control – or asa suspect/recidivist to be tracked, scanned and ﬁngerprinted? The temptationwith young people is the latter.
+Looking back at almost a quarter century of tussles around the safety andprivacy of health IT, and the related subjects of IT in education and social care,one can see the failures conforming to political stereotypes.
+ Britain’s Labourgovernments from 1997–2010 failed in a typical left-wing way.
+ They were well-meaning but na¨ıve; they could only think in terms of bureaucratic centralismand billion-pound contracts (some with ﬁrms that hired ministers before or aftertheir term of o�ce); they had no idea how to write the speciﬁcations; they liedlike mad when things went wrong; and they were suckers for special interestssuch as medical researchers demanding access to everything.
+ The Conservativegovernments since 2010 have failed in a typical right-wing way8: talking aboutrights and freedoms but cynically selling o↵ data to their friends in the drugcompanies, and for a pittance; lying like mad when things went wrong; whileundermining regulators and appointing leaders disposed to turn a blind eye toboth safety and privacy failures.
+10.
+4.
+7The Chinese WallOur ﬁnal ﬂavour of multilateral security is the Chinese Wall model, formalisedby David Brewer and Michael Nash [319].
+ Financial services ﬁrms from invest-ment banks to accountants are required by their regulators to have internalrules designed to prevent conﬂicts of interest wherever two of their clients arecompetitors, and these controls are called Chinese Walls.
+The model’s scope is wider than ﬁnance.
+ There are many service ﬁrms whoseclients may be in competition with each other: advertising agencies are anotherexample.
+A typical rule is that ‘a partner who has worked recently for onecompany may not see the papers of any other company in the same sector’.
+ Soonce a copywriter has worked on the Shell account, they will not be allowed towork on another oil company’s account for some ﬁxed period of time.
+The Chinese Wall model thus mixes free choice and mandatory access con-trol: a partner can choose which oil company to work for, but once that de-cision is taken their actions in that sector are constrained.
+ It also introducesthe concept of separation of duty into access control; a given user may performtransaction A or transaction B, but not both.
+Access controls thus becomestateful.
+Part of the attraction of the Chinese Wall model to the security researchcommunity comes from the fact that it’s easy to formalise; in fact, it can beexpressed in terms similar to Bell-LaPadula.
+ If we write, for each object c, y(c)for c’s company and x(c) for c’s conﬂict-of-interest class, then like BLP it can8This was despite the fact that the 2010–15 government had Liberal Democrat coalitionpartnersSecurity Engineering347Ross Anderson10.
+4.
+ HEALTH RECORD PRIVACYbe expressed in two properties:• The simple security property: a subject s has access to c if and only if, forall c0 which s can read, either y(c) /2 x(c0) or y(c) = y(c0)• The *-property: a subject s can write to c only if s cannot read any c0with x(c0) = ↵ and y(c) = y(c0).
+The Chinese Wall model sparked a debate about the extent to which it isconsistent with the BLP tranquility properties, and some work on the formalsemantics of such systems9.
+There are also some interesting new questionsabout covert channels.
+ For example, could an oil company ﬁnd out whethera competitor which used the same investment bank was planning a bid for athird oil company, by asking which specialists were available for consultationand noticing that their number had dropped suddenly?In practice Chinese Walls still get implemented using manual methods.
+ Onelarge software consultancy has each of its sta↵ maintain an ‘unclassiﬁed’ CVcontaining entries that have been sanitized and agreed with the customer.
+ Atypical entry might be:Sep 17 – Apr 18: consulted on security requirements for a newbranch accounting system for a major US retail bankThis is not the only control.
+ A consultant’s manager should be aware ofpossible conﬂicts and not forward the CV to the client if in doubt; if this fails,the client can spot potential conﬂicts himself from the CV; and if this also failsthen the consultant is duty bound to report any potential conﬂicts as soon asthey appear.
+There remains the issue of micro-level access.
+ What if a bank manager simplylooks at the bank statements of his best customer’s competitors? Here, modernsystems tend to limit access except where the sta↵ member has establisheda security context for that customer, for example by getting the customer toanswer some authentication questions.
+ I’ll discuss this further in the chapter onBanking and Bookkeeping.
+One conspicuous failure mode of Chinese walls is where the conﬂict periodis too short.
+ Governments typically have conﬂict rules that prevent a ministerworking in any sector that they have regulated for six months after leaving o�ce.
+This is way too little.
+ Someone who was an energy minister six months ago stillknows all the top people in the industry, and anyone who’s beneﬁted from theirpolicy may express their gratitude by hiring them.
+ Five years might be moresensible, but if you think you can get your local legislature to pass such a law,good luck.
+9See, for example, Foley [700] on the relationship with non-interference.
+The practicalresolution of tranquility is usually a cooling-o↵ period: having worked for one oil company,you might be forbidden to work for another for two yearsSecurity Engineering348Ross Anderson10.
+5.
+ SUMMARY10.
+5SummaryIn this chapter, we looked at the problem of setting boundaries when systemsscale up to collect large amounts of sensitive information, to which many peopleneed access in order to do their jobs.
+ This is an issue in many information secu-rity problems, ranging from the protection of national intelligence data and dataabout wildlife at risk from poaching, through the privacy and conﬁdentiality ofmedical and social-care information, to professional practice in general.
+We looked at medical records in the greatest detail, and found that the easyproblem is setting up access controls in a direct care setting so that access toeach record is limited to a sensible number of sta↵.
+ Such systems can be designedby automating existing working practices, and role-based access controls are anatural way to implement them.
+ However, the incentives in health-care systemsare such that the implementation is often poor, and needs regulation to enforcecompliance.
+ The traditional approach to privacy, which might be summarised as‘consent or anonymise’, is being undermined by growing complexity with manyoutsourced systems that are often opaque even to doctors (let alone patients).
+The harder problems are the growing number of central systems, particularlythose related to payments, from which opt-outs aren’t available; the growinguse of genetic data, and the e↵ects of social media from which sensitive personalhealth information can often be inferred.
+ Here, too, the governance problemsare even less tractable than the technical ones.
+ The only realistic solution lies inregulation, and here the USA and the EU are moving ever further apart.
+ Europegives its citizens the right to restrict their personal health information to theclinicians involved directly in their case; America does not.
+ However it can behard for Europeans to enforce our rights.
+ Both America and Europe have hugelobbying and ﬁnancial pressures from drug ﬁrms and others who want all ourdata; politicians tend to side with the industry and undermine the regulators.
+Since the 1990s, health providers and services have tried to have their cakeand eat it by building ‘anonymised’ databases of medical records (or schoolrecords, or census returns) so as to allow researchers to make statistical enquirieswithout compromising individuals’ privacy.
+ There are some applications wherethis is a complete non-starter, such as in ﬁghting wildlife crime; there, theaggregate data are even more valuable to poachers than individual sightings.
+In the case of medical records, computer scientists have known since the 1980sthat anonymising rich data is a lot harder than it looks, and in recent yearswe’ve acquired a robust theory of this that lets us work out when it can workand when it won’t.
+ I’ll discuss this in the next chapter.
+Another takeaway message is this.
+ Just as multilevel security was the ‘hedge-hog’ approach to information security, where you hope to get a good result byjust getting one big thing right, multilateral security requires the ‘fox’ approach;you need to understand your application in detail, learn what’s gone wrong inthe past – and also be good at adversarial thinking if you want to anticipatewhat’s likely to go wrong in future.
+Security Engineering349Ross Anderson10.
+5.
+ SUMMARYResearch ProblemsThe coronavirus pandemic is likely to make health surveillance much more per-vasive so personal health information will become more widespread and the con-ﬂicts discussed here will spread way beyond the healthcare sector.
+ What willthat entail, and how should technical and policy mechanisms evolve to cope?Also, in the near future, more and more medical treatment will involve ge-netic information.
+ Is there any sensible way in which privacy models can beextended to deal with multiple individuals? For example, in many countriesyou have the right not to know the outcome of a DNA test that a relativehas for an inheritable disease such as Huntington’s Chorea, as it may a↵ectthe odds that you have it too.
+ Your relative does have a right to know, andmay tell others – so unwelcome news might reach you indirectly.
+ As I write,there are cases going through the courts in the UK and Germany that push indi↵erent directions on the rights of the children of people diagnosed with Hunt-ington’s [606].
+ Such tensions over information rights long predate the Internetand cannot be managed purely by technological mechanisms.
+ But social mediachange the scaling factors in such a way as to make them more widespread andacute.
+ The long-term solutions may well involve some mix of laws, social normsand technology support; but they are likely to take years to work out, and wemay well end up with di↵erent solutions in di↵erent cultures.
+For example,East Asian countries have tolerated much more intrusive surveillance, and havesu↵ered far fewer deaths in the pandemic, at least so far.
+ Might that changeattitudes elsewhere?Further ReadingThe literature on compartmented-mode security is scattered: most of the public-domain papers are in the proceedings of the NCSC/NISSC and ACSAC con-ferences, while Amoroso [47] and Gollmann [779] cover the basics of the latticeand Chinese-wall models.
+ For a survey of privacy failures in health, social careand education in the UK in 2009, see ‘Database State’ [102].
+ For a case study ofthe NHS National Programme for IT, see [379], and for a later report on totalcosts by the UK Parliament’s Public Accounts Committee, see [1559].
+ For theBMA model see the policy itself [58], the Oakland version [59], the proceedingsof a conference on the policy [63], and the papers on the pilot system at Hast-ings [535, 536].
+ For a National Research Council study of medical privacy in theUSA, see [1412]; there is also an HHS report on the use of de-identiﬁed data inresearch at [1191].
+ But the best sources for up-to-date news on medical privacyissues are the websites of the relevant lobby groups: medConﬁdential for theUK, and Patient Privacy Rights for the USA.
+Security Engineering350Ross Anderson

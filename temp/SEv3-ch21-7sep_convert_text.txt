@@ -1,0 +1,847 @@
+Chapter 21Network Attack andDefenceSimplicity is the ultimate sophistication.
+– Leonardo Da VinciThere’s no security here – keep moving!– Richard Clayton21.
+1IntroductionIn this chapter I’m going to try to draw together the network aspects of securityin a coherent framework.
+ This is not straightforward as much of network securityis practical engineering; a purist from computer science might see the ﬁeld as onebodge piled on top of another.
+ And network security may not be that importantto many developers: if you write apps for Androids and iPhones that talk toservices on AWS or Azure, then you can leave much of the worry to Amazon orMicrosoft.
+But many organisations need to pay attention to network security, and thereare some visible strategic trends.
+ For twenty years, it was accepted that ﬁrmswould have a trusted internal network or intranet, protected from the Internetby ﬁrewalls; while taken to extremes by defence and intelligence organisationswith classiﬁed internal networks, milder versions were seen as best practiceby most normal ﬁrms.
+ And some industries have no viable alternatives.
+ Forexample, the protocols used in industrial control systems – DNP3 and Modbus– don’t support encryption or authentication, as they evolved in the days ofleased lines and private radio links.
+ By the late 1990s, control systems engineerswere attaching sensors and actuators to IP networks, as they were cheaper –and then realising that anyone in the world who knew a sensor’s IP addresscould read it, and anyone who knew an actuator’s IP address could activateit.
+ This led to the growth of specialist ﬁrms who sell ﬁrewalls that understandthese protocols; energy companies have thousands of them.
+ A typical electricity63521.
+1.
+ INTRODUCTIONsubstation might have two hundred devices from a multiplicity of vendors, ona LAN where performance is critical, so retroﬁtting crypto is impractical; butit has one connection to the outside world, so that’s where you have to put theprotection.
+ This is known as re-perimeterization.
+ The same approach is takenwith vehicles, where the internal CANBUS cannot be protected, so the radiointerfaces with the outside world have to be.
+But in many ﬁrms the trend is ﬁrmly in the other direction, towards de-perimeterisation.
+One thought leader is Google, promoting an architecturewithout ﬁrewalls which it calls a zero-trust security model: “By shifting accesscontrols from the network perimeter to individual users and devices, Beyond-Corp allows employees, contractors, and other users to work more securely fromvirtually any location without the need for a traditional VPN.
+” Google’s ex-perience is that the move to mobile and cloud technology is making networkperimeters ever harder to deﬁne, let alone police, and if a ﬁrm’s large enoughthat some internal compromise is inevitable anyway then the perimeter is thewrong place to put the primary protection [1984].
+ There are still some perimeterdefences, most notably against service-denial attacks, but internal networks areotherwise unprivileged and the emphasis is on tight authentication and autho-risation of users and devices: each service has an Internet-facing access proxy.
+One might see this as a per-service ﬁrewall rather than a per-building ﬁrewall,but there is quite a lot more to it with tiers of sensitivity, a device inventoryservice and an access control engine [1479].
+ You also need really good HR data,so you can tie sta↵ and contractors to devices and the services they’re allowedto use.
+ Much the same architecture is being adopted by other ﬁrms operatinglarge-scale data centres, and zero-trust security is now the subject of draft stan-dards activity by NIST [1618].
+ It will no doubt get a boost from the pandemicbecause of the huge increase in home working.
+Other organisations may take a hybrid approach.
+ The university where Iwork, for example, has some defences at the perimeter but largely lets depart-ments do our own thing; a computer science department has quite di↵erentrequirements from a humanities department or the ﬁnance o�ce.
+In order to explore the options and constraints, I’m ﬁrst going to discuss net-working protocols such as BGP, DNS and SMTP and the service-denial attacksthat can result from their abuse.
+ I’ll then take a closer look at malware, andthen at defensive technologies such as ﬁltering and intrusion detection and howdefenders can coordinate them.
+ I’ll then survey the limitations of widely-usedcrypto protocols such as TLS, SSH and IPsec, and the particularly tricky roleof certiﬁcation authorites.
+ Finally I’ll return to network architecture.
+ Many is-sues are complex and interlinked, with some signiﬁcant trade-o↵s.
+ For example,various kinds of end-to-end crypto can bring beneﬁts – particularly against bulksurveillance – but can get in the way of the surveillance we want for networksecurity.
+This chapter will deal with ﬁxed networks, and I’ll discuss what’s di↵erentabout mobile networks in the following chapter.
+Security Engineering636Ross Anderson21.
+2.
+ NETWORK PROTOCOLS AND SERVICE DENIAL21.
+2Network Protocols and Service DenialI’m going to assume some familiarity with basic network protocols.
+ The tele-graphic summary is as follows.
+ The Internet Protocol (IP) is a stateless protocolthat transfers packet data from one machine to another; IP version 4 uses 32-bitIP addresses, often written as four decimal numbers in the range 0–255, such as172.
+16.
+8.
+93.
+ ISPs are migrating to IP version 6, as the 4 billion possible IPv4addresses are just about allocated; IPv6 uses 128-bit addresses.
+ Some 10–15%of tra�c is now IPv6; in many countries a new broadband subscription will getyou an IPv6 address which works for all normal consumer purposes.
+Local networks mostly use ethernet, in which devices have unique ethernetaddresses (also called MAC addresses) that are mapped to IPv4 addresses usingthe address resolution protocol (ARP).
+ The Dynamic Host Conﬁguration Pro-tocol (DHCP) is used to allocate IP addresses to machines as needed and toensure that each IP address is unique.
+ Network address translation (NAT) alsoenables multiple devices on a network to use the same Internet-facing IP ad-dress, typically with di↵erent port numbers; this is used by most mobile networkoperators and many ISPs.
+ So if you want to track down a machine that has donesomething wicked, you will often have to get the logs that map MAC addressesof devices to IP addresses.
+ There may be more than one log, and lots can gowrong – such as wrong timestamps, and failure to understand time zones.
+One of the most basic concerns is the prevention and mitigation of denial-of-service (DoS) attacks.
+ These have a number of ﬂavours.
+ An opponent can tryto steal some of your IP address space, or one or more of your domains, in orderto send spam; even when you get it back, you may ﬁnd it’s been extensivelyblacklisted.
+An opponent can send you huge ﬂoods of tra�c from a botnetof many compromised machines; a distributed denial-of-service (DDoS) attack.
+They can abuse various online services such as DNS to send you ﬂoods of packettra�c.
+ Let’s work through these in turn.
+21.
+2.
+1BGP securityThe Internet is an interconnected network of networks: its components areAutonomous Systems (ASes) such as ISPs, telcos and large organisations, eachof which controls a range of IP addresses.
+ The glue that holds them together,the core routing protocol of the Internet, is the Border Gateway Protocol (BGP).
+Routers – the specialized computers that switch packets on networks – use BGPto exchange information about what routes are available to get to particularblocks of IP addresses, and to maintain routing tables so they can select e�cientroutes to use.
+ ASes can route tra�c to other ASes by buying service from largetransit providers but typically cut the costs of this by peering with each otherat a local Internet interchange (IX), of which most countries have at least oneand large countries may have several.
+Internet interconnectivity is a complex ecosystem with many interdependentlayers.
+ Its open and decentralised organisation has been essential to the successand resilience of the Internet, which has meant that the e↵ects of natural dis-asters such as Hurricane Katrina and terrorist attacks such as 9/11 have beenSecurity Engineering637Ross Anderson21.
+2.
+ NETWORK PROTOCOLS AND SERVICE DENIALlimited in time and space, as have assorted technical failures.
+ However the In-ternet is slowly becoming more centralised, as a result of the consolidation ofTier-1 providers, and is vulnerable to common-mode failures (such as electricpower cuts) as well as to disruptive attacks.
+About the worst attack we can reasonably foresee would involve an attackerplanting malware on thousands of routers so they advertise large numbers of falseroutes, clogging the routing tables and tearing up the routing fabric.
+ There havebeen several warnings already in the form of incidents and accidents.
+ In 2008,YouTube became inaccessible for a few hours after the government of Pakistantried to censor it locally by announcing false routes to it, which propagatedglobally; and in 2010 China Telecom advertised over 100,000 invalid routes,hijacking 15% of Internet addresses for 18 minutes.
+ Some people ascribed thatto accident, while others suggested that China had been testing a ‘cyber-nuke’,some of whose fallout escaped.
+ Most routers now accept only a limited numberof routes from each of their peers, be it a few dozen or a few hundred; so large-scale disruption would require thousands of subverted routers.
+Both Chinaand (more recently) Russia have been working on making the Internet in theircountries separable, so that major disruptive attacks could in theory be launchedwithout inﬂicting unacceptable collateral damage on local services and facilities.
+There have been reports of BGP hijacking being used by China for intelligencecollection; for example, tra�c from Canada to Korean government websites wasrouted via China from February 2016 for six months [533].
+ There has also beencriminal misuse, ranging from the hijacking of IP address space by spammers, toan eight-ﬁgure ad fraud in 2018 whose perpetrators hid in address space stolenfrom the US Air Force [791].
+ Finally, there is a growing political tussle in 2019–20 about whether Huawei should be allowed to sell routers at scale (or at all)in countries allied to the USA.
+Taking a step backward, the resilience of the Internet is hard to deﬁne and tomeasure; it is in tension with e�ciency and may be decreasing as a small numberof very large networks come to dominate.
+ These range from the dominant transitprovider, Level 3, to content delivery networks (CDNs) operated by Google,Akamai, Cloudﬂare and others.
+ There are many complex interactions betweenresilience and e�ciency, reachability and congestion, tra�c prioritisation andcommercial sensitivity, complexity and scale.
+ There’s no mechanism to checkthe validity of routing information distributed via BGP.
+ The pervasive mistrustbetween ISPs and governments makes regulation di�cult.
+The lack of goodinformation about how the system works makes rational discussion di�cult too.
+Resilience has so far depended on surplus capacity and rapid growth, but thatcannot continue for ever.
+ In 2011 colleagues and I wrote a major report for theEuropean Network and Information Security Agency that explores these issuesin detail [1906].
+The main technical BGP security mechanism at present is the ResourcePublic Key Infrastructure (RPKI) which enables registries to certify that “Au-tonomous system X announces IP address range Y”.
+ This will not prevent ca-pable attackers, as a malicious route announcement will just have the right ASat the end of the route following the attacker’s in the middle; but it detectsthe fat-ﬁnger mistakes that cause most of the outages.
+ Whether it will makean already fragile BGP system more robust to have lots of certiﬁcates in it re-Security Engineering638Ross Anderson21.
+2.
+ NETWORK PROTOCOLS AND SERVICE DENIALmains to be seen; when RIPE’s certiﬁcate expired in February 2020 there was ashort outage until it was ﬁxed.
+ For the future, people are working on Peerlock,whereby the main ASes at an interchange share information about what routesthey will and won’t announce; this has the prospect of bringing enough localbeneﬁt to exchange members for it to be practically deployable.
+21.
+2.
+2DNS securityThe Domain Name System (DNS) allows mnemonic names such as ross-anderson.
+com to be mapped to IP addresses of either kind; there’s a hierarchy of DNSservers that do this, ranging from several hundred top-level servers down throughmachines at ISPs and on local networks, which cache DNS records for perfor-mance and reliability.
+ It does occasionally get attacked: the Mirai botnet at-tacked DynDNS in October 2016, taking out Twitter on the US eastern seaboardfor ﬁve hours.
+ But DNS has become a massively distributed system with lot ofvery fast machines connected to very high-capacity networks, so service denialattacks on it are rare.
+Hijacking does occur from time to time, and at various levels.
+ Some statesintercept and redirect DNS queries as a means of censorship; some ISPs havedone so, as a means of replacing ads in web pages with ads from which theyget a cut; and a DNS server at an ISP may be hacked to drive clients to awicked website.
+ This is known as pharming, and in a variant called drive-bypharming, the crooks lure you to a web page containing javascript that changesyour home router’s DNS server from the one at your ISP to one under theircontrol [1816].
+Next time you try to go to www.
+citibank.
+com, you may bedirected to a phishing site that emulates it.
+ That’s one reason to change thedefault password on your home router – even if it’s only accessible from insideyour network.
+In order to prevent DNS hijacking, DNSSEC adds digital signatures to DNSname records.
+By verifying such a signature you can check that the recordcame from the authoritative server and was not altered en route.
+ Uptake ispatchy: all US government domains in .
+gov are supposed to be signed, and mostdomains in Sweden are signed, as the registrar made signed domains cheaper.
+However some major ﬁrms like Google don’t sign their DNS records out ofconcern that cryptography makes systems more fragile; if anything goes wrong,you can just disappear.
+ Other ﬁrms avoid DNSSEC because they don’t wantcompetitors to ‘walk the zone’ and enumerate all their subdomains; the NSEC3extension enables ﬁrms to avoid this using hashes, but many ﬁrms (or theirservice providers) have not yet built the infrastructure.
+Another problem with DNSSEC is that it gets abused in denial-of-serviceattacks.
+A common technique is that Alice attacks Bob by sending Charliea message saying, “Hey, can you tell me the very large answer to this shortquestion? Yours, Bob!” As signed DNS records are a lot larger, a DDoS-for-hireservice can use DNSSEC as an ampliﬁer, Alice can send packets that purportto come from Bob’s IP address to many DNS servers, which then bombard thetarget with replies.
+ (Cheeky criminals use the FBI as Charlie, as fbi.
+gov hastwo nice big keys.
+)Security Engineering639Ross Anderson21.
+2.
+ NETWORK PROTOCOLS AND SERVICE DENIALThe controversial issue in 2020 is DNS-over-https (DoH).
+ The main browsermaintainers, Chrome and Mozilla, propose that rather than sending DNS tra�cin the clear, it will go encrypted over https to a DoH resolver.
+ This is claimedto be good for privacy, as your ISP will have less information about your brows-ing (but unless you use Tor, it will still have plenty).
+ The downside is thatmany enterprise security products monitor DNS to detect abuse.
+ If malwarecompromises a machine in your ﬂeet, you may spot it when it tries to contacta command-and-control server, so enterprises buy threat intelligence feeds andmonitor the domain names (and IP addresses) blacklisted on them.
+ Sysadminsalso like to monitor for DNS hijacking, and to block certain domains as inappro-priate for work.
+ DoH will make all this harder, and is questionable architectureas running a core network service over an application means it’s ‘not the Inter-net any more’ [428].
+ On the commercial side, DoH may entrench Google’s gripon the advertising market, while causing problems for content delivery networkslike Akamai and Cloudﬂare over routing, load balancing and so on.
+ It will alsostop ISPs transcoding videos for mobile users to save bandwidth.
+ Experts wouldhave preferred to run DNS over TLS instead.
+21.
+2.
+3UDP, TCP, SYN ﬂoods and SYN reﬂectionOn wide-area networks, most data move between machines using either the UserDatagram Protocol (UDP) which is connectionless, or the Transmission ControlProtocol (TCP) which sets up persistent connections between endpoints.
+ Let’sstart with the 3-way handshake used by Alice to initiate a TCP connection toBob and set up sequence numbers for subsequent packet tra�c.
+A ! B:SYN; my number is XB ! A:ACK; now X+1SYN; my number is YA ! B:ACK; now Y+1(start talking)Figure 21.
+1 – TCP/IP handshakeThis protocol has been exploited in a many ways.
+ The classic service-denialattack is the SYN ﬂood.
+ Alice simply sends a lot of SYN packets and neveracknowledges any of the replies.
+ Bob accumulates more records of SYN packetsthan his software can handle.
+This was used in one of the ﬁrst distributeddenial-of-service attacks that brought down Panix, a New York ISP, for severaldays in 1996.
+The technical ﬁx was the ‘SYNcookie’: rather than keeping a copy of theincoming SYN packet, B simply sends out as Y an encrypted version of X.
+ Thatway, Bob doesn’t have to retain a lot of state about half-open sessions.
+ Despitethis, SYN ﬂoods persisted, albeit at a declining rate, for many years.
+Thegeneral principle is that when you’re designing a protocol anyone can invoke,don’t let malicious users force honest ones to do work.
+The more common attack now is SYN reﬂection.
+ Alice sends Bob a packetSecurity Engineering640Ross Anderson21.
+2.
+ NETWORK PROTOCOLS AND SERVICE DENIALthat purports to come from Charlie.
+ Bob replies to Charlie, and in practicesystems send up to ﬁve ACKs in response to each SYN as a robustness measure,so there’s still a useful ampliﬁcation e↵ect.
+21.
+2.
+4Other ampliﬁersMany other protocols have been used in service-denial attacks than DNS andTCP [1503].
+ An early favourite was smurﬁng; this exploited the Internet controlmessage protocol (ICMP), which enables users to send an echo packet to a remotehost to check whether it’s alive.
+ If Alice sent an ICMP packet purporting to comefrom Bob to a broadcast address, all the the machines on the subnet would sendhim a response.
+ The protocol was changed so that broadcast addresses didn’treply.
+ The bad guys changed to use protocols such as NTP and DNS for whichampliﬁers could still be found.
+More thorough ﬁxes for attacks based on packet ampliﬁcation were to follow.
+Most of the available ampliﬁers use UDP packets, including ICMP and NNTPbut not SYN reﬂection; so starting from the mid-2000s, broadband ISPs startedﬁltering out UDP packets with forged source addresses.
+ Microsoft also changedtheir network stack to make it much harder for an infected machine to send apacket with a spoofed IP address; you now need to hack the operating system,not just any old application.
+ So attacks that exploit UDP packet ampliﬁers haveto be run from servers in hosting centres.
+ In the late 2010s, such attacks havebecome increasingly the preserve of DDoS-for-hire operators, against whom themost e↵ective countermeasure has been to raid them and arrest them.
+21.
+2.
+5Other denial-of-service attacksAs the clever ways of creating service-denial attacks have been closed o↵ one byone, the bad guys have turned increasingly to brute force, by sending ﬂoods ofpackets from infected machines.
+ The ﬁrst distributed denial of service (DDoS)attack may have been the Morris worm in the 1980s, and the ﬁrst deliberate onein the 1990s with the attack already mentioned on Panix.
+ Nowadays, botnetsare assembled using all sorts of vulnerabilities, and underground markets letsome people specialise in hacking machines and selling them to others whoextract value in various ways.
+ Since 2016, the machines most used for DDoShave been IoT devices such as CCTV cameras, which are now connected in largenumbers to home WiFi networks with reasonable bandwidth, but which tend tohave known default passwords – and are often incapable of being patched.
+ TheMirai botnet appeared in October 2016 to exploit this opportunity, and therehave been over a thousand variants of it since (its source code got posted toHackforums).
+There are various motives for service-denial attacks.
+Most are launchedby schoolkids – typically gamers who want to take down an opposing crew’steamspeak server.
+ There has for some years been a black market in DDoS-for-hire, which the authorities in the USA and elsewhere have been trying to closedown.
+ There have been some incidents of blackmail (e.
+g.
+ of online bookmakers),and a growing use of the technique for suppressing political opponents – startingSecurity Engineering641Ross Anderson21.
+2.
+ NETWORK PROTOCOLS AND SERVICE DENIALperhaps with attacks on the servers of an opposition party in Kyrgyzstan, evenwhen these were relocated to North America [1613].
+ We discussed their use inconﬂict by states in Chapter 2.
+That said, one mustn’t forget online activism.
+ If a hundred thousand peoplesend email to the White House protesting against some policy or other, is this aDDoS attack? Protesters should not be treated as felons; but protest can easilyshade over into abuse, and drawing legislative distinctions can be hard.
+21.
+2.
+6Email – from spooks to spammersThe SMTP standard for email has particular issues around the prevention ofbulk interception, and the prevention of bulk unwanted mail.
+Email is by default neither encrypted nor authenticated, and was for decadesavailable to anyone who could either monitor the network or access mail servers.
+It was possible to use programs such as PGP/GPG to encrypt mail, but thisnever caught on outside small communities.
+First, such programs can be apain to use, and second, there are strong network e↵ects: there’s no point inusing email encryption if none of your friends do.
+ What’s more, if only a smallgroup of people use encryption, this may just bring them to the attention ofthe authorities; subversive groups, spies and so on really need anonymity ratherthan just conﬁdentiality, as we discussed in section 20.
+4.
+ So PGP/GPG tendsto be used by specialists, such as sysadmins and anti-virus researchers.
+There are two main countermeasures to bulk interception.
+ First, most mailservers use starttls to set up encrypted communications with other mailservers as they exchange mail, especially since the Snowden revelations.
+ En-crypted exchanges can be blocked by man-in-the-middle attacks, and these havebeen reported in some less-democratic countries.
+ The current countermeasureto such attacks, MTA Strict Transport Security (MTA-STS), is supported byMicrosoft, Google and Yahoo [1220]: it allows mail service providers to specifythat mail should only be delivered to them via a TLS session authenticatedby a proper certiﬁcate which you download from their website.
+ This preventsdowngrade or interception attacks on email to and from the big boys, and also al-lows opportunistic, trust-on-ﬁrst-use encryption to other servers.
+ MTA-STS hasgenerally supplanted an earlier standard, DNS-based Authentication of NamedEntities (DANE) which put a TLS certiﬁcate for starttls in the mail server’sDNS record1.
+The second countermeasure is that some 95% of personal email accountsnowadays are at the big ﬁve webmail providers, and many corporates use themtoo.
+ In this case, the conﬁdentiality of email is assured by TLS, fortiﬁed withcertiﬁcate pinning and certiﬁcate transparency which we’ll discuss later.
+ Butalthough bulk access may be blocked, webmail is subject to warranted access,just like other services that corporates outsource.
+Bulk unwanted mail, or spam, has two components.
+ The ﬁrst is entirely legalbut unwanted marketing communication.
+ As marketers can make it tiresome to1DANE is still widely used in Germany, but Google refused to use it as it depends onDNSSEC which Google considers to be insu�ciently dependable.
+Security Engineering642Ross Anderson21.
+3.
+ THE MALWARE MENAGERIE – TROJANS, WORMS AND RATSopt out, users ﬁnd it more convenient to press the ‘report spam’ button once ano↵er or supplier is no longer of interest.
+The second consists of ﬂoods of generally unwanted tra�c sent out for themost part by botnets, and often with clear criminal intent.
+ This is in somerespects similar to a DDoS attack: just as DDoS bots may forge IP addresses,spam bots may forge the sender’s email address.
+This is fought by the bigproviders with four main mechanisms.
+1.
+ Domain Keys Identiﬁed Mail (DKIM) ties email to the sending domain bysigning it using a signature key whose public veriﬁcation key is kept in thesending domain’s DNS record.
+ The signed material is selected to identifythe message unambiguously despite the additions to headers that occurduring transit, but to stop the bad guys adding an extra “From: PayPal”header.
+ Mail that hasn’t been altered too much can be forwarded.
+ There’sa replay attack in that the spammer sends his spam through Gmail, whichsigns it, and then forwards it afterwards; so mail servers cache DKIMsignatures and discard mail carrying a signature that’s already been seena few times.
+2.
+ Sender Policy Framework (SPF) is similar but ties mail to the source IPaddress.
+ Again, this is veriﬁable against a key in the domain DNS record.
+SPF doesn’t allow mail forwarding; mailing list servers are supposed to usea related protocol called Authenticated Received Chain (ARC) to re-signmail they forward.
+3.
+ A domain’s DNS can also contain a Domain-based Message Authentication,Reporting and Conformance (DMARC) record which enables its owner torecommend what a recipient should do with email that appears to comefrom the owner’s domain but which fails authentication using both DKIMand SPF.
+4.
+ Machine-learning systems are used to ﬁlter mail against authentication re-sults and other criteria, and take much of their ground truth from whetherusers report mail as spam.
+ This is made more complicated by user pref-erences for marketing material, which vary by user and over time.
+The illegal segment of spam is now a highly specialised business, run byseveral large gangs.
+ Its statistics have been ‘lumpy’ since the mid-2000s andthis has been getting more pronounced.
+ As of 2020, the gangs typically steal IPaddress space using malicious BGP route announcements, register thousands ofdomains, and send a few hundred spams from each before the machine-learningﬁlters kick in and block them.
+21.
+3The Malware Menagerie – Trojans, Wormsand RATsThe ﬁrst examples of malicious code were Trojan Horses – named after thehorse the Greeks left for the Trojans, supposedly as a gift but which containedSecurity Engineering643Ross Anderson21.
+3.
+ THE MALWARE MENAGERIE – TROJANS, WORMS AND RATSsoldiers who opened the gates of Troy to the Greek army [1129].
+ There havebeen religious wars over nomenclature for years, which is why many peopleprefer to just use the term malware.
+ My usage is that a Trojan is a programthat does something malicious (such as capturing passwords) when run by anunsuspecting user.
+ A worm is a malicious program that replicates itself on othersystems, while one that does so by hooking itself into the code of other programsis a virus.
+ A remote access Trojan (RAT) is software that may or may not runas root but that enables a remote party to access the device it runs on, whilea rootkit is software installed as root on a device and that stealthily enables athird party to control it.
+ Potentially unwanted software (PUS) may have beeninstalled openly or by deception, but does something the user doesn’t want (ifthey understand it at all).
+These categories are not mutually exclusive and the boundaries can be con-text dependent.
+ For example, stalkerware – software that enables one personto track another’s mobile phone location and use – falls into di↵erent categoriesdepending on whether it was installed covertly, or by a controlling man bullyinghis partner, or by a court ordering it as a condition of bail.
+ Even stealthy mal-ware isn’t always illegal as it can be used by law-enforcement agencies to turnsuspects’ phones and laptops into listening devices, as well as by fraudsters tooperate bank accounts by remote control2.
+Malware generally uses stealth techniques to hide, but eventually it’s iden-tiﬁed and tools to remove it are written.
+ There’s a whole ecosystem aroundmalware: malware writers, botnets of infected machines, and a range of se-curity ﬁrms o↵ering everything from threat intelligence to antivirus software.
+(There are even ﬁrms selling malware – particularly to government agencies.
+)And in addition to the formal economy, there’s an underground economy ofcyber-crooks selling everything from banking Trojans to DDoS-for-hire services.
+21.
+3.
+1Early history of malwareIt the early 1960’s, machines were slow and their CPU cycles were rationed –with students often at the tail of the queue.
+ Students invented tricks such aswriting computer games with a Trojan inside to check if the program is runningas root, and if so to create a privileged account with a known password.
+ By the1970s, time-sharing systems at universities were the target of more and morepranks involving Trojans.
+ All sorts of tricks were developed.
+ In 1978, JohnShoch and Jon Hupp of Xerox PARC wrote a program they called a worm,which replicated itself across a network looking for idle processors so it couldassign them tasks [1724].
+In 1984, Ken Thompson gave a classic paper“Reﬂections On Trusting Trust”,when he accepted a Turing award, the top prize in computer science.
+ He showedthat even if the source code for a system were carefully inspected and knownto be free of vulnerabilities, a trapdoor could still be inserted [1883].
+ His trickwas to build the trapdoor into the compiler.
+If this recognized that it was2At the other end of the spectrum, some antivirus products behave like malware in variousways, including being very hard to remove after a ‘free trial’, or by introducing insecurities.
+In December 2019, one brand of AV software was removed by Chrome, Firefox and Opera forexﬁltrating too much personal information [358].
+Security Engineering644Ross Anderson21.
+3.
+ THE MALWARE MENAGERIE – TROJANS, WORMS AND RATScompiling the login program, it would insert a master password that wouldwork on any account3.
+Of course, someone might examine the source codefor the compiler, and then compile it again from scratch.
+ So if the compilerrecognizes that it’s compiling itself, it inserts the vulnerability anyway, even ifit’s not present in the source.
+ So even if you can buy a system with veriﬁablysecure hardware, operating system and applications, the compiler binary canstill contain a Trojan.
+ The moral is that in order to trust a system completely,it is not enough to build all of it, in the sense that software engineers use theword ‘build’, namely compiling it from source code.
+ You have to create all of it,including the tool chain, and the hardware too.
+Malware next became mobile.
+ The ﬁrst-ever computer virus in the wild waswritten for the Apple II by a 9th-grader in 1981 [1216].
+ In 1984 Fred Cohen did aPhD on the topic; his experiments with di↵erent operating systems showed howcode could propagate itself from one machine to another, and as I mentioned inSection 9.
+6.
+4, from one compartment of a multilevel system to another.
+ Withinabout three years we started to see the ﬁrst real live viruses in the wild: PCviruses which spread when users shared programs on diskettes or via bulletinboards4.
+One early innovation was the ‘Christma’ virus, which spread round IBMmainframes in December 1987.
+It was a program written in the mainframecommand language REXX that had a header saying ‘Don’t read me, EXEC me’and code that, if executed, drew a Christmas tree on the screen – then sentitself to everyone in the user’s contacts ﬁle.
+ It was written as a prank, ratherthan out of malice; and by using the network (IBM’s BITNET) to spread, andinviting users to run it, it was ahead of its time.
+21.
+3.
+2The Internet wormThe press and public became aware of malware in November 1988 with the In-ternet worm.
+ This was a program written by Robert Morris Jr that exploited anumber of vulnerabilities to spread from one machine to another in November1988 [617].
+ It tried 432 common passwords in a guessing attack, looked for anymachines trusted by the machine it infected, and also tried to exploit vulnera-bilities in Unix (including the fingerd bug mentioned in section 6.
+4.
+1).
+ It alsotook steps to camouﬂage itself: it was called sh and it encrypted its data strings(albeit with a Caesar cipher).
+Its author claimed that his code was not a deliberate attack on the Internet– merely an experiment to see whether code could replicate from one machine toanother.
+ But it had a bug.
+ It should have recognised machines that were alreadyinfected, and not infected them again, but this feature didn’t work.
+ The resultwas a huge volume of tra�c that completely clogged up the Internet (or moreaccurately, its predecessor the Arpanet) despite the fact that it only a↵ectedsome 10% of the 60,000 machines on the Arpanet at the time.
+One lesson3This developed an idea ﬁrst ﬂoated by Paul Karger and Robert Schell in the Multicsevaluation in 1974 [1019].
+4Before the Internet was opened up to the public, online services were mostly standalone;bulletin boards were typically operated by hobbyists and would let subscribers or even anony-mous users dial in to share information and ﬁles.
+Security Engineering645Ross Anderson21.
+3.
+ THE MALWARE MENAGERIE – TROJANS, WORMS AND RATSwas that sites which kept their nerve and didn’t pull their network connectionrecovered more quickly as they could ﬁnd out what was happening and get theﬁxes.
+21.
+3.
+3Further malware evolutionBy the early 1990s, PC viruses had become such a problem that they gaverise to a whole industry of anti-virus software.
+ Through the 1990s, operatingsystems acquired better access controls, making the malware writer’s job harder,but the spread of interpreted languages provided plenty of new opportunities.
+By the start of the 21st century, the main vector was the macro languages inproducts such as Word, and the main transmission mechanism had become theInternet [298].
+The next phase of malware evolution was to enlist the user as the propagationmechanism.
+ The ‘Love Bug’ in 2000 was a worm that sent itself to everyonein the victim’s address book, with the subject line ‘I love you’ designed to getpeople to open it5.
+This incident taught us about the di�culty of stoppingsuch things by ﬁltering; a Canadian company with 85,000 sta↵ stripped outall Windows executables at the ﬁrewall, but many of their sta↵ had personalwebmail accounts, so the Love Bug got in anyway.
+ The company had giveneach employee a copy of the corporate directory in their address book, and theresult was meltdown as 85,000 mail clients each tried to say ‘I love you’ toeach of 85,000 addresses.
+ The Love Bug was followed by similar worms whichpersuaded people to click on them by o↵ering pictures of celebs such as BritneySpears and Paris Hilton.
+The next development was ﬂash worms which propagate by scanning thewhole Internet for machines vulnerable to some exploit or other, and takingthem over; examples such as Code Red and Slammer infected all vulnerablemachines within hours or even minutes, and drove research into what sort ofautomated defences might react in time [1821].
+The early 2000s also saw the rise of spyware and adware.
+ Spyware collectsand forwards information from your computer (and now, your phone) withoutthe owner’s authorization, or with at best an obscure popup that doesn’t reallytell you what you’re agreeing to.
+It may also be installed by someone else,such as a parent or partner; spyware is increasingly involved in intimate partnerabuse.
+Adware may bombard the user with advertising popups and can bebundled with spyware.
+ The vendors of such products have even sued antiviruscompanies who blacklisted their wares.
+ Some spyware is installed deliberately,whether by companies who want to keep tabs on sta↵, by parents who wantto see what their kids are up to, or by abusive men who want to monitor andcontrol their partners.
+ Boundaries are di�cult and di↵erent people may havedi↵erent views.
+A sea-change came about in 2004–6.
+ Until then, most malware writers didso for fun or to impress their friends – basically, they were amateurs.
+ Sincethen, the emergence of underground markets and crime forums has made the5It can be seen as a more virulent variant of the ‘Christma’ worm of 1987, but the LoveBug’s author was a schoolboy in Manila who’d probably never heard of that one.
+Security Engineering646Ross Anderson21.
+3.
+ THE MALWARE MENAGERIE – TROJANS, WORMS AND RATSwhole business much more professional.
+ Malware writers now get paid moneyfor software to recruit machines that can be sold on for cash to botnet herdersand for other exploits.
+Back in the amateur era, most viruses were ﬂaky; very few actually spread inthe wild.
+ If code isn’t infectious enough it won’t spread, but if you make it tooinfectious then within a few hours the world’s anti-virus vendors are upgradingtheir products to detect and remove it.
+ Now that malware writers focus onmoney rather than bragging rights, they tend to avoid self-replicating wormsin favour of more controllable exploit campaigns.
+ (The main exception is whenexploiting IoT devices that can’t be patched.
+)By the late 2000s, the largest botnets were using professional online market-ing techniques to grow their network.
+ Various stories were used to get people toclick on a link and run a Trojan that would drop a rootkit on to their machine.
+Victims had to click away several warnings to install software; but Windowspops up so many annoying dialog boxes that most people just click them away.
+One of the ﬁrst really large ones, Storm, earned its living from pump-and-dumpoperators and pharmacy scammers [1090].
+Security researchers tried to dis-able big botnets by ﬁnding and taking down their command-and-control server;Storm used a peer-to-peer architecture that removed this single point of fail-ure [1835].
+ In the end, it was targeted by Microsoft for removal.
+ The samegame is still being played; in March 2020 Microsoft took down Necurs, a botnetwith nine million machines that had been growing for eight years, distributingbanking Trojans as well as ransomware and email spam [349].
+Flash worms have made a comeback since October 2016 with the Mirai wormand its variants.
+ Mirai initially took over wiﬁ-attached CCTV cameras that hada known root password and software that could not be upgraded; all such devicesin the IPv4 address space could be found and recruited within an hour or so.
+Since then, there have been over a thousand Mirai variants attacking variousIoT devices.
+21.
+3.
+4How malware worksMalware typically has two components – a replication mechanism or dropper,and a payload.
+ A worm simply makes a copy of itself somewhere else when it’srun, perhaps by breaking into another system by password guessing or using aremote code execution vulnerability (both of which were used by the Internetworm).
+ Viruses spread in other software, perhaps as macros in documents, whileTrojans are typically executed by the victim.
+The second component of a virus is the payload.
+ When activated, this maydo one or more of a number of bad things:• exﬁltrate your conﬁdential data;• attack you directly using banking malware or spyware;• encrypt your data and demand a ransom;• attack others, such as when GCHQ’s Operation Socialist described in sec-Security Engineering647Ross Anderson21.
+3.
+ THE MALWARE MENAGERIE – TROJANS, WORMS AND RATStion 2.
+2.
+1.
+9 subverted Belgacom and installed software in it to do surveil-lance of mobile-phone tra�c passing through Belgium to other countries;• perform some other nefarious task, such as using the CPU to mine cryp-tocurrency;• install a rootkit or remote access Trojan to enable its controllers to do anyof the above things, to coordinate attacks with malware on other machines,and to update itself in response to any countermeasures.
+If the target is not an individual but a company – as in the Belgacom case– then the attack may involve weeks to months of work.
+ Once attackers controla device on the target network, they will want to move sideways to map thenetwork and ﬁnd key assets such as authentication servers and mail servers sothey can expand the compromise and install remote access Trojans to get apermanent presence.
+ There are many possibilities.
+1.
+ In the old days, an attacker would install packet sni↵er software to harvestpasswords and compromise other accounts, eventually including a sysad-min’s.
+ Good practice nowadays is to block such attacks using two-factorauthentication, or using a protocol such as Kerberos or SSH to ensure thatclear text passwords don’t go over the LAN.
+2.
+ Other techniques target shared resources such as ﬁle servers.
+ For example,Linux servers may use the Network File System (NFS) protocol; when avolume is ﬁrst mounted, the client gets a root ﬁlehandle from the server– an access ticket that doesn’t depend on the time and can’t be revoked.
+We block this at our own lab using Kerberos to authenticate clients andservers.
+ There are similar problems with Windows ﬁle shares, although thedetails are di↵erent; the EternalBlue vulnerability used by the WannaCryand NotPetya worm exploited such ﬁle shares.
+3.
+ Security mechanisms such as SSH bring further vulnerabilities in thatmachines in large organisations may have many thousands of SSH keysto communicate with each other, and intruders can exploit them and thetrust structures they create to move around.
+To get an idea of the range of tools available to a capable attacker nowa-days, I’d suggest you browse the NSA papers released by Ed Snowden and theCIA toolkits leaked in the Vault 7 disclosure.
+ Cyber warriors have a range ofexploit kits, droppers, RATs and software for stealthy exﬁltration of intelligenceproduct.
+The takeaway is that the ease with which an intruder on your network cantake over other machines depends on how tightly you have the network lockeddown, and the damage that can follow any breach will depend on the extent towhich other machines in your network trust, or are vulnerable to, the compro-mised machine.
+ This is one of the arguments for not trusting local networks,but insisting on strong authentication between clients and servers at all times.
+Security Engineering648Ross Anderson21.
+3.
+ THE MALWARE MENAGERIE – TROJANS, WORMS AND RATS21.
+3.
+5CountermeasuresWithin a few months of the ﬁrst PC viruses appearing in the wild in 1987, therewere startups selling antivirus software.
+ This led to an arms race in which virusand antivirus developers tried to outwit each other.
+Early antivirus software came in basically two ﬂavours – scanners and check-summers.
+ Scanners search executable ﬁles for an indicator of compromise (IoC),typically a string of bytes from a speciﬁc virus.
+ Malware developers respondedin various ways, and the dominant technique became polymorphism.
+ The idea isto change the code each time the malware replicates, to make it harder to ﬁndstable IoCs.
+ The usual technique is to encrypt the code, and have a small headerthat contains decryption code.
+ With each replication, the malware re-encryptsitself under a di↵erent key, and tweaks the decryption code by substitutingequivalent sequences of instructions.
+Modern malware may be run throughhalf-a-dozen such packers in turn, and recursively unpack itself when run.
+ AVﬁrms ﬁght back by running the code in a virtual machine, so the malware devsinclude VM-detection code.
+ The AV ﬁrms can at least use the unpacked codeas an IoC so long as they can hack through to the last unpacking operation.
+Checksummers keep a whitelist list of all the authorised executables on thesystem, together with checksums of the original versions, typically computedusing a hash function.
+ The malware devs’ main countermeasure is stealth, whichin this context means that the malware watches out for operating system callsof the kind used by the checksummer and hides itself whenever a check is beingdone.
+To provide robust defences against malware, you have to combine tools,incentives and management.
+We learned in the old days of DOS-based ﬁleviruses to provide a central reporting point for all incidents, and to control allsoftware loaded on an organisation’s machines.
+ The main risks were machinesused at home both for work and for other things (such as kids playing games),and ﬁles coming in from other organisations.
+ The same principles still apply.
+However, ﬁrms now need a more coordinated response than before.
+One ofthe reasons is that antivirus software has been getting steadily less e↵ective.
+The commercialisation of botnets and of machine exploitation has meant thatmalware writers operate like companies, with research and test departments.
+Almost all exploits are undetectable by the current antivirus products when ﬁrstlaunched (if their writers test them properly) and many of them recruit theirtarget number of machines without coming to the attention of the antivirusindustry.
+ The net e↵ect was that while antivirus software might have detectedalmost all of the exploits in circulation in the early 2000s, by 2010 the typicalproduct might detect only a third of them, and by 2020 you expect to detectinfection after the fact and have to clear up.
+ That means having good toolsupport, logging network tra�c and analysing it in the light of the latest threatintelligence.
+ What’s more, the rootkit vendors provide after-sales service; if aremoval kit is shipped, the rootkit vendor will rapidly ship countermeasures.
+And nowadays many attackers – especially the competent ones – don’t leavemalware ﬁles lying around but ‘live o↵ the land’; they might just add their sshkey to a list of authorised keys on one of your servers so they can pop in whenthey feel like it, leaving nothing for legacy AV to ﬁnd.
+Security Engineering649Ross Anderson21.
+4.
+ DEFENSE AGAINST NETWORK ATTACK21.
+4Defense Against Network AttackIn defending against malware and network attack generally, the view from thesecond edition of this book in 2008 was that you needed three things: goodenough management to keeping your systems patched up-to-date and conﬁguredproperly; ﬁrewalls to stop known Trojans and network exploits; and intrusiondetection to monitor your networks and machines for indicators of compromiseso you can catch the stu↵ that got through and clean up afterwards.
+The principles remain the same in 2020 but reality is much more complexnow, because the scale and complexity of the task have made automation almostessential.
+ A large Windows shop might have something like the following:1.
+ An agent running on each endpoint, reporting to a cloud service to giveyou full visibility of what software is running where and to enable you topush updates;2.
+ A vulnerability scanner that continually probes your network for knownvulnerabilities;3.
+ Various boundary control devices which may include ﬁrewalls, a proxyserver that ﬁlters all URLs of websites that sta↵ visit, and proxies forcritical applications;4.
+ An SSL gateway for sta↵ working remotely;5.
+ A bring-your-own-device (BYOD) manager, to control laptops, phones andother devices that sta↵ members use but that the ﬁrm doesn’t own;6.
+ A data leakage prevention (DLP) system to identify sta↵ who attempt toremove company documents or code;7.
+ A threat intelligence platform that integrates feeds from multiple providers,to alert you to various indicators of compromise including bad DNS namesand IP addresses;8.
+ A log analysis tool that enables you to go back and work out when acompromise ﬁrst happened, and how far it spread;9.
+ a security orchestration and response (SOAR) system that helps you re-spond quickly if you note that some devices in your network are commu-nicating with bad addresses such as the command-and-control servers ofknown malware.
+Making all this work together requires system integration, otherwise you’llhave dozens of sta↵ in your network security centre whose job is to copy listsof bad domains, bad IP addresses and other indicators of compromise from onetool to another.
+That said, let’s work our way down this list.
+Organisations that are serious about IT security – because they are targets ofstate actors (like big service ﬁrms), or have demanding compliance requirementsSecurity Engineering650Ross Anderson21.
+4.
+ DEFENSE AGAINST NETWORK ATTACK(like banks), or have a lot to lose (like the military) – aim to stop all vulnera-bilities at source.
+ This means keeping everything patched up to date, which inturn means automated patch management.
+ But such a strategy is harder thanit looks.
+ It brings with it a number of hard subproblems, such as maintainingan accurate inventory of all the devices on your network.
+ If you impose a rigidbureaucracy for registering new devices, people will have to ﬁnd ways to cir-cumvent it to get their work done.
+ So you need to also scan your network tosee what’s there and whether it’s vulnerable.
+ And even diligent organisationsmay ﬁnd it’s just too expensive to ﬁx all the security holes at once; patches maybreak critical applications, and an organisation’s most critical systems often runon the least secure machines, as administrators have not dared to upgrade themfor fear of losing service.
+This interacts with operational security.
+ In Chapter 2 and Chapter 8 wediscussed the practice and limitations of training sta↵ to not expose systems byfoolish actions.
+ By the mid-2000s, the main attack vector was spearphishing –getting people to click on links in email that download and install rootkits.
+ Welearned from Ed Snowden that this was the standard way for the NSA to attacka company in 2013: they would monitor external tra�c to identify sysadmins, dosome background research to identify individual targets, and craft a convincingphishing lure.
+ Alternatively they would direct the target to a website they couldspoof or where they could mount a man-in-the-middle protocol attack.
+You may try to educate your sta↵ to not click on links in suspicious mail,but competent attackers create mails that don’t look suspicious.
+ And so manybusinesses expect their customers and suppliers to click on links that your sta↵will have to do some clicking to get their work done.
+ We discussed in Chapter 3and elsewhere that victim blaming is maladaptive; if your security systems arenot usable, you have to ﬁx them rather than blaming the poor users.
+Many ﬁrms mitigate the risk by opening all mail attachments in a cloudservice rather than a local machine, giving sta↵ non-Windows machines such asChromebooks, iPads or Macs, or having a ﬁrewall or mail ﬁlter that strips outsuspicious content.
+21.
+4.
+1Filtering: ﬁrewalls, censorware and wiretapsA ﬁrewall is a machine that stands between a private network and the Inter-net, and ﬁlters out tra�c that might be harmful.
+ It’s named after the metalbulkhead that separates the passenger compartment of a car or light plane fromthe engine compartment, to protect the occupants from a fuel ﬁre.
+ Firewallswere controversial when they appeared in the mid-1990s; purists said that allthe machines in a company should be secured, while ﬁrewall advocates said thiswas impractical.
+ The debate has swung back and forth since.
+Firewalls are just one example of systems that examine streams of pack-ets and perform ﬁltering or logging operations.
+ Bad packets may be thrownaway, or modiﬁed in such a way as to make them harmless.
+ They may also becopied to a log or audit trail.
+ Very similar systems are also used for Internetcensorship and for law-enforcement wiretapping; almost everything I’ll discussin this section goes across to those applications too.
+ Developments in any ofSecurity Engineering651Ross Anderson21.
+4.
+ DEFENSE AGAINST NETWORK ATTACKthese ﬁelds potentially a↵ect the others; and actual systems may have overlap-ping functions.
+ For example, many corporate ﬁrewalls or mail ﬁlters screen outpornography, and some even block bad language, while ISP systems that censorchild pornography or dissenting political speech may report the perpetratorsautomatically to the authorities.
+ Many ﬁlters also keep logs, so that attackscan be investigated after the fact; and in parts of the ﬁnancial sector, all sta↵communications are required to be logged so that regulators can investigate anysuspicions of insider trading or money laundering.
+Filters come in basically three ﬂavours, depending on whether they operateat the IP packet level, at the TCP session level or at the application level.
+21.
+4.
+1.
+1Packet ﬁlteringThe simplest kind of ﬁlter merely inspects packet addresses and port numbers.
+This functionality is available as standard in routers, in Linux and in Windows.
+You can block IP spooﬁng by ensuring that only ‘local’ packets leave a network,and only ‘foreign’ ones enter.
+ It’s also easy to block tra�c to or from ‘known bad’IP addresses.
+ For example, IP ﬁltering is a major component of the censorshipmechanisms in the Great Firewall of China; a list of bad IP addresses can bekept in router hardware, which enables packet ﬁltering to be done at great speed.
+Basic packet ﬁltering is often used to block all tra�c except that arrivingon speciﬁc port numbers.
+You might initially allow the ports used by com-mon services such as email and web tra�c, and then open up further ports asneeded.
+ As we move to software deﬁned networks (SDN), which replace expen-sive routers with cheap switches controlled by software on commodity servers,packet ﬁltering rules become just the access-control rules in the SDN controller.
+However, packet ﬁlters can be defeated by a number of tricks.
+ For example,a packet can be fragmented in such a way that the initial fragment passes theﬁrewall’s inspection but is then overwritten by a subsequent fragment, replacingthe source address with one that violates your security policy.
+ Another limita-tion is that maintaining a blacklist is di�cult, especially when it’s not the IPaddress speciﬁcally you want to block, but something that resolves into an IPaddress, especially on a transient basis.
+ For example, phishermen use tricks likefast-ﬂux in which a site’s IP address changes several times an hour.
+21.
+4.
+1.
+2Circuit gatewaysThe next step up is a circuit gateway that reassembles and examines all thepackets in each TCP session.
+ This is more expensive than simple packet ﬁlteringbut can also provide the added functionality of a virtual private network (VPN)whereby corporate tra�c passed over the Internet is encrypted from ﬁrewall toﬁrewall.
+ I’ll discuss the IPSEC protocol that’s used for this in the last sectionof this chapter.
+TCP-level ﬁltering can be used to do a few more things, such as DNS ﬁltering.
+However, such a ﬁlter can’t screen out bad things at the application level, frommalicious code to child sex abuse material.
+ Thus it may be programmed todirect certain types of tra�c to application ﬁlters.
+Security Engineering652Ross Anderson21.
+4.
+ DEFENSE AGAINST NETWORK ATTACK21.
+4.
+1.
+3Application proxiesThe third type of ﬁrewall is the application proxy, which understands one or moreservices.
+ Examples are mail ﬁlters that try to weed out spam, and web proxiesthat block or remove undesirable content.
+ The classic objective is stripping outcode, be it straightforward executables, active content in web pages, or macrosfrom incoming Word documents.
+ The move to web-based mail services and theadoption of https have left signiﬁcantly less work for mail ﬁlters to do, and asthe service ﬁrms adopt technical measures such as certiﬁcate transparency toprevent proxying, ﬁltering needs to shift to endpoints.
+An application proxy can also be a bottleneck.
+ An example is the GreatFirewall of China, which tried through the 2000s to block mail and web contentthat refers to banned subjects [448].
+ Since the adoption of https by the majorservice providers, and the availability of services such as Google Docs that canalso be used for communication, China simply stops most of its citizens fromusing services like Gmail and Facebook.
+In the emerging BeyondCorp model promoted by Google, proxies sit in frontof the application servers themselves so that the internal network does not needto be trusted.
+21.
+4.
+1.
+4Ingress versus egress ﬁlteringMost ﬁrewalls look outwards and try to keep bad things out, but some lookinwards and try to stop bad things leaving.
+ The pioneers were military mailsystems that monitor outgoing tra�c to ensure that nothing classiﬁed goes outin the clear.
+ Around 2005 some ISPs started looking at outgoing mail tra�cto try to detect spam [442]; and by now most consumer ISPs prevent theircustomers sending packets with spoofed source addresses.
+ This source addressvalidation means that DDoS operators using UDP reﬂection attacks can nolonger use botnets but need to rent servers in data centres.
+The fastest-growing use of egress ﬁltering in 2020 is for data leakage preven-tion (DLP).
+ Software that ‘phones home’, whether for copyright enforcement ormarketing purposes, can disclose highly sensitive material, and prudent organ-isations increasingly wish to monitor and control this kind of tra�c.
+ But thepervasive use of https means that DLP systems typically need to install softwareon endpoints rather than using middleboxes.
+21.
+4.
+1.
+5ArchitectureFor years, many ﬁrms bought a ﬁrewall to keep their auditors happy.
+ If that’syour pain point, a simple ﬁltering router won’t need much maintenence andwon’t get in the way too much.
+ At the other extreme, a serious ﬁrewall system ata defence contractor might consist of a packet ﬁlter connecting the outside worldto a screened subnet, also known as a demilitarized zone (DMZ), which in turncontains a number of application servers or proxies to ﬁlter mail, web and otherservices.
+ You may also expect to ﬁnd data diodes separating networks operatingat di↵erent clearance levels, to ensure that classiﬁed information doesn’t escapeSecurity Engineering653Ross Anderson21.
+4.
+ DEFENSE AGAINST NETWORK ATTACKMail�proxyFilterWeb�serverMail�guardOther�proxies .
+ .
+ .
+FilterInternetIntranetClassified�intranetFigure 21.
+2: Complex ﬁrewalls for an MLS networkeither outwards or downwards (Figure 21.
+2).
+An alternative approach is to have more networks, but smaller ones.
+ Atour university, we have ﬁrewalls to separate departments, although we’ve gota shared network backbone and some shared central services such as logging.
+There’s no reason why the students and the ﬁnance department should be onthe same network, and a computer science department has got quite di↵erentrequirements from a department of theology.
+ Keeping each network small limitsthe scope of any compromise and helps incentivise system administrators todefend it.
+Considerations in the design of a network security architecture include sim-plicity, usability, deperimeterisation versus re-perimterisation, underblockingversus overblocking, maintainability, and incentives.
+First, since ﬁrewalls do only a small number of things, it’s possible to makethem simple to remove sources of vulnerability and error.
+ If your organisationhas a heterogeneous population of machines, then loading as much of the securitytask as possible on a small number of simple boxes makes sense.
+ On the otherhand, if you’re running something like a call centre, with a thousand identically-conﬁgured PCs, it makes sense to put your e↵ort into keeping this conﬁgurationtight.
+ These are roughly the energy utility, and Google, models discussed in theintroduction above.
+Second, elaborate central installations not only impose greater operationalcosts, but can get in the way so much that people install back doors, such ascable modems that bypass the ﬁrewall, to get their work done.
+ I will discuss insection ?? how diplomats have come unstuck by using private email when theiro�cial systems were unusable.
+ Many well-run ﬁrms have open guest networks,as does our department; there’s always got to be something that works.
+ Anda prudent system administrator will monitor the actual network conﬁgurationrather than just relying on ‘policy’.
+Security Engineering654Ross Anderson21.
+4.
+ DEFENSE AGAINST NETWORK ATTACKThird, ﬁrewalls only work until people ﬁnd ways round them.
+ Early ﬁrewallslet only mail and web tra�c through; so writers of applications from computergames to anonymity proxies redesigned their protocols to make the client-servertra�c look as much like normal web tra�c as possible.
+ Then everything movedto Web 2.
+0 and such ﬁlters became largely ine↵ective.
+Next, there’s deperimeterisation – as Google’s BeyondCorp notes, it’s be-coming steadily harder to put all the protection at the perimeter, thanks tothe the proliferation of phones and PDAs being used for functions that used tobe done on desktop computers, and by changing business methods that involvemore outsourcing of functions – whether formally to subcontractors or infor-mally to advertising-supported web apps.
+ If some parts of your organisationcan’t be controlled (e.
+g.
+ the sales force and the R&D lab) while others must be(the ﬁnance o�ce) then you may need separate architectures.
+ The proliferationof web applications is complemented by a blunting of the incentive to do thingsat the perimeter, as useful things become harder to do.
+ The di↵erence betweencode and data is steadily eroded by new scripting languages.
+ Many ﬁrms triedto block JavaScript in the early 2000s but were beaten by popular web sites thatrequire it.
+ Nowadays it may be impossible to prevent your sta↵ attaching largenumbers of IoT devices that just cannot be secured at all [1254].
+And then there’s our old friend the Receiver Operating Characteristic orROC curve.
+ No ﬁltering mechanism has complete precision, so there’s inevitablya trade-o↵ between underblocking and overblocking.
+ If you’re running a cen-sorship system to stop kids accessing pornography in public libraries, do youunderblock, and annoy parents and churches when some pictures get through,or do you overblock and get sued for infringing free-speech rights? Things aremade worse by the fact that the ﬁrewall systems used to ﬁlter web content forsex, violence and bad language also tend to block free-speech sites (as many ofthese criticise the ﬁrewall vendors – and some o↵er technical advice on how tocircumvent blocking.
+)And as we’ve repeatedly pointed out, security depends at least as muchon incentives as on technology.
+ A sysadmin who looks after a departmentalnetwork used by a hundred people they know, and who will personally have toclear up any mess caused by an intrusion or a conﬁguration error, is much moremotivated than someone who’s merely one member of a large team looking afterthousands of machines.
+21.
+4.
+2Intrusion DetectionAttacks will happen, and it’s often cheaper to prevent some attacks and detectthe rest than it is to try to prevent everything.
+ The systems used to detectbad things happening are referred to generically as intrusion detection systems(IDS).
+ The antivirus software products I discussed earlier are one example; butthe term is most usually applied to boxes that sit on your network and lookfor signs of an attack in progress or a compromised machine [1636].
+ Examplesinclude:• a machine trying to contact a ‘known bad’ service such as an IRC channelthat’s used to control a botnet, or a known-bad IP address – or trying toSecurity Engineering655Ross Anderson21.
+4.
+ DEFENSE AGAINST NETWORK ATTACKresolve a known-bad DNS name;• packets with forged source addresses – such as packets that claim to befrom outside a subnet but that actually originate from it;• spam coming from a machine in your network.
+In cases like this, the IDS typically tells the sysadmin that a particularmachine needs to be looked at.
+ This may be just the ﬁrst step in an investigationthat involves staring at logs to see how it happened, and what else the attackersmight have infected.
+Other examples of intrusion detection, which we’ve seen in earlier chapters,include mechanisms for detecting payment card fraud and stock-market systemsthat look for insider trading, such as via increases in trading volume just beforea price-sensitive announcement.
+ This is now an active area of research: theboom in AI since 2012 has created lots of startups looking for pattern-matchingproblems.
+21.
+4.
+2.
+1Types of intrusion detectionThe simplest intrusion detection method is to sound an alarm when a thresholdis passed.
+ Three or more failed logons, a credit card expenditure of more thantwice the moving average of the last three months, or a mobile phone call lastingmore than six hours, might all ﬂag an account for attention.
+ More sophisticatedsystems generally fall into two categories.
+Misuse detection systems operate using a model of the likely behaviour of anintruder.
+ A banking system may alarm if a user draws the maximum permittedamount from a cash machine on three successive days; and a Unix intrusiondetection system may look for user account takeover by alarming if a previouslynaive user suddenly starts to use sophisticated tools like compilers.
+ Simple mis-use detection systems, such as antivirus scanners, look for a signature – a knowncharacteristic of a speciﬁc attack.
+ This can be either explicit in the data (suchas a substring of an executable ﬁle that marks it as a speciﬁc piece of malware)or in behaviour (such as a machine contacting the IP address of a known botnetcommand-and-control server).
+ More complex misuse detection systems treat anumber of signatures as signals and then train a machine-learning classiﬁer tomake the decisions.
+ As I discussed in section 12.
+5.
+4, the systems used to detectcard fraud use dozens of signals, as they need low false alarm rates to be usefulgiven the scale of modern payment systems.
+Anomaly detection systems attempt the much harder job of looking foranomalous behaviour in the absence of a clear model of the attacker’s modusoperandi.
+ The hope is to detect attacks that have not been previously recognizedand cataloged.
+ Systems of this type have used AI techniques since the 1990s,though some ﬁrms eschew them; Google policy, for example, is to avoid systemsthat try to learn thresholds or automatically detect causality, and instead havesimple systems that detect changes in end-user request rates [236].
+The dividing line between misuse and anomaly detection is somewhat blurred.
+A borderline case is Benford’s law, which describes the distribution of digits inSecurity Engineering656Ross Anderson21.
+4.
+ DEFENSE AGAINST NETWORK ATTACKrandom numbers.
+ One might expect that numbers beginning with the digits‘1’, ‘2’, .
+.
+.
+ ‘9’ would be equally common.
+ But when numbers come from ran-dom natural sources and span more than one order of magnitude, so that theirdistribution is independent of the number system in which they’re expressed,the distribution is logarithmic: about 30% of decimal numbers start with ‘1’.
+Crooked clerks who think up numbers to cook the books, or even use ran-dom number generators without knowing Benford’s law, are often caught thisway [1247].
+Another borderline case is the honeypot – something enticing left to attractattention.
+ I mentioned, for example, that some hospitals have dummy recordswith celebrities’ names in order to entrap sta↵ who ignore patient conﬁdential-ity.
+ In the network context, honeypots emulate many types of device so thatattackers scanning the Internet looking for (say) a DSL modem of a particularupgrade status ﬁnd one to attack; this may contain either a simple emulator, orwith more recent designs, the actual modem ﬁrmware running in a VM [1955].
+The upshot is that the honeypot operator gets to see who’s attacking what, andhow.
+21.
+4.
+2.
+2General limitations of intrusion detectionSome intrusions are obvious.
+ If you’re worried about activists vandalising yourweb site, then have a machine somewhere that fetches the page frequently andrings an alarm when it changes.
+ But in the general case, intrusion detection ishard.
+ The virus pioneer Fred Cohen proved that detecting viruses (in the senseof deciding whether a program is going to do something bad) is as hard as thehalting problem, so we can’t ever expect a complete solution [450].
+There’s also a matter of deﬁnitions.
+ Some intrusion detection systems areconﬁgured to block some kinds of suspicious behaviour.
+But this turns theintrusion-detection system into an access control mechanism, as well as openingthe door to service-denial attacks.
+ I prefer to deﬁne an intrusion-detection sys-tem as one that monitors the logs and draws attention to suspicious occurrences.
+Then there’s the cost of false alarms.
+ Academic machine-learning researchersoften consider they’ve done well when they train a classiﬁer to have a false alarmrate of 0.
+1%.
+ But if you’re on the Gmail team and dealing with a billion usersauthenticating themselves every day, that’s way too much.
+ Large-scale systemsneed really low false alarm rates.
+Finally, there are three generic problems with machine-learning classiﬁers:the facts that they’re not much good at detecting new attacks, that people gamethem, and that they inhale the prejudices of their training data.
+ We will discussthese in more detail in section 25.
+3.
+21.
+4.
+2.
+3Speciﬁc problems detecting network attacksTurning now to the speciﬁc problem of detecting network intrusion, it’s harder tospot than payment fraud.
+ Network intrusion detection products still have highmissed alarm and false alarm rates.
+ It’s common to detect actual intrusionsonly afterwards.
+ The reasons for the poor performance include the following, inSecurity Engineering657Ross Anderson21.
+4.
+ DEFENSE AGAINST NETWORK ATTACKno particular order.
+• The Internet is a very noisy environment – not just at the level of contentbut also at the packet level.
+ A lot of random crud arrives at any substantialsite, and enough of it can be interpreted as hostile to provide a signiﬁcantfalse alarm rate.
+ Many bad packets result from software bugs; others arethe fault of out-of-date or corrupt DNS data; and some are local packetsthat escaped, travelled the world and returned [213].
+• There are ‘too few attacks’.
+ If there are ten real attacks per million sessions– which is almost certainly an overestimate – then even if the system hasa false alarm rate as low as 0.
+1%, the ratio of false to real alarms will be100.
+ We talked about similar problems with burglar alarms; it’s also awell-known problem for medics running screening programs for diseaseslike HIV where the test error rate exceeds the disease prevalence.
+ Wherethe signal is way below the noise, the guards get tired and the genuinealarms get missed.
+• While a theft from a bank causes an incorrect state – money in the wrongplace, and evidence on the audit trail – many network intrusions aim toavoid this, for example if their mission is to exﬁltrate conﬁdential data.
+It’s easier to write software to detect errors than it is to detect slightlyodd behaviour.
+• Many network attacks are speciﬁc to particular versions of software, soyou need a large and constantly-changing library of attack signatures.
+However, many ﬁrms buy intrusion detection systems in order to satisfyinsurers or auditors, and the products aren’t always kept up to date.
+• As more and more tra�c is encrypted, it can’t easily be subjected tocontent analysis or ﬁltered for malicious code.
+ If DNS-over-https becomesthe norm, tools that rely on analysing your DNS tra�c will become muchless e↵ective.
+• The issues we discussed in the context of ﬁrewalls largely apply to intrusiondetection too.
+ You can ﬁlter at the packet layer, which is fast but missesa lot; or you can proxy your applications, which is expensive – and needsto be constantly updated to cope with new applications and attacks.
+• You may have to do intrusion detection both locally and globally.
+ Moreand more things have to be done on local machines, thanks to encryptedweb sessions; but some attacks are stealthy – the opponent sends 1–2packets per day to each of maybe 100,000 hosts, and you need a centralmonitor that counts packets by source and destination address and byport.
+Nowadays, intrusion detection systems involve the coordination of multiplemonitoring mechanisms and products at di↵erent levels both in the network andon your ﬂeet of endpoint devices.
+ A large company with tens of thousands ofsta↵ using Windows will typically have several dozen products, as I discussedpreviously in section 21.
+4.
+ Integrating and automating both monitoring andSecurity Engineering658Ross Anderson21.
+5.
+ CRYPTOGRAPHY: THE RAGGED BOUNDARYresponse makes up more and more of a CISO’s job.
+ The growth areas thereforeinclude integration tools for security incident and event management (SIEM),security orchestration and response (SOAR), and metrics.
+21.
+5Cryptography: the ragged boundaryNetwork security interacts with cryptography in a number of ways.
+ We alreadymentioned the debate about DNS over https; now I’m going to describe ﬁveother aspects of crypto brieﬂy.
+ They are SSH; the local link protection o↵eredby WiFi, Bluetooth and HomePlug; the IPSec mechanisms used in VPNs; TLS;and the public key infrastructures (PKI) used to support many of these.
+Inthe previous chapter, we discussed how attempts to build more trustworthycomponents out of cryptography run up against many real-world engineeringand economic constraints.
+ The tools that we use to set boundaries on networks,and to translate trust within them, are no di↵erent.
+The emerging themes are that the most distributed part of the problem isunmanageable because the vendors don’t care; in particular the thousands ofdevice types being marketed as part of the ‘Internet of Things’ have no remotemanagement facility available to users, the vendor often doesn’t upgrade thesoftware, and the lack of a user interface means that authentication is haphazardat best.
+ Meanwhile the most centralised part of the problem – PKI – is oftensubverted by government mandates.
+21.
+5.
+1SSHWhen I use my laptop to access ﬁles on my desktop machine, or do anythingwith any other machine in our lab for that matter, I use secure shell (SSH)which provides encrypted links between Unix and Windows hosts.
+ So when Iwork from home, my tra�c is protected, and when I log on from the PC at mydesk to another machine in the lab, the password I use doesn’t go across theLAN in the clear.
+SSH was initially written in 1995 by Tatu Yl¨onen, a researcher at HelsinkiUniversity of Technology, following a password-sni�ng attack there [2058].
+ Itsets up encrypted connections between machines, so that logon passwords don’ttravel across the network in the clear, and supports other useful features thatled to its rapid adoption [1617].
+There are various conﬁguration options, but in the most straightforward one,each machine has a public-private keypair.
+ The private key is protected by apassphrase that the user types at the keyboard.
+ To connect from my laptopto a server at the lab, I install my laptop public key in a ﬁle on the relevantserver.
+ When I wish to log on to a server I’m prompted for my passphrase;the two machines set up a Di�e-Hellman key; the private keys are used to signthe transient public keys, to stop middleperson attacks; the subsequent tra�cis thus both encrypted and authenticated.
+ Manual key installation is intuitive,but doesn’t scale particularly well.
+There are also options to use Kerberos,whether to authenticate the session key set up using Di�e-Hellman, or to setSecurity Engineering659Ross Anderson21.
+5.
+ CRYPTOGRAPHY: THE RAGGED BOUNDARYup the session key directly.
+ (In the latter case, SSH falls back to being a variantof Kerberos in the sense that it is now a trusted third-party protocol, and thepolice can get the Kerberos server to decrypt the tra�c.
+)Possible problems include the fact that if you’re typing at the keyboardone character at a time, then each character gets sent in its own packet, andthe packet interarrival times can leak a lot of information about what you’retyping [1803].
+However, the worst is probably that most SSH keys used forserver-to-server communication are stored in the clear, without being protectedby a password at all.
+ So if a server is compromised, the same can happen toevery other machine that trusts an SSH key installed on it.
+SSH is often used as a simple logon mechanism; many IoT devices run Linuxand allow remote logon by anyone who knows an appropriate password.
+ Thisopens them to password-guessing attacks, and where there are weak passwordsor a known default password, to recruitment into botnets based on Mirai andsimilar tools.
+ The countermeasure here is honeypots.
+21.
+5.
+2Wireless networking at the peripheryMany networks use wireless technology at the edge to go the last few feet froman access point to a device, or from one device to another.
+ Protocols such asWiFi, Bluetooth and Homeplug all o↵er encryption to provide some protectionagainst service abuse and perhaps against eavesdropping.
+ However most arevulnerable to local attacks that are di�cult to block completely because manydevices don’t get patched, lack user interfaces, or both.
+21.
+5.
+2.
+1WiFiWiFi supports wireless local area networks, whether at home to connect phonesand other devices to a home router, or by businesses to connect payment ter-minals and stock control devices as well as PCs.
+It has come with a seriesof encryption protocols since its launch in 1997.
+The ﬁrst widely-used one,WEP (for wired equivalent privacy), was shown to be fairly easily broken be-cause of the weak ciphers demanded by US export control and poor protocoldesign [299, 1873].
+ Since 2004, an improved system called WPA2 uses AES en-cryption.
+ The key for each access point is typically printed on a card that ﬁtsinto the back of the router.
+Should WiFi networks be seen as untrusted? The reason to set a passwordis more to prevent third parties using your bandwidth or quota, rather than therisk of pharming.
+ Many people in the UK or America ﬁnd it convenient to havean open network for guests to use, and so that you and your neighbours canuse each others’ networks as backups.
+ In countries where you pay for downloadbandwidth, home router passwords are mostly set.
+In some, like India, it’sagainst the law to run an open WiFi access point (terrorists who mounted anattack in Bombay in 2008 used them to call home unobtrusively).
+ Having thekey on a card is a neat example of usable security design: the householder canmake their network as open or as secure as needed by pinning the card on thewall or by locking it up.
+Security Engineering660Ross Anderson21.
+5.
+ CRYPTOGRAPHY: THE RAGGED BOUNDARYWiFi security is still somewhat fragile.
+ Universal Plug and Play (UPnP) letsany device in a network punch a hole through the router’s ﬁrewall; DHS hasbeen recommending since 2013 that people turn it o↵.
+ However now that manydevices and domestic appliances come with an attached cloud service, that’shard.
+ It’s used along with WiFi Protected Setup (WPS) which lets you enrolgadgets on your network with a simple button press.
+ You can set a PIN butthere have been a couple of attacks found on the mechanism.
+Businesses may have to take a bit more care.
+ In March 2007, retail chain TJMaxx reported that some 45.
+7 million credit card numbers had been stolen fromits systems; the Wall Street Journal reported that an insecure WiFi connectionin St Paul, Mn.
+, was to blame [1509].
+ Banks sued the company, and eventuallysettled for $41m [788].
+Patching is an issue.
+ For example, in March 2020 we learned of the Kr00kvulnerability in Broadcom wiﬁ chips which will get patched in Macs and iPhonesbut probably not in wireless routers or older Android phones [799].
+ As for thegreat majority of IoT devices, from toys through home appliances, they won’tget patched, ever.
+21.
+5.
+2.
+2BluetoothBluetooth is another short-range wireless protocol, aimed at personal area net-works, such as linking a headset to a phone, or a phone in your pocket to ahands-free interface in your car.
+ It’s also used to connect cameras and phonesto laptops, keyboards to PCs and so on.
+ Like WiFi, the ﬁrst versions of theprotocol turned out to have ﬂaws [2015, 1713, 1101].
+ From version 2.
+1 (releasedin 2007), Bluetooth has supported Secure Simple Pairing [1169], which useselliptic-curve Di�e-Hellman to thwart passive eavesdropping attacks.
+ Man-in-the-middle attacks are harder; they are dealt with by generating a six-digitnumber for numerical comparison.
+ However, because one or both of the devicesmight lack a keyboard or screen (or both), it’s also possible for the number tobe generated at one device and entered as a passkey at another; and there’sa ‘just works’ mode that’s not protected against middleperson attack.
+ What’smore, the data may or may not be signed, giving a total of about ten di↵erentcombinations of conﬁdentiality, integrity and resistance to man-in-the-middleattack; and a number of attacks have been found, some inspired by NSA toolslisted in the Snowden disclosures [1635].
+ Again, patching is an issue.
+ In 2018,Eli Biham found that many implementations could be fooled by a man-in-the-middle supplying an invalid elliptic curve to the authentication protocol [244],and in 2020 Daniele Antonioli and colleagues discovered a variant of the mig-in-the-middle attack where you just reﬂect the challenge from a bluetooth deviceback to it, claiming that you’re now the challenger and the target device is theresponder [124].
+ So if you have a device with a bluetooth chip that hasn’t beenpatched, it may be vulnerable.
+21.
+5.
+2.
+3HomePlugHomePlug is a protocol used for communication over the mains power cables.
+HomePlug AV is widely used in wiﬁ extenders: you plug one station into yourSecurity Engineering661Ross Anderson21.
+6.
+ CAS AND PKIrouter or cable modem, and another gives a remote wiﬁ access point at theother end of your house.
+ (Declaration of interest: I was one of the protocol’sdesigners.
+) We were faced with the same design constraints as the Bluetoothteam: not all devices have keyboards or screens, and we needed to keep costslow.
+ We decided to o↵er only two modes of operation: secure mode, in whichthe user manually enters into their network controller a unique AES key that’sprinted on the device label, and ‘simple connect’ mode in which the keys areexchanged without authentication.
+ The keys aren’t even encrypted in this mode;its purpose is not to provide security but to prevent wrong associations, such aswhen a device wrongly mates with a network next door [1436].
+ However manyvendors just support the ‘simple connect’ mode and end up with a policy of truston ﬁrst use, as already mentioned in section 14.
+3.
+3.
+3.
+Others sell extendersin pairs, with keys already installed.
+ There are variants for smart meters tocommunicate with substations, and for electricity utilities to provide broadbandto the home over the power line (though these are not widely used because ofradio frequency interference).
+ Vendors also customised the product in variousways to make it incompatible with competitors.
+ As a result of this mess, littlereliance can be placed on the key management.
+21.
+5.
+2.
+4VPNsVirtual private networks (VPNs) typically do encryption and authentication atthe IP layer using a protocol suite known as IPsec.
+ This deﬁnes a security asso-ciation as the combination of keys, algorithms and parameters used to protecta particular packet stream.
+ Protected packets may be just authenticated, or en-crypted too; in the former case, an authentication header is added that protectsdata integrity, while in the latter the packet is also encrypted and encapsulatedin other packets.
+ There’s also an Internet Key Exchange (IKE) protocol to setup keys and negotiate parameters, and we may infer from Ed Snowden’s disclo-sures that the standard default settings of this (with 1024-bit Di�e-Hellman)are insecure.
+VPNs are o↵ered by ﬁrewall vendors so that by installing one of their boxesin each branch between the local LAN and the router, all the internal tra�ccan pass encrypted over the Internet.
+ Individual workers’ laptops and homePCs can also join a VPN given appropriate software.
+ VPNs are also o↵eredcommercially, and are used for example by people and ﬁrms in countries likeIran and China to circumvent the national ﬁrewall.
+21.
+6CAs and PKIAs we discussed in section 5.
+7.
+4, the pioneers of public-key cryptography devel-oped a vision of certiﬁcates that would bind public keys to the names or rolesof the organisations, people or devices that controlled the corresponding privatekeys.
+ Initially it was thought that governments or phone companies would dothis, but they were too slow.
+ During the dotcom boom, entrepreneurs set upcertiﬁcate authorities (CAs) and software ﬁrms such as Microsoft and Netscapeembedded their public keys into their browsers.
+ There followed a gold rush asSecurity Engineering662Ross Anderson21.
+6.
+ CAS AND PKIthe CAs bought each other and consolidated; investors hoped that every devicewould need a public-key certiﬁcate, so you’d need to pay Verisign ten bucksevery two years to renew the certiﬁcate on your toaster, or it wouldn’t talk toyour fridge.
+Once that foolishness died down, the world’s governments moved to get theirown CAs’ root certiﬁcates into the browsers for intelligence and surveillance pur-poses.
+ As people moved to web services like Gmail, security agencies developedtools to do man-in-the-middle attacks, and as TLS was used to encrypt pass-word entry (and later, the whole session), this meant having a CA that wouldproduce a certiﬁcate on www.
+gmail.
+com for a security agency public key thatthe target’s browser would accept.
+ In fact, at a panel discussion at FinancialCryptography 2011, I asked the man from Mozilla how come, when I updatedFirefox the previous day, it had put back a certiﬁcate I’d removed for Tubitak –a Turkish intelligence organisation.
+ At this point a man stood up in the audienceand shouted ‘How dare you insult my country! Tubitak is not an intelligenceagency – it is a research organisation!’ The man from Mozilla shrugged and saidwryly, ‘Now you see how hard certiﬁcate governance is.
+’Later that year came the DigiNotar scandal.
+ DigiNotar was a Dutch CAwhich was found to have issued wildcard certiﬁcates for Gmail.
+ Iranian agentshad hacked it in order to monitor 300,000 Gmail users in Iran; sanctions meantthat, unlike Turkey, they could not just have their government certiﬁcate in-stalled in the major browsers.
+ Mozilla and Google promptly put DigiNotar todeath by removing its root certiﬁcates; Microsoft and Apple followed quickly.
+This caused real disruption in the Netherlands, many of whose online govern-ment services used DigiNotar certiﬁcates, and had to scramble to get others.
+It turned out that there had been earlier attacks on another CA, Comodo, butthat company claimed to have revoked all its wrongly-issued certiﬁcates.
+ Sincethen, there has been increasing pressure on CAs and auditors from the browsers’root stores.
+There is frequent semantic confusion between ‘public (key infrastructure)’and ‘(public key) infrastructure’.
+ In the ﬁrst, the infrastructure can be used bywhatever new applications come along; I’ll call this an open PKI.
+ In the second,it can’t; I’ll call this a closed PKI.
+ If you’re building a service that governmentagencies are likely to attack, then it may be a good idea to keep your PKIclosed, with a CA that runs on your own premises – so you get to know of anywarrants.
+ I advise ﬁrms who maintain software that’s installed on many millionsof machines to use a private CA for their code signing keys.
+PKI has a number of intrinsic limitations, many of which we discussed in thechapter on distributed systems.
+ Naming is di�cult, and the more applicationsrely on a certiﬁcate, the shorter its useful life will be.
+You can sometimessimplify things by removing unnecessary names: rather than one certiﬁcatesaying ‘Ross Anderson’s key is KR’ and another saying ‘Ross Anderson has theright to administer x.
+foo.
+com’ you might just say ‘KR has the right to administerx.
+foo.
+com.
+’This is an aspect of the ‘one key or many’ debate.
+ Should I expect to havea single digital credential to replace each of the metal keys, credit cards, swipeaccess cards and other tokens that I currently carry around? Or should each ofSecurity Engineering663Ross Anderson21.
+6.
+ CAS AND PKIthem be replaced by a di↵erent credential? Multiple keys protect the customer:I don’t want to have to use a key with which I can remortgage my house to buymy lunchtime sandwich.
+ As we saw in the chapter on banking and bookkeeping,it’s easy to dupe people into signing a message by having the equipment displayanother one.
+Now the standard PKI machinery (the X.
+509 protocol suite) was developedto provide an electronic replacement for the telephone book, so it started o↵ byassuming that everyone will have a unique name and a unique key in an openPKI architecture.
+This in turn leads to issues of trust, of which there are many.
+• If you remove one of the hundreds of root certiﬁcates from Firefox, thenMozilla silently replaces it; Windows comes with even more root certiﬁ-cates – but you can’t delete them at all.
+ In each case, you have to knowhow to mark a certiﬁcate as untrusted.
+• There have been some interesting e↵ects where a government that had itscert in Windows but not in other browsers (such as Thailand’s, after themilitary coup in 2014) had to resort to di↵erent surveillance methods forMac users [1554].
+• Many ﬁrms use certs that are out-of-date, or that correspond to the wrongcompany, often because the ﬁrm’s marketing department got a contractorto run some promotion or another.
+ As a result, users have been trained toignore security warnings, and only a small minority used to pay attentionto them [841].
+ Recently browsers such as Firefox have made it harder toclick past warnings.
+• Certs bind a company name to a DNS name, but their vendors are usuallynot authorities on either; they hand out certiﬁcates after checking thatthe applicant can answer an email sent to that domain, or put up a webpage with a CA challenge on it.
+ Things are slightly better with ‘extendedvalidation’ certiﬁcates6, but even they aren’t foolproof.
+• On their ‘certiﬁcation practice statements’ CAs go out of their way todeny all liability.
+• Certiﬁcate revocation is an issue.
+ The original idea was that anyone rely-ing on a cert could download a certiﬁcate revocation list (CRL) from theCA and check any cert on which they were about to rely.
+ However, thisvitiated much of the beneﬁt of public-key cryptography by requiring onlineoperation for high assurance.
+ In addition, users of some systems (partic-ularly US government ones) had to download large CRLs every time theystarted up their systems, leading to delay and network congestion.
+ Sinceabout 2013, people have moved to the Online Certiﬁcate Status Protocol(OCSP), a more e�cient protocol for online status checking.
+Behind all this mess lies, as usual, security economics.
+ During the dotcomboom in the 1990s, the SSL protocol (as TLS then was) won out over a more6These used to bring up a green padlock in your browser, though this is being discontinuedin Chromium from v 76 in 2020 after research showed that nobody paid any attention.
+Security Engineering664Ross Anderson21.
+6.
+ CAS AND PKIcomplex and heavyweight protocol called SET, because it placed less of a burdenon developers [110].
+ The costs of compliance were dumped on the users – whoare often unable to cope [524].
+ Much of the engineering around CAs and certssince then has been playing catchup.
+The big issues at the time of writing are certiﬁcate lifetime; LetsEncrypt;and certiﬁcate transparency.
+The maximum permitted lifetime of a certiﬁcate, if it’s to be accepted bythe main browsers, has steadily reduced from 8 years to 3 years to 27 months.
+Ballots in 2017 and 2019 proposed a cut to 13 months [1581] and in 2020 Appleforced the issue by declaring that from September, its devices would no longeraccept any certs valid for longer than 398 days [1446].
+ This will force manywebsites to refresh their certiﬁcates; it will be interesting to see how ﬁrms ﬂushout all the certs in DNS.
+ (It will also widen the gap between systems withannual certs and some industrial and IoT systems where certs have to last foryears because of the di�culty of software upgrade.
+)Getting certs used to be di�cult as you had to go shopping for one, proveyou controlled your domain, get the cert, upload it to your server, change theconﬁguration and then test it all.
+ The change maker here has been a nonproﬁt,the Internet Security Research Group (ISRG) which provides certs for free andby February 2020 had issued a billion of them.
+ Making certs free allowed fullautomation, which keeps costs down: their ‘LetsEncrypt’ CA supports 100msites on a budget of $3m pa.
+ LetsEncrypt set out to make deploying certs easy,and the impact has been real: 20% of browser connections are still in plaintext,but this is down from 60% four years ago.
+ This service started in 2015, twoyears after the Snowden revelations.
+ Their automated certiﬁcate managementenvironment is now standardised as RFC8555, so commercial CAs are using ittoo.
+There’s a transparency log and the system has no manual override, sothere’s some assurance that they have never been compelled to issue a cert.
+ (Infact, the NSA uses their certs.
+) At November 2019, they were the largest CA,with 112m certs for 188m domains; they had 5% of the top hundred sites but35% of the top million.
+ Their scale means that mistakes a↵ect lots of sites; inMarch 2020, a bug in their software meant that 3 million certiﬁcates covering12 million server names had to be replaced [590].
+21.
+6.
+1Certiﬁcate transparencyFollowing the attacks on Comodo and DigiNotar, work started on mechanismsto block maliciously issued certiﬁcates.
+ Certiﬁcate transparency sets out to dothis by maintaining logs of all the certiﬁcates seen in the wild for each domain,so that domain owners can rapidly spot certs that should not have been issuedfor their domain.
+ Google launched the ﬁrst certiﬁcate transparency log in 2013and Chrome started insisting on such logs for extended validation certiﬁcatesin 2015.
+ Google found that Symantec had issued certiﬁcates for a number ofdomains (including their own) without the domain owner’s knowledge [1786],and made certiﬁcate transparency mandatory for all CAs in 2018.
+Security Engineering665Ross Anderson21.
+7.
+ TOPOLOGY21.
+7TopologyThe topology of a network is the pattern in which its nodes are connected, andthis can be a signiﬁcant component of the security architecture.
+• A utility might have a number of islands, each containing a generatoror substation with dozens to hundreds of devices on a trusted network,connected in turn via a specialised ﬁrewall and a VPN to a network controlcentre.
+• A cloud service provider might have tens of thousands of machines in adata centre, with hierarchies of certiﬁcates issued both by the providerand its tenants determining which VMs or containers on which machinescan communicate with each other.
+ And while the internal network may beuntrusted, in the sense that network location plays no role in access controldecisions, it may be shielded from DDoS attacks by front-end systems.
+• Classiﬁed systems used by governments may have quite large trusted net-works operating at elevated levels, with separate LANs in buildings.
+More complex topologies can be found where nodes are users and edges aretheir presence in each others’ address books.
+ Social-network analysis has beenapplied to disciplines from epidemiology through criminology and the study ofhow new technologies di↵use, to the study of harms transmitted directly betweenusers, such as macro viruses [1433].
+ Social networks can be modelled by a graphwith a power-law distribution of vertex order; a small number of well-connectednodes help make the network resilient against random failure, and easy to navi-gate.
+ Yet they also make such networks vulnerable to targeted attack.
+ Removethe well-connected nodes, and the network is easily disconnected [36].
+ Dictatorshave known this intuitively; Stalin consolidated his rule by killing the richerpeasants, Pol Pot killed intellectuals, while William the Conqueror killed theSaxon gentry.
+ Now we have quantitative models, they help explain why revo-lutionaries have tended to organise themselves in cells [1373]; by doing tra�canalysis against just a few well-connected organisers, a police force can identify asurprising number of members of a dissident organisation – unless the dissidentsorganised in a cell structure in the ﬁrst place [510].
+21.
+8SummaryPreventing and detecting attacks that are launched over networks is the core ofa modern CISO’s job.
+ It’s di�cult because it involves a huge range of attacktypes and security technologies.
+ It can lead to newsworthy failures.
+ There isunlikely to be any magic solution, though a lot of things can help.
+ Each newadvance opens up new things to worry about; for example, cloud services mayshift much of the network security task to a provider, but make conﬁgurationmanagement more critical.
+ Overall, the problems are so complex and messythat managing them needs a whole-system approach with automation.
+Security Engineering666Ross Anderson21.
+8.
+ SUMMARYHacking techniques depend partly on the opportunistic exploitation of vul-nerabilities introduced accidentally by the major vendors, and partly on tech-niques to social-engineer people into running untrustworthy code.
+ However thesehave developed into a whole ecosystem of bad guys, which a security engineeralso needs to study and understand.
+Research ProblemsIn 2000, the centre of gravity in network security research was technical: we werebusy looking for new attacks on protocols and applications as the potential fordenial-of-service attacks started to become clear.
+ By 2010, there was much morediscussion of economics and policy: of how changing liability rules might makethings better [97].
+ By 2020, there is much more work on metrics: on measuringthe actual wickedness that goes on, and feeding this not just into the policydebate but also into law enforcement.
+ At the operational level, the game isabout automation and integration – about enabling large ﬁrms to process largequantities of threat intelligence and network surveillance information, turn itinto actionable intelligence, and measure how e↵ectively the network securityteam is doing its job.
+Further ReadingThe early classic on Internet security was written by Steve Bellovin and BillCheswick, with Avi Rubin joining them for the second edition [221].
+ The seminalwork on viruses is by Fred Cohen [450], while Java security is discussed by LiGong (who designed it) [783].
+ For BGP security, see our 2011 ENISA report:the full Monty is over two hundred pages, designed for people starting a PhDin network security, but there’s a shorter executive summary too [1906].
+For a more detailed overview of malware, I might suggest Wenke Lee’s Cyboksurvey paper [1137]; and Sanjah Jha’s Cybok survey of network security providesmore detail of IPSEC as well as ethernet and port-based security [983].
+I’m not aware of any good overview of the certiﬁcation authority ecosys-tem.
+ You might start with the 2004 oral history interview with Jim Bidzos,the founder of Verisign [240].
+ The initial goal of Microsoft and Netscape wasto jump-start electronic commerce on the worldwide web; certiﬁcate use thenspread to passwords and software updates, and when Javascript came along,the same origin principle shifted trust to websites.
+ Many other players jumpedin, with some government agencies trying to undermine the CA ecosystem andothers trying to reinforce it.
+ There’s conﬂict between technical security goalsand legal goals, as well as between auditors and regulators.
+ So there are quiteseparate views on CA security from WebTrust (the American and Canadian ac-countants) and ETSI (the most relevant European standards body).
+ For moredetail, a presentation by Ryan Sleevi on what’s wrong with the ecosystem [1785]has many pointers for those who want to dig into the current problems, bothtechnical and operational, and their background.
+Security Engineering667Ross Anderson

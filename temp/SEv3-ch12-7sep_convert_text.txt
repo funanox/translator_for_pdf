@@ -1,0 +1,1550 @@
+Chapter 12Banking and BookkeepingAgainst stupidity, the Gods themselves contend in vain.
+– JC Friedrich von SchillerAs a dog returneth to his vomit, so a fool returneth to his folly.
+– Proverbs 26:1112.
+1IntroductionThe cashless payment industry is one of the winners from the coronavirus pan-demic, as people worldwide abandon cash in favour of card and phone payments.
+The underlying banking systems range from payment card processing and homebanking through high-value interbank money transfers to the back-end book-keeping systems that keep track of it all and settle up afterwards.
+ There arespecialised networks for everything from stock trading to trade payments, manyof which are open to other companies too.
+ Larger companies have internal book-keeping and cash management systems that mirror many of the functions of abank.
+Such systems matter to the security engineer for a number of reasons.
+ First,they’re a core professional competence.
+ You need to understand transactionprocessing to tackle the wider problems of fraud, and this chapter will give you aroad map.
+ You also need to understand internal controls based on bookkeeping,as these not only give early warnings when things go wrong, but also drivecorporate risk management.
+ You have to be able to carry a conversation aboutGramm-Leach-Bliley, Sarbanes-Oxley and PCI DSS to have credibility withyour CFO.
+ When you propose protection mechanisms, one of the ﬁrst thingsyou’re likely to be asked is how they’ll help executives discharge their ﬁduciaryresponsibilities to shareholders.
+Second, bookkeeping drove the computer industry.
+ The ﬁrst computer out-side the military and academia was the Leo, which did bookkeeping for theLyons chain of co↵ee houses from 1951.
+ Banking rapidly became the most in-tensive application area for computing, which spread into other ﬁrms via the37612.
+2.
+ BOOKKEEPING SYSTEMSautomation of bookkeeping from the 1960s.
+ So the protection of bookkeepingsystems is of both historical and practical importance.
+ It also gives us a well-understood model of protection in which conﬁdentiality plays little role, butwhere the integrity of records (and their immutability once made) is paramount.
+A banking system should prevent customers from cheating each other, or thebank; it should prevent bank sta↵ from cheating the bank, or its customers; andthe evidence it provides should be good enough that none of them can get awaywith falsely accusing others of cheating.
+ Banking and bookkeeping pioneeredthe use of dual control, also known nowadays as multi-party authorisation.
+Third, transaction processing systems – whether for $50 ATM withdrawals,or $100m wire transfers – were the application that launched commercial cryptol-ogy as a separate discipline outside the military.
+ They drove the development ofencryption algorithms and protocols, as well as the supporting technology suchas smartcards.
+ Many instructive mistakes were ﬁrst made (or at least publiclydocumented) in the area of ﬁnancial cryptography.
+Finally, many of the global-scale systems we’ve built this century were de-signed to circumvent the checks and balances that had evolved over centuriesin the local and manual systems they replaced.
+ Google’s mission was to makeall the world’s information available by disrupting the previous implicit andexplicit controls of locality, scale, conﬁdence and copyright.
+ Uber planned tobecome the global taxi company by circumventing taxi regulations in thousandsof towns and cities worldwide.
+ It’s hardly surprising that a successful startupoften has to reinvent controls, whether under pressure from fraud and abuse, orunder pressure from lawmakers.
+In this chapter, I’ll ﬁrst describe the bookkeeping systems used to track assetsand manage the risk of corrupt sta↵; such accounting systems are also used byother companies of any size.
+ I’ll then describe the international funds-transfersystems used for interbank payments.
+Next, I’ll describe ATM systems, thepublic face of banking, whose technology has also been adopted in applicationssuch as utility meters.
+ I’ll follow with the story of credit cards, which havebecome the main payment mechanism online.
+ I’ll then move on to more recenttechnical advances, including contactless payments, phone payments and openbanking.
+12.
+2Bookkeeping SystemsBookkeeping appears to have been invented in the Middle East in about 8500BC, just after agriculture [1663].
+ When people started to produce surplus food,they started to store and trade it.
+ Suddenly they needed a way to keep trackof which villager put what in the communal warehouse.
+ To start with, eachunit of food (sheep, wheat, oil, .
+.
+.
+ ) was represented by a clay token, or bulla,which was placed inside a clay envelope, sealed by rolling it with the patternof the warehouse keeper and then baked it in a kiln.
+ When the farmer wantedto get his food back, the seal was broken by the keeper in the presence of awitness.
+ (This may be the oldest known security protocol.
+) By about 3000BC,this had led to the invention of writing [1515]; after another thousand years, weﬁnd equivalents of promissory notes, bills of lading, and so on.
+ At about theSecurity Engineering377Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMSsame time, metal ingots started to be used as an intermediate commodity, oftensealed inside a bulla by an assayer.
+ In 700BC, Lydia’s King Croesus startedstamping the metal directly and thus invented coins [1551].
+ By the Athens ofPericles, a number of wealthy individuals were in business as bankers [772].
+Figure 12.
+1: – clay envelope and its content of tokens representing 7 jars of oil,from Uruk, present day Iraq, ca.
+ 3300 BC (Courtesy Denise Schmandt-Besseratand the Louvre Museum)The next signiﬁcant innovation dates to medieval times.
+ As the dark agescame to a close and trade started to grow, some businesses became too largefor a single family to manage.
+ The earliest recognisably modern banks date tothis period; by having branches in a number of cities, they could ﬁnance trade.
+But for ﬁrms to grow beyond the ability of the owner’s family to supervisethem directly, they had to hire managers from outside.
+ The mechanism thatevolved to control the risk of fraud was double-entry bookkeeping.
+ Historianshave found double-entry records created by Jewish merchants in twelfth-centuryCairo [1691], though the ﬁrst book on the subject did not appear until 1494 [522].
+12.
+2.
+1Double-entry bookkeepingThe idea behind double-entry bookkeeping is simple: each transaction is postedto two separate books, as a credit in one and a debit in the other.
+ For example,when a ﬁrm sells a customer $100 worth of goods on credit, it posts a $100credit on the Sales account, and a $100 debit to the Receivables account.
+ Whenthe customer pays the money, it will credit the Receivables account (therebyreducing the asset of ‘money receivable’), and debit the Cash account.
+ (Theprinciple taught in accountancy school is ‘debit the receiver, credit the giver’.
+)At the end of the day, the books should balance, that is, add up to zero; theassets and the liabilities should be equal.
+ In all but the smallest ﬁrms, the booksSecurity Engineering378Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMSwere kept by di↵erent clerks.
+We arrange things so that each branch can be balanced separately.
+ Eachcashier will balance their cash tray before locking it in the vault overnight;the debits in the cash ledger should exactly balance the physical banknotesthey’ve collected.
+So most frauds need the collusion of two or more people,and this principle of split responsibility, also known as dual control or multi-party authorisation (MPA), is complemented by audit.
+ Not only are the booksaudited at year end, but there are random audits too; inspectors may descendon a branch at no notice and insist that all the books are balanced before thesta↵ go home.
+Technology arrived in 1879, when the ‘Incorruptible Cashier’ patent of JamesRitty of Dayton, Ohio, introduced the cash register with a bell and a papertape.
+ Ritty was a saloon owner whose employees stole money from him.
+ Hesold his patent to John H.
+ Patterson, who founded the National Cash RegisterCompany, which not only became a leading supplier of banking and bookkeepingequipment, but spun o↵ IBM, which dominated the computer industry untilMicrosoft displaced it in the 1990s.
+12.
+2.
+2Bookkeeping in banksBanks were early adopters of computers for bookkeeping.
+ Starting in the late1950s and early 1960s with applications such as cheque processing, they foundthat even the slow and expensive computers of the time were much cheaper thanarmies of clerks.
+ The 1960s saw banks o↵ering automated payroll services totheir corporate customers.
+ ATMs arrived en masse in the 1970s, with the ﬁrstonline banking systems in the 1980s; web-based banking followed in the 1990s.
+Yet today’s slick online systems still rely on legacy back-o�ce automation.
+The law in the US, Europe and most developed countries requires not justbanks but all public companies to have e↵ective internal controls, and makesexecutives responsible for them.
+ Such laws are the main drivers of investmentin information security mechanisms.
+ Computer systems used for bookkeepingtypically claim to implement variations on the double-entry theme, but thequality is variable.
+ The separation-of-duty features may be just a skin in theuser interface, while the underlying data are open to manipulation by technicalsta↵.
+For example, if the ledgers are all just views of one single database,then someone with physical access and a database editing tool might bypassthe controls.
+ Sta↵ may also notice loopholes and exploit them.
+ For example,one bank didn’t audit address changes, until a cashier found he could change acustomer’s address, issue an extra bank card, and change it back again [54].
+ Sowe need to look at the mechanics, and banking is the natural place to start.
+A traditional core banking system has a number of data structures: anaccount master ﬁle, which contains each customer’s current balance togetherwith previous transactions for a period of perhaps ninety days; a number ofledgers which track cash and other assets on their way through the system;various journals of transactions that have been received from cash machines,teller stations, merchant terminals and so on, but not yet posted to the ledgers;and an audit trail that records who did what and when.
+ The systems used bySecurity Engineering379Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMSthe large UK banks are relatively unchanged since the last century, though anumber of peripherals have been added, notably phone banking1.
+The core banking software will apply the transactions from the journals tothe various ledgers and the account master ﬁle.
+So when a customer walksinto a branch and pays $100 into their savings account, the teller will make atransaction that records a credit to the customer’s savings account of $100 whiledebiting the same amount to the cash ledger recording the amount of money inthe drawer.
+This was traditionally done overnight in a batch process but increasinglyinvolves real-time online processing, so things can go wrong more quickly.
+ Thefact that all the ledgers should always add up to zero provides an importantcheck.
+ If the bank (or one of its branches) is ever out of balance, an alarmwill go o↵, some processing will stop, and inspectors will start looking for thecause.
+ So a programmer who wants to add to their own account balance hasto take the money from some other account, rather than just creating it outof thin air by tweaking the account master ﬁle.
+ Just as a traditional businesshad di↵erent ledgers managed by di↵erent clerks, so a banking data processingshop will have di↵erent development teams in charge of di↵erent subsystems.
+In addition, all code is subjected to scrutiny by an internal auditor, and totesting by a separate test department.
+ Once it has been approved, it will berun on a production machine that does not have a development environment,but only approved object code and data.
+ (The principle that a di↵erent teamruns production systems than the developers who wrote it is now coming understrain in the new world of DevOps.
+)12.
+2.
+3The Clark-Wilson Security Policy ModelAlthough such systems had evolved since the 1960s, a formal model of theirsecurity policy was only introduced in 1987 by Dave Clark and Dave Wilson(the former a computer scientist, and the latter an accountant) [436].
+ In thismodel, some data items are constrained so that they can only be acted on by acertain set of transformation procedures.
+More formally, there are special procedures whereby data can be input –turned from an unconstrained data item, or UDI, into a constrained data item,or CDI; integrity veriﬁcation procedures (IVPs) to check the validity of any CDI(e.
+g.
+, that the books balance); and transformation procedures (TPs), which maybe thought of in the banking case as transactions that preserve balance.
+ Inthe general case, they maintain the integrity of CDIs.
+ They also write enoughinformation to an append-only CDI (the audit trail) for transactions to be re-constructed.
+ Access control is by means of triples (subject, TP, CDI), whichare so structured that a multi-party authorisation policy is enforced.
+ In theformulation in [47]:1.
+ the system will have an IVP for validating the integrity of any CDI;1Most retail banking transactions nowadays are balance enquiries from phones, which aretypically dealt with by a front end that gets regular updates from the core system.
+Thisminimises load on the core system, and also minimises the complaints when it goes down.
+Security Engineering380Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMS2.
+ the application of a TP to any CDI must maintain its integrity;3.
+ a CDI can only be changed by a TP;4.
+ subjects can only initiate certain TPs on certain CDIs;5.
+ triples must enforce an appropriate separation-of-duty policy on subjects;6.
+ certain special TPs on UDIs can produce CDIs as output;7.
+ each application of a TP must cause enough information to reconstruct itto be written to a special append-only CDI;8.
+ the system must authenticate subjects attempting to initiate a TP;9.
+ the system must let only special subjects (i.
+e.
+, security o�cers) makechanges to authorization-related lists.
+A number of things bear saying.
+First, unlike Bell-LaPadula, the Clark-Wilson model involves maintaining state.
+ In addition to the audit trail, this isusually necessary for dual control as you have to keep track of which transactionshave been partially approved – such as those approved by only one manager andwaiting for sign-o↵ by a second.
+Second, the model doesn’t do everything.
+ It captures the idea that statetransitions should preserve an invariant such as balance, but not that statetransitions should be correct.
+ This model doesn’t stop you paying cash into thewrong bank account.
+Third, the hard question remains, namely: how do we control the risks fromdishonest sta↵?Rule 5 says that ‘an appropriate separation-of-duty policy’must be supported, but nothing about what this means.
+ Indeed, it’s di�cultto ﬁnd any systematic discussion in the accounting literature of how you designinternal controls.
+What happens in practice is that the big four accountancy ﬁrms have a listof controls that they push to their audit clients – a typical company may havea checklist of about 300 internal controls that it has to maintain, depending onwhat sector it’s in.
+ These lists get steadily longer in response to incidents, fears,and regulatory requirements.
+ Many controls are formal compliance rather thanreal risk reduction, and some are actually harmful.
+ I discussed in section 3.
+4.
+4.
+3how the big four auditors seized on NIST advice in the 1990s to get people tochange their passwords every month; at the time of writing (2020) they are stillpushing their audit clients to do this.
+ Yet NIST retracted its advice years agoin the face of the evidence, and Britain’s GCHQ also advises companies againstpassword aging.
+A principled approach to internal control is possible, and indeed desirable.
+In the following section, I try to distill the experience gained from working at thecoalface in banking and consultancy, and more recently in university governance.
+12.
+2.
+4Designing internal controlsOver the years, various standards for bookkeeping and internal control have beenpromoted by the accountancy profession, by lawgivers and by banking regula-Security Engineering381Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMStors.
+ In the US, there’s the Committee of Sponsoring Organizations (COSO), agroup of accounting and auditing bodies [461].
+ However, self-regulation failedto stop the excesses of the dotcom era, and following the collapse of Enronthere was intervention from US lawmakers in the form of the Sarbanes-OxleyAct (SOX) of 2002.
+ SOX regulates all US public companies, making senior exec-utives responsible for the accuracy and completeness of ﬁnancial reports, whosetruthfulness CEOs have to certify; protecting whistleblowers, who are the mainsource of information on insider fraud; and making managers responsible formaintaining “adequate internal control structure and procedures for ﬁnancialreporting”.
+ It also demands that auditors disclose any “material weaknesses”.
+Most of the compliance costs of SOX are reckoned to come from internal con-trols.
+ Earlier, the Gramm-Leach-Bliley Act (GLBA) of 1999 had liberalised bankregulation in many respects but obliged banks to have security mechanisms toprotect information from foreseeable threats in security and integrity.
+ Alongwith HIPAA in the medical sector, and PCI DSS that I’ll discuss later in sec-tion 12.
+5.
+2, GLBA and SOX have driven much of the investment in informationsecurity and internal control.
+ These regulations have helped consolidate the BigFour accountancy ﬁrms’ inﬂuence over corporate policy on internal control.
+In this section, our focus is on the technical aspects.
+ Modern risk-managementsystems typically require a company to identify and assess its risks, and thenbuild controls to mitigate them.
+ The company will typically have a risk registercontaining many pages of major risk items such as ‘loss of working capital due tolarge unauthorised bank transaction by insider’ (I’ll discuss this in more detailin section 27.
+2).
+ Some of them will be mitigated using non-technical measuressuch as insurance, but all should have a risk owner among the senior executives,and a number of these risks will end up in the CIO’s lap2The auditors’ work will be driven by the International Auditing and As-surance Standard Board’s “International Standard on Auditing 315” [950].
+ ISA315 focuses on the risk of a material misstatement in an organisation’s accounts,whether due to error or to fraud.
+ The auditors are supposed to understand thebusiness and its system of internal control; they will identify signiﬁcant accounts(such as Cash), signiﬁcant assertions for each account (such as Existence) andthe signiﬁcant business processes (such as Sales) that impact them, along withthe controls those processes contain.
+They then work through the risk thateach assertion might be false and whether the risk is material.
+ So how do youengineer proper controls? The latest version of ISA 315 has quite a few pageson this, but they are mostly somewhat general3, so their interpretation is oftendown to the accountancy ﬁrms.
+As we’ll discuss in Part 3, there are two basic approaches to assuring safetyagainst errors and security against attacks.
+ You can work top-down, starting o↵from the list of bad things you want to not happen, such as ‘large unauthorisedwire transfer’, then enumerating the possible causes and identifying controls tomitigate the risks; or you can work bottom-up, starting o↵ from things thatmight fail, such as ‘a member of sta↵ being blackmailed’, work out what harmmight result, and again identify appropriate controls.
+ You may often have to2For a description of risk governance in a UK bank, see the Financial Conduct Authority’sreport into the 2016 fraud against Tesco Bank [687], which I discuss in section 12.
+6.
+3.
+3See paragraphs A6, A123–181, A198, A224–229 and Appendix 3 paragraphs 15–24Security Engineering382Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMSuse both approaches.
+ When supporting audit, you need to pay attention to therisks to assertions on which the ﬁnancial statements rely.
+ However, you cannotignore other risks that might a↵ect the ﬁrm’s ability to operate, such as the lossof a data centre.
+ The internal controls will not be all of your security posture.
+Having identiﬁed those risks that need to be mitigated by separation ofduty, you can do this in two ways: dual control, also known as multi-partyauthorisation, and functional separation.
+In dual control, two or more principals act together to authorize a transac-tion.
+ The classic military example is in nuclear command systems, which mayrequire two o�cers to turn their keys simultaneously in consoles that are too farapart for either to reach both locks (I’ll discuss this in detail in section 15.
+4).
+The classic civilian example is when a bank issues a letter of guarantee, whichmay undertake to carry the loss should a loan made by another bank go sour.
+Guarantees are particularly prone to fraud.
+ If you can get bank A to guar-antee a loan to your business from bank B, then bank B is supervising youraccount while bank A’s money is at risk.
+ A crook with a forged or corruptly-obtained guarantee can take their time to plunder the loan account at bank B,with the alarm only being raised when they default and bank B asks bank Afor the money.
+ You don’t want a single manager to be able to issue such aninstrument4.
+With functional separation of duty, two or more sta↵ members act on a trans-action in complementary ways.
+ The classic example is corporate purchasing.
+ Aline manager takes a purchase decision and tells the purchasing department; aclerk there raises a purchase order; the store clerk records the goods’ arrival; aninvoice arrives at accounts; the accounts clerk correlates it with the purchaseorder and the stores receipt and raises a cheque; and the accounts manager signsthe cheque.
+However, it doesn’t stop there.
+ The line manager now gets a debit on theirmonthly statement for that internal account, their boss reviews the accountsto make sure the division’s proﬁt targets are likely to be met, the internalaudit department can descend at any time to audit the division’s books, andwhen the external auditors come in once a year they will check the books of arandomly selected sample of departments.
+ Finally, when frauds are discovered,the company’s lawyers may make vigorous e↵orts to get the money back.
+The model can be summarised as prevent – detect – recover.
+ The relianceplaced on each of these three legs will depend on the application.
+ Where detec-tion may be delayed, and recovery may therefore be di�cult – as with corruptbank guarantees – you put extra e↵ort into prevention, perhaps using dual con-trol.
+ Where it’s prevention that’s hard, you can make detection fast enough,and recovery vigorous enough, to provide a deterrent.
+ The classic example hereis that bank cashiers can easily take cash, so you count the money every daybefore they go home.
+Management control based on bookkeeping is not only one of the earliestsecurity systems; it has given rise to a lot of management science and civil law.
+4Nowadays the issue is not just whether two managers might collude, or one of themimpersonate the other, but whether malware might take over both their accounts.
+ I’ll discussthis further in section 12.
+3.
+3.
+Security Engineering383Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMSControls work best where the roles are complementary parts of the existingbusiness process, and some processes have evolved over centuries to supportthem.
+ Controls are not only entwined with these processes, but exist in theﬁrm’s cultural context.
+ In Swiss banks, there are two managers’ signatures onalmost everything, while Americans are much more relaxed.
+ In most countries’banks, sta↵ can be moved randomly from one task to another, and are forced totake a one-week or even two-week holiday, with no computer or building access,at least once a year.
+ This would not be acceptable in a university – but inacademia there’s a lot less to steal.
+Designing an internal control system is highly interdisciplinary.
+ The ﬁnancialcontrollers, the personnel department, the lawyers, the auditors and the systemspeople all come at the problem from di↵erent directions, o↵er partial solutions,fail to understand each other’s control objectives, and things fall down the holein the middle.
+ Human factors are often neglected, and systems end up vulnerablewhen helpful subordinates or authoritarian managers circumvent the control toget their work done.
+ It’s important to match the controls to the culture, andmotivate people to use them; the better run banks sell management controlsto sta↵ as a means of protecting them against blackmail and kidnapping.
+ Aswe noted in Chapter 3, sta↵ in an organisation only have so much compliancebudget – they’re only prepared to spend so much time and e↵ort performingsecurity rituals that get in the way.
+Controls that become rituals may alsobe practised for many years after their purpose has been forgotten or becomeirrelevant.
+ You have to understand all this and spend the compliance budgetwisely on achieving culturally feasible e↵ects.
+A culture of limited trust ofclose colleagues is particularly di�cult to sustain (another reason why functionalcontrols split across business units may be more e↵ective).
+And just as you will try to require more than one banker to approve a largetransaction, you may want to require more than one engineer to approve codeto run on a live system.
+ But this is hard to do thoroughly for a number ofreasons.
+ First, many interfaces provide single points of failure.
+ Second, split-responsibility systems administration is just too tedious.
+ With care you canmake it auditable5.
+ Third, dual controls often require persistent state, which isin tension with programmers’ wish to keep things simple by making transactionsatomic.
+ And as that state needs to be managed, there are always some trustedsysadmins who need full access in order to do their jobs.
+ Fourth, as ﬁrms moveto integrating development and operations as DevOps, and then add securityto make it DevSecOps, they may end up with more trusted sta↵.
+ At the veryleast, the location of trust may change, as more of it shifts to the source codereview phase.
+ Fifth, there are emergencies.
+ The ATM system goes down at theweekend, and the ATM team’s on-call engineer gets access to the live systemfrom home to ﬁx the bug.
+ You log such accesses and get your auditors to stare atthe logs, as with the sysadmins.
+ Finally, it’s inevitable that your top engineerswill be so much more knowledgeable than your auditors that they could do badthings if they really wanted to.
+So there are always engineers who could commit fraud.
+ A sysadmin might5Old-time banking systems were built on the IBM operating system MVS, which wouldlet the sysadmin do anything, except ﬁnding out which of their activities the auditor wasmonitoring [224].
+Security Engineering384Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMScreate two shadow users who between them authorise a large payment, or apayment system maintainer might pop an extra payment into the queue.
+ Wherethey get caught is when the balancing controls set o↵ the alarm after a day ortwo, and the money-laundering controls at the bank to which they wire themoney stop them getting away with very much.
+I’ll discuss this further insection 12.
+3.
+3.
+ The take-home is that functional controls along the prevent –detect – recover model are often more important than shared control, as theyseparate know-how as well as access.
+ But for functional separation to work,the mechanisms need to be engineered into the application, so they may beproprietary, obscure and less well tested than the mechanisms that come withoperating systems.
+ And there are limits to how much you can separate know-how.
+ Some people have to understand it all, such as the security architect andthe chief auditor.
+The same analysis hold for the business processes themselves.
+ Some peopleend up having to take high-value decisions quickly and have to understand allthe aspects of a deal.
+ At a real bank, you might ﬁnd thirty or forty people youjust have to trust – the CEO, the chief dealer, the top sysadmins and a numberof others.
+ It’s important to know who they are, to minimise their numbers, topay them well, and to watch them discreetly.
+A ﬁnal remark on dual control is that it gets fragile at organizational in-terfaces.
+One example is that banks in California suddenly started ignoringrequests that cheques have two signatures after they installed new processingequipment [1621].
+ Some organisations are unwilling to show competitors who’strusted to sign and for how much.
+ And then there’s dispute resolution: ‘My twomanagers say the money was sent!’ ‘But my two say it wasn’t!’12.
+2.
+5What goes wrongTheft and fraud can take many forms.
+ Most thefts from the average companyare due to insiders, and automation seems to be making the incidents both rarerand larger.
+12.
+2.
+5.
+1Insider fraudsBack when most bankers worked in branches, banks in the English-speakingworld sacked some 1% of sta↵ each year.
+ The typical o↵ence was minor embez-zlement with a loss of a few thousand dollars.
+ No-one found an e↵ective way ofpredicting which sta↵ would go bad; previously loyal sta↵ can be thrown o↵ therails by shocks such as divorce, or be given a new manager they just can’t stand.
+Losing a few hundred tellers a year was just a cost of doing business.
+ Thesenumbers are falling now that most sta↵ work in call centres; the customers theydeal with are allocated randomly to them, so it’s hard to collude with a friend.
+It’s also harder nowadays for sta↵ to sell customers’ personal information, sincesta↵ have to walk a customer through security questions to get access to theirrecord.
+ Sta↵ at well-run banks are typically forbidden from taking phones oreven pens and paper into call centres so they can’t leak data to outsiders at anySecurity Engineering385Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMSscale6.
+Notable insider cases include:• The biggest recent UK bank fraud was pulled o↵ by a gangster from theEast End of Glasgow, Feezan Hameed.
+ ‘Fizzy’ got sent down for 11 yearsin 2016 for stealing at least £113m from business customers of Lloyds’Bank in the UK during 2013–15, of which only £47m was recovered7.
+ Hesubverted two members of sta↵ who spotted target companies – typicallymedium-sized ﬁrms with over £1m in their accounts.
+ Fizzy would thenphone up the business owner or ﬁnancial controller, claim to be from thebank, ‘authenticate’ himself by reading them a couple of recent transac-tions, and ask them to ‘authenticate’ themselves in return by computingan authorisation code on their second-factor device.
+ Before he did this,he’d log on as them and set up a batch of payments for large ﬁve-ﬁguresums.
+ The code he got from the victim would release the batch [820].
+• A password reset clerk at HSBC conspired with persons unknown tochange the password used by AT&T to access their bank account withHSBC.
+ The new password was used to transfer over $20 million to o↵shorecompanies, from which it was not recovered.
+ The clerk was a vulnerableyoung man who had been employed on password reset after failing inter-nal exams; the court took mercy, and he got away with ﬁve years [1569].
+It was alleged that an AT&T employee had conspired to cover up thetransactions, but that gentleman was acquitted.
+• One rapidly-growing bank fraud in the 2010s has involved spear-phishingaccounts sta↵ at medium-sized ﬁrms and taking over a couple of sta↵accounts.
+ Owning two clerks’ PCs is simpler than suborning two clerks,and if a ﬁrm’s PCs all have the same conﬁguration and update status,it may not be too hard.
+As a bank may pay extra attention to largetransactions, the game is often to make a lot of four-ﬁgure payments beforethe company notices.
+ In the US, companies that don’t notice a fraudulentpayment the following day usually have no redress.
+ A typical attack mightnet half a million.
+12.
+2.
+6Executive fraudsAll the famous large ﬁnancial frauds – nine ﬁgures and up – have involved seniorinsiders.
+ The collapse of Barings Bank is a good example: managers failed tocontrol rogue trader Nick Leeson, blinded by greed for the bonuses his appar-ent trading proﬁts earned them.
+ Other examples include the Equity Fundingscandal, in which an insurance company’s management created thousands offake people on their computer system, insured them, and sold the policies on toreinsurers; and Robert Maxwell’s looting of the Daily Mirror newspaper pensionfunds in Britain.
+ Either the victim’s executives were grossly negligent, as in the6Such opsec rules are making it harder for call centres to get sta↵ to work from homeduring the Covid pandemic.
+7Full disclosure: I acted as expert witness for one of the victim companies, and we had tothreaten to sue Lloyds to get our money back.
+Security Engineering386Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMScase of Barings, or were the perpetrators, as with Equity Funding and Maxwell.
+And these patterns repeat; for example, Wells Fargo was ﬁned $3bn in 2020 foropening millions of accounts without the customers’ knowledge, just as in theEquity Funding case [699].
+Economists and accountancy professors analyse such issues as problems ofagency: a principal A hires an agent B to manage an asset and wants to knowhow can B’s performance be monitored and assessed.
+ The same principles applywhether the principal is the bank’s CEO and the agent is a manager contem-plating a fraud; or whether the principal consists of the shareholders and theagent is the CEO.
+ In theory, the internal controls and the internal audit depart-ment are the tool used by the CEO to keep track of more junior sta↵, whilethe external auditors are the tool used by the shareholders to keep track of theCEO and the senior executives.
+That’s the theory.
+ The practice was analysed by Alexander Dyck, AdairMorse and Luigi Zingales in a survey of 230 cases of corporate fraud againstquoted US companies between 1996 and 2004 [596].
+Before Sarbanes-Oxley,only a minority of frauds were revealed by the people mandated to spot them:14% by the auditors and 6% by the SEC.
+ Most were detected by actors withother incentives: 19% by employees, 16% by industry regulators, 14% by ﬁ-nancial analysts and 14% by the media.
+ Stock-exchange regulators, commercialbanks and insurance underwriters are notable for their complete absence.
+ Af-ter Sarbanes-Oxley the performance of mandated actors improved slightly butstill to just over half the total.
+ Their analysis of incentives shows that actorswith the strongest incentive to blow the whistle, such as short sellers, were leastactive, while the most active, employees, often had negative incentives in thatthey got ﬁred.
+ This suggests that the dominating factor is who actually knowswhat’s going on.
+ Second, rewards promote disclosure: in addition to the ef-fects of Sarbanes-Oxley, many government actors (such as the taxman) rewardwhistleblowers, with positive e↵ects.
+In theory, external auditors are appointed by the board’s audit committee,which is chaired by an external director; but who appoints the external direc-tors? In my experience, the external directors tend to be friendly with the CEOand the auditors go out of their way to schmooze the CFO8.
+ They o↵er cheapaudits to get their foot in the door, and make their real money from consul-tancy; this was a structural problem for decades, and eventually in February2020, the UK Financial Reporting Council ordered audit and consultancy to beseparated [1049].
+ The big audit ﬁrms have a pernicious e↵ect on the informationsecurity world by pushing their own list of favourite controls, regardless of theclient’s real risks.
+ They maximise their income by nit-picking and compliance;the Sarbanes-Oxley regulations cost the average US public company over $1ma year in audit fees.
+Quite apart from the pure economic incentives, bosses ﬁnd it hard to copewith evidence that senior colleagues are incompetent or dishonest.
+ There’s awhole literature on information avoidance, which I mentioned in section 3.
+2.
+4:people are reluctant to learn things that will cause them pain, stress or extra8The legal inﬁghting following the collapse of Enron destroyed its auditors Arthur Ander-sen, reducing the ‘big ﬁve’ audit ﬁrms to the ‘big four’; now auditors go out of their way toavoid liability for fraud.
+Security Engineering387Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMSwork.
+ And risks that managers are unwilling to confront, they are often unableto control.
+ No-one at Barings wanted to think that their star dealer Nick Leesonmight be a crook; and pop went the bank.
+ Such risks are not being mitigatedby technology; if anything they may be growing.
+12.
+2.
+6.
+1The Post O�ce caseExecutives can also be unwilling to believe that anything might be going sys-tematically wrong with their accounting systems.
+ Even if they suspect, there’sa social reﬂex to close ranks under criticism, and lawyers may advise clients tojust deny everything.
+The case worth studying here is the failure of the Post O�ce accountingsystem in the UK.
+ The Post O�ce doesn’t just ship letters but is a signiﬁcantﬁnancial institution too, most of whose branches are run by sub-postmasters –typically shopkeepers with a franchised Post O�ce counter on their premises.
+ Tocontrol them, the Post O�ce built an accounting system called Horizon, whichhad multiple bugs that caused many franchisees to be charged money they didn’towe.
+ Thousands of people had their lives ruined; some lost their businesses andwere bankrupted, some sta↵ were wrongly ﬁred, and several people were jailedfor frauds they did not commit.
+ Eventually 587 sub-postmasters sued the PostO�ce, and in December 2019 they won an apology and £58m.
+ The judge foundthat Horizon ‘was not remotely robust’ [185].
+This is the ﬁrst and only case, so far as I know, where an accounting systemhas been subjected to a proper test in aggressive litigation.
+ Many legal systemspresume that accounting systems are working properly unless someone can pro-duce evidence to the contrary, and this can be hard: a lot of the legal e↵ort wentinto forcing the Post O�ce to give the claimants access to the software and itsdocumentation so it could be examined by their experts.
+ Incidentally, the totallosses to franchisees appear to be in the mid-hundreds of millions; they’ll getmaybe £11m of the £58m settlement, with the rest going to the lawyers and tothe hedge fund that bankrolled the litigation.
+ Most sta↵ at the Post O�ce tooka pay cut while the CEO Paula Vennels, an ordained minister, got a substantialraise [354].
+ She eventually left.
+ It may be that the software supplier, Fujitsu,will end up paying for the settlement, but that may require further litigation.
+12.
+2.
+6.
+2Other failuresMost accounting system failures are less spectacular, but there are many failuresthat have signiﬁcant e↵ects on the ability of ﬁnancial and other ﬁrms to operate.
+We’ll see more examples as we work through payments in this chapter and otherapplications in later chapters, but here’s a start sample.
+1.
+ As computer systems get more complex over time, they accumulate cruftthat makes them more fragile and harder to maintain.
+ Software engineersrefer to this as technical debt: it means that changes become slower andmore expensive, and recovery from failures can be complex [41].
+ Book-keeping systems are no exception.
+ For example, in June 2012, 6.
+5 millionSecurity Engineering388Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMScustomers of the Natwest Bank had service disrupted for several weeks fol-lowing a software upgrade that went wrong and had to be reversed.
+ Peoplewere stranded overseas with no money and some companies couldn’t makepayroll.
+ The bank was ﬁned £42m [686]; it was then largely owned by theUK government as it had gone bust in the crash of 2008.
+ Had the servicefailure gone on another week, it might well have gone bust again, costingtaxpayers tens of billions and causing widespread disruption.
+ So the fearof a catastrophic failure closing a money-centre bank is a real one.
+ Butreplacing a crufty old core banking system with a new one is a majorproject taking years and costing nine ﬁgures, with its own strategic risks.
+As a young man I worked on a couple of such projects: they have theirnail-biting moments.
+2.
+ We ﬁnd similar project risks further down the food chain.
+ Our univer-sity’s accounting system was replaced in the early 2000s, and a projectthat should have cost £3m cost £11m instead.
+ We ended up suing theaccountancy ﬁrm that installed it, and published a detailed report of whatwent wrong [691].
+3.
+ The system is still, years later, a pain to use, and the reason why may beof interest.
+ At our university, 35 ﬁnance-o�ce sta↵ have more say in thedesign of the ﬁnance system than 1,500 professors.
+ The clerks care more,as they use it all the time, while we professors might use it for an houror two a week.
+ The time saved by clerks is less than the time wasted byprofessors, but the concentrated interest usually wins.
+So even if your bookkeeping system uses a standard core that enforces thebasic Clark-Wilson properties of balance and integrity, there’s still a lot to gowrong.
+12.
+2.
+6.
+3Ecological validityAnd it’s not enough to just check that the books are internally consistent.
+ Youalso need to check that they correspond to external reality.
+ The series of scandalsthat shaped modern audit requirements and practice began with the collapsein 1938 of McKesson and Robbins, a well-known drug and chemical companywith reported assets of $100m 9.
+ It turned out that 20% of the recorded assetsand inventory did not exist.
+ The president, Philip Musica, turned out to be abootlegger with a previous fraud conviction; with his three brothers, he inﬂatedthe ﬁrm’s ﬁgures using a fake foreign drug business involving a bogus shippingagent and a fake Montreal bank.
+The auditors had accepted the McKessonaccount without making enquiries about the company’s bosses; they failed tocheck inventories, verify accounts receivable with customers, or think aboutseparation of duties within the company [1616].
+The famous case for the next generation was the salad oil scandal of 1963,involving the bankruptcy of the Allied Crude Oil Reﬁning Corporation and theprosecution by Robert F.
+ Kennedy of its CEO, Tino de Angelis.
+ Allied had bor-rowed millions from American Express and others against tanks of soybean oil9About $1.
+8bn in 2020 dollarsSecurity Engineering389Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMSthat were actually mostly water, and used this to trade heavily in futures [1442].
+American Express stock dropped by 50% after a whistleblower told it of thefraud; it lost $58m.
+ (Warren Bu↵ett then bought 5% of the company and madea fortune.
+)The requirement that all big ﬁrms be audited has entangled audit ﬁrms inpretty well every major ﬁnancial scandal.
+ I already mentioned Enron, whosefailure in 2001 led to the Sarbanes-Oxley Act, and then there was the ﬁnancialcrisis in 2008 caused in part by trading complicated ﬁnancial derivatives thatturned out to be based on near-worthless mortgages.
+ And one issue with theblockchain systems currently being promoted for some payment and bookkeep-ing applications is that while the mathematical structure may give guaranteesof consistency and consensus, there is no information whatsoever about whetherthe assets referred to are sound, or even exist.
+ So you might be somewhat scep-tical when you see a bank talking about a blockchain to register mortgages,on which smart contracts will allow ﬁnancial innovation.
+ I’ll return to this insection 20.
+7.
+The most recent scandal as this book went to press in July 2020 was Wire-card.
+A payment service ﬁrm, it had started out processing card paymentsto porn sites, online casinos and other merchants that normal banks wouldn’ttouch.
+ It grew rapidly to displace Commerzbank in the Dax 30 – the indexof Germany’s 30 biggest quoted companies, and was celebrated in Germany asa rare local ﬁrm able to challenge Silicon Valley.
+ But in June 2020, as it wasattempting to buy Deutsche Bank (Germany’s largest bank, with a market capof about $20bn), Wirecard’s auditors EY disclosed that a quarter of its claimedassets, some e2.
+1bn supposedly held in the Philippines, could not be found.
+(EY had failed to verify its bank statements with its bankers for three years,relying instead on ‘screenshots’ provided by the company itself [1834].
+) The ﬁrmﬁled for bankruptcy and its CEO, Markus Braun, was arrested.
+ A string of ﬁn-tech startups that used it to process payments stopped trading, leaving millionsof cardholders inside and outside Germany unable to access their money.
+ Yetinvestors and regulators had ignored numerous red ﬂags, going back as far as2008 [1256].
+ Worse, when the Financial Times published an analysis in 2019 ofWirecard’s dubious accounting practices – pointing out that its Dubai subsidiaryseemed to have no customers, that the address of one alleged Philippines sub-sidiary was a small bus company, that another was the home of a retired seaman,and that whistleblowers in its Singapore subsidiary had reported they were beingordered to cook the books [1283] – the German regulator BaFin had respondednot by investigating the company but by starting a criminal investigation of thejournalists and banning short selling of the company’s shares [610].
+ BaFin hadfor some years defended the company against critics rather than investigatingtheir criticisms.
+ This was one of the largest frauds in European history, de-stroying over e20bn in apparent shareholder value, as well as public conﬁdencein German ﬁnancial regulation.
+ En route Wirecard had taken in ﬁrms such asMoodys, Credit Suisse and Softbank.
+ It was quite astonishing to see how littlethe lessons of McKesson and Robbins had been heeded; checking overseas cashbalances really should have been audit 101.
+ Yet the audit industry has persis-tent structural problems, ranging from the fact that auditors sell to CFOs tothe fact that almost all the work is done by juniors [703].
+Security Engineering390Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMS12.
+2.
+6.
+4Control tuning and corporate governanceThe main reason internal control structures tend to be conservative, expensiveand ine↵ective is that while in theory organizations develop them in the light ofexperience, in practice this experience is relayed through the auditor cartel.
+ Intheory there is some governance behind this.
+ There’s a survey of internal auditstandards in [?]; the most inﬂuential is the Risk Management Framework fromthe Committee of Sponsoring Organizations (COSO), a group of US accountingand auditing bodies [461].
+This is one yardstick by which your system willbe judged if it’s used in the US public sector or by companies quoted on USequity markets.
+ The COSO model is targeted not just on internal control but onthe reliability of ﬁnancial reporting and compliance with laws and regulations.
+Its basic process is an evolutionary cycle: in a given environment, you assessthe risks, design controls, monitor their performance, and then go round theloop again.
+ COSO emphasizes soft aspects of corporate culture more than hardsystem design issues so may be seen as a guide to managing and documentingthe process by which your system evolves.
+ In theory, its core consists of seniormanagement checking that their control policies are being implemented andachieving their objectives, and modifying them if not.
+ In practice, the auditorshave captured it.
+The Information Systems Audit and Control Association (ISACA), whichadministers the Certiﬁed Information Systems Auditor (CISA) exam, has areﬁnement of COSO known as the Control Objectives for Information and re-lated Technology (CobiT) which is more international [946].
+ It extends from thetechnical aspects of internal audit to personnel management, change control andproject management.
+ More concrete standards emerge from auditors’ interpre-tation of speciﬁc sectoral regulations, such as Sarbanes-Oxley for US publicly-listed companies, Gramm-Leach-Bliley for US ﬁnancial-sector ﬁrms, HIPAA forUS healthcare providers and GDPR for the personal information of residentsof EU member states.
+ And, as we noted in the chapter on banking and book-keeping, the standards set by the PCI trade association govern data relatingto payment cards.
+ There’s also ISO 27001 on security management.
+ Whateversectors you or your customers operate in, it’s worthwhile paying attention toevolving cybersecurity standards.
+ Many of these are standards because every-one can agree on them, so they’re by no means su�cient.
+ Pretty well every bigbreach involves a ﬁrm with ISO 27001 certiﬁcation; the auditors said somethingwas OK when it wasn’t.
+ We’ll return to this in section 28.
+2.
+9.
+12.
+2.
+7Finding the weak spotsIf you are ever responsible for security in an organisation, you should not justthink about which components might, by their failure, cause a bad enough lossto make a material di↵erence to the bottom line.
+You need to think aboutthe people too, and their external relationships.
+ Which of your managers coulddefraud your company by colluding with customers or suppliers? Could a branchmanager be lending money to a dodgy business run by his cousin against forgedcollateral? Could he have sold life-insurance policies to nonexistent people andforged their death certiﬁcates? Could an operations manager be taking bribesSecurity Engineering391Ross Anderson12.
+2.
+ BOOKKEEPING SYSTEMSfrom a supplier? Could your call-centre sta↵ be selling data from the accountsthey’ve dealt with to a phishing gang who use this data to impersonate yourcompany to your customers? Lots of things can go wrong.
+ You have to ﬁgureout which of them matter, and how you get to ﬁnd out.
+ Remember the oldexperience of 1% of sta↵ falling into temptation every year.
+ Remember that atrusted person is one who can damage you.
+ Who can damage you, and how?This is what a control maintainer must constantly think about.
+The lessons to be learned include the following.
+• Maintaining e↵ective controls is hard in a changing environment and needssomeone senior to own it.
+• If you rely on complaints from customers or sta↵ to alert you to fraud andsystem failures, you’d better have a good way for them to contact you andfor you to listen to them.
+ Many companies cut costs by being hard tocontact, but this has consequences.
+• The main exposure is to the company’s own sta↵ and contractors, soyou’d better talk to enough of them and ask questions like ‘If you wantedto defraud the company, how would you do it?’• Don’t just think in terms of transactions and processes, but about people,incentives, social norms and the power to manipulate or intimidate others.
+Do you expect people to keep each other honest without any motivatingstructure, and nothing but risk for whistleblowers?• No security policy can achieve full compliance, as workarounds will beneeded for people to cope with real life.
+• These workarounds naturally create vulnerabilities, so you’d better designcontrols that people can comply with.
+• You’d better have a working relationship with the ﬁrm’s executive leader-ship, so you understand which of them might be incurring risks relevantto your responsibilities, and so they understand what you’re doing too.
+There will always be residual risks.
+ Managing these residual risks remainsone of the hardest and most neglected of jobs.
+ It’s an extremely bad idea toadopt a doctrine that some particular system is foolproof – because if you assignits failure an a priori probability of zero, then evidence won’t shift it and thingscould go badly wrong when it eventually fails.
+ More generally, you need to helpthe ﬁrm learn from experience.
+ And experience means not just loss history:controls that get in the way need to be identiﬁed and improved.
+ If you’re seenas contributing to proﬁts rather than just as another compliance burden, you’llbe listened to a lot more.
+ For example, if you can ﬁx the password reset functionso it needs fewer sta↵, or improve the fraud engine so that the company’s websiterejects fewer shopping baskets, the board will listen to you a lot more readily.
+Finally, your risk management systems will have to pay some homage to oneor more compliance regimes, depending on the industry.
+ The international stan-dard ISO 27001 on security management is used in some industries: it demandsthat you analyse the risks systematically and subject the unacceptable ones toSecurity Engineering392Ross Anderson12.
+3.
+ INTERBANK PAYMENT SYSTEMSsome form of risk treatment (control, avoidance, transfer); and have a man-agement process to ensure that the controls are updated.
+ In many companies,this will be driven by your auditors anyway.
+ And there are many sector-speciﬁcregulatory regimes to deal with.
+ In healthcare you have to worry about HIPAA(see section 10.
+4); and as for banking and payments, we turn to that next.
+12.
+3Interbank Payment SystemsWhen people think of electronic fraud, they often envisage a Hollywood scene inwhich crafty Russian hackers break a bank’s codes and send zillion-dollar wiretransfers to tax havens.
+ Systems for transferring money are indeed a crime tar-get, and have been for a century and a half.
+ We’ll look ﬁrst at the systems usedto transfer money between banks, and then at those used by bank customers,whether individuals or merchants.
+12.
+3.
+1A Telegraphic History of E-commerceMany people assume that e-commerce is something invented in the mid-1990s.
+But it goes back much further.
+Governments used visual signalling from classical times, including heliographs(which used mirrors to ﬂash sunlight at the receiver), semaphores (which usedthe positions of moving arms to signal letters and numbers) and ﬂags.
+ Land-based systems sent messages along chains of beacon towers, and naval systemsrelayed them between ships.
+ After the Napoleonic War, the French governmentopened its heliograph network to commercial use, and soon the ﬁrst frauds tookplace.
+ For two years up till they were discovered in 1836, two bankers bribed anoperator to signal the movements of the stock market to them covertly by mak-ing errors in transmissions that they could observe from a safe distance.
+ Othertechniques were devised to signal the results of horseraces.
+ Bookies learned to‘call time’ by a clock, rather than waiting for a result and hoping that they werethe ﬁrst to hear it.
+From the 1760s to the 1840s, the electric telegraph was developed by a num-ber of pioneers, of whom the most inﬂuential was Samuel Morse.
+ He persuadedCongress in 1842 to fund an experimental line from Washington to Baltimore.
+This so impressed people that serious commercial investment started, and bythe end of that decade there were 12,000 miles of line operated by 20 companies.
+This was in many ways like the Internet boom of the late 1990s.
+Banks were the ﬁrst big users, and found that they needed mechanisms toprevent transactions being altered by crooked operators en route: I discussedthe test key systems they developed for the purpose in section 5.
+2.
+4.
+ Telegramswere also used to create national markets.
+ For the ﬁrst time, commodity tradersin New York could ﬁnd out within minutes what prices had been set in auctionsin Chicago, and ﬁshing skippers arriving in Boston could ﬁnd out the price ofcod in Gloucester.
+ The history of the period shows that most of the conceptsand problems of e-commerce were familiar to the Victorians [1818].
+ How do youknow who you’re speaking to? How do you know if they’re trustworthy? HowSecurity Engineering393Ross Anderson12.
+3.
+ INTERBANK PAYMENT SYSTEMSdo you know whether the goods will be delivered, and whether payments willarrive? The nineteenth-century answer was trusted intermediaries – principallybanks who helped business manage risk using references, guarantees and lettersof credit.
+By the 1970s, bankers started to realise that this worthy old Victorian systemwas due for an overhaul.
+First, as I noted earlier in section 5.
+2.
+4, most test-key systems were vulner-able to cryptanalysis; someone who observed a number of transactions couldgradually work out the key material.
+Second, the test key system didn’t support dual control.
+ The secret tableswere kept in a safe, and two clerks would sit together to work out a test andcheck it; but there was nothing really to stop sta↵ members working out testsfor unauthorised messages at the same time.
+Third, the real concern was cost and errors.
+ The use of manual cryptographymeant that each transaction was typed on a keyboard at least three times: onceinto the paying bank’s computer which would print out a transaction in thetelex room, where a test was computed manually; then a second time to send atelex to the receiving bank, who would check the test manually; then the thirdtime as that bank fed it into their own computer.
+ Errors were much more of aproblem than frauds.
+ Surely the payments could ﬂow directly from one bank’scomputer to another?12.
+3.
+2SWIFTA consortium of banks set up the Society for Worldwide Interbank FinancialTelecommunications (SWIFT) in the 1970s to provide a more secure, e�cientand controllable mechanism for sending payment instructions between memberbanks.
+ It can be thought of as an email system with built-in authentication andnon-repudiation services, plus optional encryption.
+ It’s used to ship trillionsof dollars round the world daily, and its design has been copied in systemsprocessing the title to many other kinds of asset, such as the bills of lading thatprove ownership of ships’ cargoes.
+The design constraints are interesting.
+The banks did not wish to trustSWIFT to the point that its employees could forge bank transactions.
+ The au-thenticity mechanisms had to be independent of the conﬁdentiality mechanisms,since at the time a number of countries (such as France) forbade the civilian useof cryptography for conﬁdentiality.
+ The non-repudiation functions could not usedigital signatures, as they hadn’t been invented yet.
+ Finally, the banks had tobe able to enforce auditable dual controls over interbank transactions.
+The design of SWIFT I is summarized in Figure 12.
+2.
+ Authenticity of mes-sages was assured by computing a message authentication code (MAC) at thesending bank and checking it at the receiving bank.
+ The keys used to be man-aged using bilateral key exchange: whenever a bank set up a relationship over-seas, the senior manager who negotiated it would exchange keys with his op-posite number, whether in a face-to-face meeting or afterwards by post to eachothers’ home addresses.
+ There were two key components to minimize the risk ofSecurity Engineering394Ross Anderson12.
+3.
+ INTERBANK PAYMENT SYSTEMSRGP�Bank�Key�Key�Branch�Swift�Logs�RGP�Bank�Branch�Figure 12.
+2: – architecture of SWIFTcompromise, with one sent in each direction (even if a bank manager’s mail isread in his mailbox by a criminal at one end, it’s not likely to happen at both).
+Authentication was not enabled until both banks conﬁrmed that the other’s keyhad been safely received and installed.
+This way, SWIFT had no part in the message authentication; so long asthe authentication algorithm in use was sound, none of their sta↵ could forge atransaction.
+ The authentication algorithm was supposed to be a trade secret,but as banks like their security mechanisms to be international standards, peopleﬁgured out to look at ISO 8731 [1631].
+ Pretty quickly, an attack was found andpublished in [1545].
+Fortunately, this attack takes over 100,000 messages torecover a key – which was too large for a practical attack on a closed systemand gave the banks time to migrate to more modern mechanisms.
+Although SWIFT itself was not trusted for authentication, it did provide anon-repudiation service.
+ Banks in each country sent their messages to a RegionalGeneral Processor (RGP) which logged them and forwarded them to SWIFT,which also logged them and sent them on to the recipient via the RGP in itscountry, which also logged them.
+ The RGPs were generally run by di↵erentservice ﬁrms.
+ Thus any banker wishing to dishonestly repudiate a transactionwould have to subvert not just the local SWIFT application and its surroundingcontrols, but two independent contractors in di↵erent countries.
+ And logs areeasier for judges to understand than cryptography.
+Conﬁdentiality was an optional add-on.
+ It was provided by line encryptiondevices between the banks and the RGP node, and between these nodes andthe main SWIFT processing sites.
+ Keys were hand-carried between the devicesat either end of a leased line.
+In countries where conﬁdentiality was illegal,these devices could be omitted without impairing the authenticity and non-repudiation mechanisms10.
+10In one country, a bank that attempted to install line encryptors found noise appearing onthe line after a few hours.
+ This only appeared on the live line, not the backup one, only aftera delay, and swapping the equipment between the two lines didn’t help.
+ The bank realisedthat the local spooks wouldn’t tolerate encryption and gave up.
+Security Engineering395Ross Anderson12.
+3.
+ INTERBANK PAYMENT SYSTEMSDual control was provided either by specialized terminals or by softwarepackages that could be integrated with other bank systems.
+ The usual method ofoperation is to have three separate sta↵ to do a SWIFT transaction: one to enterit, one to check it, and one to authorize it11.
+ There’s a further functional controlin that you reconcile accounts by checking transactions against statements everyday.
+ So a bogus payment instruction that gets past the entry controls shouldresult in an alarm the following business day.
+12.
+3.
+3What goes wrongSWIFT I ran for twenty years without a single report of external fraud againstthe system itself.
+ In the mid 1990s, after the attack on the MAC algorithm waspublished, it was enhanced by adding public key mechanisms: SWIFT II stillused bilateral key exchange, but with MAC keys shared between correspondentbanks using public-key cryptography and the MACs themselves further pro-tected by a digital signature.
+ The key-management mechanisms were ensconcedas ISO 11166, and there was some debate over the security of this architec-ture [112, 1631].
+ Quite apart from the centralization of trust brought about bythe adoption of public key cryptography – in that a central certiﬁcation author-ity could falsely certify a key as belonging to a bank when it doesn’t – at leastone early deployment adopted 512-bit public keys because of U.
+S.
+ export con-trols, and by 2000 at least one RSA public key of this length had been factoredsurreptitiously by a group of students [43].
+ Bilateral key exchange was replacedin 2009 with a new system whose cryptographic mechanisms are proprietary.
+The messaging standard is being replaced by ISO 20022.
+A political row arose once the crypto started to be toughened up and to of-fer conﬁdentiality by default.
+ The New York Times disclosed in June 2006 thatthe NSA was accessing the entire transaction stream, whereupon the NSA sim-ply demanded access to everything.
+ This caused a confrontation with privacy-conscious Europeans, but eventually after President Obama succeeded PresidentBush, the EU agreed a treaty under which the US Treasury Department canserve subpoenas on Swift [341].
+ Payments within Europe were supposedly ex-cluded, but since such payments were targeted, and Ed Snowden revealed thescale of collection, the issue has been raised repeatedly by the European Parlia-ment and by privacy authorities12.
+Criminal (as opposed to governmental) attacks on interbank systems havenot involved the payment mechanisms themselves but the surrounding businessprocesses.
+ It does happen from time to time that a bank programmer inserts abogus message into the processing queue, but it usually fails because he doesn’tunderstand the business process.
+ How an international wire transfer actuallyworks is that banks maintain accounts with each other, so when bank A sendsmoney to a customer of bank B it actually sends an instruction ‘please pay thiscustomer the following sum out of our account with you’.
+ As these accounts11As the checker can modify the payee and the amount, this is really only dual control, nottriple control – and the programmers who maintain the interface can always attack the systemthere, unless you can maintain separation of duty on the systems side too.
+12One might ask why banks don’t just build new systems with end-to-end crypto, but bankregulators demand access to all message tra�c between banks, and some tra�c within banks,to enforce rules against insider trading.
+Security Engineering396Ross Anderson12.
+3.
+ INTERBANK PAYMENT SYSTEMShave both balances and credit limits, and as payments may have to go throughone or more correspondent banks, large payments need human interventions tomake the money available.
+ There are also ﬁlters that look for large transactionsso that the bank can report them to the money-laundering authorities [75].
+ Soa naive programmer who sneaks in a bogus transaction to an account he’s setup at a Swiss bank usually gets arrested when he turns up to collect the cash.
+The most famous attack carried out via Swift was in 4–5 February 2016 whenNorth Korean agents stole $63m from the Bank of Bangladesh.
+ They appear tohave used Dridex malware to steal the credentials of bank sta↵ and then orderedfour transactions that transferred $81m from the bank’s account at the FederalReserve in New York to the Philippines, of which only $18m was recovered;the rest got laundered through a local casino.
+ A further 30 transactions for atotal of $851m were ﬂagged for manual review by the Fed and not sent; anotherfor $20m was sent to Sri Lanka which was recovered after the paying banknoticed a spelling error and stopped payment.
+ This was not actually an attackon Swift, but an attack on the Bank of Bangladesh’s own gateway to the Swiftsystem [858].
+But if your life’s goal is to get rich from bank fraud, you’re probably bettero↵ getting a law degree and working as a bank manager rather than messingabout with computers.
+ In fact, most signiﬁcant frauds have exploited proceduralvulnerabilities rather than technical attacks.
+• Perhaps the ﬁrst famous wire fraud was in 1979 when Stanley Rifkin, acomputer consultant, embezzled over ten million dollars from Security Pa-ciﬁc National Bank.
+ He got round the controls by agreeing to buy a largeshipment of diamonds from a Russian government agency in Switzerland.
+He observed an authorization code used internally when dictating trans-fers to the wire transfer department, and used it over the telephone –a classic example of dual control breakdown at a system interface.
+ Hegave himself extra time to escape by doing the deal just before a US bankholiday.
+ Where he went wrong was in not planning what to do after hecollected the stones.
+ If he’d hidden them in Europe, gone back to the USAand helped investigate the fraud, he might well have got away with it; asit was, he went on the run and got caught.
+• A fraud of a slightly di↵erent type took place in 1986 between Londonand Johannesburg.
+ At that time, the South African government operatedtwo exchange rates, and in one bank the manager responsible for decid-ing which rate applied to each transaction conspired with a rich man inLondon.
+ They sent money out to Johannesburg at an exchange rate ofseven Rand to the Pound, and back again the following day at four.
+ Aftertwo weeks of this, the central bank sent the police round.
+ When he sawthem in the dealing room, the manager ﬂed without stopping to collecthis jacket, drove over the border to Swaziland, and ﬂew via Nairobi toLondon.
+ There, he boasted to the press about how he had defrauded thewicked apartheid system.
+ As the UK had no exchange controls, exchangecontrol fraud wasn’t an o↵ence, so he couldn’t be extradited.
+ This is per-haps the only case I know where the perp not only got away with severalmillion but also got to brag about it.
+Security Engineering397Ross Anderson12.
+4.
+ AUTOMATIC TELLER MACHINES• I’ve seen bad guys getting away with fraud using a letter of guarantee.
+It’s common enough for a company in one country to ask their bank toguarantee a loan to a company in another.
+ This can be set up as a SWIFTmessage, or even a paper letter, between the two banks.
+ But as no cashchanges hands at the time, the balancing controls are inoperative.
+ If aforged guarantee is accepted as genuine, the ‘beneﬁciary’ can take histime borrowing money from the accepting bank, laundering it, and dis-appearing.
+ Only when the lending bank realises that the loan has gonesour and tries to call in the guarantee is the forgery discovered.
+ Then youcan end up with a computer forensics case as two banks argue over whosefault it was.
+The lesson is to be alert to anything that can defeat dual control.
+ But youneed to see this in a broader context.
+ It’s not just the technical problems ofsystems administration, interfaces or even shared-control crypto: the core isthe business process design.
+ And quite often, critical transactions don’t appearas such at a casual inspection.
+ Proper split control usually needs functionalseparation, and for that you need to really understand the application in itssocial and economic context.
+12.
+4Automatic Teller MachinesOur second set of lessons emerges from studying payment cards.
+ This storyhas at least four components: ﬁrst, automatic teller machines (ATMs); second,credit cards; third, the chip cards that have taken over as both debit and creditcards since the mid-2000s; and fourth, contactless payments including phonebanking.
+ATMs were one of the most inﬂuential technological innovations of the 20thcentury.
+ They were devised in 1938 by the inventor Luther Simjian, who alsothought up the teleprompter and the self-focusing camera.
+ He persuaded Citi-corp to install his ‘Bankamat’ machine in New York in 1939, but they withdrewit after six months, saying ‘the only people using the machines were a smallnumber of prostitutes and gamblers who didn’t want to deal with tellers faceto face’ [1743].
+ Its comeback was in 1967, when a machine made by De La Ruewas installed by Barclays Bank in Enﬁeld, London.
+ According to the WorldBank, there are now over 2.
+4m machines, or 41 per 100,000 adults [2041].
+ Cardpayments with PINs are now used in many terminals in shops, and the tech-nology, including block ciphers, tamper-resistant hardware and the supportingprotocols, ended up being adapted for many other applications from postalfranking machines to lottery ticket terminals.
+ In short, ATMs were the ‘killerapp’ that got modern commercial cryptology and retail payment technology o↵the ground.
+12.
+4.
+1ATM basicsMost ATMs operate using some variant of a system developed by IBM for its3624 series cash machines in the late 1970s.
+ The card’s magnetic strip containsSecurity Engineering398Ross Anderson12.
+4.
+ AUTOMATIC TELLER MACHINESPAN:8807012345691715PIN key KP:FEFEFEFEFEFEFEFEResult of DES {PAN}KP :A2CE126C69AEC82D{N}KP decimalized:0224126269042823Natural PIN:0224O↵set:6565Customer PIN:6789Figure 12.
+3: – IBM method for generating bank card PINsthe customer’s primary account number (PAN) and an expiry date.
+ A secretkey, called the ‘PIN key’, is used to encrypt the PAN, then decimalize it andtruncate it.
+ The result of this operation is called the ‘natural PIN’; an o↵setcan be added to give the PIN which the customer must enter.
+ The o↵set has nocryptographic function; it just enables customers to choose their own PIN.
+ Anexample of the process is shown in ﬁgure 12.
+3.
+In the ﬁrst ATMs to use PINs, each ATM contained a copy of the PIN keyand each card contained the o↵set as well as the primary account number.
+ Soeach ATM could verify all customer PINs.
+ Early ATMs also operated o✏ine; ifyour cash withdrawal limit was $500 per week, a counter was kept on the card.
+From the mid-1990s, networks became more dependable and ATMs have tendedto operate online only, which simpliﬁed the design.
+ Starting in 2003, magneticstrips were supplemented with smartcard chips, followed by contactless paymentfrom 2012; I’ll describe these enhancements in later sections.
+But the basicprinciple remains: PINs are generated and protected using cryptography.
+A cryptographic processor, known as a hardware security module (HSM), iskept in the bank’s server room and manages customer PINs so as to enforce adual-control policy.
+1.
+ Operations on the clear values of customer PINs, and on the keys usedto protect them, are always done in a secure cryptographic device (SCD),so that no member of the bank’s sta↵ ever gets to see a PIN other thantheir own.
+ SCDs include the HSMs in the bank server room13 along withcrypto modules in ATMs and other PIN-entry devices.
+2.
+ Thus, for example, the cards are personalized in a facility with machinesto emboss the card, encode the mag strip and initialise the chip, while thePIN mailers are printed in a separate facility containing a printer attachedto an HSM.
+ They’re mailed out a few days apart.
+3.
+ A terminal master key is supplied to each ATM in the form of two printedcomponents, which are carried to the branch by separate people, inputat the ATM’s rear keyboard, and combined to form the key.
+Similarceremonies (but with three people) are used to set up master keys betweenbanks and network switches such as VISA.
+13Or nowadays, also in a cloud service provider or other service contractorSecurity Engineering399Ross Anderson12.
+4.
+ AUTOMATIC TELLER MACHINES4.
+ If ATMs perform PIN veriﬁcation locally, then the PIN key is encryptedunder the terminal master key and sent to the ATM.
+ Keys are stored in alocal SCD – a tamper-resistant chip next to the keyboard – which eitherveriﬁes PINs as they’re entered or encrypts them so they can be sent fromthe ATM to a central HSM for checking.
+5.
+ If the bank’s ATMs are to accept other banks’ cards, then the PIN willbe encrypted in the ATM’s SCD and sent to the bank, which will decryptit and re-encrypt it using a key shared with the switch operator, suchas VISA.
+ This PIN translation function is done entirely within an HSM.
+VISA similarly uses an HSM to translate the PIN to a key shared withthe card-issuing bank, so it can be veriﬁed by an HSM there.
+The ATM network rapidly became orders of magnitude bigger than Swift.
+Rather than being used by a few thousand banks, it was soon connecting tens ofthousands of banks and hundreds of millions of cardholders.
+ It was not feasibleto do either key exchange or ﬁnancial settlement bilaterally between 20,000banks, so each bank connects to a switch provided by a switching organizationsuch as VISA, and these switches’ HSMs translate the tra�c.
+ The switches alsodo accounting, so banks can settle their accounts for each day’s transactionswith a single debit or credit, rather than each having to maintain accounts withthousands of other institutions.
+The switches are trusted, so if something goes wrong there the consequencescan be severe.
+This seems to happen about once a decade.
+In one case aswitch manager ended up a fugitive from justice, and in another, a Y2K-relatedsoftware upgrade at a switch was bungled, with the result that cardholders inone country found that for a day or two they could withdraw money even iftheir accounts were empty.
+ The bill in each case was in seven ﬁgures.
+The engineers who designed ATM networks and security systems in the 1980s(of whom I was one) assumed that criminals would be relatively sophisticated,fairly well-informed about the system design, and rational in their choice ofattack methods.
+ We worried about the many banks which were slow to buysecurity modules.
+ We worried about banks cutting corners such as omittingauthentication codes on authorization responses.
+ We agonized over whether theencryption algorithms were strong enough, whether the tamper-resistant HSMswere tamper-resistant enough, and whether the random number generators usedto generate keys were random enough.
+ We knew we just couldn’t enforce dualcontrol properly: bank managers considered it beneath their dignity to touch akeyboard, so rather than entering the ATM master key components themselvesafter a maintenance visit, most of them would just give both key components tothe ATM engineer.
+ Above all, we worried that a repairman would get his handson a bank’s PIN key, force the reissue of millions of cards and wreck publicconﬁdence in electronic banking.
+ This was our doomsday scenario.
+Doomsday eventually happened.
+ In December 2017, a key at Postbank inSouth Africa was compromised while kept on a laptop during during a datacentre move.
+ Somehow, it was copied to a memory stick; the CEO also hada copy.
+ The copies were supposed to be destroyed in front of witnesses butsomehow a stick got lost.
+From March 2018 to December 2019, R56m (US$3.
+4m) was stolen in 56,000 transactions, mostly from cards issued to poorSecurity Engineering400Ross Anderson12.
+4.
+ AUTOMATIC TELLER MACHINESpensioners to pay state beneﬁts.
+ In February 2019, the central bank orderedPostbank to reissue all its 12m cards, which cost R1bn (US $60m) [1237].
+However, the millions of frauds against PIN-based payment cards over thepast 50 years turned out to be very much more diverse.
+12.
+4.
+2What goes wrongCard payment systems have huge transaction volumes, a wide diversity of oper-ators, and plenty of capable motivated opponents.
+ There have been successivewaves of card fraud, where vulnerabilities were discovered, exploited and theneventually ﬁxed.
+ The overall pattern is that card fraud has increased in valueover time but decreased as a proportion of the transactions; the system is slowlygetting more secure as it grows in both size and experience [91].
+The ﬁrst wave, in the early 1990s, exploited the poor implementation andmanagement of early magnetic-strip card systems.
+ In the UK, one proliﬁc fraud-ster, Andrew Stone, was convicted three times of ATM fraud, the last time get-ting ﬁve and a half years in prison.
+ He started when he discovered by chancean ‘encryption replacement’ trick: he changed the account number on his bankcard to his wife’s and found that he could take money out of her account usinghis PIN.
+ In fact, he could take money out of any account at that bank using hisPIN.
+ This happened because his bank wrote the encrypted PIN to the card’smagnetic strip without linking it to the account number.
+ His second methodwas ‘shoulder surﬁng’: he’d stand in line behind a victim, observe the enteredPIN, and pick up the discarded ATM slip.
+ Most banks at the time printed thefull account number on the slip, and a card would work with no other correctinformation on it.
+Stone’s methods spread via people he trained as his accomplices, and viaa ‘Howto’ manual he wrote in prison.
+ Some two thousand victims of his (andother) frauds banded together to bring a class action against thirteen banks toget their money back.
+ The banks beat this by arguing that the facts in eachcase were di↵erent, and split it into thousands of small-claims cases that thevictims did not have the expertise to pursue.
+ I was an expert in this case, andused it to write a couple of papers on what went wrong [54, 55].
+ The fraudeventually spread worldwide, as criminals in Romania and elsewhere starteddesigning ATM skimming equipment and sold it online.
+ Here I’ll summarize themore important and interesting lessons we learned.
+Most of the actual ‘phantom withdrawals’ in the early 1990s appeared tohave one of the following three causes:• Simple processing errors give rise to a steady background noise of dis-putes.
+Developed countries get about four transactions per head permonth; that’s 240m a month in the UK alone.
+ If the error rate is only 1in 100,000, that’s a lot of disputes.
+ Even if your core banking system hasgood balancing controls, the peripheral systems that feed it can be ﬂaky.
+One source of errors we tracked down was that a large bank’s ATMs wouldsend a transaction again if the network went down before a conﬁrmationmessage was received from the bank’s server; periodically, the server itselfSecurity Engineering401Ross Anderson12.
+4.
+ AUTOMATIC TELLER MACHINEScrashed and forgot about open transactions, causing debits to be dupli-cated.
+ We also found customers whose accounts were debited with othercustomers’ transactions, and other customers who were never debited atall for their card transactions.
+ (We used to call these cards ‘directors’cards’ and joked that they were issued to bank directors.
+)• Thefts from the mail were reckoned in the 1990s to account for 30% of allUK payment card losses, and postal control procedures remained dismalfor years.
+ For example, when I moved to Cambridge in February 1992 mybank sent not one, but two, cards and PINs through the post, and they ar-rived only a few days after intruders had got hold of our apartment block’smail and torn it up looking for valuables.
+ In 2003–5, when magnetic-stripcards were replaced with chip cards, there was another surge in theftsfrom the mail – see ﬁgure 12.
+4.
+ The main ﬁx was to make you phone acall centre or visit a website to activate a card before you can use it.
+• Frauds involving dishonest or negligent bank sta↵ appeared to be the thirdbig cause of phantoms.
+ We’ve had occasional cases of ATM service sta↵installing wiretaps inside an ATM to record customer card and PIN data,and one case back in the 1990s of crooked insiders working out PINs forstolen cards for £50 a time.
+ More recently we’ve had bigger cases of crooksworking out how to social-engineer bank call centres to issue new cardsto addresses they control [2013].
+Insider frauds were particularly com-mon in countries like Britain where the law generally made the customerpay for fraud, and rarer in countries like the USA where the bank paid;British bank sta↵ knew that customer complaints wouldn’t be investigatedcarefully.
+However, there were plenty of frauds due to careless design or that taughttechnical security lessons.
+• The shoulder-surﬁng trick of standing in an ATM queue, observing a cus-tomer’s PIN, picking up the discarded ticket and copying the data to ablank card, was ﬁrst reported in New York in the mid 1980s; and it wasstill working in the Bay Area in the mid 1990s.
+ By then it had been au-tomated; Bay area criminals used video cameras with motion sensors tosnoop on PINs, whether by renting an apartment overlooking an ATM oreven parking a rented van there.
+ Visual copying is easy to stop: the stan-dard nowadays is to print only the last four digits of the account numberon the ticket, and since the early 1990s, cards have a three-digit card ver-iﬁcation value (CVV) on the magnetic strip that must never be printed.
+Yet the CVV is not always checked.
+• There were many losses due to bugs and blunders.
+One ATM sold inthe 1980s had a ‘test dispense’ code that would output ten banknotesof the lowest available denomination whenever a certain fourteen digitsequence was entered at the keyboard.
+ One bank printed this sequence inits branch manual, and three years later there was a sudden spate of losses.
+All the banks using the machine had to rush out a patch to disable thetest dispense transaction.
+ And despite the fact that I documented this inSecurity Engineering402Ross Anderson12.
+4.
+ AUTOMATIC TELLER MACHINES1993, and again in the ﬁrst edition of this book in 2001, similar incidentswere still reported as late as 2007.
+• Some makes of ATM used in convenience stores could be reprogrammedinto thinking that they were dispensing $1 bills when in fact they were dis-pensing twenties; it just took a default master password that was printedin the online manuals.
+ Any passer-by who knew this could stroll up tothe machine, reset the bill value, withdraw $400, and have their accountdebited only $20.
+ The store owners who leased the machines were not toldof the vulnerability, and were left to pick up the tab [1539].
+• Many banks’ operational security procedures were dire.
+ As an experiment,my wife went into a branch of our bank in 1993 with a witness and toldthem she’d forgotten her PIN.
+ The teller helpfully printed her a new PINmailer from a printer attached to a PC behind the counter – just like that!It was not the branch where our account is kept.
+ Nobody knew her and allthe identiﬁcation she o↵ered was our bank card and her checkbook.
+ Whenanyone who’s snatched a handbag can walk in o↵ the street and get a PINfor the card in it at any branch, no amount of encryption technology willdo much good.
+ (That bank later went bust in 2008.
+)• One technique that’s worked consistently for 40 years – and still worksnowadays with many ATMs – is the Lebanese loop.
+ The crook ﬁts a loopof tape, perhaps from an old videocassette, into the ATM throat and waitsfor a victim.
+ The card gets snagged in the loop, and the victim abandonsit.
+ The crook retrieves it, and if he managed to see the victim’s PIN, goesshopping.
+ Some ATMs have mechanisms to frustrate this, and some don’t.
+Some banks just don’t care: one victim of such a fraud, in a bank lobby,went straight inside the bank to complain but was fobbed o↵ by sta↵ whodidn’t want to get involved.
+ After her card was looted, her card-issuingbank blamed her, and this ended up as a dispute.
+• The high-tech modus operandi was using false terminals or skimmers tocollect card and PIN data.
+ The ﬁrst report was from the USA in 1988;there, crooks built a vending machine that would accept any card and PIN,and dispense a pack of cigarettes.
+ In 1993, two villains bought a real ATMand a software development kit for it, programmed it to steal card dataand PINs, and installed it in the Buckland Hills Mall in Connecticut [988].
+• False terminal attacks spread to Europe and to point-of-sale systems in the90s.
+ I mentioned in section 4.
+5, a tap on a garage point-of-sale terminalwas used to harvest card and PIN data in Utrecht, in the Netherlands;and in 1994, crooks in London set up to a whole bogus bank branch [943].
+Eventually, by the mid-2000s, card skimmers became widely available onthe black market.
+ By 2015 a Romanian gang was caught operating 100ATMs in tourist spots in Mexico, stealing $20m a month [1094].
+ Magneticstrip cards were just too easy to copy, and the card technology had tochange.
+• Since the mid-2010s, we have seen occasional ‘jackpotting’ attacks wherecrooks hack ATMs so that they keep on dispensing bills until they’reempty.
+ This can involve infecting ATMs with malware, whether onlineSecurity Engineering403Ross Anderson12.
+4.
+ AUTOMATIC TELLER MACHINESor by getting physical access to a USB port, or physically inserting rogueelectronics [489].
+• There are occasional frauds when an insider gets at one of the servers inthe back-end system, or when one of them fails insecure.
+ This can resultin customers being able to use cards with any PIN (if the online PINchecking process fails) or in customers with the right PIN being able torun up unlimited overdrafts (if the balance inquiry process fails).
+ Onesuch failure was deliberate: after 9/11 damaged its ATM network, theMunicipal Credit Union decided to let customers in New York withdrawmoney without checking their balances until things could be ﬁxed.
+ Thatcost $15m, and 118 customers ended up being charged with theft [1657].
+I reckon the ﬁrst thing we did wrong when designing ATM security systemsin the 1980s was to worry about criminals being clever, when we should ratherhave worried about our customers – the banks’ system designers, implementersand testers – being unable to use the security systems we designed.
+ In recentyears, research by Yasemin Acar, Sascha Fahl and others has shown that many ifnot most security failures can be seen as programmer usability failures; normalprogrammers can’t cope with the complicated crypto APIs and access controlmechanisms that security geeks love to build [11].
+ Security geeks pay attentionto crypto because the maths are interesting, but less so to the ‘boring’ bits suchas creating tools that non-specialists can actually use.
+ So it’s rare that the badguys have to break the crypto.
+ And modern payment networks have so manyusers that we must expect the chance discovery of vulnerabilities that were tooobscure to be caught in testing.
+The second thing we did wrong was to not ﬁgure out what attacks could beindustrialised, and focus on those.
+ In the case of ATMs, the false-terminal attackis the one that eventually made the big time.
+ The ﬁrst hint of organised crimeinvolvement was in 1999 in Canada, where dozens of alleged Eastern Europeanorganized-crime ﬁgures were arrested in the Toronto area for deploying doctoredpoint-of-sale terminals [129, 216].
+ Since about 2005, skimmers made in EasternEurope are sold on underground markets, designed to be attached to the throatsof cash machines to read the magnetic strip and also capture the PIN using atiny camera or a keyboard overlay.
+ I’ll discuss these in more detail in the nextsection.
+ The remedy has been moving from magnetic-strip cards to chip cards,but this has taken over ﬁfteen years, and magnetic-strip fraud has cost a lot ofmoney in the meantime.
+ The curious thing may be that it took 40 years fromthe launch of magnetic-strip ATM cards until skimmers made them too easy toattack.
+ The key factor was that criminals started to specialise and organise, asI discussed in section 2.
+3.
+12.
+4.
+3Incentives and injusticesIn the USA, the banks carry a lot of the risks associated with new technology.
+In a historic case, Judd versus Citibank, bank customer Dorothy Judd claimedthat she had not made some disputed withdrawals and Citibank said that asits systems were secure, she must have done.
+ The judge ruled that he “wasnot prepared to go so far as to rule that when a credible witness is faced withSecurity Engineering404Ross Anderson12.
+4.
+ AUTOMATIC TELLER MACHINESthe adverse ‘testimony’ of a machine, he is as a matter of law also faced withan unmeetable burden of proof” – and gave her her money back [995].
+ TheUS Federal Reserve incorporated this view into ‘Regulation E’, which requiresbanks to refund all disputed transactions unless they can prove fraud by thecustomer [639].
+ This has led to some minor abuse, but typically less than thelosses from vandalism [2046].
+In other countries – such as the UK, the Netherlands and Norway – thebanks got away for years with claiming that their ATM systems were infallible.
+Phantom withdrawals, they maintained, could not happen and a customer whocomplained of one must be mistaken or lying.
+This position was somewhatundermined in the UK when Stone and his followers started being jailed forATM fraud, and there were some rather unpleasant incidents.
+ One examplewas the Munden case [55].
+John Munden was one of our local police constables, based in Bottisham,Cambridgeshire; his beat included the village of Lode where I lived at the time.
+He came home from holiday in September 1992 to ﬁnd his account at the HalifaxBuilding Society empty.
+ He asked for a statement, found six withdrawals for atotal of £460 which he did not recall making, and complained.
+ The Halifax hadhim prosecuted for attempting to obtain money by deception.
+ It came out duringthe trial that their IT was somewhat ramshackle; the disputed transactions hadnot been properly investigated; and they made all sorts of wild claims, such asthat their ATM system couldn’t su↵er from bugs as its software was writtenin assembler.
+ Nonetheless, it was his word against theirs.
+ He was convictedin February 1994 and suspended from the police force.
+ Just before the appealwas due to be heard, the prosecution served up a report from the Halifax’sauditors claiming that their system was secure.
+ The defense demanded equalaccess to the bank’s systems for its own expert.
+ The Halifax refused, so thecourt disallowed all its computer evidence.
+ The case collapsed, John Mundenwas acquitted, and he got his job back.
+Once the fuss died down, the banks went back to claiming that their systemswere secure, and the same drama played itself out again when Jane Badger,of Burton-on-Trent, England, was prosecuted for complaining about phantomwithdrawals.
+The case against her collapsed in January 2008.
+If a systemis to provide evidence, then dual control is not enough.
+It must be able towithstand examination by hostile experts.
+ The security property the bank reallyneeded wasn’t dual control but non-repudiation: the ability for the principalsin a transaction to prove afterwards what happened.
+This might have beenprovided by installing ATM cameras; although these were mandatory in thestate of New York as an anti-mugging measure, they were not used in Britain.
+Indeed, during the 1992–4 wave of ATM frauds, the few banks who had installedATM cameras were pressured by the other banks into withdrawing them; cameraevidence was a threat to the banks’ collective stance that their systems wereinfallible.
+ It would be a further 25 years before the Post O�ce case I mentionedin section 12.
+2.
+6.
+1 would ﬁnally expose a bank’s systems to thorough scrutiny,and have them condemned as unreliable in the High Court.
+Security Engineering405Ross Anderson12.
+5.
+ CREDIT CARDS12.
+5Credit CardsThe second component that led to modern card payment systems was the creditcard.
+ For years after their invention by Diners Club in the 1950s, credit cardswere treated by most banks as a loss leader with which to attract high-valuecustomers.
+ Eventually, the number of merchants and cardholders reached criti-cal mass and the transaction volume took o↵.
+ In Britain, from the mid-80s, thecredit card business was suddenly extremely proﬁtable14.
+When you use a credit card to pay for a purchase in a store, the transactionﬂows from the merchant to their bank (the acquiring bank) which pays themafter deducting a merchant discount of typically just under 2% for a small mer-chant15.
+ If the card was issued by a di↵erent bank, the transaction now ﬂowsto a switch such as VISA which passes it to the issuing bank for payment.
+ Eachtransaction involves two components: authorisation, when you present yourcard at a merchant and they want to know right now whether to give you thegoods, and settlement, which ﬂows through a separate system and gets moneyto the merchant, often two or three days later.
+ The issuer also gets a slice ofthe merchant discount, but makes most of its money from extending credit tocardholders.
+12.
+5.
+1Credit card fraudFrom the 1950s to the 1990s, credit card transactions were processed by mak-ing a paper sales draft on a multipart form using the embossing on the card,writing in the amount, getting the customer to sign it, and processing it likea check.
+ The risk of fraud using stolen credit cards was traditionally managedby hot card lists and merchant ﬂoor limits.
+Each merchant got a local ‘hotcard list’ plus a limit set by their acquiring bank above which they have to callfor online authorization.
+ In the 1980s, electronic terminals were introduced soa sales clerk could swipe a card and get an authorization automatically.
+ Thecrooks’ response was a ﬂood of forged cards: between 1989 and 1992, magneticstrip counterfeiting grew from an occasional nuisance into half the total fraudlosses [12].
+The introduction of mail-order and telephone sales led to card not present(CNP) transactions where the merchant was not able to inspect the card.
+ Banksmanaged the risk by using the expiry date as a password, lowering the ﬂoor lim-its, increasing the merchant discount and insisting on delivery to a cardholderaddress, of which the numerical part is supposed to be checked during autho-rization.
+ But the main change was to shift liability so that the merchant borethe risk of disputes.
+ If you challenge an online credit card transaction (or infact any transaction made under CNP rules), the full amount is immediatelydebited back to the merchant, together with a signiﬁcant handling fee.
+ This14Payment systems have strong network externalities, just like communications technologiesor computer platforms: the service provider must recruit enough merchants to appeal tocardholders, and vice versa, so new payment mechanisms can take years to get established,then suddenly take o↵ like a rocket.
+15Debit cards are cheaper, and big merchants can pay under 1% even for credit card trans-actions.
+Security Engineering406Ross Anderson12.
+5.
+ CREDIT CARDSapplies whether the debit is a fraud, a dispute or a return.
+VISA’s response to growing card forgery and online fraud was card veriﬁ-cation values (CVVs) – three-digit MACs computed on the card strip contents(account number, version number, expiry date) and written at the end of thestrip.
+ They worked: in the ﬁrst quarter of 1994, VISA’s fraud losses droppedby 15.
+5% while Mastercard’s rose 67% [386].
+ So Mastercard adopted CVVs too.
+They also appeared on debit cards, which converged with credit cards techni-cally: this was an extended process as banks ﬁrst allowed credit cards to be usedin ATMs too and then let debit cards be used at the point of sale, at di↵erenttimes in di↵erent countries.
+The crooks moved to skimming – operating businesses where genuine cus-tomer cards were swiped through an extra, unauthorized, terminal to grab acopy of the magnetic strip, which would then be re-encoded on a genuine card.
+(In countries where PINs were already used in point-of-sale terminals, this al-lowed forged cards to be used in ATMs directly.
+)The banks’ response wasintrusion detection systems that tried to identify criminal businesses by corre-lating the purchase histories of customers who complained.
+ By the late 1990’s,the smarter crooked businesses learned to absorb the cost of the customer’stransaction.
+ You have a drink at a Maﬁa-owned bistro, o↵er a card, sign thevoucher, and fail to notice when the charge doesn’t appear on your bill.
+ A monthor two later, there’s a huge bill for jewelry, electrical goods or even casino chips.
+By then you’ve forgotten about the bistro, and the bank never had a record ofit [720].
+In the early 2000s, high-tech criminals became better organised as electroniccrime became specialised.
+ The emergence of online criminal forums, starting inRussia and Ukraine in 2003, enabled malware writers, botnet herders, phishingsite operators and cash-out specialists to trade with each other and get goodat their jobs.
+ This spilled over from targeting online transactions to attacks onretail terminals.
+ Forums o↵ered fake terminals and skimmers that record mag-strip card and PIN data, so as to make card clones.
+ In the Far East, wiretapswere used to harvest card data from the mid-2000s [1158].
+Europe introduced smartcards in 2003–5, and the crooks came up with de-vices that copy data from chip cards to mag-strip cards for use in terminals thatstill accepted mag-strip transactions.
+ Some of them used vulnerabilities in theEMV protocol, and so I’ll come back to them after I’ve described EMV and chipcards in the next section.
+Regardless of whether the card has a chip or not, there are many scamsinvolving cards that are never received by genuine customers.
+ There’s pre-issuefraud including thefts from the mail of the ‘pre-approved’ cards that arrive injunk mail.
+ There are applications made in the names of people who exist but arenot aware of the application (often misrepresented as ‘identity theft’ by banksthat would like to pretend that it was your identity that was stolen rather thantheir money [1324]).
+ And there are scams where crooks get careless bank sta↵ tosend a replacement card for your account to an address they control [2013].
+ Theremaining line of defence against such scams – until the customer gets a bill andcomplains – is automatic fraud detection, which I’ll discuss in section 12.
+5.
+4.
+Security Engineering407Ross Anderson12.
+5.
+ CREDIT CARDS12.
+5.
+2Online card fraudTurning now from traditional credit card fraud to the online variety, I ﬁrsthelped the police investigate an online credit card fraud in 1987.
+ In that case,the suspect got a list of hot credit card numbers from his partner who worked ina supermarket, and used them to buy software from companies overseas, whichhe downloaded to order for his customers.
+ Hot card lists at the time carriedonly those cards which were being abused in that country; using a local hot cardoverseas meant that the bank would carry the can, not an innocent customer.
+As it happens, the suspect quit before there was enough evidence to arrest him.
+A rainstorm washed away the riverbank opposite his house and exposed a hidethe police had built to stake him out.
+From about 1995, the dotcom boom got underway and businesses rushed tobuild websites.
+ There was anxiety that the use of credit cards on the Internetwould lead to an avalanche of fraud, as ‘evil hackers’ intercepted emails and webforms and harvested credit card numbers by the million.
+ These fears drove Mi-crosoft and Netscape to introduce SSL/TLS to encrypt credit card transactionsen route from browsers to web servers.
+The reality is a bit more complex.
+Intercepting email and web tra�c isindeed possible, especially at endpoints, but can be di�cult to do at scale.
+ Lotsof websites ran for many years with no encryption, or weak encryption, andthe real issue turned out to be not wiretapping but phishing.
+ Even this onlygot going at scale after 2004; and there (as I remarked in Chapter 3) the issueis more psychology than cryptography.
+ TLS per se doesn’t help, as bad guyswho can set up man-in-the-middle attacks can just get certiﬁcates and encryptthe tra�c.
+ The site will have a di↵erent domain name, but it’s unreasonableto expect most members of the public to notice that, especially as banks andmerchants use all sorts of variant domains themselves16.
+Second, most of the credit card numbers that are traded online got into badhands because someone hacked a merchant’s computer.
+ VISA had rules for yearsthat prohibited merchants from storing credit card data once the transactionhad been processed, but many merchants ignored them.
+There followed thePayment Card Industry Data Security Standard (PCI-DSS), a joint e↵ort by thePayment Card Industry Security Standards Council17.
+ PCI DSS rules requirebasic hygiene for systems holding cardholder data such as account numbers andexpiry dates18 while sensitive data such as CVVs and PINs can’t be stored at all.
+Finally, enforcement started to bite, and by in October 2007, the US NationalRetail Federation asked credit card companies to stop forcing retailers to storecredit card data at all (they were supposed to store card numbers temporarilyin case of chargebacks) [1957].
+ PCI DSS has now become a signiﬁcant pieceof compliance for ﬁrms that accept credit card transactions; it provides little16There are now some technical ﬁxes, such as certiﬁcate transparency, which I’ll discuss insection 21.
+5.
+1.
+17This was set up by Visa, MasterCard, Amex, JCB and Discover; it now has other stake-holders too.
+18Cardholder data must be encrypted when they go over networks, and when stored theymust be protected by a ﬁrewall and AV; default passwords can’t be used; and you musthave a security policy, need-to-know access controls, testing, and since 2017 a secure softwaredevelopment lifecycle.
+ It adds up to quite a bundle of documentation and a lot of jobs foraccountants to check it.
+Security Engineering408Ross Anderson12.
+5.
+ CREDIT CARDSliability cover, since if fraud happens the banks can usually blame the merchantanyway even if it was certiﬁed compliant.
+Other real incentives facing merchants are, ﬁrst, the cost of disputes, andsecond, security-breach disclosure laws.
+ While the details di↵er between coun-tries, disclosure laws have made a di↵erence as notifying customers costs realmoney and the the stock prices of companies su↵ering a breach can fall severalpercent.
+ As for disputes, consumer protection laws in many countries make iteasy to repudiate a transaction.
+ Basically all the customer has to do is callthe credit card company and say “I didn’t authorize that” and the merchant issaddled with the bill.
+ This was workable in the days when almost all credit cardtransactions took place locally and most were for signiﬁcant amounts.
+ If a cus-tomer fraudulently repudiated a transaction, the merchant would pursue themthrough the courts.
+ Nowadays many transactions are international, amountsare small, and verifying overseas addresses via the credit card system is ﬂaky.
+So the opportunity for repudiating transactions – and getting away with it – isincreased.
+On the other hand, some market sectors have many websites that exploittheir customers, and porn sites have been a running sore.
+ A common scam wasto o↵er a ‘free tour’ of the site and demand a credit card number, supposedlyto verify that the user was over 18, and then bill him anyway.
+ Some sites billedother consumers who have never visited them at all [921].
+ Even apparently largeand ‘respectable’ web sites like playboy.
+com were criticised for such practices,and at the bottom end of the porn industry, things are atrocious.
+ The worstcase so far was probably Operation Ore, in which some three thousand victimsof credit card fraud were wrongly arrested on suspicion of buying child sex abusematerial, and at least one killed himself.
+ I discuss the Operation Ore case insection 26.
+5.
+3.
+The main brake on wicked websites is the credit-card chargeback.
+ A bankwill typically charge the merchant $100–200 in fees for each of them, as wellas debiting the transaction amount from his account.
+ So if more than a smallpercentage of the transactions on your site are challenged by customers, yourmargins will be eroded.
+ If chargebacks go over perhaps 10%, your bank mayterminate your service.
+ This has motivated merchants to take care – to bewareof odd orders (e.
+g.
+ for four watches), orders from dodgy countries, customersusing free email services, requests for expedited delivery, and so on.
+ But leavingthe bulk of the liability for mail-order transactions with them is suboptimal:the banks know much more about fraud patterns.
+ Shared liability might well bebetter, but legal systems are not good at that.
+ One lobbyist beats another whenthe law gets written, or one legal team beats the other when the key precedentis set, and we get stuck with it.
+One systematic attack involves progressive guessing.
+ All websites must askfor the primary account number and expiry date, but a merchant may also askfor the CVV printed on the back of the card, and digits from the cardholderaddress.
+ Starting from a valid account number, you guess the expiry date bytesting it on merchant websites that check only that; then you guess the CVVon websites that check that too, then the postcode digits, and ﬁnally guess thehouse number from the websites that check that too.
+ There are enough websitesout there for this to work for VISA cards; Mastercard has central monitoring,Security Engineering409Ross Anderson12.
+5.
+ CREDIT CARDSand they hot-list a number after about ten failed guesses (though this can leadto denial-of-service attacks) [1].
+Another attack is credential stu�ng, where the bad guys get millions ofemail / password combinations from compromised web sites and try them out inother sites from which value can be extracted.
+ Such attacks, plus the increasingavailability of stolen credit card data on underground markets, have driven thedevelopment of better cardholder authentication, at least for larger transactions.
+12.
+5.
+33DS3D Secure is a single sign-on system designed by the payment card industry19.
+When the merchant captures a payment transaction past some threshold, theyredirect to a bank server that invites the customer to authenticate the transac-tion using a password or a second-factor such as a code sent to their mobile bySMS.
+ It is increasingly used for large payment card transactions.
+3DS acquired users rapidly because customers who used it were held liable forfraud where possible, so merchants paid less.
+ Customer onboarding was a softspot for years.
+ Many banks initially let the 3DS servers enrol their customersdirectly and solicit a password the ﬁrst time their card was used at a participat-ing merchant, a process called activation during shopping (ADS).
+ Some even letcustomers re-enrol if they forgot the password, so initially the system was easyto hack.
+ It also got customers used to entering bank passwords at a site whoseURL has nothing to do with the bank, and one bank even got customers to entertheir ATM PINs there [1362].
+ Now, a decade after its initial roll-out, 3DS ismoving to an (incompatible) second version endorsed as an EMV standard.
+ Afactor has been government mandates to use two-factor authentication, whichresults in most banks knowing their customers’ mobile phone numbers.
+ HoweverSMS-based two-factor authentication is now reaching the end of its useful life,as discussed previously in section 3.
+4.
+1 and later in section 12.
+7.
+4.
+ Some 3DSimplementations still use bank passwords.
+12.
+5.
+4Fraud enginesPeople started working from the mid-1990s on better ﬁnancial intrusion detec-tion, and by now all websites of any size that accept card-not-present trans-actions have a fraud engine that decides whether to accept or decline eachtransaction.
+ There are two approaches: anomaly detection, which uses variousthresholding and other techniques to look for unusual patterns, and abuse de-tection which looks for known fraud patterns.
+ The big problem in both casesis false positives.
+ We all have experience of cards being blocked, and in manycases the triggers are obvious.
+ Small transactions used to cause alarms as theysuggested a thief testing stolen cards to see which are still live.
+ Another issuewas multiple transactions overseas; in the 1990s, whenever I went to the USA,my debit card would do three transactions and then stop working.
+Modernmachine-learning techniques have made such mechanisms slightly less annoy-19It is variously branded as ‘Mastercard SecureCode’, ‘Veriﬁed by VISA’, ‘Amex SafeKey’and ‘Discover ProtectBuy’.
+Security Engineering410Ross Anderson12.
+6.
+ EMV PAYMENT CARDSing, but the sheer scale of modern payment systems with tens of thousands oftransactions per second means that even a 0.
+1% false positive rate will create aﬁrehose of customer complaints.
+More convincing are projects that look for known patterns of misuse.
+ Forexample, FICO maintains a list of the most suspicious ATMs.
+Banks thatsubscribe to its service tell it whenever a transaction is declined, whether becauseof a stolen card, a wrong PIN or an empty account.
+ The ATM is then bumpedup the ‘hot ATM’ list.
+ When a crook takes a ﬁstful of stolen cards to an ATM,it will get to the top of the list within three or four cards and then decline anycard issued by a bank that subscribes to FICO’s service.
+ The crook will assumethey’re no good and throw them away.
+ Over 40% of the world’s banks, by cardissuing volume, now subscribe.
+An important success factor in running an intrusion detection system is theincentives.
+ Websites in the UK can turn away as much as 4% of o↵ered shoppingbaskets because of their fraud engines.
+ If security is the responsibility of theCFO, he’ll see it as a cost centre and try to minimise it; but for the chiefmarketing o�cer, a 25% improvement in the false positive rate translates to‘1% more sales’, for which they’ll happily pay real money.
+The core of a good fraud engine tends to be several dozen signals extractedfrom the transaction stream on the basis of a set of well-understood threatvectors (such as bad IP addresses, or too many logons from the same IP address)and a set of quality signals (such as ‘card old but good’).
+ These signals arethen fed to a machine-learning system that scores the transactions.
+ The signalsappear to be the most important part of the design, not whether you use anSVM or a Bayesian network.
+ The signals need to be continuously curated andupdated as the bad guys learn new tricks, and the fraud engine needs to bewell integrated with the human processes.
+ As for how fraud engines fail, theregulator’s report into a 2016 fraud against Tesco Bank found that the sta↵failed to ‘exercise due skill, care and diligence’ over the fraud detection rules,and to ‘respond to the attack with su�cient rigor, skill and urgency’ [687].
+ Inthat case, the bank failed to update its fraud engine following a warning fromMastercard the previous day of a new type of card scam.
+ We’ll discuss this casefurther in section 12.
+6.
+3 once we’ve explained chip cards.
+12.
+6EMV payment cardsThe biggest investment since 2003 has been in new card technologies, with banksreplacing both credit cards and debit cards with EMV smartcards, followed bycontactless payments with both cards and phones.
+ Card payments have becomeboth complex and diverse; the best way to understand them may be to followtheir evolution.
+When integrated circuits came along in the 1960s and microprocessors inthe 1970s, various people proposed putting them in bank cards.
+ The Germansconsider the smartcard to have been invented by Helmut Gr¨ottrup and J¨urgenDethlo↵ in 1968, when they proposed and patented a custom IC for a card; theJapanese point to a patent by Kunitaka Arimura in 1970; while the French creditSecurity Engineering411Ross Anderson12.
+6.
+ EMV PAYMENT CARDSRoland Moreno, who proposed memory chips in cards in 1973, and Michel Ugonwho proposed adding a microprocessor in 1977.
+ The French company Honeywell-Bull patented a chip containing memory, a microcontroller and everything elseneeded to do transactions in 1982; they started being used in French pay phonesin 1983, and in banking from the mid-1980s.
+Norway was second with some banks issuing chip cards from 1986.
+ Britain’sNatWest Bank developed the Mondex electronic purse system in the early 90s,piloted it in Swindon, then sold it to Mastercard; the software evolved intoMultos, a card operating system that’s still in use.
+ There was a patent ﬁght be-tween VISA and Mastercard.
+ There is more detail on these early pilot projectsin Chapter 3 of the second edition of this book.
+ That was all good learningexperience.
+ But for a payment card to be really useful, it has to work interna-tionally – and especially in Europe with many small countries jammed up closetogether, where millions of people cross borders for their weekly shop or evenon their commute to work.
+ So the banks ﬁnally got together in the late 1990sand hammered out a standard.
+12.
+6.
+1Chip cardsThe EMV standards specify chip cards and the supporting protocols for use inATMs and retail payment terminals.
+ They were initially developed by Europay,Mastercard and VISA, who then set up EMVCo to maintain and extend thestandards.
+ Chip cards were rolled out in the UK from 2003–6 and then in otherEuropean countries, most of which use PINs for authentication in stores as wellas ATMs, leading to the system being called ‘chip and PIN’.
+ In the USA andSingapore, chip cards are now used with signatures, and the system’s called‘chip and signature’.
+ The standards run to many thousands of pages; they nowextend to contactless payments, online payments and much else; and there arefurther documents speciﬁc to particular countries, and to individual banks.
+ Tomake sense of it all, let’s start with the basic protocol for using an EMV cardwith a PIN to buy goods from a shop.
+First, the card sends its credentials to the PIN entry device (PED) or termi-nal, consisting of the primary account number (PAN) and a certiﬁcate signedby the card issuing bank.
+ Then the terminal sends an unpredictable numberor nonce N, the date t and the requested payment amount X, along with thePIN entered by the cardholder.
+ The card checks the PIN, and if it’s correctit computes an authentication request cryptogram (ARQC) which is a messageauthentication code (MAC) on N, d3 and X.
+ Each message has some extra datadi which we’ll discuss later.
+C �! T :PAN, d1, CertKB(PAN, d1)T �! C :N, t, X, d2, PINC �! T :d3, MACKCB(d3, T, N, t, X)The ARQC is computed using a key KCB shared between the card andthe bank20.
+ The merchant can’t check this, so must either accept the risk of20The long-term key KCB is actually used to generate a derived unique key per transaction(DUKPT, pronounced duck-put) as a countermeasure to power analysis.
+ I’m omitting suchSecurity Engineering412Ross Anderson12.
+6.
+ EMV PAYMENT CARDSan o✏ine payment or send the transaction to the card-issuing bank throughthe payment network.
+ The bank checks the ARQC and the available funds,and if all’s well sends a response that also includes an authorisation responsecryptogram (ARPC) for the card.
+ The card responds with a further MAC calledthe transaction certiﬁcate.
+EMV allows many options, some of which are dangerous, either individuallyor in combination, and can be thought of as a construction kit for buildingpayment systems, with which you can build systems that are quite secure, orvery insecure.
+ It’s the switch speciﬁcations from VISA and MasterCard thatreally constrain the crypto as most banks want to be able to rely on their stand-in processing.
+ Things got tightened up steadily over 2005–17 as a succession offrauds exploited the less secure versions.
+ The simplest way to understand theprotocol suite may be to follow this history.
+12.
+6.
+1.
+1Static data authenticationThe default EMV variant up till 2011 in many countries was static data authen-tication (SDA).
+ As this used cheap cards that could not do public-key cryptog-raphy, there’s no card public key KC, and the PIN is sent to the card in theclear.
+ So it’s still vulnerable to sni�ng by a man-in-the-middle device, just aswith the magnetic strip cards that EMV was replacing.
+ The terminal veriﬁesthe certiﬁcate and digital signature, but has no way to verify the MAC21.
+ Asbefore, merchants have a ﬂoor limit below which o✏ine transactions are permit-ted, so they don’t have to stop trading when the network or the acquiring bankare down22.
+To begin with, the commonly-exploited vulnerability was backwards com-patibility with magnetic strip cards.
+ The certiﬁcate initially contained all theinformation needed to forge a mag-strip card, and as the introduction of chipand PIN meant that people started to enter PINs everywhere rather than justat cash machines23, gangs either set up false terminals or used various wiretapdevices to collect card data from genuine terminals and then cashed out viamag-strip forgeries.
+ Initially these were used in local ATMs that would fall backto mag-strip processing for reliability and compatibility during the changeover.
+From the late 2000s, the crooks targeted countries such as the USA and Thai-land that hadn’t adopted EMV yet.
+ This wave of mag-strip fallback fraud isvisible in the yellow line in ﬁgure 12.
+4, which surges between 2006 and 2010.
+Part of the crime wave of 2006–9 targeted petrol stations.
+ An attack on ourlocal BP garage in Cambridge involved a CCTV camera ﬁtted in the ceilingto capture the PINs plus a wiretap to get the card data; over 200 local peoplefound that copies of their cards were used in ATMs in Thailand.
+ BP’s competitorShell was hit even harder, and fell back to mag-strip operation for a while aftersome of their PIN pads were replaced with tampered ones by crooks pretendingdetails here and will discuss power analysis later in the chapter on side channels.
+21The bank could thus use any algorithm it liked, but the default was DES-CBC-MAC withtriple-DES for the last block.
+22Floor limits were ﬁrst cut to zero in Spain and this seems to be happening in the UKtoo, which seems daft; stations should not stop selling tickets when the phone line goes down,except possibly for season tickets.
+23In the UK, at 900,000 shop terminals as well as 50,000 ATMs.
+Security Engineering413Ross Anderson12.
+6.
+ EMV PAYMENT CARDSLosses (£m)Year20042006200820102012201420162018Total (£m)504.
+7439.
+5467.
+6580.
+7676.
+8479481.
+2452.
+7499.
+8553.
+4597.
+5755.
+6768.
+8731.
+4844.
+90100200300400500Card-not-presentCounterfeitLost and stolenID theftMail non-receiptChip & PIN deployment periodMobile bankingPhone bankingOnline bankingFigure 12.
+4: – card fraud in the UK from 2004 to 2018.
+to be maintenance engineers.
+The most spectacular fraud was discovered in2008, when a gang apparently intercepted PIN entry devices in a warehousein Dubai, en route from the factory in China to the UK and the Netherlands,and installed in them miniature mobile phones that sent the gang the card andPIN data.
+ Shops in the UK and banks in the Netherlands installed new devicesstraight out of the box – which promptly started SMSing their customers’ datato a server in Karachi [1729].
+ The gang was arrested and brought to trial in theUK, but the case failed when the banks declined to provide evidence.
+Colleagues and I therefore investigated a sample of PIN pads and foundthat such attacks were easy.
+ For example, the Ingenico i3300, the most widely-deployed terminal in the UK in 2007, had a user-accessible compartment, shownin Figure 12.
+5, which gives access to the bottom layer of the circuit board.
+ Wefound that a 1 mm diameter via, carrying the serial data signal, was easilyaccessed using a bent paperclip, which could be inserted through a hole in theplastic without leaving any external marks.
+ So an attacker could indeed hide adevice inside the terminal that gathers and relays both card and PIN data.
+ The‘Common Criteria Evaluation’ of such devices turned out to be worthless; I willdiscuss the political and organisational reasons for its failure in section 28.
+2.
+7.
+2.
+Such devices are now certiﬁed to standards set by PCI, and the rising issueis software complexity; rather than being based on 8-bit microcontrollers, PINentry devices nowadays tend to be built on Linux or Android platforms, whichhave a larger attack surface.
+France was hit with a wave of attacks using ‘yescards’.
+These are cardsprogrammed to accept any PIN (hence the name) and to participate in the EMVprotocol using a certiﬁcate from a genuine card, but returning random valuesfor the MAC [179].
+ They worked just ﬁne to buy low-value items like snacksand subway tickets, back when these were always sold via o✏ine transactions.
+Security Engineering414Ross Anderson12.
+6.
+ EMV PAYMENT CARDSFigure 12.
+5: – a rigid wire is inserted through a hole in the Ingenico’s concealedcompartment wall to intercept the smartcard data.
+ The front of the device isshown on the top right.
+Another family of problems has to do with authentication methods.
+ Eachcard, and each terminal, has a priority list of preferred cardholder veriﬁcationmethods (CVMs), which it shares in the supplementary data d1 and d2.
+ Thecard might say in e↵ect: ‘ﬁrst try online PIN veriﬁcation, and if that’s notsupported use local PIN veriﬁcation, and if that’s not possible then a signaturewill do, and if you can’t even get that then you don’t need to authenticate thecustomer at all’.
+ It might seem surprising that ‘no authentication’ is an option,but it’s needed to support devices such as parking meters that don’t have PINpads.
+ As well as PIN, signature or nothing, the terminal CVM list can specifyauthentication on a device, such as the biometric scanner on a phone.
+ Both cardand terminal can have risk-management logic to set monetary limits for di↵erentmethods.
+ But EMV version 1 has a ﬂaw: the list of authentication methods isn’titself authenticated, so a crook can manipulate it in a false-terminal attack [169].
+Many attacks become possible once you have a man-in-the-middle device.
+Two students of ours implemented a relay attack for a TV programme; a bogusterminal in a caf´e was hooked up via radio to a bogus card.
+ When a journalistin the caf´e went to pay £5 for some cake to a till operated by one student,the transaction was relayed to the false card carried by the other, who waslingering in a bookstore waiting to buy a book for £50.
+ The £50 transactionSecurity Engineering415Ross Anderson12.
+6.
+ EMV PAYMENT CARDSwent through successfully [584].
+ There are many entertaining variants on thetheme.
+ We don’t ﬁnd them in the wild, though, as they’re hard to scale.
+The scale of fraud varies quite a lot between countries, and this teaches thatthe practical security of EMV depends on contextual factors and implementationdetails – such as the extent to which local ATMs will do fallback magnetic-strip processing, the proportion of local shops open to various kinds of skimmerattack, and – as always – incentives.
+ Do the banks carry the can for fraud as inthe USA, which makes them take care, or are they able to dump the costs onmerchants and cardholders?A landmark during EMV roll-out was the ‘liability shift’.
+ In many countries,regulators allowed banks to arm-twist merchants into installing EMV terminalsby changing their terms and conditions so that merchants were liable for dis-puted transactions if EMV wasn’t used, but the banks became liable if it was.
+In that case, banks in much of Europe simply blamed the customer: ‘Your cardwas used, and so was your PIN, so you’re liable.
+’ So in theory fraud wasn’tthe bank’s problem any more.
+ In practice fraud went up, as you can see fromﬁgure 12.
+4.
+ Fraud rose initially, thanks to the many cards stolen from the mailduring the changeover period; the banks rushed the roll-out as the merchantspaid for the fraud until they had EMV terminals, which took time24.
+ There wasthen a surge in counterfeit, as shops started to get terminals, people got used toentering PINs in them, and the bad guys used bad terminals to steal card datato make mag-strip copies for use in ATMs.
+ The biggest change though was asurge in mail order and online fraud.
+ The net e↵ect was that by October 2007fraud was up 26% on the previous year [126].
+The fraud ﬁgures would have been higher were it not for some blatant ma-nipulation.
+ UK bank customers were stopped from reporting card fraud to thepolice from April 2007; this deal was negotiated between the banks and thepolice by the Blair government in order to massage the crime statistics down-wards, for which it was twice criticised by a parliamentary committee.
+ Properfraud reporting was only reintroduced in 201525.
+ You can see the e↵ects of thisfrom the dip in the red line in ﬁgure 12.
+4 between 2008 and 2016; those missingmillions include a lot of fraud costs that were simply dumped on cardholders.
+The banks also took over much of the ﬁnancing of the small police unit thatdoes investigate card fraud, so they have some control over such prosecutionsas do happen.
+12.
+6.
+1.
+2ICVVs, DDA and CDAIn order to stop mag-strip fallback fraud, banks started from the mid-2000s toimplement the integrated circuit card veriﬁcation value (iCVV), a CVV that is24This led to years of bad blood between merchants and banks.
+25By then it had served its political purpose.
+ From 2007–2015 crime fell steadily, as it wasmoving online like everything else, and the online part wasn’t being counted properly.
+ WhenTheresa May stood for election as leader of the Conservative Party in 2016, one of her claimsto party members was that she’d cut crime despite cutting police numbers from 140,000 to120,000; this claim was technically true, of reported crime at least.
+ When Boris Johnson stoodto replace her in 2019, he claimed that crime had fallen while he was Mayor of London from2008–16.
+ This claim was not even technically true, as once the O�ce of National Statisticsinsisted on counting properly from 2015, reported crime in Britain doubled.
+Security Engineering416Ross Anderson12.
+6.
+ EMV PAYMENT CARDSdi↵erent in the card data in the chip from the versions on the magnetic strip(which is read in mag-strip ATM transactions) and on the signature strip (whichis used online).
+ Once all three are di↵erent, a chip-only skimmer can’t in theorybe used to make working mag-strip forgeries, and even if a merchant breaksthe PCI DSS rules by keeping the signature-strip CVV on a database that thengets hacked, this CVV should not be enough to allow either a mag-strip forgeryor a yes-card forgery (this is known as channel separation).
+ The three CVVsare all calculated the same way – as a three-digit MAC on the PAN, versionnumber and expiry date, computed using triple-DES, but with di↵erent valuesof a service code in the computation.
+Dynamic data authentication (DDA) is the current default variant of EMV.
+It was used initially in Germany and from 2011 throughout Europe.
+ DDA cardscan do public-key cryptography: each has a private key KC, whose public keyis embedded in the card certiﬁcate.
+ The cryptography is used for two functions.
+First, when the card is ﬁrst inserted into the terminal, it’s sent a nonce, which itsigns, assuring the terminal that the card is present (somewhere).
+ The terminalthen sends a block containing the ‘unpredictable number’ and the PIN encryptedusing the card’s public key, followed by the transaction data, and the cardreturns the application data cryptogram as before.
+ This blocks skimmers fromcollecting the PIN26.
+ Back in the 2000s, DDA cards cost twice as much as SDAcards; cards are now very much cheaper, and the main extra cost of DDA isthat card personalisation is slower.
+Combined data authentication (CDA) is the Rolls-Royce variant.
+ It’s likeDDA except that the card also computes a signature on the MAC.
+ This enablessafer o✏ine operation, as the terminal can now verify the transaction.
+ It tiesthe transaction data to the public key and to the fact that a PIN veriﬁcationwas performed – assuming, that is, the bank selected the option of including aPIN-veriﬁcation ﬂag in the transaction data.
+ As for why this matters, considerthe No-PIN attack.
+12.
+6.
+1.
+3The No-PIN attackIn 2009, we got credible complaints from several fraud victims that their cardshad been stolen and then used in shops in transactions that their bank refused torefund, claiming that their PIN had been used – while they insisted that it couldnot have been compromised.
+ Steven Murdoch, Saar Drimer and I investigatedand found that a man-in-the-middle device could tell the terminal that the cardhad accepted the PIN, while telling the card that the terminal had initiated achip-and-signature transaction [1364].
+ Banks in some countries don’t use PINs,typically because regulators didn’t allow the liability shift; and some banks inthe UK allow customers to refuse a PIN and get a US-style chip-and-signaturecard instead.
+In the protocol, the card data d3 contains a ﬂag indicating whether the PINwas veriﬁed or not, and the terminal separately returns a ﬂag to its acquiringbank with the same information.
+ However the card ﬂag is proprietary to the26As the card data are still in clear, a bad guy can still collect the PINs by visual observationand try mag-strip fallback, in the hope that the card issuer doesn’t check CVVs; some banksapparently still don’t.
+Security Engineering417Ross Anderson12.
+6.
+ EMV PAYMENT CARDSissuer, rather than an EMV standard, so it wasn’t checked by default.
+Four criminals were arrested in France in May 2011, and a forensic reportwas published by Houda Ferrari et al in 2015 after their last appeals ran out.
+The No-PIN attack was accomplished by cutting out the chip from a stolencard and bonding it underneath the chip of a hobbyist smartcard, which wasthen programmed to perform the man-in-the-middle attack [680].
+The gangstole some e600,000 over 7,000 transactions using 40 modiﬁed cards, of which25 were seized by the police.
+One UK bank blocked the attack in late 2010 but the block was removedin early 2011, perhaps because strict error handling was causing too many falsepositives (the terminal ﬂag may be missing or wrong).
+ The response to our dis-closure of the vulnerability was somewhat negative; the banks’ trade associationwrote to the university asking it to take down the master’s thesis of a studentwhose project had been to build a more robust man-in-the-middle device to in-vestigate such issues (the university of course refused) [77].
+ It wasn’t until 2017that the attack deﬁnitively stopped working in the UK.
+ However, if either thecard or the merchant terminal was issued by a non-UK bank, the attack maystill work.
+Overlay smartcards may have been used in China and possibly Italy for suchan attack in late 2018.
+ These are very thin smartcards – about 180 microns thick– with contacts top and bottom.
+ They were developed in China to supportmobile phone roaming; the idea is that you stick one on top of your normalphone SIM to provide an alternative.
+ The overlay acts as a classic man-in-the-middle.
+ These devices are ideal for attacks; they’re widely available, they saveyou having to build ﬁddly custom hardware, and are easy to use (you programthem in JavaCard).
+12.
+6.
+2The preplay attackOn the 29th of June 2011, a Maltese customer of HSBC on holiday in Majorcafound four ATM transactions debited to his account despite the fact that hehad the card in his possession at the time.
+He’d eaten a meal the previousevening at a restaurant where he thought the sta↵ suspicious, and wonderedif his card had been copied.
+ HSBC refused him a refund.
+ So he contacted usand we advised him to demand the transaction logs.
+ It turned out that the‘unpredictable number’ generated by the ATM was just a 16-bit counter thatcycled every 3 minutes.
+For a DDA/CDA card, the authentication step of EMV is:T �! C :T, N, t, X, d2, {PIN}KCC �! T :d3, MACKCB(d3, T, N, t, X)If I know which ‘unpredictable number’ N a given terminal will generatewhen the date t is tomorrow, and I have your card in my hand today, then I canwork out an ARQC MACKCB(d3, T, N, t, X) that will work tomorrow in thatmachine.
+ Mike Bond, Marios Choudary, Steven Murdoch, Sergei Skorobogatovand I therefore instrumented a payment card, by attaching tiny microcontroller,Security Engineering418Ross Anderson12.
+6.
+ EMV PAYMENT CARDSmemory and clock chips, and investigated ATMs around Cambridge, England.
+We found that almost half of them used counters as ‘unpredictable numbers’.
+Others had random number generators with stuck bits.
+ We then went back tothe EMV specs and found that the test routine for a terminal only required thetester to draw three ‘unpredictable numbers’ and check that they were di↵erent.
+So could this be exploited at scale in Britain?The next data point came in September 2012, when a Scottish sailor ordereda drink in a bar in Las Ramblas, a tourist street in Barcelona.
+ He paid e33 withhis EMV card, or so he thought.
+ He passed out, woke up the following morning,and found later that day that his account at Lloyds Bank had been hit withten debits of e3,300 each – a total of £24,000 at the time.
+ The bank claimedthat as the chip and PIN had been used, he was liable.
+ He instructed lawyerswho engaged us, and got the transaction logs from the bank.
+ It turned outthat the ten transactions had been spaced evenly, ﬁled through three di↵erentacquiring banks, and that although they had been made in the same terminal,the terminal was registered with di↵erent characteristics at each of these banks.
+This was clear evidence of technical manipulation, and the sailor got his moneyback.
+ We dubbed this the ‘pre-play attack’, as the essence is that rather thanreplaying old transactions, you record transactions that you will book in thefuture.
+ If the same terminal will be used, then the fact that it’s the terminalthat generates the ‘unpredictable number’ makes the attack easy [282].
+Since then, we’ve seen cases of pre-play attacks in a number of countries inEurope, typically against customers of strip clubs and other sex industry ﬁrms.
+In the UK, a customer of a lap-dancing club in Bournemouth complained in 2014that the sta↵ got him drunk and charged him £7,500 in 13 transactions [334].
+Following press publicity, over a dozen other victims came forward, includingpeople who’d su↵ered debits after they were back home in bed [1948].
+ Thissuggested a pre-play attack rather than a simple case of whores rolling drunkencustomers; the local authority took an interest, and the club was put ‘on proba-tion’ for six months.
+ However we could not persuade the police to raid the cluband look for evidence, and eventually it got its full license back.
+ In 2020, a clubin London actually lost its license after making multiple charges to customers,with some victims being taken for tens of thousands [1341].
+ Elsewhere in Europetoo, it’s turned out to be hard; one such club in Cracow, Poland, got raided butthe police didn’t look for technical evidence.
+ Terminals can be compromised invarious ways: apart from poor random number generators, their vendors canfail to patch their software, and some nowadays even let operators run apps onthem27.
+ So the preplay problem persists, and I fear that eventually we’ll have ahomicide case on our hands.
+ Pimps who do pre-play attacks seem to often spikethe victim’s drink, and if you anaesthetise drunks and leave them to sleep it o↵on a whorehouse sofa while you loot their bank accounts, then sooner or laterone of them will inhale some vomit.
+An interesting point about security usability is that if you have four or ﬁvecards in your wallet or purse, then if you add up all their balances and creditlimits, plus the extra ‘unauthorised overdrafts’ the card ﬁrms might give you,27Dixons Carphone was ﬁned £500,000 in 2020 after malware infected 5,390 tills, compro-mising the personal data of 14 million people and the data from 5.
+6 million cards.
+ The previousyear they’d been ﬁned £400,000 for similar failures [2039].
+Security Engineering419Ross Anderson12.
+6.
+ EMV PAYMENT CARDSyou’re probably walking around with the price of a car.
+ If you had that muchcash in your pockets you’d probably not go into a bad part of town.
+ You mightnot even be comfortable walking along the high street unless you had a couple ofbig friends with you.
+ Payment cards obscure this prudential reﬂex, and enableus to spend much more than we would when calm and sober.
+ Quite apart fromfraud there are issues of vulnerability.
+ The UK government, for example, hasjust banned the use of credit cards in casinos.
+If you’re designing a systemthat takes payments online for regulated products, or if your products might beregulated in future because they can be addictive, then there’s a bunch of issuesyou need to work through from ethics to geolocation to arbitration.
+12.
+6.
+3ContactlessContactless payment was pioneered in the USA by Mobil in 1997 and adoptedin the 2000s in a number of transport systems from London to Tokyo.
+ By 2007,you could just touch your phone on Japanese subway turnstiles in order to getthrough.
+ Barclays issued the ﬁrst contactless bank cards in the same year; VISAand Mastercard developed contactless variants of EMV for payment; and Googlelaunched Android Pay in 2011 using the Mastercard PayPass standard28.
+ Theseearly adopters struggled to get merchants to change their payment terminals,while the press and public remained sceptical.
+ The market tipped in 2014 whenApple launched Apple Pay.
+ By 2017 card payments had overtaken cash pay-ments in the UK, because of the convenience of tap-and-pay; in 2018, debit cardsovertook cash in the USA, and the share of US consumers using mobile onlineapps rose from 40% to 60% [707].
+ The coronavirus pandemic in 2020 caused afurther large-scale switch from cash to contactless, with UK ATM transactionsfalling from 232m in January to 91m in April and cash transactions falling fromone in three to one in ten, while the contactless limit was raised from £30 to£45.
+The basic idea is simple.
+ In the USA, the terminal generates an ‘unpre-dictable number’ N, the card uses KC to generate a dynamic CVV as a 3-digitMAC on selected transaction data, and this is sent to the card-issuing bankalong with N.
+ In order to scale processing, the CVV keys may be made avail-able to the HSMs of acquiring banks and to service ﬁrms that stand in for them.
+Risk is mitigated by transaction limits – in 2020, $100 in the USA and £30 inthe UK.
+ Some issuers have a policy that after a certain number of contactlesstransactions, the cardholder must do a full EMV transaction with a PIN; thiscauses complications in some applications.
+ There’s a variant in the UK andEurope where the card is made to generate an ARQC which may be sent to thebank network for checking on a random basis.
+As with regular EMV, N is generated by the terminal rather than by thebank, so pre-play attacks are possible, but in most countries are not an issuebecause of the transaction limits29.
+ However, the extension of contactless pay-ments from cards to phones led to additional complexity, and the systems we28Full disclosure: I did some work for Google on the design.
+29In Germany, you do high-value card payments by doing a contactless payment, combinedwith online PIN veriﬁcation as in an ATM transaction, but I’m not aware of any pre-playincidents.
+Security Engineering420Ross Anderson12.
+6.
+ EMV PAYMENT CARDShave now are a mash-up of competing proposals from the two card schemes.
+In some Android phones, the credit card becomes a virtual credit card, im-plemented in Java Card in a secure element in the NFC chip that does thecontactless RF protocol; Apple is something similar but with the key materialin the iPhone’s secure enclave.
+ Other Android phones use host card emulationwhere the NFC function is provided in software.
+ NFC chips, or functionality, arestarting to appear in watches, bracelets and other devices too.
+ Many use tok-enization, where the phone or other device is provisioned with a token30 and keymaterial by an online tokenization service provider (TSP) that acts on behalf ofthe banks.
+ The merchant sends the transaction to the TSP, which performs theappropriate cryptographic operations in its HSM and forwards the transactionto the customer’s bank.
+When contactless cards were rolled out, there were the usual implementationfailures.
+ In some stores, you could be charged for a transaction twice if you paidusing a contact transaction yet left your wallet or purse near the terminal witha di↵erent, contactless, card in it.
+ Researchers also wondered whether a crookcould harvest credit card numbers, security codes and expiry dates by doingRFID transactions with victims’ cards as he brushes past them in the street– or by reading cards that have been sent in the mail, without opening theenvelopes [894].
+ Martin Emms and colleagues from Newcastle showed this waspossible, and found some even more interesting ﬂaws: one UK bank even let youmake one guess at a PIN; with others, the cash limit failed with foreign currencytransactions [628].
+ On November 5th 2016 this led to a major fraud againstTesco Bank in the UK, when crooks in Brazil posted high-value transactions byusing mag-strip data on a contactless interface on a mobile device.
+ The bogustransactions amounted to £2.
+2m from 8,261 customer accounts and, althoughthe eventual losses were only £700,000, the attack created a ﬂood of fraud alertswith which the bank’s weekend working procedures could not cope.
+It tookuntil November 7th to block the fraudulent transaction stream, many legitimatetransactions were also blocked, and normal customer service only restarted onthe 9th.
+ For this failure, and the distress caused to customers, the regulatorﬁned the bank £16.
+4m [687].
+In 2019, Leigh-Anne Galloway and Tim Yunusov found you could increasethe contactless limit from £30 to £5500 by pretending to be a phone, and there’salso an exploitable preplay attack.
+These attacks exploit the phone / card/ terminal complexity.
+ Android phones can have multiple limits depending onwhether the screen is o↵ or on, and whether the user has recently authenticated;and the phone and terminal send unauthenticated ﬂags to each other [736].
+ In2020, David Basin, Ralf Sasse, and Jorge Toro found an improved middlepersonattack where a transaction is routed from a stolen card through two phones to acontactless terminal, which accepts a claim that the cardholder was veriﬁed usingthe phone’s own authentication mechanism, such as a biometric [182].
+ Possiblysuch attacks could be prevented from scaling by the banks’ fraud engines, andthey haven’t appeared in the statistics (yet).
+ However we still get complaintsfrom cardholders who have been victims of fraud after their cards were stolen,and who claim their PIN wasn’t compromised while their bank claims it musthave been.
+30There’s a payment account reference (PAR), a permanent pseudonym for the card numberSecurity Engineering421Ross Anderson12.
+7.
+ ONLINE BANKINGWe’re starting to see innovative variants that don’t rely on speciﬁc hardwarebut allow other channels to be used to run the protocol, such as QR codes.
+ We’llhave to wait and see whether these lead to man-in-the-middle attacks at scale.
+The designers of second-generation EMV are talking of closing all the plaintextgaps and even adding distance bounding as an option.
+ Such techniques couldthwart many of the attacks described here.
+ But the principal problems withcontactless now that it has been running for several years are more prosaic, andinclude card collisions: if you have three cards in your wallet and you wave thewallet over a subway turnstile, which of them gets debited? The card-choicemechanisms aren’t robust enough to give repeatable answers [1287].
+ This is anissue in London, where if you tap into the local transport system and fail to tapout again, you get billed the maximum fare.
+ If the entry and exit turnstiles seedi↵erent cards in your wallet, you end up paying double the maximum.
+A recent development is Software PIN on COTS (SPoC) where the old as-sumption of a sort-of cleartext magnetic strip plus a strongly encrypted PIN isturned on its head: the SPoC rule is that devices where the PIN can’t be stronglyprotected must never learn the associated card data.
+ If a PIN is entered in amerchant’s iPhone, as we now see at Apple stores, there’s another componentcalled a Secure Card Reader – PIN (SCRP) that plugs into the phone and ac-cepts the customer card.
+ Even if the phone app is compromised, the bad guydoesn’t know which card the PIN will work for.
+ The phone also passes the cus-tomer PIN to the SCRP where it’s encrypted and sent o↵ for online veriﬁcation.
+There’s also work on ways to accept contactless payments on ordinary phones;and presumably the next step will be to pay people by tapping phones together,with one emulating the card and another the terminal.
+ Direct phone-to-phonepayments are already routine for tens of millions of people in countries such asKenya and Bangladesh, as I’ll describe below in section 12.
+8.
+1.
+ It will be aninteresting challenge to join up such systems with the world of EMV and makethe whole thing safe to use.
+12.
+7Online BankingAfter credit and debit cards, the third thread in the world of payments is bankingfrom your PC or phone.
+In 1985, the ﬁrst home banking service in the world was o↵ered by the Bankof Scotland, whose customers could use Prestel, a proprietary email systemoperated by British Telecom, to make payments.
+ When Steve Gold and RobertSchifreen hacked Prestel – as described previously in section 3.
+4.
+4.
+4 – it scaredthe press and the bankers.
+ But there was little real risk.
+ The system allowedonly nominated account payments – you could only send money between yourown accounts and to accounts you’d notiﬁed to the bank, such as your gas andelectricity suppliers.
+ In the early days this meant visiting a branch, ﬁlling apaper consent form, and waiting until the cashier checked the payee accountnumber.
+The early 1990s saw the rapid growth of phone banking, followed by bankwebsites from the late 1990s, and then the phishermen arrived.
+Security Engineering422Ross Anderson12.
+7.
+ ONLINE BANKING12.
+7.
+1PhishingIn section 3.
+3.
+3 I summarised the history of phishing from its beginnings in the1990s to its use against online bank accounts from 2003.
+ The bad guys startedwith crude lures from typosquatted domains like http://www.
+barqlays.
+com todeceptive ones like http://www.
+barclays.
+othersite.
+com; the banks’ initialresponse was to blame their customers.
+ The gangs rapidly got more sophisti-cated, as underground crime forums got going from around 2005 that supportedincreasing specialisation, just as in the normal economy.
+ One gang would writethe malware, another would herd the botnet, and we started to see specialistswho would accept hot money and launder it.
+ The usual technique was to lootwhatever customer accounts you could and send the money to compromisedaccounts at whatever bank was slowest at recovery.
+ Of the £35m lost by UKbanks in 2006, over £33m was lost by a single bank.
+ One of its competitorstold us that the secret was to spot account takeovers quickly and follow themup aggressively; if money’s sent to a mule’s account, he should ﬁnd his accountfrozen before he can walk to Western Union.
+ So the laundrymen learned toavoid them.
+The industry learned to take down phishing websites as quickly as possible,and specialist takedown companies got good at this.
+ The bad guys respondedwith tricks such as fast ﬂux, where phishing sites were hosted on botnets andeach mark who answered a lure was sent to a di↵erent IP address.
+The second battleﬁeld was asset recovery: the fraudsters would try to get themoney overseas quickly and launder it, while the industry and law enforcementwould try to stop them.
+Until May 2007, the preferred route was eGold, acompany operated from Florida but with a legal domicile in the Caribbean,which o↵ered unregulated electronic payment.
+ After eGold got raided and closeddown by the FBI, the villains started to send money through banks in Finlandto their subsidiaries in the Baltic states and on to Russia.
+ The third choicewas wire-transfer ﬁrms like Western Union: the phishermen recruit mules byo↵ering jobs in which they work from home and earn a commission as an agentfor a foreign company.
+ They are told their work is to receive several paymentsa week, deduct their own commission, and then send the balance onwards viaWestern Union [789].
+ There have also been various electronic money servicesin Russia and the Middle East [75].
+ Regulators played whack-a-mole: after onechannel got closed down, another would open up.
+ Banks through which moneylaundering was easy – known in the industry as ‘mule banks’ – even su↵ered lessfraud, as the big gangs avoided targeting their customers in the hope that they’dstay useful for longer as the second link in the chain.
+ This battle continues, withfunds laundered through everything from cryptocurrencies to Amazon gift cards.
+This emphasises the importance of the prevent – detect – recover model weintroduced in section 12.
+2.
+4 above.
+ Where authentication alone can’t do thejob, and you can’t ﬁnd other vulnerable points in the kill chain, you need tobeef up the intrusion-detection mechanisms that complement them.
+Security Engineering423Ross Anderson12.
+7.
+ ONLINE BANKING12.
+7.
+2CAPIn 2006, the banks announced a two-factor authentication standard based onEMV, and this was launched the following year.
+ The Chip Authentication Pro-gram (CAP)31 consists of a handheld password calculator in which you can putyour EMV bank card.
+ You enter a PIN; the device gets the card to check this;you can then do one of three functions.
+ You can get a one-time password to logon, you can answer a logon challenge, or you can authenticate a series of digits,typically from a payee account number and amount.
+Current versions use a custom app on the EMV card, which uses a keyshared with the issuing bank to compute a MAC on the supplied data and onan application transaction counter (ATC) (which is di↵erent from the one usedfor point-of-sale transactions).
+ The response code is a truncated MAC and atruncated ATC.
+ The security is discussed in [585]; brieﬂy, if you put your card ina bad terminal, this can generate a CAP code to log on to your online bankingservice, though that’s hard to scale as you typically also need a password.
+ Theavailability of CAP readers means that a mugger who holds you up for your cardcan demand your PIN and check it, without having to march you to an ATMand risk being seen on CCTV.
+ This has led to homicides, and was negligentdesign: other password calculators just return the wrong result if you supplythe wrong PIN, including the early designs from the 1980s that I described insection 4.
+3.
+2.
+12.
+7.
+3Banking malwareAs banks made simple phishing attacks harder by using ever more elaborateauthentication mechanisms from partial password questions to the early two-factor authentication schemes, some bad guys just worked harder at persuasion.
+Even in Germany, whose banks gave their customers printed lists of one-timepasswords, the crooks persuaded some customers to type them all in at once.
+Other bad guys turned to automation, in the form of banking malware.
+ From2007, a series of malware strains such as Zeus, Torpig, SpyEye, EMotet, Trickbotand Dridex stole hundreds of millions from banks and their customers worldwide,spreading by various techniques including Word macros and drive-by downloads.
+By 2011, man-in-the-middle attacks developed into man-in-the-browser attacks:when the user of an infected PC sets out to use their bank account, browsermalware can actively modify transaction data so that what they see isn’t whatthey authorise.
+ This is why prudent banks now use a second factor such as CAPto authenticate at least the last four digits of the account number of any newpayee.
+ Banks who don’t use CAP may use a dedicated authentication deviceinstead, or a phone-based second factor.
+12.
+7.
+4Phones as second factorsAnother response to the wave of phishing in the mid-2000s was to use thecustomer’s phone as a second factor.
+ It seems natural to send a conﬁrmation,31This is its brand name for Mastercard, which invented it; VISA calls it Dynamic PasscodeAuthentication (DPA).
+Security Engineering424Ross Anderson12.
+7.
+ ONLINE BANKINGsuch as: ‘If you really want to send $7500 to Russian Real Estate LLC, pleaseenter 4716 now in your browser.
+’ This appears to give the same beneﬁts asCAP, but with a nicer user interface.
+However, after South African banks started implementing this in 2007, theyquickly saw the ﬁrst SIM swap fraud.
+ Some Johannesburg crooks got a new SIMfor the phone number of the CFO of a charity that looks after orphaned andvulnerable children, and stole R90,460 from its bank account [1514].
+ The bankcomplained to the phone company, which was unsympathetic: phone companiessell minutes, not banking authentication services.
+ As I discussed in section 3.
+4.
+1,such frauds spread from South Africa to Nigeria, then to the USA from about2014–5 where they were initially used to steal Instagram accounts, and from2018 to loot people’s accounts at bitcoin exchanges [1092].
+Such attacks now involve phone company insiders.
+ In a 2019 case, an AT&Tcontractor in Tucson, Arizona, helped a SIM-swap gang steal $2m from 29victims [711].
+ In 2020, Kevin Lee and colleagues tried to swap ten SIMs on eachof ﬁve US phone companies and found it to be easy: with the big companies,it worked every time.
+ Vulnerabilities included authenticating people by askingabout recent calls and recent top-ups, both of which can be manipulated by anattacker [1136].
+ It was also reported that SIM swappers were hacking phonecompany sta↵, by social-engineering them into installing remote access toolson their PCs, and then using the subverted machines to reassign target phonenumbers to SIMs they controlled [485].
+ Tens of thousands of customer servicereps are in a position to be careless, to get hacked or to take bribes from SIMswap gangs.
+ Some already take bribes to unlock stolen phones, and once theseunderground communities link up we can expect things to get worse.
+ There havealso been a couple of cases, in Germany and the UK, where attackers exploitedthe SS7 signalling protocol to wiretap targets’ mobile phones remotely and stealcodes that way [489] (I’ll discuss this further in section 22.
+1.
+3).
+ In China, thelaw requires you to visit a phone shop and show ID to buy a SIM; in India,you need a biometric check and the phone company is also made partly liablefor SIM-swap fraud.
+ However, the direction of travel in the USA and Europe isaway from SMS as a second factor and towards a custom phone app32.
+But as I wrote in the second edition of this book in 2007, “Two-channelauthentication relies for its security on the independence of the channels.
+.
+.
+ ifeveryone starts using an iPhone, or doing VoIP telephony over wireless accesspoints, then the assumption of independence breaks down.
+”In the EU, the second payment services directive now requires banks touse two-factor authentication.
+ So it’s becoming universal, and the bad guysare getting a lot of practice at breaking it.
+ But what happens if you do yourbanking not on your laptop but on a phone app, and use another phone app asyour second factor? If malware roots your phone, might it take over both apps,and loot your account?At the time of writing (2020), the European Central Bank takes the viewthat two apps are OK so long as you use runtime application self-protection(RASP), which means that you obfuscate the app code using the kind of tech-32Data on which banks use hardware tokens as second factors, or software tokens, or SMS,or no second factor at all, can be found at https://twofactorauth.
+org/#banking.
+Security Engineering425Ross Anderson12.
+7.
+ ONLINE BANKINGniques developed during the 1980s for software copy protection and the 1990s fordigital rights management.
+ This makes experienced security engineers wince,as the history of such mechanisms is not a good one; it’s told in the chapter onCopyright and DRM, and I discuss RASP further there in section 24.
+3.
+3.
+ It isvery hard to get any assurance of how long an obfuscation scheme will take tobreak; a break must be expected at any time, and the user of such a schemehad better be ready to patch it immediately that happens.
+ And maybe all anattacker might need to do is shim one of the methods in the network stack toget at the strings containing the authentication exchange.
+ So they might notneed to extract the key or otherwise break the RASP mechanism itself.
+12.
+7.
+5LiabilityOne long-running argument has been over liability.
+ The rush to online bankingled many banks to adopt contract terms that put the risk of fraud on customers,in conﬂict with consumer law and traditional banking practice [277].
+ Unfortu-nately, the EU’s Payment Services Directives of 2007 and 2015 went along withthis by leaving a loophole in dispute resolution procedures33.
+A study of the bank fraud reimbursement terms and conditions of 30 banksoperating in 25 countries showed a great variety of security advice, with muchof it being vague, impractical or even conﬂicting [201].
+ For example, HSBCrequired unique PINs and passwords per account, contrary to advice given earlierby the UK banks’ trade association which recommended customers to change alltheir PINs to the PIN issued for one of their cards.
+ It also had the most onerousdemands for Internet banking, including that the bank’s URL must always betyped into the browser manually.
+ It, and many other banks, required customersto use antivirus software; fewer required that software be patched up-to-date.
+Banks meanwhile trained their customers to be vulnerable by business prac-tices such as telling their customers to reveal their security data, even whenmaking unsolicited calls.
+ I’ve personally received an unsolicited call from mybank saying ‘Hello, this is Lloyds TSB, can you tell me your mother’s maidenname?’ You’re sorely tempted to tell them to get lost, but if you do it will be abother to reactivate or replace your payment cards.
+ And even if the security rit-ual is made more complicated, the phishermen can still talk the marks throughit, if need be as a man-in-the-middle (or browser) attack.
+However, round about 2015, the bad guys started to evolve a better way.
+12.
+7.
+6Authorised push payment fraudAuthorised push payment (APP) fraud refers to bank transfers that customersare tricked into making.
+ Figures only started to get collected in 2017 and the33British banks got the UK government to insert ‘necessarily’ into article 72(2): ‘Wherea payment service user denies having authorised an executed payment transaction, the useof a payment instrument recorded by the payment service provider, including the paymentinitiation service provider as appropriate, shall in itself not necessarily be su�cient to proveeither that the payment transaction was authorised by the payer or that the payer actedfraudulently or failed with intent or gross negligence to fulﬁl one or more of the obligationsunder Article 69.
+’Security Engineering426Ross Anderson12.
+8.
+ NONBANK PAYMENTS2018 ﬁgures are not calculated in the same way to 2017, so we don’t have thoseon the graph in ﬁgure 12.
+4.
+ However the total, at £354.
+3 million, is second onlyto remote purchase fraud and more than the remainder put together.
+A typical modus operandi is to look for someone who’s buying a house andsend an email that seems to be from their lawyer informing them that the ﬁrm’sbank account number has changed.
+Another is to target vulnerable elderlypeople.
+ In one case, a 92-year old war veteran was called by crooks pretendingto be from his bank, bank A, who told him that the bank had been hacked, sohe had to transfer his life savings of £120,000 to bank B for safekeeping.
+ Twodays later, his son visited and learned what had happened.
+ In this particularcase, their lawyers demanded that bank B produce the know-your-customerdocuments with which the mule account was opened.
+ A few days later, bank B(which had a reputation as a ‘mule bank’) sheepishly refunded the money.
+That victim was lucky, but many were less so.
+ Large frauds had becomeeasy because the banks had made large payments easy; in the old days, takingout £120,000 would have involved arranging a meeting with a bank managerat the very least.
+Yet online banking had been combined with a system ofinstantaneous payments which meant that fraudsters could get away with ﬁve-ﬁgure and even six-ﬁgure sums.
+ In the UK this became such a sore point thatParliament’s Treasury committee noted that rapid irrevocable payments weresimply the wrong default [1361], and the Payment Services Regulator changedthe rules so that the banks now carry some of the liability.
+As a result, ithas become signiﬁcantly more complicated to make large bank transfers.
+ Evenmedium-sized transactions get held up; if you try to pay your plumber a fewthousand for renovating your bathroom, you’re likely to get anxious calls fromthe bank and be put through some security ceremonies.
+Similar frauds have also been growing steadily against companies.
+ Known asbusiness email compromise (BEC), they now account for several billion dollarsa year in losses [91].
+ In one recent case, a museum in the Netherlands agreed tobuy an 1855 painting by John Constable for £2.
+4m from a London art dealer,but sent the money to the wrong account after crooks hacked the museum’semail account and sent emails appearing to come from the dealer.
+ The museumsued the dealer but lost [506].
+Victim ﬁrms have much less protection thanconsumers do, but there are some mitigations that help both.
+ For example,the UK regulator ordered banks to implement conﬁrmation of payee: when youﬁrst make a payment to a new account, you’ll be asked for the account holder’sname and you’ll be alerted if it’s wrong [1361].
+ Still, prudent practice is nowto hard-code company bank account numbers in business contracts, so that ifﬁrm A pays crook C instead of ﬁrm B, there’s no room for argument over whosefault it was.
+ In Germany – where ﬁrms have been using direct bank paymentssince the 20th century – it has been a legal requirement for years that companiesprint their bank account numbers on their letterheads.
+12.
+8Nonbank paymentsThere are many ways of making payments other than through banks.
+ PayPal isthe survivor of a number of email-based payment service providers that sprungSecurity Engineering427Ross Anderson12.
+8.
+ NONBANK PAYMENTSup at the time of the dotcom boom, and has now in e↵ect grown into a bank, witha portfolio of payment services both traditional and novel.
+ A more traditionalservice is hawala, a term that refers to money-changers that serve communitiesof immigrants from South Asia and the Middle East, helping them to sendmoney home.
+They compete with Western Union, which grew up with theVictorian telegraph network, and more modern payment service providers whoprovide low-cost foreign exchange transactions.
+ Some of these services are usedby cybercriminals, most notably PayPal and Western Union.
+ Western Unionis a particular problem for law enforcement as criminals can send money toany one of its many branches and withdraw it in cash.
+ All such providers areregulated in the European Union by the E-money directive of 2009, which setsrules for capital and liquidity.
+ There are also cryptocurrencies such as bitcoin,which some regulators currently exempt from e-money regulation, and whichI’ll discuss in the chapter on Advanced Cryptographic Engineering.
+Two particular types of payment service merit separate discussion: phonepayments and overlay payments, of which the leading examples are M-Pesa,AliPay / WeChat Pay, and Sofort.
+12.
+8.
+1M-PesaM-Pesa is a mobile phone banking service in Kenya, launched in 2007 by Voda-fone.
+ It took o↵ rapidly and the ﬁrm that operates it, Safaricom, is now Kenya’slargest ﬁnancial institution.
+ Over 200 similar services have been launched inless developed countries, and have been transformative in about 20 of them; thelargest such service now may be B-Kash in Bangladesh.
+ Many such serviceshave been growing rapidly during the 2020 coronavirus lockdown.
+M-Pesa got going as a means for migrant workers in Nairobi and Mombasato send money home to rural relatives.
+ Before mobile phones came along, thismeant posting cash, or sending it with friends or bus drivers – both inconvenientand risky, especially during a period of civil unrest in 2008 after a disputedelection the year before.
+ Once mobile phones became widespread, people startedbuying airtime as a means of transferring value, and from there it was a smallstep to transfer actual value.
+ The security mechanisms of such systems tend tobe simple, with an encrypted PIN, payee and value sent over SMS or USSD.
+The key success factor is that phone companies have built networks of tensof thousands of sales agents who can turn cash into digital credit and backagain – networks that reach the smallest villages, unlike the legacy banks.
+ Theoperational problems have to do with people sending money to the wrong phonenumber by mistake, and integrating incoming M-Pesa payments with businesssystems.
+12.
+8.
+2Other phone payment systemsMany other countries have phone payment systems, or have widely-used pro-prietary payment systems that work reasonably well on phones.
+ An exampleof these is PayPal, which redirects you from a merchant website to PayPal’s,where you log in to authorise payment.
+ Up until 2013, this was the world’sSecurity Engineering428Ross Anderson12.
+8.
+ NONBANK PAYMENTSleading phone payment system.
+ Since then the leading phone payment mecha-nism has been AliPay, a proprietary payment app run by the Alibaba group inChina.
+ It is closely followed by Tencent’s WeChat Pay; in 2020 they had 54%and 39% of the Chinese mobile-payment market respectively.
+ Smartphone pay-ments took o↵ rapidly in China, as M-Pesa did in Kenya, because banking usedto be unsatisfactory outside the main cities [608].
+ They have become the defaultpayment mechanism in China, and use a visual payment channel: a merchantdisplays a QR code which the customer scans to send the right amount to theright account.
+ AliPay and WeChat Pay operate not just as business platformsbut as national infrastructure, and since 2018 are closely regulated: the Peo-ple’s Bank of China gets copies of all transaction data [1529].
+ This ﬁts with theChinese approach to information sovereignty we discussed in section 2.
+2.
+2.
+ Andboth apps now support payment using your face, aligning with the growing usein China of face recognition, a technology I discuss in section 17.
+3.
+ India alsohas a low-cost phone payment system in UPI, linked to the national Aadhaarbiometric card; on these national payment and identity layers sit a number ofcompeting payment apps.
+12.
+8.
+3Sofort, and open bankingCredit cards were not traditionally used in Germany, which was inconvenientwhen people started shopping online.
+ One approach was to order goods froma website, get the merchant’s bank account details and a transaction referencenumber, go to your bank and pay, then go back to the merchant’s website thenext day and put in the payment details.
+Sofort¨uberweisung is German for ‘immediate payment’ and set out to solvethis problem by means of an industrialised man-in-the-middle attack.
+ In orderto buy a plane ticket, for example, you click the ‘sofort’ (‘immediate’) button onthe airline’s checkout page, and the service opens up a frame in which you enteryour bank name and account number.
+ Sofort then logs on to your bank as you,and presents you with the bank’s authentication challenge.
+ Once you pass this,it goes into your account, checks that there’s enough money, and sends itself thepayment.
+ It then redirects back to the airline and you get your ticket [79].
+ Thee↵ect is to make online shopping easier, but also to deprive the banks of cardtransaction fees (the merchant pays about a third as much as they’d have paidfor a card transaction).
+The banks sued Sofort for unfair competition and for inciting customers tobreach bank terms of service by entering their credentials at Sofort’s website.
+They lost after the German Federal Antitrust O�ce argued that the banks’terms of service hindered competition and were designed to exclude new businessmodels like Sofort’s.
+ Sofort got a banking licence and the other banks just hadto compete.
+The upshot was the EU’s second payment services directive (PSD2), alsoknown as ‘open banking’.
+ Since January 2018, banks must open up their sys-tems, not just by releasing transaction data in a standard format to other regu-lated ﬁnancial institutions if their customer requests it, but allowing the otherinstitution to act as the customer does.
+ The upside will include banks and ﬁn-tech companies o↵ering dashboards that will let you see all your holdings acrossSecurity Engineering429Ross Anderson12.
+9.
+ SUMMARYall the banks with which you have an account, and move money between themto get the best deals.
+ The downside is that fraud and money laundering aremigrating rapidly to open banking channels.
+ If a crook sets up an account atBank A, ﬁlls it with stolen money, authorises an account at Fintech B to op-erate it, then uses B to get A to send money to C, A is not allowed to refusethe transaction.
+ The upshot is that traditional controls on fraud and moneylaundering become much less e↵ective.
+ So there will be more jobs for securityengineers34.
+ We will have to wait and see how all this develops.
+The introduction of QR code based payment into the EMV standards opensup the possibility of scaling something like Sofort’s payment mechanism world-wide.
+ As well as the customer presenting a payment instrument as a QR code,the merchant can present a payment demand in this way, so that the customer’sphone can initiate an online bank payment.
+ Existing phone payment systemslike M-Pesa also require the customer to scan a QR code or enter data manu-ally if their phone can’t do this.
+ There may be some scope for innovation andconvergence here, so we’ll have to wait and see how it develops.
+12.
+9SummaryBanking systems are critical to the security engineer because that’s how stolenmoney gets moved – and fascinating in other ways too.
+ Bookkeeping gives usa mature example of systems oriented towards authenticity and accountabilityrather than conﬁdentiality.
+ The Clark-Wilson security policy provides a modelof this approach, which evolved over centuries.
+ Making it work well in practicemeans sophisticated functional separation, whose design involves input frommany disciplines.
+ The threat model has a particular emphasis on insiders.
+Payment systems played a signiﬁcant role in the development of cryptol-ogy through their use in the ﬁrst generation of ATM systems; the adoption ofsmartcard-based payments has changed the fraud landscape once more.
+Finally, we have seen several waves of attacks on electronic banking systemssince the mid-2000s – by phishing account credentials, by man-in-the-browserattacks by specialised malware, by SIM swap attacks on the mobile phonesused as a second authentication factor, and by social engineering customers tosend their money to the bad guys directly.
+ These have progressively exploredthe possible combinations of high tech and low cunning, and they teach theimportance of a holistic approach to fraud mitigation.
+ The turbulence causedby the pandemic is likely to emphasise this, but at least the mechanisms whoseuse is surging, such as contactless payments in developed countries and phonepayments elsewhere, have had a few years to bed down.
+34Open Banking means migrating from the old ISO 8583 standard to the newer ISO 20022.
+This enables a move from 8-byte PIN blocks to 16-byte and thus from 3DES to AES; fromlater batch settlement of transactions to real-time gross settlement; and much much more.
+Security Engineering430Ross Anderson12.
+9.
+ SUMMARYResearch ProblemsI’ve always distrusted the cartel of big accountancy ﬁrms – down from the BigEight in the 1980s to the Big Four now, following three mergers and the failureof Arthur Anderson in the Enron scandal.
+A student and I once wonderedwhether being a client of big accountancy ﬁrm was a signal of wrongdoing, buta brief analysis threw up no evidence either way.
+ Thereafter when I served ona governing body or audit committee I always proposed using a local ﬁrm, as itwas cheaper, but only once managed to get a change (and that was from one bigﬁrm to another).
+ When I served on our university’s governing body I had to putup with this cartel shaking us down for a million a year and providing nothinguseful in return; most of the work was done by juniors.
+ I thought the Germansmight be better o↵ as their rules prevent auditors selling consultancy services,but the Wirecard scandal punctured that illusion.
+ The UK government stilldecided after that scandal (and many others) that from 2024, the audit ﬁrmsmust separate their audit and consulting practices in such a way that auditpartners’ remuneration comes only from the audit business and is not cross-subsidised from consultancy [1050].
+ It would be great if that works, but I fail tosee how it can have any real e↵ect on most of the concrete problems describedin this book, whether the internal control issues analysed in this chapter or theassurance issues which I tackle in section 28.
+1.
+ The audit cartel imposes hugesocial costs and is not quite what we expect from standard economic analysis35.
+It needs to be understood better.
+Designing internal controls is still pre-scientiﬁc; we could do with tools tohelp us do it in a more systematic, less error-prone way.
+ Just as many securityfailures come from poor usability at the level of both users (who are o↵ereddangerous choices as defaults) and programmers (who’re given access-controland other tools that are insanely tricky to use), so many internal control failurescome from administrative mechanisms that are designed for the comfort of theauditor rather than to be actually usable in real organisations.
+ How can we dothis better?Payment systems are at the one time deeply conservative, being in manyways little changed since the 1970s, and also constantly evolving, as the mecha-nisms moved from ATMs and HSMs to chip cards and to crypto chips in mobilephones.
+ The ground’s also shifting as attacks evolve (as with SIM swap) andthe environment changes (as with open banking).
+ Maintaining resilience in theface of such change takes work.
+ As EMV implementations get tightened up, andas the second version of EMV starts to tackle the residual vulnerabilities de-scribed here, we can expect fraud to move to the periphery: to the customer, viaaccount takeover; to the merchant, via hacking attacks, refund scams, couponscams and the like; and to the bank, via preissue frauds and technical attackson the systems for authorisation and settlement.
+If account takeover is going to become ever-more pervasive, what are theimplications? I suspect that our regulatory approach needs an overhaul: blam-35See the Lerner-Tirole model discussed in section 28.
+2.
+8 for a model of how ﬁrms facedwith a compliance requirement usually choose the cheapest supplier.
+ Why do most large ﬁrmsand even large universities go for famous but expensive ﬁrms when they’re all but useless atdetecting whether executives are crooks or ﬁrms are trading while insolvent?Security Engineering431Ross Anderson12.
+9.
+ SUMMARYing ordinary customers for harm they su↵er from systems designed by othersis wrong.
+ But what should we do? Should we go for radical transparency, im-pose payment delays, or put more weight on rapid asset recovery? Is there somesmart combination, such as making the speed and ﬁnality of payment a functionof the known standing of both payer and payee? Or should regulators just keeppushing liability back to the banks and let them work it out?The context in early 2020 was that retail banks are making less money thanthey used to, because of low interest rates and growing competition, so banksecurity engineers are being asked to do more with less.
+ Social media are makingdowntime more painful; if a bank’s mobile app is down for 15 minutes because ofa DDoS attack on a gateway, there can be a twitter storm that causes directorsto phone the Chief Operating O�cer.
+ Such incentives push in the direction ofmoving stu↵ to the cloud, but this raises further problems; we’ll discuss cloudHSMs later in the chapter on Advanced Cryptographic Engineering.
+ The coro-navirus pandemic has been great for payment service providers, with PayPal’sshare price up by about a half; as to where it may drive ﬁntech innovation, per-haps it will be around video.
+ Videoconferencing is having to replace in-branchmeetings for complex and high-value transactions such as loans.
+ The latest waveof ﬁntechs such as Monzo were already getting customers to record a selﬁe videoas part of the onboarding process, so that call centre sta↵ helping a customerrecover an account from a lost or stolen phone could check they’re the sameperson who opened the account.
+ What else?Further ReadingAndrew Jamieson wrote a 100-page ebook on EMV for Underwriters’ Labora-tories – ten times what I had space for here [977] – and that may be a usefulstepping stone from my short summary to the thousands of pages of speciﬁ-cations from PCI SSC and EMVco [629].
+ I don’t know of any comprehensivebook on core banking systems, although there are many papers on paymentsystems available from the Bank for International Settlements: the most re-cent, as we go to press in July 2020, analyses quality of service and notes thatwhile payments within Europe mostly take under 30 minutes, a combination ofmultiple intermediaries, business hours, time zones, capital controls, liquidityand ancient technology mean that payments to Asia and Africa can take hoursto days [162].
+ If you’re going to do any real work on internal control, you’dbetter read ISA 315 [950]; its interpretation by the big four accountancy ﬁrmsnow makes the weather on internal controls.
+ I’ll revisit this topic in Part 3.
+To understand what can actually go wrong, read the judgment in the Horizoncase [185] and the survey of corporate fraud by Alexander Dyck, Adair Morseand Luigi Zingales [596].
+The IBM system of generating and protecting ATM PINs was described ina number of articles, such as [521] and [951], while early ATM networks aredescribed in [763].
+ For the basics of ATM fraud, see [55]; while the transcriptof the trial of an HSBC insider gives a snapshot of typical internal controls inelectronic banking systems [1569].
+ The ﬁrst survey of underground markets was2007 by Jason Franklin, Vern Paxson, Adrian Perrig and Stefan Savage [714];Security Engineering432Ross Anderson12.
+9.
+ SUMMARYeven then, the focus was on bank fraud rather than on drugs or malware.
+ There’sa rich literature since then on topics from the social dynamics of undergroundcommunities [1345] to the Russians behind the Dridex malware campaign [1622].
+Colleagues and I have contributed to big surveys of cybercrime in 2012 [90] and2019 [91].
+ There’s a collection of our group’s writings on bank fraud at our BankFraud Resource Page, at https://www.
+cl.
+cam.
+ac.
+uk/~rja14/banksec.
+html.
+For an authoritative case study of a large card fraud, see the FCA’s 2018 rulingagainst Tesco Bank [687].
+ This not only sets out how the fraud was done, buthow the controls failed at multiple points and how the regulators calculated theﬁne.
+Finally, for the political and legislative history of the US intelligence initiativeagainst terrorist ﬁnance and its e↵orts to get SWIFT data by covert or legislativemeans, see David Bulloch’s thesis [341].
+Security Engineering433Ross Anderson

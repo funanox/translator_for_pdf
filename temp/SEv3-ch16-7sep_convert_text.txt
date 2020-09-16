@@ -1,0 +1,439 @@
+Chapter 16Security Printing and SealsA seal is only as good as the man in whose briefcase it’s carried.
+– KAREN SP¨ARCK JONESYou can’t make something secure if you don’tknow how to break it.
+– MARC WEBER TOBIAS16.
+1IntroductionMany computer systems rely to some extent on secure printing, packaging andseals to guarantee important aspects of their protection.
+• Most security products can be defeated if the opponent can get at them be-fore you install them.
+ Seals, and tamper-evident packaging generally, canhelp with trusted distribution, that is, assuring the user that the producthasn’t been tampered with since leaving the factory.
+• We saw how monitoring systems, such as utility meters and tachographs,often use seals to make it harder for users to tamper with input.
+ No matterhow sophisticated the cryptography, a defeat for the seals can be a defeatfor the system.
+• I also discussed how the contactless cards used in most building entrycontrol systems can be cloned, thanks to the attacks on Mifare and someof its successors.
+ If you’re scrutinising the ID of an engineer before youlet him into your hosting centre, it can be a good idea to eyeball the IDas well as reading it electronically.
+ Even with electronic ID cards, thesecurity printing can still matter.
+• In general, it may be a more realistic goal to make credentials tamper evi-dent rather than tamper proof: if someone dismantles their smartcard andgets the keys out, they should not be able to reassemble it into somethingthat will pass close examination.
+ Security printing can help here.
+50216.
+2.
+ HISTORYQuite apart from these direct applications of printing and sealing technology,the ease with which modern color scanners and printers can be used to makepassable forgeries has opened up another front.
+ Since the late 1990s, banknoteprinters have been promoting digital protection techniques [253].
+ These includewatermarks that stop compliant scanners and printers being used for forgery,and invisible copyright marks that can enable forgeries to be detected in vendingmachines [830].
+ Meanwhile, vendors of color copiers and printers embed forensictracking codes in their printed output that contain the machine serial number,date and time [621].
+ So the digital world and the world of ‘funny inks’ havebeen growing closer.
+16.
+2HistorySeals have a long and interesting history.
+ In the chapter on banking systems, Idiscussed how bookkeeping systems had their origin in the clay tablets, or bullae,used by neolithic warehouse keepers in Mesopotamia as receipts for produce.
+Over 5000 years ago, the bulla system was adapted to resolve disputes by havingthe warehouse keeper bake the bulla in a clay envelope with his mark on it.
+Seals were used to authenticate documents in the ancient Mediterranean andChina.
+ They were used in medieval Europe as a means of social control beforepaper came along; a carter would be given a lead seal at one tollbooth and handit in at the next, while pilgrims would get lead tokens from shrines to provethat they had gone on pilgrimage (indeed, the young Gutenberg got his ﬁrstbreak in business by inventing a way of embedding slivers of mirror in lead sealsto prevent forgery and protect church revenues) [825].
+ Even after handwrittensignatures had taken over as the principal authentication mechanism for letters,seals lingered as a secondary mechanism.
+ Until the nineteenth century, letterswere not placed in envelopes, but folded over several times and sealed using hotwax and a signet ring.
+Seals are still the preferred authentication mechanism for important docu-ments in China, Japan and Korea.
+ Elsewhere, traces of their former importancesurvive in the company seals and notaries’ seals a�xed to important documents,and the national seals that some countries’ heads of state apply to archival copiesof legislation, and in the demand in some European countries for electronic sig-natures that comply with the EU’s eIDAS standards.
+However, by the middle of the 20th century, their use with documents hadbecome less important in the West than their use to authenticate packaging.
+The move from loose goods to packaged goods, and the growing importance ofbrands, created not just the potential for greater quality control but also thevulnerability that bad people might tamper with products.
+ The USA su↵eredan epidemic of tampering incidents, particularly of soft drinks and medical prod-ucts, leading to a peak of 235 reported cases in 1993 [1027].
+ This helped pushmany manufacturers towards making products tamper-evident.
+The ease with which software can be copied, and consumer resistance totechnical copy-protection mechanisms from the mid 1980s, led software com-panies to rely increasingly on packaging to deter counterfeiters.
+ That was justSecurity Engineering503Ross Anderson16.
+3.
+ SECURITY PRINTINGpart of a much larger market in preventing the forgery of high value brandedgoods ranging from perfume and cigarettes through aircraft spares to pharma-ceuticals.
+ In short, huge amounts of money have poured into seals and otherkinds of secure packaging.
+Unfortunately, most seals are still fairly easy to defeat.
+The typical sealconsists of a substrate with security printing, which is then glued or tied roundthe object being sealed.
+ So we must ﬁrst look at security printing.
+ If the wholeseal can be forged easily then no amount of glue or string is going to help.
+16.
+3Security PrintingThe introduction of paper money into Europe by Napoleon in the early 1800s,and of other valuable documents such as bearer securities and passports, kickedo↵ a battle between security printers and counterfeiters that exhibits many ofthe characteristics of a coevolution of predators and prey.
+ Photography (1839)helped the attackers, then color printing and steel etching (1850s) the defenders.
+In recent years, the color copier and the cheap scanner have been countered byholograms and other optically variable devices.
+Sometimes the same peoplewere involved on both sides, as when a government’s intelligence services try toforge another government’s passports – or even its currency, as both sides didin World War Two.
+On occasion, the banknote designers succumb to the Titanic E↵ect, of be-lieving too much in the latest technology, and place too much faith in someparticular trick.
+ An example comes from the forgery of British banknotes in the1990s.
+ These notes have a window thread – a metal strip through the paper thatis about 1 mm wide and comes to the paper surface every 8 mm.
+ So when youlook at the note in reﬂected light, it appears to have a dotted metallic line run-ning across it, but when you hold it up and view it through transmitted light,the metal strip is dark and solid.
+ Duplicating this was thought to be hard.
+ Yeta criminal gang came up with a beautiful hack.
+ They used a cheap hot stampingprocess to lay down a metal strip on the surface of the paper, and then printed apattern of solid bars over it using white ink to leave the expected metal patternvisible.
+ They were found at their trial to have forged tens of millions of pounds’worth of notes over a period of several years [697].
+ British banknotes are nowbeing migrated to plastic, a process pioneered in Australia.
+16.
+3.
+1Threat modelAs always we have to evaluate a protection technology in the context of a modelof the threats.
+ Broadly speaking, the threat can be from a major organization(such as one country trying to forge another’s banknotes), from a medium-sizedorganization (whether a criminal gang forging several million dollars a monthor a distributor forging labels on vintage wines), to amateurs using equipmentthey have at home or in the o�ce.
+In the banknote business, the big growth area in the last years of the twenti-eth century was amateur forgery.
+ Knowledge had spread in the printing trade ofSecurity Engineering504Ross Anderson16.
+3.
+ SECURITY PRINTINGhow to manufacture high-quality forgeries of many banknotes, which one mighthave thought would increase the level of professional forgery.
+ But the spread ofhigh quality color scanners and printers has put temptation in the way of manypeople who would never have dreamed of getting into forgery in the days whenit required messy wet inks.
+ Amateurs used to be thought a minor nuisance, butsince about 1997 or 1998 they have accounted for most of the forgeries detectedin the USA.
+ Amateur forgers are hard to combat as there are many of them;they mostly work on such a small scale that their product takes a long timeto come to the attention of authority; and they are less likely to have criminalrecords.
+ The notes they produce are often not good enough to pass a bankteller, but are uttered in places such as dark and noisy nightclubs.
+The industry distinguishes three di↵erent levels of inspection of a forgedbanknote or document [1935]:1.
+ a primary inspection is one performed by an untrained inexperienced per-son, such as a member of the public or a new cashier at a store.
+ Oftenthe primary inspector has no motivation, or even a negative motivation.
+If he gets a banknote that feels slightly dodgy, he may try to pass it onwithout looking at it closely enough to have to decide between becomingan accomplice or going to the hassle of reporting it;2.
+ a secondary inspection is one performed in the ﬁeld by a competent andmotivated person, such as an experienced bank teller in the case of ban-knotes or a trained manufacturer’s inspector in the case of product labels.
+This person may have some special equipment such as an ultraviolet lamp,a pen with a chemical reagent, or even a scanner and a PC.
+ However theequipment will be limited in both cost and bulk, and will be completelyunderstood by serious counterfeiters;3.
+ a tertiary inspection is one performed at the laboratory of the manufac-turer or the note issuing bank.
+ The experts who designed the securityprinting (and perhaps even the underlying industrial processes) will be onhand, with substantial equipment and support.
+The state of the security printing art can be summarised as follows.
+ Gettinga counterfeit past a primary inspection is usually easy, while getting it pasttertiary inspection is usually impossible if the product and the inspection processhave been competently designed.
+ So secondary inspection is the battleground –except in a few applications such as banknote printing where attention is nowbeing paid to the primary level, where the limitations are skill and, above all,motivation.
+ The main limits on what sort of counterfeits can be detected bythe secondary inspector in the ﬁeld have to do with the bulk and the cost of theequipment needed.
+16.
+3.
+2Security printing techniquesTraditional security documents utilize a number of printing processes, including:• intaglio, a process where an engraved pattern is used to press the ink onto the paper with great force, leaving a raised ink impression with highSecurity Engineering505Ross Anderson16.
+3.
+ SECURITY PRINTINGdeﬁnition.
+This is often used for scroll work on paper banknotes andpassports;• letterpress in which the ink is rolled on raised type that is then pressed onto the page, leaving a depression.
+ The numbers on paper banknotes areusually printed this way, often with numbers of di↵erent sizes and usingdi↵erent inks to prevent o↵-the-shelf numbering equipment being used;• special printing presses, called Simultan presses, which transfer all theinks, for both front and back, to the paper simultaneously.
+ The printingon front and back can therefore be accurately aligned; patterns can beprinted partly on the front and partly on the back so that they matchup perfectly when the note is held up to the light (see-through register).
+Reproducing this is believed to be hard on cheap color printing equipment.
+Simultan presses also have special ducting to make ink colors vary alongthe line (rainbowing);• rubber stamps that are used to endorse documents, or to seal photographsto them;• embossing and laminates that are also used to seal photographs, and onbank cards to push up the cost of forgery.
+ Embossing can be physical, oruse laser engraving techniques to burn a photo into an ID card;• watermarks are an example of putting protection features in the paper.
+They are more translucent areas inserted into the paper by varying itsthickness when it is manufactured.
+ Many other special materials, such asﬂuorescent threads, are used for similar purposes.
+More modern techniques include:• Modern plastic notes, ﬁrst introduced in Australia, allow a variety of fea-tures to be embedded in a see-through window;• optically variable inks that change color from green to gold depending onthe viewing angle;• inks with magnetic, photochromic or thermochromic properties;• printing features visible only with special equipment, such as the micro-printing on US bills which requires a magnifying glass to see, and printingin ultraviolet, infrared or magnetic inks (the last of these being used inthe black printing on US bills);• metal threads and foils, from simple iridescent features to foil color copyingthrough to foils with optically variable e↵ects such as holograms and kine-grams.
+ Holograms are typically produced optically, and look like a solidobject behind the ﬁlm, while kinegrams are produced by computer andmay show a number of startlingly di↵erent views from slightly di↵erentangles;• screen traps such as details too faint to scan properly, and alias bandstructures which contain detail at the correct size to form interferencee↵ects with the dot separation of common scanners and copiers;Security Engineering506Ross Anderson16.
+3.
+ SECURITY PRINTING• digital copyright marks which may vary from images hidden by micro-printing their Fourier transforms directly, to proprietary spread spectrumsignals that will be recognized by a color copier, scanner or printer andcause it to stop.
+ The best-known is the yellow pattern of stars, in theshape of the Southern Cross, that is embedded in the design of many ban-knotes and that stops compliant scanners and printers from processingit;• unique stock, such as the Sandia proposal of paper with optical ﬁbersrandomly spread through it during manufacture so that each sheet hasa characteristic pattern that can be digitally signed and printed on thedocument using a barcode [1746].
+For the design of the US $100 bill, see [1367]; and for a study of counterfeitbanknotes, with an analysis of which features provide what evidence, see [1936].
+In general, banknotes’ genuineness cannot readily be conﬁrmed by the inspec-tion of a single security feature.
+ Many of the older techniques, and some of thenewer, can be mimicked in ways that will pass primary inspection.
+ The tactilee↵ects of intaglio and letterpress printing wear o↵, so crumpling and dirtyinga forged note is standard practice, and skilled banknote forgers mimic water-marks with faint grey printing (though watermarks remain surprisingly e↵ectiveagainst amateurs).
+ Holograms and kinegrams can be vulnerable to people usingelectrochemical techniques to make mechanical copies, and if not then villainsmay originate their own master copies from scratch.
+When a hologram of Shakespeare was introduced on UK bank cards in 1988,I visited the factory as the representative of a bank and was told proudly that,as the industry had demanded a second source of supply, they had given a spareset of plates to a large security printing ﬁrm – and this competitor of theirs hadbeen quite unable to manufacture acceptable foils.
+ (The Shakespeare foil wasthe ﬁrst commercially used di↵raction hologram to be in full color and to moveas the viewing angle changed).
+ Surely a device which couldn’t be forged, evenby a major security printing company with access to genuine printing plates,must give total protection? But when I visited Singapore seven years later, Ibought a similar (but larger) hologram of Shakespeare in the ﬂea market.
+ Thiswas clearly a boast by the maker that he could forge UK bank cards if he wishedto.
+ By then, a police expert estimated that there were over 100 forgers in Chinawith the skill to produce passable forgeries [1440].
+When polymer notes were introduced into the UK, in 2016 for the £5 noteand 2017 for the £10, we were told they were unforgeable.
+ But by 2018 we werebeing told how to spot forgeries.
+ One victim reported ‘I looked closer and sawthe Big Ben was missing and part of the serial number and the Queen’s facewere coming o↵.
+ When I compared it to a genuine note I already had I also sawthe silver strips were green’ [1611].
+ Later that year, enterprising villains werepassing o↵ plastic £20 notes, even though the o�cial £20 note wasn’t due tolaunch till 2020.
+So the technology constantly moves on, and it is imprudent to rely on asingle protection technology.
+ Even if one defense is completely defeated (suchas if it becomes easy to make mechanical copies of metal foils), you have at leastone completely di↵erent trick to fall back on (such as optically variable ink).
+Security Engineering507Ross Anderson16.
+3.
+ SECURITY PRINTINGBut designing a security document is much harder than this.
+ There are com-plex trade-o↵s between protection, aesthetics and robustness, and the businessfocus can also change.
+ For many years, banknote designers aimed at prevent-ing forgeries passing secondary or tertiary inspection rather than on the morecommon primary inspection.
+Much time was spent handwringing about thedi�culty of training people to examine documents properly, and not enoughattention was paid to studying how the typical user of a product such as a ban-knote actually decides subconsciously whether it’s acceptable.
+ In other words,the technological focus had usurped the business focus.
+The lessons drawn so far are [1935]:• security features should convey a message relevant to the product.
+ So it’sbetter to use iridescent ink to print the denomination of a banknote thansome obscure feature nobody looks at;• security features should obviously belong where they are, so they becomeembedded in the user’s cognitive model of the object;• their e↵ects should be obvious, distinct and intelligible;• they should not have existing competitors that can provide a basis forimitations;• they should be standardized.
+This work deserves much wider attention, as the banknote community isone of the few subdisciplines of our trade to have devoted a lot of thought tosecurity usability.
+ (We’ve seen over and over again that one of the main failingsof security products is that usability gets ignored.
+) When it comes to documentsother than banknotes, such as passports, there are also issues relating to thepolitical environment of the country and the mores of the society in which theywill be used [1293].
+Usability also matters during second-line inspection, but here the issues aremore subtle and focus on the process which the inspector has to follow to dis-tinguish genuine from fake.
+With banknotes, the theory is that you design a note with perhaps twentyfeatures that are not advertised to the public.
+ A number of features are madeknown to secondary inspectors such as bank sta↵.
+ In due course these becomeknown to the forgers.
+ As time goes on, more and more features are revealed.
+Eventually, when they are all exposed, the note is retired from circulation andreplaced.
+ This process may become harder if the emphasis switches from manualto automatic veriﬁcation.
+ A thief who steals a vending machine, dismantles it,and reads out the software, gains a complete and accurate description of thechecks currently in use.
+ Having once spent several weeks or months doing this,he will ﬁnd it much easier the second time round.
+ So when the central banktells manufacturers the secret polynomial for the second level digital watermark(or whatever), and this gets ﬁelded, he can steal another machine and get thenew data within days.
+ So failures can be more sudden and complete than withmanual systems, and the cycle of feature life, death and rebirth could turnmore quickly than in the past.
+ Another possibility, of course, is that developedSecurity Engineering508Ross Anderson16.
+3.
+ SECURITY PRINTINGcountries move entirely to card payments, the path of rich early adopters suchas Sweden and Finland.
+With product packaging, the typical business model is that samples of forg-eries are found and taken to the laboratory, where the scientists ﬁnd some wayin which they are di↵erent – perhaps the hologram is not quite right.
+ Kits arethen produced for ﬁeld inspectors to go out and track down the source.
+ If thesekits are bulky and expensive, fewer of them can be ﬁelded.
+ If there are manydi↵erent forgery detection devices from di↵erent companies, then it is hard topersuade customs o�cers to use any of them.
+ Ideas such as printing individualmicroscopic ultraviolet barcodes on plastic product shrinkwrap often fail be-cause of the cost of the microscope, laptop and online connection needed to dothe veriﬁcation.
+ As with banknotes, you can get a much more robust systemwith multiple features but this pushes the cost and bulk of the reading deviceup still further.
+With ﬁnancial instruments, and especially checks, alteration is a much biggerproblem than copying or forgery from scratch.
+ In numerous scams, villains gotgenuine checks from businesses by tricks such as by prepaying deposits or makingreservations in cash and then cancelling the order.
+ The victim duly sends outa check, which is altered to a much larger amount, often using readily availabledomestic solvents.
+ The standard countermeasure is background printing usinginks which discolor and run in the presence of solvents.
+ But the protection isn’tcomplete because of tricks for removing laser printer toner (and even simplethings like typewriter correction ribbon).
+ One enterprising villain even presentedhis victims with pens that had been specially selected to have easily removableink [8].
+Check fraud used to be many times greater in value than card fraud, andalso di�cult to deal with because of the huge volume of checks processed daily.
+This makes scrutiny impossible except for very large amounts.
+ In the Far East,where people use a personal chop or signature stamp to sign checks, low-costautomatic veriﬁcation is possible [929].
+ However, with handwritten signatures,automated veriﬁcation with acceptable error rates is still beyond the state ofthe art (I’ll discuss it in section 17.
+2).
+ The future for businesses is to movepayments to bank transfer; the early adopter here, Germany, largely suppressedcheck frauds by the early 2000s.
+ SEPA payments are now making electronicpayments much quicker and cheaper than check payments in the Euro zone.
+Of course, document alterations aren’t just a banking problem.
+ Most faketravel documents are altered rather than counterfeited from scratch.
+ Names arechanged, photographs are replaced, or pages are added and removed.
+ For thisreason, developed countries have largely moved to chip-based passports; visitorsfrom countries that don’t have electronic passports yet may have to get visasthat contain chips or that point to an online database storing the traveler’sbiometric.
+Security Engineering509Ross Anderson16.
+4.
+ PACKAGING AND SEALS16.
+4Packaging and SealsSupply-chain security involves problems of packaging and seals.
+A seal, inthe deﬁnition of the Los Alamos vulnerability assessment team, is ‘a tamper-indicating device designed to leave non-erasable, unambiguous evidence of unau-thorized entry or tampering.
+’Most seals work by applying some kind of security printing to a substrate toget a tag, and then ﬁxing this tag to the material to be protected.
+ Applicationsrange from pharmaceutical products through cargo containers to ballot boxes.
+Other products follow the same general philosophy but using di↵erent materials;at the bottom end we ﬁnd plastic straps that are easy to tighten but hard toloosen without cutting, while at the top there are optical ﬁbres that loop aroundthe protected object and are actively monitored for stretching by an attachedlaser tag.
+16.
+4.
+1Substrate propertiesSome systems add random variability to the substrate material.
+ We mentionedthe trick of loading paper with optical ﬁbers; there are also watermark magneticsin which a random high-coercivity signal is embedded in a card strip whichcan subsequently be read and written using standard low-coercivity equipmentwithout the unique random pattern being disturbed.
+ These were used in bankcards in Sweden, telephone cards in Korea, and entry control cards in some ofthe buildings in my university.
+A similar idea was used in arms control during the Cold War.
+ Many weaponsand materials have surfaces that are unique; see for example Figure 16.
+1 for thesurface of paper.
+ Other material surfaces can be made unique; for example,a patch can be eroded on a tank gun barrel using a small explosive charge.
+The pattern is measured using laser speckle techniques, and either recorded ina log or attached to the device as a machine-readable digital signature [1749].
+This makes it easy to identify capital equipment such as heavy artillery whereidentifying each gun barrel is enough to prevent either side from cheating.
+ Youcan even authenticate a piece of paper using laser speckle to encode its surfaceroughness into a code that is robust to creasing, drying, scribbling and evenscorchings [332].
+ The problem there is ﬁnding an application where you canjustify using expensive scanners at each end of the process.
+16.
+4.
+2The problems of glueAlthough a tag’s uniqueness can be a side-e↵ect of its manufacture, most sealsstill work by ﬁxing a security-printed tag on to the target object.
+ This raisesthe question of how the beautiful piece of iridescent printed art can be attachedto a crude physical object in a way that is very hard to remove.
+In the particular case of tamper-evident packaging, the attachment is part ofan industrial process; it could be a pressurized container with a pop-up buttonor a break-o↵ lid.
+ The usual answer is to use a glue which is stronger than theseal substrate itself, so that the seal will tear or at least deform noticeably ifSecurity Engineering510Ross Anderson16.
+4.
+ PACKAGING AND SEALSFigure 16.
+1: – scanning electron micrograph of paper (courtesy Ingenia Tech-nology Ltd)pulled away.
+ This is the case with foil seals under drink caps and blister packsof pills.
+However, in most products, the implementation is rather poor.
+ Many sealsare vulnerable to direct removal using only hand tools and a little patience.
+Take a sharp knife and experiment with the next few letters that arrive in self-seal envelopes.
+ Many of these envelopes are supposed to tear, rather than peelopen; the ﬂap may have a few vertical slots cut into it for this purpose.
+ Butthis hoped-for tamper evidence usually assumes that people will open them bypulling the envelope ﬂap back from the body.
+ By raising the ﬂap slightly andworking the knife back and forth, it is often possible to cut the glue withoutdamaging the ﬂap and so open the envelope without leaving suspicious marks.
+(Some glues should be softened ﬁrst using a hairdryer, or made more fragile byfreezing.
+) Or open the envelope at the other end, where the glue is not designedto be mildly tamper-evident.
+ Either way you’ll probably get an envelope thatlooks slightly crumpled on careful examination.
+ If it’s noticeable, iron out thecrumples.
+ This attack usually works against a primary inspection, probablyfails a tertiary inspection, and may well pass secondary inspection: crumpleshappen in the post anyway.
+Many of the seals on the market can be defeated using similarly simpletricks.
+ A notorious example is the vignette, or motorway toll sticker, used inSwitzerland and Austria.
+ There, you have to pay a road toll for which you geta sticker that goes on your windscreen to certify that you have paid your duesfor a year, or a shorter period if you rent a car.
+ If you tear a sticker o↵ yourwindscreen to use it on another car, some of the ink comes with it while somesticks to the windscreen.
+ So people get dust on the glue before sticking it on,by brushing the sticker back and forth on the dashboard.
+ This has now beenmade an o↵ence, and you’re ﬁned if you get caught [1468].
+16.
+4.
+3PIN mailersMany banks now print customer PINs on special print stocks.
+ In the old days,PIN mailers used multipart stationery and impact printers; you got the PINby ripping the envelope open and pulling out a slip on which the PIN hadSecurity Engineering511Ross Anderson16.
+5.
+ SYSTEMIC VULNERABILITIESbeen impressed.
+ The move from impact to laser technology led to a numberof companies inventing letter stationery from which you pull a tab to read thePIN.
+ The idea is that just as a seal can’t be moved without leaving visibleevidence, with this stationery the secret can’t be extracted without leavingvisible evidence.
+ A typical mechanism is to have a patch on the paper that’sprinted with an obscuring pattern and that also has an adhesive ﬁlm over it, onwhich the PIN is printed.
+ Behind the ﬁlm is a die-cut tab in the paper that canbe pulled away with the obscuring background, making the PIN visible.
+My students Mike Bond, Steven Murdoch and Jolyon Clulow had some funﬁnding vulnerabilities with successive versions of these products.
+The earlyproducts could be read by holding them up to the light, so that the light glancedo↵ the surface at about 10 degrees; the opaque toner showed up clearly againstthe shiny adhesive ﬁlm.
+ The next attack was to scan the printing into Photoshopand ﬁlter out the dense black of the toner from the grey of the underlyingprinting.
+ Another was thermal transfer; put a blank sheet of paper on top ofthe mailer and run an iron over it.
+ Yet another was chemical transfer usingblotting paper and organic solvents.
+ This work was reported to the bankingindustry in 2004, and ﬁnally published in 2005 [284].
+The banks have nowissued test standards for mailers.
+ Yet to this day we keep getting mailers onwhich the PIN is easy to read.
+This is an example of a system that doesn’t work, and yet persists.
+ If acrook knows I’m getting a new bank card, and can steal from my mail, he’lljust take both the card and the PIN.
+ It’s hard to think of any real attacksthat the ‘tamper-evident’ PIN mailer prevents.
+ It might occasionally prevent afamily member learning a PIN by accident; equally, there might be an occasionalcustomer who reads the PIN without tearing the tab, withdraws a lot of money,then claims he didn’t do it, in which case the bank will probably just say “sosue us” and disown its own mailer.
+But the threats are vestigial comparedwith the amount that’s being spent on all this fancy stationery.
+ The driver forsuch behaviour is probably compliance; it’s too much bother to rethink cardscheme rules, audit procedures and insurance inspections that evolved in an ageof impact printers.
+16.
+5Systemic VulnerabilitiesWe turn now from the speciﬁc threats against particular printing tricks andglues to the system level threats, of which there are many.
+At our local swimming pool, congestion is managed by issuing swimmerswith wristbands during busy periods.
+ A di↵erent color is issued every twentyminutes or so, and from time to time all people with bands of a certain color areasked to leave.
+ The band is made of waxed paper.
+ At one end it has a printedpattern and serial number on one side, and glue on the other; the paper is cross-cut with the result that it is completely destroyed if you tear it o↵ carelessly;see Figure 16.
+2.
+ (It’s similar to the luggage seals used at some airports.
+)The simplest attack is via the supplier’s website, where boxes of 100 wrist-bands cost about $8.
+ If you don’t want to spend money, you can use each bandSecurity Engineering512Ross Anderson16.
+5.
+ SYSTEMIC VULNERABILITIESFigure 16.
+2: – a wristband seal from our local swimming poolonce, then ease it o↵ gently by pulling it alternately from di↵erent directions,giving the result shown in the photo.
+ The printing is crumpled, though intact;the damage isn’t such as to be visible by a poolside attendant, and could in facthave been caused by careless application.
+ The point is that the damage done tothe seal by ﬁxing it twice, carefully, is not easily distinguishable from the e↵ectsof a naive user ﬁxing it once.
+ An even more powerful attack is to not removethe backing tape from the seal at all, but use a safety pin, or your own glue, toﬁx it.
+Despite this, the wristband seal is perfectly ﬁt for purpose.
+ There is littleincentive to cheat: the Olympic hopefuls who swim lengths for two hours at astretch use the pool when it’s not congested.
+ They also buy a season ticket, sothey can go out at any time to get a fresh wristband.
+ But it illustrates manyof the things that can go wrong.
+ The customer is the enemy; it’s the customerwho applies the seal; the e↵ects of seal re-use are indistinguishable from those ofrandom failure; unused seals can be bought in the marketplace; counterfeit sealscould also be manufactured at little cost; and e↵ective inspection is infeasible.
+(And yet this swimming-pool seal is still harder to defeat than many sealingproducts sold for high-value industrial applications.
+)16.
+5.
+1Peculiarities of the threat modelIn military systems the opponent is the disloyal soldier, or the other side’s specialforces trying to sabotage your equipment.
+ In nuclear monitoring systems it canbe the host government trying to divert ﬁssile materials from a licensed civilianSecurity Engineering513Ross Anderson16.
+5.
+ SYSTEMIC VULNERABILITIESreactor.
+ With voting machines, most attacks come from election o�cials.
+Some of the most di�cult sealing tasks arise where it’s the enemy who willapply the seal.
+ A typical business application is where a company subcontractsthe manufacture of some of its products and is afraid that the contractor willproduce more of the goods than agreed.
+ Overproduction is the main sourceby value of counterfeit goods worldwide; the perpetrators have access to theauthorized manufacturing process and raw materials, and grey markets providenatural distribution channels.
+ Even detecting such frauds – let alone provingthem to a court – can be hard.
+A typical solution for high-value goods such as cosmetics may involve sourc-ing packaging materials from a number of di↵erent companies, whose identitiesare kept secret from the ﬁrm operating the ﬁnal assembly plant.
+ Some of thesematerials may have serial numbers embedded in various ways (such as by laserengraving in bottle glass, or printing on cellophane using inks visible only underUV light).
+ There may be an online service whereby the manufacturer’s ﬁeldagents can verify the serial numbers of samples purchased randomly in shops,or there might be a digital signature on the packaging that links all the variousserial numbers together for o✏ine checking.
+There are limits on what seals can achieve in isolation.
+ Sometimes the brandowner himself is the villain, as when a vineyard falsely labels as vintage an extrathousand cases of wine that were actually made from bought-in blended grapes.
+So bottles of South African wine all carry a government regulated seal with aunique serial number; here, the seal doesn’t prove the fraud but makes it harderfor a dishonest vintner to evade the other controls such as inspection and audit.
+Sealing mechanisms usually must be designed with the complementary controlprocesses in mind.
+Inspection can be harder than one would think.
+ The distributor who hasbought counterfeit goods on the grey market, believing them to be genuine,may set out to deceive the inspectors without any criminal intent.
+ Where greymarkets are an issue, the products bought from ‘Fred’ will be pushed out rapidlyto the customers, ensuring that the inspectors see only authorized products inhis stockroom.
+ Also, the distributor may be completely in the dark; it could behis sta↵ who are peddling the counterfeits.
+ A well-known scam is for airline sta↵to buy counterfeit perfumes, watches and the like when they visit countries withunregulated markets, and sell them in-ﬂight to customers [1142].
+ The stocks inthe airline’s warehouses (and in the duty-free carts after the planes land) willall be completely genuine.
+ So it is usually essential to have agents go out andmake sample purchases, and the sealing mechanisms must support this.
+16.
+5.
+2Anti-gundecking measuresWhether the seal adheres properly to the object being sealed may also dependon the honesty and diligence of low-level sta↵.
+ I mentioned in section 14.
+3.
+2.
+2how in truck speed limiter systems, the gearbox sensor is secured using a pieceof wire that the calibrating garage seals with a lead disc that is crimped in placewith special tongs.
+ The defeat is to bribe the garage mechanic to wrap the wirethe wrong way, so that when the sensor is unscrewed from the gearbox the wireSecurity Engineering514Ross Anderson16.
+5.
+ SYSTEMIC VULNERABILITIESwill loosen, instead of tightening and breaking the seal.
+ This is simpler thangoing to amateur sculptor classes so that you can take a cast of the seal andforge a pair of sealing tongs out of bronze.
+The people who apply seals can be careless as well as corrupt.
+ Some airportsapply tape seals to checked bags after X-raying them using a machine nearthe check-in queue.
+ On about half of the occasions this has been done to mybaggage, the tape has been poorly ﬁxed; either it didn’t cross the fastenerbetween the suitcase and the lid, or it came o↵ at one end, or the case hadseveral compartments big enough to hold a bomb but only one of their fastenerswas sealed.
+ But airport security is mostly theatre anyway.
+Much of the interesting research in seals has focused on usability.
+ One hugeproblem is checking whether sta↵ who’re supposed to inspect seals have actuallydone so.
+ Gundecking is a naval term used to refer to people who pretend to havedone their duty, but were actually down on the gun deck having a smoke.
+ So ifyour task is to inspect the seals on thousands of shipping containers arriving ata port, how do you ensure that your sta↵ actually look at each one?One approach is to include in each container seal a small processor with acryptographic keystream generator that produces a new number every minute orso.
+ Then the inspector’s task is to visit all the inbound containers and record thenumbers they display.
+ If a tampering event is detected, the device erases its key,and can generate no more numbers.
+ If your inspector doesn’t bring back a validseal code from one of the containers, you know something’s wrong, whether withit or with him.
+ Such seals are also known as ‘anti-evidence’ seals: the idea isthat you store information that a device hasn’t been tampered with, and destroyit when tampering occurs, leaving nothing for an adversary to counterfeit.
+Carelessness and corruption interact.
+If enough of the sta↵ applying orverifying a seal are careless, then if I bribe one of them the resulting defectdoesn’t of itself prove dishonesty.
+16.
+5.
+3The e↵ect of random failureThere are similar e↵ects when seals can break for completely innocent reasons.
+For example, speed-limiter seals often break when a truck engine is steam-cleaned, so a driver will not be prosecuted for tampering if a broken seal isall the evidence the tra�c policeman can ﬁnd.
+ (Truck drivers know this.
+)After opening a too-well-sealed envelope, a spy can close it again with asticker saying ‘Opened by customs’ or ‘Burst in transit – sealed by the PostO�ce’.
+ He could even just tape it shut and scrawl ‘delivered to wrong addresstry again’ on the front.
+The consequences of such failures and attacks have to be thought throughcarefully.
+ If the protection goal is to prevent large-scale forgery of a product,occasional breakages may not matter; but if it is to support prosecutions, spon-taneous seal failure can be a serious problem.
+ In extreme cases, placing toomuch trust in the robustness of a seal might lead to a miscarriage of justice andundermine the sealing product’s evidential (and thus commercial) value.
+My example of this comes from the curfew tags which I described in detailSecurity Engineering515Ross Anderson16.
+5.
+ SYSTEMIC VULNERABILITIESin section 14.
+4.
+ There, the tag vendors made grandiose marketing claims aboutthe tamper-resistance of their products, but refused to make samples availablefor testing by the defence when challenged in court.
+ Terrorism suspects werereleased when their control orders could no longer be justiﬁed, and eventuallythe tag ﬁrms lost their contracts for criminal misconduct: they had billed theMinistry of Justice for tagging people who were dead or in jail, and ended uppaying multimillion-pound ﬁnes, as did their auditors [193].
+16.
+5.
+4Materials controlAnother common vulnerability is that supplies of sealing materials are uncon-trolled.
+ Corporate seals are a nice example.
+ In the UK, these typically consistof two metal embossing plates that are inserted into special pliers and were usedto crimp important documents.
+ Several suppliers manufacture the plates, and alawyer who has ordered hundreds of them tells me that no check was ever made.
+Although it might be slightly risky to order a seal for ‘Microsoft Corporation’,it should be easy to have a seal made for almost any less well known target: allyou have to do is write a letter that looks like it came from a law ﬁrm.
+ The realpurpose of sealing is not to prevent forgery but to enable law ﬁrms to chargeextra for documents that have to have seals attached.
+A more serious example is the reliance of the pharmaceutical industry onblister packs, sometimes supplemented with holograms and color-shifting inks.
+All these technologies are freely available to anyone who cares to buy them, andthey are not particularly expensive either.
+ Or consider the plastic envelopesused by some courier companies, which are designed to stretch and tear whenopened.
+ So long as you can walk in o↵ the street and pick up virgin envelopes atthe depot, they are unlikely to deter anyone who invests some time and thoughtin planning an attack; he can substitute the packaging either before, or after, aparcel’s trip through the courier’s network.
+It is also an ‘urban myth’ that the police and security services cannot openenvelopes tracelessly if the ﬂaps have been reinforced with sticky tape thathas been burnished down by rubbing it with a thumbnail (I recently receivedsome paperwork from a bank that had been sealed in just this way).
+ This isnot entirely believable – even if no police lab has invented a magic solvent forsellotape glue, the nineteenth century Tsarist police already used forked sticksto wind up letters inside a sealed envelope so that they could be pulled out,read, and then put back [1001]; letter writers there and indeed all over Europeused letterlocking – complex systems of folds, slits and seals that they hopedwould make tampering evident [366].
+Even if sellotape were guaranteed to leave a visible mark on an envelope,one would have to assume that the police’s envelope-steaming department haveno stock of comparable envelopes, and that the recipient would be observantenough to spot a forged envelope.
+ Given the ease with which an envelope witha company logo can be scanned and then duplicated using a cheap color printer,these assumptions are fairly ambitious.
+ In any case, the arrival of desktop colorprinters has caused a lot of organizations to stop using preprinted stationery.
+This makes the forger’s job much easier.
+Security Engineering516Ross Anderson16.
+5.
+ SYSTEMIC VULNERABILITIES16.
+5.
+5Not protecting the right thingsWhere a value token encodes value in two di↵erent ways, you may expect crim-inals to exploit any di↵erence, or indeed to create one.
+ Credit cards becamevulnerable to forgery in the late 1980s as banks introduced authorization termi-nals that read the magnetic strip, while the imprinting machines used by mostmerchants to print out vouchers for the customer to sign used the embossing,and most merchants banked the signed vouchers as if they were checks.
+ Crookswho changed the mag strip but not the embossing defeated the system.
+ Thereare also attacks involving partial alterations.
+ For example, credit cards used tohave holograms, but as they covered only the last four digits, the attacker couldalways change the other twelve.
+ When the algorithm the bank used to generatecredit card numbers was known, this involved only ﬂattening, reprinting andre-embossing the rest of the card, which could be done with cheap equipment.
+Such attacks are now obsolete, as the old Addressograph draft capture machinesare no longer used.
+ In any case, all the hologram said was ‘This was once a validcard’ and most banks have now discontinued it.
+Finally, food and drug producers often use shrink-wrap or blister packaging,which if well designed can be moderately di�cult for amateurs to forge wellenough to withstand close inspection.
+ However when selecting protective mea-sures you have to be very clear about the threat model – is it counterfeiting,alteration, duplication, simulation, diversion, dilution, substitution or some-thing else? [1524] If the threat model is a psychotic with a syringe full of poison,then simple blister or shrink-wrap packaging is not quite enough.
+ What’s reallyneeded is a tamper sensing membrane, which will react visibly and irreversiblyto even a tiny penetration.
+ (Such membranes exist but are still too expensivefor consumer products.
+ I’ll discuss them in the chapter on tamper resistance.
+)16.
+5.
+6The cost and nature of inspectionThere are many stories in the industry of villains replacing the hologram on abank card with something else – say a rabbit instead of a dove – whereuponthe response of shopkeepers is just to say: ‘Oh, look, they changed the holo-gram!’ This isn’t a criticism of holograms but is a much deeper issue of appliedpsychology and public education.
+ It’s a worry for bankers when new notes arebeing introduced – the few weeks during which everyone is getting familiar withthe new notes can be a bonanza for forgers.
+A related problem is the huge variety of passports, driver’s licenses, letter-heads, corporate seals, and variations in packaging.
+ Without samples of genuinearticles for comparison, inspection is more or less limited to the primary leveland so forgery is easy.
+ Even though bank clerks have books with pictures offoreign banknotes, and immigration o�cers similarly have pictures of foreignpassports, there is often only sketchy information on security features.
+ Crooksfrequently get genuine passports and ID cards by corrupt means (and not justfrom less developed countries.
+) Oh, and the absence of real physical samplesmeans that the tactile aspects cannot be properly examined.
+A somewhat shocking experiment was performed by Sonia Trujillo at the7th Security Seals Symposium in Santa Barbara in March 2006.
+ She tamperedSecurity Engineering517Ross Anderson16.
+6.
+ EVALUATION METHODOLOGYwith nine out of thirty di↵erent food and drug products, using only low-techattacks, and invited 71 tamper-detection experts to tell them apart.
+ Each sub-ject was asked to pick exactly three out of ten products that they thought hadbeen tampered.
+ The experts did no better than random, even though most ofthem took signiﬁcantly longer than the four seconds per product that they weredirected to.
+ If even the experts can’t detect tampering, even when they’re toldit has been happening, what chance does the average consumer have?So the seal that can be checked by the public or by sta↵ with minimaltraining, and without access to an online database, remains an ideal ratherthan a reality.
+ The main purpose of tamper-evident packaging is to reassure thecustomer; secondary purposes include minimising product returns, due diligenceand reducing the size of jury awards.
+ Deterring incompetent tamperers mightjust about be in there somewhere.
+Firms that take forgery seriously, like luxury goods makers, have adoptedmany of the techniques pioneered by banknote printers.
+ But high-value productpackages are harder to protect than banknotes.
+ Familiarity is important: peopleget a ‘feel’ for things they handle frequently such as local money, but are muchless likely to notice something wrong with a package they see only rarely – suchas a fancy cosmetic or an expensive bottle of wine.
+ For this reason, much of thework in protecting products that contain electronics has shifted to online regis-tration mechanisms.
+ Some products have acquired electronics for this purpose,while others that already have electronics are acquiring wiﬁ chips.
+One of the possibilities is to enlist the public as inspectors, not so much ofthe packaging, but of unique serial numbers.
+ Instead of having these numbershidden from view in RFID chips, vendors can print them on product labels,and people who’re concerned about whether they got a genuine product couldcall in to verify.
+ This may often get the incentives aligned better, but can beharder than it looks.
+ For example, when Microsoft ﬁrst shipped its antispywarebeta, I installed it on a family PC – whose copy of Windows was immediatelydenounced as evil.
+ Now that PC was bought at a regular store, and I simplydid not need the hassle of explaining this.
+ I particularly did not like their initialnegotiating position, namely that I should send them more money.
+ Eventuallythey gave us another copy of Windows.
+ But we didn’t buy another Windowsmachine after that.
+16.
+6Evaluation MethodologyThis discussion suggests a systematic way to evaluate a seal product for a givenapplication.
+ Rather than just asking, “Can you remove the seal in ways otherthan the obvious one?” we need to follow it from design and ﬁeld test throughmanufacture, application, use, checking, destruction and ﬁnally retirement fromservice.
+ Here are some of the questions that should be asked:• If a seal is forged, who’s supposed to spot it? If it’s the public, then howoften will they see genuine seals? Has the vendor done proper experimentsto establish the likely false accept and false reject rates? If it’s your in-spectors in the ﬁeld, how much will their equipment and training cost?Security Engineering518Ross Anderson16.
+6.
+ EVALUATION METHODOLOGYAnd how well are these inspectors – public or professional – motivated toﬁnd and report defects?• Has anybody who really knows what they’re doing tried hard to defeatthe system? And what’s a defeat anyway – tampering, forgery, alteration,erosion of evidential value or a ‘PR’ attack on your commercial credibility?• What is the reputation of the team that designed it – did they have ahistory of successfully defeating opponents’ products?• How long has it been in the ﬁeld, and how likely is it that progress willmake a defeat signiﬁcantly easier?• Who else can buy, forge or steal the sealing materials?• Will the person who applies the seal ever be careless or corrupt, and if so,how will you cope?• Will the seal protect the right part (or enough) of the product?• What are the quality issues? What about the e↵ects of dirt, oil, noise,vibration, cleaning, and manufacturing defects? Will the product have tosurvive outdoor weather, petrol splashes, being carried next to the skin orbeing dropped in a glass of beer? Or is it supposed to respond visibly ifsuch a thing happens? How often will there be random seal failures andwhat e↵ect will they have?• If you’re going to end up in court, are there experts other than your own(or the vendor’s) on whom the other side can rely? If the answer is no,then is this a good thing or a bad thing? Why should the jury believeyou, the system’s inventor, rather than the sweet little old lady in thedock? Will the judge let her o↵ on fair trial grounds – because rebuttingyour technical claims would be an impossible burden of proof for her todischarge? And what happens if you sell your company to someone whosells it to a crook?• Once the product is used, how will the seals be disposed of – are youbothered if someone recovers a few old seals from the trash?Remember that defeating seals is about fooling people, not beating hardware.
+So think hard whether the people who apply and check the seals will performtheir tasks faithfully and e↵ectively; analyze motive, opportunity, skills, auditand accountability.
+ Be particularly cautious where the seal is applied by theenemy (as in the case of contract manufacture) or by someone open to corruption(such as the garage eager to win the truck company’s business).
+ Finally, thinkthrough the likely consequences of seal failure and inspection error rates not justfrom the point of view of the client company and its opponents, but also fromthe points of view of innocent system users and of legal evidence.
+This whole-life-cycle assurance process is just a microcosm of the assuranceprocess you need to apply to systems in general.
+ I’ll discuss that in more detailin Part III.
+Security Engineering519Ross Anderson16.
+7.
+ SUMMARY16.
+7SummaryMost commercially available sealing products are relatively easy to defeat, andthis is particularly true when seal inspection is performed casually by peoplewho are untrained, unmotivated or both (as is often the case).
+ Sealing has to beevaluated over the whole lifetime of the seal from manufacture through materi-als control, application, veriﬁcation and eventual destruction; hostile testing ishighly advisable in critical applications.
+ Seals often depend on security printing,about which broadly similar comments may be made.
+Research ProblemsThis is an area in which a lot of ideas have come and gone without making muchimpact.
+ No doubt lots of fancy new technologies will be touted for product safetyand counterfeit detection, from nanoparticles through ferroﬂuids to DNA; butso long as the markets are broken, and people ignore the system-level issues,what good will they do? Do any of them have novel properties that enable usto tackle the hard problems of primary inspectability?Automatic inspection systems may be one way forward.
+ One example is incold chain assurance.
+ Some products such as vaccines need to be kept at lessthan 40C, and already ship with loggers in the container or pallet that monitorthe temperature and allow failures to be identiﬁed.
+ There are also telltale paperstrips that display a di↵erent barcode, on the basis of a chemical reaction, if thethreshold is exceeded.
+ Regulated industries with safety-critical products, suchas pharma, might be a good place to try out new ideas.
+A much harder problem is how to help the consumer in less regulated in-dustries.
+ Most of the counterfeits and poisoned products are introduced at theretail level, which used to be highly dispersed.
+ But tech is ﬁxing that, and per-haps the solution doesn’t lie in packaging but in regulatory action against largeretailers like Amazon.
+ Its marketplace and fulﬁlment services are reportedly be-coming the most concerning distribution channel for many counterfeit products,as well as products that have been declared unsafe by government agencies, aredeceptively labeled or are banned by regulators, including children’s toys con-taining dangerous levels of lead [591].
+ This is looking like becoming one of thebig regulatory battles between governments and Big Tech.
+ Perhaps it’s an in-evitable e↵ect of scale; if everybody’s on Facebook then that includes all theworld’s creeps, bullies and extremists, and if all the world’s merchants use Ama-zon to ship their products then something similar can be expected.
+ Eventually,I suspect, Amazon will be compelled to hire tens of thousands of product safetyand compliance inspectors, just as Facebook has been compelled to hire tensof thousands of content moderators.
+ But laws usually lag technology by ﬁfteenyears or so, and in the meantime secure printing and sealing will continue –albeit with a continuing move to online product registration.
+Security Engineering520Ross Anderson16.
+7.
+ SUMMARYFurther ReadingThe deﬁnitive textbook on security printing is van Renesse [1935] which goesinto not just the technical tricks such as holograms and kinegrams, but howthey work in a variety of applications from banknote printing through passportsto packaging.
+ This is very important background reading.
+The essential writing on seals can be found in the many publications byRoger Johnston’s seal vulnerability assessment team (e.
+g.
+, [989]).
+The history of counterfeiting is fascinating.
+ From Independence to the CivilWar, Americans used banknotes issued by private banks rather than by thegovernment, and counterfeiting was pervasive.
+ Banks could act against localforgers, but by about 1800 there had arisen a network of engravers, papermakers,printers, wholesalers, retailers and passers, with safe havens in the badlands onthe border between Vermont and Canada; neither the US nor the Canadiangovernment wanted to take ownership of the problem [1311].
+More recently there’s been the Supernote controversy.
+ In the late 2000s, afew million dollars a year worth of counterfeit US currency turned up that wasperfect in almost every respect: it was printed with the right presses, on the rightpaper, and tracked the small changes accurately – except in that it did not usethe right magnetic and infrared security features.
+ The US government accusedNorth Korea of forgery and used this to impose sanctions; others suggested thatthe notes were more likely produced by the CIA in order to trace cash moneyﬂows.
+ These notes turned up in only tiny quantities, and only in the hands ofpeople of interest to the CIA such as North Korean diplomats and central Asianwarlords.
+ They had been carefully designed to pass all inspections other thanthe counting machines used by money-centre banks, which would prevent themgetting into circulation at scale; and the volumes that turned up were at leastone order of magnitude less than a forger would have produced, and would haveneeded to produce in order to pay for the equipment [622].
+Security Engineering521Ross Anderson

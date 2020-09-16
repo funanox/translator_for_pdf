@@ -1,0 +1,730 @@
+Chapter 7Distributed SystemsA distributed system is one in which the failure of a computer youdidn’t even know existed can render your own computer unusable.
+– LESLIE LAMPORT [1123]What’s in a name? That which we call a roseby any other name would smell as sweet– WILLIAM SHAKESPEARE7.
+1IntroductionWe need a lot more than authentication, access control and cryptography tobuild a robust distributed system of any size.
+Some things need to happenquickly, or in the right order, and matters that are trivial to deal with for a fewmachines become a big deal once we have hyperscale data centres with complexarrangements for resilience.
+ Everyone must have noticed that when you updateyour address book with an online service provider, the update might appear asecond later on another device, or perhaps only hours later.
+Over the last 50 years, we’ve learned a lot about issues such as concurrency,failure recovery and naming as we’ve built things ranging from phone systemsand payment networks to the Internet itself.
+ We have solid theory, and a lotof hard-won experience.
+ These issues are central to the design of robust securesystems but are often handled rather badly.
+ I’ve already described attacks onprotocols that arise as concurrency failures.
+If we replicate data to make asystem fault-tolerant, then we may increase the risk of data theft.
+Finally,naming can be a thorny problem.
+There are complex interactions of peopleand objects with accounts, sessions, documents, ﬁles, pointers, keys and otherways of naming stu↵.
+Many organisations are trying to build larger, ﬂatternamespaces – whether using identity cards to track citizens or using device IDto track objects – but there are limits to what we can practically do.
+ Big datameans dealing with lots of identiﬁers, many of which are ambiguous or evenchanging, and a lot of things can go wrong.
+2367.
+2.
+ CONCURRENCY7.
+2ConcurrencyProcesses are called concurrent if they can run at the same time, and this isessential for performance; modern computers have many cores and run manyprograms at a time, typically for many users.
+ However, concurrency is hard todo robustly, especially when processes can act on the same data.
+ Processes mayuse old data; they can make inconsistent updates; the order of updates mayor may not matter; the system might deadlock; the data in di↵erent systemsmight never converge to consistent values; and when it’s important to makethings happen in the right order, or even to know the exact time, this can betrickier than you might think.
+ These issues go up and down the entire stack.
+Systems are becoming ever more concurrent for a number of reasons.
+ Firstis scale: Google may have started o↵ with four machines but their ﬂeet passeda million in 2011.
+ Second is device complexity; a luxury car can now containdozens to hundreds of di↵erent processors.
+The same holds for your laptopand your mobile phone.
+ Deep within each CPU, instructions are executed inparallel, and this complexity leads to the Spectre attacks we discussed in thechapter on access control.
+ On top of this, virtualization technologies such as Xenare the platforms on which modern cloud services are built, and they may turna handful of real CPUs in a server into hundreds or even thousands of virtualCPUs.
+ Then there’s interaction complexity: going up to the application layer,an everyday transaction such as booking a rental car may call other systems tocheck your credit card, your credit reference agency score, your insurance claimhistory and much else, while these systems in turn may depend on others.
+Programming concurrent systems is hard, and the standard textbook exam-ples come from the worlds of operating system internals and of performancemeasurement.
+ Computer scientists are taught Amdahl’s law: if the proportionthat can be parallelised is p and s is the speedup from the extra resources, theoverall speedup is (1�p+p/s)�1.
+ Thus if three-quarters of your program can beparallelised but the remaining quarter cannot be, then the maximum speedupyou can get is four times; and if you throw eight cores at it, the practical speedupis not quite three times1.
+ But concurrency control in the real world is also asecurity issue.
+ Like access control, it is needed to prevent users interfering witheach other, whether accidentally or on purpose.
+ And concurrency problems canoccur at many levels in a system, from the hardware right up to the businesslogic.
+ In what follows, I provide a number of concrete examples; they are by nomeans exhaustive.
+7.
+2.
+1Using old data versus paying to propagate stateI’ve already described two kinds of concurrency problem: replay attacks onprotocols, where an attacker manages to pass o↵ out-of-date credentials; andrace conditions, where two programs can race to update some security state.
+As an example, I mentioned the ‘mkdir’ vulnerability from Unix, in which aprivileged instruction that is executed in two phases could be attacked halfwaythrough by renaming the object on which it acts.
+ Another example goes back to1(1 � 34 +34.
+8 )�1 =(0.
+25 + 0.
+09375)�1=(0.
+34375)�1=2.
+909Security Engineering237Ross Anderson7.
+2.
+ CONCURRENCYthe 1960s, where in one of the ﬁrst multiuser operating systems, IBM’s OS/360,an attempt to open a ﬁle caused it to be read and its permissions checked; ifthe user was authorised to access it, it was read again.
+ The user could arrangethings so that the ﬁle was altered in between [1129].
+These are examples of a time-of-check-to-time-of-use (TOCTTOU) attack.
+We have systematic ways of ﬁnding such attacks in ﬁle systems [251], but attacksstill crop up both at lower levels, such as system calls in virtualised environ-ments, and at higher levels such as business logic.
+ Preventing them isn’t alwayseconomical, as propagating changes in security state can be expensive.
+A good case study is card fraud.
+ Since credit and debit cards became popularin the 1970s, the banking industry has had to manage lists of hot cards (whetherstolen or abused), and the problem got steadily worse in the 1980s as cardnetworks went international.
+ It isn’t possible to keep a complete hot card list inevery merchant terminal, as we’d have to broadcast all loss reports instantly totens of millions of devices, and even if we tried to verify all transactions with thebank that issued the card, we’d be unable to use cards in places with no network(such as in remote villages and on airplanes) and we’d impose unacceptable costsand delays elsewhere.
+ Instead, there are multiple levels of stand-in processing,exploiting the fact that most payments are local, or low-value, or both.
+Merchant terminals are allowed to process transactions up to a certain limit(the ﬂoor limit) o✏ine; larger transactions need online veriﬁcation with themerchant’s bank, which will know about all the local hot cards plus foreign cardsthat are being actively abused; above another limit it might refer the transactionto a network such as VISA with a reasonably up-to-date international list; whilethe largest transactions need a reference to the card-issuing bank.
+ In e↵ect, theonly transactions that are checked immediately before use are those that arelocal or large.
+Experience then taught that a more centralised approach can work betterfor bad terminals.
+ About half the world’s ATM transactions use a service thatgets alerts from subscribing banks when someone tries to use a stolen card at anATM, or guesses the PIN wrong.
+ FICO observed that criminals take a handfulof stolen cards to a cash machine and try them out one by one; they maintain alist of the 40 ATMs worldwide that have been used most recently for attemptedfraud, and banks that subscribe to their service decline all transactions at thosemachines – which become unusable by those banks’ cards for maybe half anhour.
+ Most thieves don’t understand this and just throw them away.
+Until about 2010, payment card networks had the largest systems that man-age the global propagation of security state, and their experience taught us thatrevoking compromised credentials quickly and on a global scale is expensive.
+The lesson was learned elsewhere too; the US Department of Defense, for ex-ample, issued 16 million certiﬁcates to military personnel during 1999–2005, bywhich time it had to download 10 million revoked certiﬁcates to all securityservers every day, and some systems took half an hour to do this when theywere ﬁred up [1299].
+The costs of propagating security state can lead to centralisation.
+ Big serviceﬁrms such as Google, Facebook and Microsoft have to maintain credentialsfor billions of users anyway, so they o↵er logon as a service to other websites.
+Security Engineering238Ross Anderson7.
+2.
+ CONCURRENCYOther ﬁrms, such as certiﬁcation authorities, also provide online credentials.
+But although centralisation can cut costs, a compromise of the central servicecan be disruptive.
+In 2011, for example, hackers operating from Iranian IPaddresses compromised the Dutch certiﬁcation authority Diginotar.
+ On July9th, they generated fake certiﬁcates and did middleperson attacks on the gmailof Iranian activists.
+ Diginotar noticed on the 19th that certiﬁcates had beenwrongly issued but merely called in its auditors.
+ The hack became public on the29th, and Google reacted by removing all Diginotar certiﬁcates from Chromeon September 3rd, and getting Mozilla to do likewise.
+ This led immediately tothe failure of the company, and Dutch public services were unavailable onlinefor many days as ministries scrambled to get certiﬁcates for their web servicesfrom other suppliers [471].
+7.
+2.
+2Locking to prevent inconsistent updatesWhen people work concurrently on a document, they may use a version controlsystem to ensure that only one person has write access at any one time to anygiven part of it, or at least to warn of contention and ﬂag up any inconsistentedits.
+ Locking is one general way to manage contention for resources such asﬁlesystems and to make conﬂicting updates less likely.
+Another approach iscallback; a server may keep a list of all those clients which rely on it for securitystate and notify them when the state changes.
+Credit cards again provide an example of how this applies to security.
+ If Iown a hotel and a customer presents a credit card on check-in, I ask the cardcompany for a pre-authorisation, which records that I will want to make a debitin the near future; I might register a claim on ‘up to $500’.
+ This is implementedby separating the authorisation and settlement systems.
+ Handling the failuremodes can be tricky.
+ If the card is cancelled the following day, my bank cancall me and ask me to contact the police, or to get her to pay cash2.
+ This is anexample of the publish-register-notify model of how to do robust authorisationin distributed systems (of which there’s a more general description in [152]).
+Callback mechanisms don’t provide a universal solution, though.
+ The cre-dential issuer might not want to run a callback service, and the customer mightobject on privacy grounds to the issuer being told all her comings and goings.
+Consider passports as another example.
+ In many countries, government ID isrequired for many transactions, but governments won’t provide any guarantee,and most citizens would object if the government kept a record of every timean ID document was presented.
+ Indeed, one of the frequent objections to theIndian government’s requirement that the Aadhar biometric ID system be usedin more and more transactions is that checking citizens’ ﬁngerprints or iris codesat all signiﬁcant transactions creates an audit trail of all the places where theyhave done business, which is available to o�cials and to anyone who cares tobribe them.
+2My bank might or might not have guaranteed me the money; it all depends on what sortof contract I’ve got with it.
+ There were also attacks for a while when crooks ﬁgured out how toimpersonate a store and cancel an authorisation so that a card could be used to make multiplebig purchases.
+ And it might take a day or three for the card-issuing bank to propagate analarm to the merchant’s bank.
+ A deep dive into all this would be a book chapter in itself!Security Engineering239Ross Anderson7.
+2.
+ CONCURRENCYThere is a general distinction between those credentials whose use gives riseto some obligation on the issuer, such as credit cards, and the others, suchas passports.
+Among the di↵erences is whether the credential’s use changesimportant state, beyond possibly adding to a log ﬁle or other surveillance system.
+This is linked with whether the order in which updates are made is important.
+7.
+2.
+3The order of updatesIf two transactions arrive at the government’s bank account – say a credit of$500,000 and a debit of $400,000 – then the order in which they are applied maynot matter much.
+ But if they’re arriving at my bank account, the order willhave a huge e↵ect on the outcome! In fact, the problem of deciding the order inwhich transactions are applied has no clean solution.
+ It’s closely related to theproblem of how to parallelise a computation, and much of the art of buildinge�cient distributed systems lies in arranging matters so that processes are eithersimply sequential or completely parallel.
+The traditional bank algorithm was to batch the transactions overnight andapply all the credits for each account before applying all the debits.
+ Inputs fromdevices such as ATMs and check sorters were ﬁrst batched up into journalsbefore the overnight reconciliation.
+ Payments which bounce then have to bereversed out – and in the case of ATM and debit transactions where the cashhas already gone, you can end up with customers borrowing money withoutauthorisation.
+ In practice, chains of failed payments terminate.
+ In recent years,one country after another has introduced real-time gross settlement (RTGS)systems in which transactions are booked in order of arrival.
+ There are severalsubtle downsides.
+ First, at many institutions, the real-time system for retailcustomers is an overlay on a platform that still works by overnight updates.
+Second, the outcome can depend on the order of transactions, which can dependon human, system and network vagaries, which can be an issue when many verylarge payments are made between ﬁnancial institutions.
+ Credit cards operate ahybrid strategy, with credit limits run in real time while settlement is run justas in an old-fashioned checking account.
+In the late 2010s, the wave of interest in cryptocurrency has led some en-trepreneurs to believe that a blockchain might solve the problems of inconsistentupdate, simplifying applications such as supply-chain management.
+ The energycosts rule out a blockchain based on proof-of-work for most applications; butmight some other kind of append-only public ledger ﬁnd a killer app? We willhave to wait and see.
+ Meanwhile, the cryptocurrency community makes exten-sive use of o↵-chain mechanisms that are often very reminiscent of the checking-account approach: disconnected applications propose tentative updates that arelater reconciled and applied to the main chain.
+ Experience suggests that thereis no magic solution that works in the general case, short perhaps of having asmall number of very large banks that are very competent at technology.
+ We’lldiscuss this further in the chapter on banking.
+In other systems, the order in which transactions arrive is much less im-portant.
+Passports are a good example.
+Passport issuers only worry abouttheir creation and expiration dates, not the order in which visas are stampedSecurity Engineering240Ross Anderson7.
+2.
+ CONCURRENCYon them3.
+7.
+2.
+4DeadlockAnother problem is deadlock, where two systems are each waiting for the otherto move ﬁrst.
+ Edsger Dijkstra famously explained this problem, and its possiblesolutions, via the dining philosophers’ problem.
+ A number of philosophers areseated round a table, with a chopstick between each of them; and a philosophercan only eat when they can pick up the two chopsticks on either side.
+ So if allof them try to eat at once and each picks up the chopstick on their right, theyget stuck [560].
+This can get really complex when you have multiple hierarchies of locksdistributed across systems, some of which fail (and where failures can meanthat the locks aren’t reliable) [151].
+ And deadlock is not just about technology;the phrase ‘Catch-22’ has become popular to describe deadlocks in bureaucraticprocesses 4.
+ Where a process is manual, some fudge may be found to get roundthe catch, but when everything becomes software, this option may no longer beavailable.
+In a well known business problem – the battle of the forms – one companyissues an order with its own contract terms attached, another company acceptsit subject to its own terms, and trading proceeds without any further agreement.
+In the old days, the matter might only be resolved if something went wrong andthe companies ended up in court; even so, one company’s terms might specifyan American court while the other’s specify one in England.
+ As trading hasbecome more electronic, the winner is often the company that can compel theloser to trade using its website and thus accept its terms and conditions.
+ Firmsincreasingly try to make sure that things fail in their favour.
+The resultingliability games can have rather negative outcomes for both security and safety;we’ll discuss them further in the chapter on economics.
+7.
+2.
+5Non-convergent stateWhen designing protocols that update the state of a distributed system, the‘motherhood and apple pie’ is ACID – that transactions should be atomic,consistent, isolated and durable.
+A transaction is atomic if you ‘do it all ornot at all’ – which makes it easier to recover after a failure.
+ It is consistent ifsome invariant is preserved, such as that the books must still balance.
+ This iscommon in banking systems, and is achieved by insisting that the sum total ofcredits and debits made by each transaction is zero (I’ll discuss this more inthe chapter on banking and bookkeeping).
+ Transactions are isolated if they areserialisable, and they are durable if once done they can’t be undone.
+These properties can be too much, or not enough, or both.
+On the onehand, each of them can fail or be attacked in numerous obscure ways; on the3Many Arab countries won’t let you in with an Israeli stamp on your passport, but mostpure identiﬁcation systems are essentially stateless.
+4Joseph Heller’s 1961 novel of that name described multiple instances of inconsistent andcrazy rules in the World War 2 military bureaucracy.
+Security Engineering241Ross Anderson7.
+2.
+ CONCURRENCYother, it’s often su�cient to design the system to be convergent.
+ This meansthat, if the transaction volume were to tail o↵, then eventually there wouldbe consistent state throughout [1353].
+ Convergence is usually achieved usingsemantic tricks such as timestamps and version numbers; this can often beenough where transactions get appended to ﬁles rather than overwritten.
+In real life, you also need ways to survive things that go wrong and arenot completely recoverable.
+ The life of a security or audit manager can be aconstant battle against entropy: apparent deﬁcits (and surpluses) are alwaysturning up, and sometimes simply can’t be explained.
+ For example, di↵erentnational systems have di↵erent ideas of which ﬁelds in bank transaction recordsare mandatory or optional, so payment gateways often have to guess data inorder to make things work.
+ Sometimes they guess wrong; and sometimes peoplesee and exploit vulnerabilities which aren’t understood until much later (if ever).
+In the end, things may get fudged by adding a correction factor and setting atarget for keeping it below a certain annual threshold.
+Durability is a subject of debate in transaction processing.
+ The advent ofphishing and keylogging attacks has meant that some small proportion of bankaccounts will at any time be under the control of criminals; money gets movedboth from them and through them.
+ When an account compromise is detected,the bank moves to freeze it and perhaps to reverse payments that have recentlybeen made from it.
+ The phishermen naturally try to move funds through in-stitutions, or jurisdictions, that don’t do transaction reversal, or do it at bestslowly and grudgingly [75].
+ This sets up a tension between the recoverabilityand thus the resilience of the payment system on the one hand and transactiondurability and ﬁnality on the other5.
+7.
+2.
+6Secure timeThe ﬁnal concurrency problem of special interest to the security engineer is theprovision of accurate time.
+ As authentication protocols such as Kerberos canbe attacked by inducing clock error, it’s not enough to simply trust a randomexternal time source.
+ One possibility is a Cinderella attack: if a security criticalprogram such as a ﬁrewall has a licence with a timelock, an attacker might windyour clock forward “and cause your ﬁrewall to turn into a pumpkin”.
+ Given thespread of IoT devices that may be safety-critical and use time in ways that arepoorly understood, there is now some concern about possible large-scale servicedenial attacks.
+ Time is a lot harder than it looks: even if you have an atomicclock, leap seconds cannot be predicted but need to be broadcast somehow;some minutes have 61 and even 62 seconds; odd time e↵ects can be a securityissue6; and much of the world is not using the Gregorian calendar.
+5This problem goes back centuries, with a thicket of laws around whether someone actingin good faith can acquire good title to stolen goods or stolen funds.
+ The Bills of ExchangeAct 1882 gave good title to people who bought bills of exchange in good faith, even if theywere stolen.
+ Something similar used to hold for stolen goods bought in an open market, butthat was eventually repealed.
+ In the case of electronic payments, the banks acted as a cartelto make payments ﬁnal more quickly, both via card network rules and by lobbying Europeaninstitutions over the Payment Services Directives.
+ As for the case of bitcoin, it’s still in ﬂux;see section 20.
+7.
+5.
+6Some ATMs didn’t check customer balances for a few days after Y2K, leading to unau-thorised overdrafts once the word got roundSecurity Engineering242Ross Anderson7.
+3.
+ FAULT TOLERANCE AND FAILURE RECOVERYAnyway, there are several possible approaches to the provision of secure time.
+You can give every computer a radio clock, and indeed your smartphone hasGPS – but that can be jammed by a passing truck driver.
+ You can abandonabsolute time and instead use Lamport time, in which all you care about iswhether event A happened before event B rather than what date it is [1122].
+For robustness reasons, Google doesn’t use time in its internal certiﬁcates, butuses ranges of serial numbers coupled to a revocation mechanism [23].
+In many applications, you may end up using the network time protocol(NTP).
+ This has a moderate amount of protection, with clock voting and au-thentication of time servers, and is dependable enough for many purposes.
+ How-ever, you still need to take care.
+ For example, Netgear hardwired their homerouters to use an NTP server at the University of Wisconsin-Madison, whichwas swamped with hundreds of thousands of packets a second; Netgear endedup having to pay them $375,000 to maintain the time service for three years.
+Shortly afterwards, D-Link repeated the same mistake [445].
+ Second, from 2016there have been denial-of-service attacks using NTP servers as force multipli-ers; millions of servers turned out to be abusable, so many ISPs and even IXPsstarted blocking them.
+ So if you’re planning to deploy lots of devices outsideyour corporate network that will rely on NTP, you’d better think hard aboutwhich servers you want to trust and pay attention to the latest guidance fromCERT [1797].
+7.
+3Fault Tolerance and Failure RecoveryFailure recovery is often the most important aspect of security engineering, yetit is one of the most neglected.
+ For many years, most of the research paperson computer security have dealt with conﬁdentiality, and most of the rest withauthenticity and integrity; availability has almost been ignored.
+ Yet the actualexpenditures of a modern information business – whether a bank or a searchengine – are the other way round.
+ Far more is spent on availability and recoverymechanisms, such as multiple processing sites and redundant networks, than inintegrity mechanisms such as code review and internal audit, and this in turn isway more than is spent on encryption.
+ As you read through this book, you’ll seethat many other applications, from burglar alarms through electronic warfare toprotecting a company from DDoS attacks, are fundamentally about availability.
+Fault tolerance and failure recovery are often the core of the security engineer’sjob.
+Classical fault tolerance is usually based on redundancy, fortiﬁed using mech-anisms such as logs and locking, and is greatly complicated when it must with-stand malicious attacks on these mechanisms.
+ Fault tolerance interacts withsecurity in a number of ways: the failure model, the nature of resilience, thelocation of redundancy used to provide it, and defence against service denialattacks.
+ I’ll use the following deﬁnitions: a fault may cause an error, whichis an incorrect state; this may lead to a failure, which is a deviation from thesystem’s speciﬁed behavior.
+ The resilience which we build into a system to tol-erate faults and recover from failures will have a number of components, suchas fault detection, error recovery and if necessary failure recovery.
+ The meaningSecurity Engineering243Ross Anderson7.
+3.
+ FAULT TOLERANCE AND FAILURE RECOVERYof mean-time-before-failure (MTBF) and mean-time-to-repair (MTTR) shouldbe obvious.
+7.
+3.
+1Failure modelsIn order to decide what sort of resilience we need, we must know what sort ofattacks to expect.
+ Much of this will come from an analysis of threats speciﬁc toour system’s operating environment, but some general issues bear mentioning.
+7.
+3.
+1.
+1Byzantine failureFirst, the failures with which we are concerned may be normal or malicious,and we often model the latter as Byzantine.
+ Byzantine failures are inspired bythe idea that there are n generals defending Byzantium, t of whom have beenbribed by the attacking Turks to cause as much confusion as possible.
+Thegenerals can pass oral messages by courier, and the couriers are trustworthy, soeach general can exchange conﬁdential and authentic communications with eachother general (we could imagine them encrypting and computing a MAC on eachmessage).
+ What is the maximum number t of traitors that can be tolerated?The key observation is that if we have only three generals, say Anthony,Basil and Charalampos, and Anthony is the traitor, then he can tell Basil “let’sattack” and Charalampos “let’s retreat”.
+ Basil can now say to Charalampos“Anthony says let’s attack”, but this doesn’t let Charalampos conclude thatAnthony’s the traitor.
+ It could just as easily have been Basil; Anthony couldhave said “let’s retreat” to both of them, but Basil lied when he said “Anthonysays let’s attack”.
+This beautiful insight is due to Leslie Lamport, Robert Shostak and MarshallPease, who proved that the problem has a solution if and only if n � 3t+1 [1124].
+Of course, if the generals are able to sign their messages, then no general dare saydi↵erent things to two di↵erent colleagues.
+ This illustrates the power of digitalsignatures in particular and of end-to-end security mechanisms in general.
+ Thereis now a substantial literature on Byzantine fault tolerance – the detailed designof systems able to withstand this kind of failure; see for example the algorithmby Miguel Castro and Barbara Liskov [394].
+Another lesson is that if a component which fails (or can be induced to failby an opponent) gives the wrong answer rather than just no answer, then it’smuch harder to use it to build a resilient system.
+ It can be useful if componentsthat fail just stop, or if they can at least be quickly identiﬁed and blacklisted.
+7.
+3.
+1.
+2Interaction with fault toleranceSo we can constrain the failure rate in a number of ways.
+ The two most obvi-ous are by using redundancy and fail-stop processes.
+ The latter process error-correction information along with data, and stop when an inconsistency is de-tected; for example, bank transaction processing will typically stop if an out-of-balance condition is detected after a processing task.
+ The two may be combined;the processors used in some safety-critical functions in cars and aircraft typicallySecurity Engineering244Ross Anderson7.
+3.
+ FAULT TOLERANCE AND FAILURE RECOVERYhave two or more cores.
+ There was pioneering work on a fault-tolerant multipro-cessor (FTMP) in the 1970s, driven by the Space Shuttle project; this exploredwhich components should be redundant and the associated design trade-o↵saround where the error detection takes places and how closely everything issynchronised [920].
+ Such research ended up driving the design of fault-tolerantprocessors used in various submarines and spacecraft, as well as architecturesused by Boeing and Airbus.
+ The FTMP idea was also commercialised by Tan-dem and then by Stratus, which sold machines for payment processing.
+ TheStratus had two disks, two buses and even two CPUs, each of which would stopif it detected errors; the fail-stop CPUs were built by having two CPU chips onthe same card and comparing their outputs.
+ If they disagreed the output wentopen-circuit.
+ A replacement card would arrive in the post; you’d take it downto the machine room, notice that card 5 had a ﬂashing red light, pull it outand replace it with the new one – all while the machine was processing dozensof transactions per second.
+ Nowadays, the data centres of large service ﬁrmshave much more elaborate protocols to ensure that if a machine fails, anothermachine takes over; if a rack fails, another rack takes over; and even if a datacentre fails, its workload is quickly recovered on others.
+ Google was a leaderin developing the relevant software stack, having discovered in the early 2000sthat it was much cheaper to build large-scale systems with commodity PCs andsmart software than to buy ever-larger servers from specialist vendors.
+While redundancy can make a system more resilient, it has costs.
+ First,we have to deal with a more complex software stack and toolchain.
+Bankseventually moved away from Stratus because they found it was less reliableoverall than traditional mainframes: although there was less downtime due tohardware failure, this didn’t compensate for the extra software failure caused byan unfamiliar development environment.
+ Second, if I have multiple sites withbackup data, then conﬁdentiality could fail if any of them gets compromised7;and if I have some data that I have a duty to destroy, then purging it frommultiple backup tapes can be a headache.
+ The modern-day issue with developingsoftware in containers on top of redundant cloud services is not so much theprogramming languages, or compromise via data centres; it’s that developersare unfamiliar with the cloud service providers’ access control tools and all toooften leave sensitive data world-readable.
+There are other traps for the unwary.
+ In one case in which I was called asan expert, my client was arrested while using a credit card in a store, accused ofhaving a forged card, and beaten up by the police.
+ He was adamant that the cardwas genuine.
+ Much later, we got the card examined by VISA, who conﬁrmedthat it was indeed genuine.
+ What happened, as well as we can reconstruct it,was this.
+ Credit cards have two types of redundancy on the magnetic strip – asimple checksum obtained by combining together all the bytes on the track usingexclusive-or, and a cryptographic checksum which we’ll describe in detail laterin section 12.
+5.
+1.
+ The former is there to detect errors, and the latter to detectforgery.
+ It appears that in this particular case, the merchant’s card reader wasout of alignment in such a way as to cause an even number of bit errors whichcancelled each other out by chance in the simple checksum, while causing the7Or the communications between your data centres get tapped; we discussed in section 2.
+1how GCHQ did that to Google.
+Security Engineering245Ross Anderson7.
+3.
+ FAULT TOLERANCE AND FAILURE RECOVERYcrypto checksum to fail.
+ The result was a false alarm, and a major disruptionin my client’s life.
+Redundancy is hard enough to deal with in mechanical systems.
+ For ex-ample, training pilots to handle multi-engine aircraft involves drilling them onengine failure procedures, ﬁrst in the simulator and then in real aircraft withan instructor.
+ Novice pilots are in fact more likely to be killed by an enginefailure in a multi-engine plane than in a single; landing in the nearest ﬁeld isless hazardous for them than coping with sudden asymmetric thrust.
+ The samegoes for instrument failures; it doesn’t help to have three artiﬁcial horizons inthe cockpit if, under stress, you rely on the one that’s broken.
+ Aircraft are muchsimpler than many modern information systems – yet there are still air crasheswhen pilots fail to manage the redundancy that’s supposed to keep them safe.
+There are also complex failures, as when two Boeing 737 Max aircraft crashedbecause of failures in a single sensor, when the plane had two but the softwarefailed to read them both, and the pilots hadn’t been trained how to diagnosethe problem and manage the consequences.
+ All too often, system designers putin multiple protection mechanisms and don’t think through the consequencescarefully enough.
+ Many other safety failures are failures of usability, and thesame applies to security, as we discussed in Chapter 3; redundancy isn’t anantidote to poor design.
+7.
+3.
+2What is resilience for?When introducing redundancy or other resilience mechanisms into a system,we need to understand what they’re for and the incentives facing the variousactors.
+ It therefore matters whether the resilience is local or crosses geographicalor organisational boundaries.
+In the ﬁrst case, replication can be an internal feature of the server to makeit more trustworthy.
+ I already mentioned 1980s systems such as Stratus andTandem; then we had replication of standard hardware at the component level,such as redundant arrays of inexpensive disks (RAID).
+ Since the late 1990sthere has been massive investment in developing rack-scale systems that letmultiple cheap PCs do the work of expensive servers, with mechanisms to ensurea single server that fails will have its workload taken over rapidly by another,and indeed a rack that fails can also be recovered on a hot spare.
+ These arenow a standard component of cloud service architecture: any ﬁrm operatinghundreds of thousands of servers will have so many failures that recovery mustbe largely automated.
+But often things are much more complicated.
+ A service may have to assumethat some of its clients are trying to cheat it and may also have to rely on anumber of services, none of which is completely accurate.
+ When opening a bankaccount, or issuing a passport, we might want to check against services fromvoter rolls through credit reference agencies to a database of driver’s licences,and the results may often be inconsistent.
+ Trust decisions may involve complexlogic, not entirely unlike the systems used in electronic warfare to try to workout which of your inputs are being jammed.
+ (I’ll discuss these further in thechapter on electronic and information warfare.
+)Security Engineering246Ross Anderson7.
+3.
+ FAULT TOLERANCE AND FAILURE RECOVERYThe direction of mistrust has an e↵ect on protocol design.
+ A server facedwith multiple untrustworthy clients and a client relying on multiple servers thatmay be incompetent, unavailable or malicious will both wish to control the ﬂowof messages in a protocol in order to contain the e↵ects of service denial.
+ It’shard to design systems for the real world in which everyone is unreliable and allare mutually suspicious.
+Sometimes the emphasis is on security renewability.
+ The obvious examplehere is bank cards: a bank can upgrade security from time to time by mailing outnewer versions of its cards, whether upgrading from mag strip to chip or fromcheap chips to more sophisticated ones; and it can recover from a compromiseby mailing out cards out of cycle to a↵ected customers.
+ Pay TV and mobilephones are somewhat similar.
+7.
+3.
+3At what level is the redundancy?Systems may be made resilient against errors, attacks and equipment failuresat a number of levels.
+ As with access control, these become progressively morecomplex and less reliable as we go up to higher layers in the system.
+Some computers have been built with redundancy at the hardware level, suchas Stratus systems and RAID discs I mentioned earlier.
+ But simple replicationcannot provide a defense against malicious software, or against an intruder whoexploits faulty software.
+At the next level up, there is process group redundancy.
+ Here, we may runmultiple copies of a system on multiple servers in di↵erent locations and com-pare their outputs.
+ This can stop the kind of attack in which the opponent getsphysical access to a machine and subverts it, whether by mechanical destructionor by inserting unauthorised software.
+ It can’t defend against attacks by autho-rised users or damage by bad authorised software, which could simply order thedeletion of a critical ﬁle.
+The next level is backup, where we typically take a copy of the system (acheckpoint) at regular intervals.
+The copies are usually kept on media thatcan’t be overwritten such as write-protected tapes or discs with special software.
+We may also keep journals of all the transactions applied between checkpoints.
+Whatever the detail, backup and recovery mechanisms not only enable us torecover from physical asset destruction, they also ensure that if we do get anattack at the logical level, we have some hope of recovering.
+ The classic examplein the 1980s would have been a time bomb that deletes the customer databaseon a speciﬁc date; since the arrival of cryptocurrency, the fashion has been forransomware.
+Businesses with critical service requirements, such as banks and retailers,have had backup data centres for many years.
+ The idea is that if the maincentre goes down, the service will failover to a second facility.
+ Maintaining suchfacilities absorbed most of a typical bank’s information security budget.
+Backup is not the same as fallback.
+ A fallback system is typically a lesscapable system to which processing reverts when the main system is unavailable.
+One example was the use of manual imprinting machines to capture credit cardSecurity Engineering247Ross Anderson7.
+3.
+ FAULT TOLERANCE AND FAILURE RECOVERYtransactions from the card embossing when electronic terminals failed.
+ Fallbacksystems are an example of redundancy in the application layer – the highestlayer we can put it.
+It is important to realise that these are di↵erent mechanisms, which dodi↵erent things.
+ Redundant disks won’t protect against a malicious programmerwho deletes all your account ﬁles, and backups won’t stop him if rather than justdeleting ﬁles he writes code that slowly inserts more and more errors8.
+ Neitherwill give much protection against attacks on data conﬁdentiality.
+ On the otherhand, the best encryption in the world won’t help you if your data processingcenter burns down.
+ Real-world recovery plans and mechanisms involve a mixtureof all of the above.
+The remarks that I made earlier about the di�culty of redundancy, andthe absolute need to plan and train for it properly, apply in spades to systembackup.
+ When I was working in banking in the 1980s, we reckoned that wecould probably get our backup system working within an hour or so of our mainprocessing centre being destroyed, but the tests were limited by the fact that wedidn’t want to risk processing during business hours: we would recover the mainproduction systems on our backup data centre one Saturday a year.
+ By the early1990s, Tesco, a UK supermarket, had gotten as far as live drills: they’d pull theplug on the main processing centre once a year without warning the operators,to make sure the backup came up within 40 seconds.
+By 2011, Netﬂix haddeveloped ‘chaos monkeys’ – systems that would randomly knock out a machine,or a rack, or even a whole data centre, to test resilience constantly.
+ By 2019,large service ﬁrms have gotten to such a scale that they don’t need this.
+ If youhave three million machines across thirty data centres, then you’ll lose machinesconstantly, racks frequently, and whole data centres often enough that you haveto engineer things to keep going.
+ So nowadays, you can simply pay money and acloud service provider will worry about a lot of the detail for you.
+ But you needto really understand what sort of failures Amazon or Google or Microsoft canhandle for you and what you have to deal with yourself.
+ The standard servicelevel agreements of the major providers allow them to interrupt your servicefor quite a few hours per month, and if you use a smaller cloud service (even agovernment cloud), it will have capacity limits about which you have to thinkcarefully.
+It’s worth trying to work out which services you depend on that are outsideyour direct supply chain.
+ For example, Britain su↵ered a fuel tanker drivers’strike in 2001, and some hospitals had to close because of sta↵ shortages, whichwas supposed to not happen.
+ The government had allocated petrol rations todoctors and nurses, but not to schoolteachers.
+ So the schools closed, and thenurses had to stay home to look after their kids, and this closed hospitals too.
+This helped the strikers defeat Prime Minister Tony Blair: he abandoned hissignature environmental policy of steadily increasing fuel duty.
+ As we becomeincreasingly dependent on each other, contingency planning gets ever harder.
+8Nowadays the really serious ransomware operators will hack your system, add ﬁle encryp-tion surreptitiously and wait before they pounce – so they hold hostage not just your currentdata but several weeks’ backups tooSecurity Engineering248Ross Anderson7.
+3.
+ FAULT TOLERANCE AND FAILURE RECOVERY7.
+3.
+4Service-denial attacksOne of the reasons we want security services to be fault-tolerant is to makeservice-denial attacks less attractive, less e↵ective, or both.
+ Such attacks areoften used as part of a larger plan.
+ For example, one might take down a securityserver to force other servers to use cached copies of credentials, or swamp a webserver to take it temporarily o✏ine and then get another machine to serve thepages that victims try to download.
+A powerful defense against service denial is to prevent the opponent frommounting a selective attack.
+ If principals are anonymous – say there are severalequivalent services behind a load balancer, and the opponent has no idea whichone to attack – then he may be ine↵ective.
+ I’ll discuss this further in the contextof burglar alarms and electronic warfare.
+Where this isn’t possible, and the opponent knows where to attack, thenthere are some types of service-denial attacks that can be stopped by redundancyand resilience mechanisms and others that can’t.
+ For example, the TCP/IPprotocol has few e↵ective mechanisms for hosts to protect themselves againstnetwork ﬂooding, which comes in a wide variety of ﬂavours.
+ Defense against thiskind of attack tends to involve moving your site to a beeﬁer hosting service withspecialist packet-washing hardware – or tracing and arresting the perpetrator.
+Distributed denial-of-service (DDoS) attacks came to public notice whenthey were used to bring down Panix, a New York ISP, for several days in 1996.
+During the late 1990s they were occasionally used by script kiddies to take downchat servers.
+ In 2001 I mentioned them in passing in the ﬁrst edition of this book.
+Over the following three years, extortionists started using them; they’d assemblea botnet, a network of compromised PCs, which would ﬂood a target webserverwith packet tra�c until its owner paid them to desist.
+ Typical targets wereonline bookmakers, and amounts of $10,000 – $50,000 were typically demandedto leave them alone, and the typical bookie paid up the ﬁrst time this happened.
+When the attacks persisted, the ﬁrst solution was replication: operators movedtheir websites to hosting services such as Akamai whose servers are so numerous(and so close to customers) that they can shrug o↵ anything the average botnetcould throw at them.
+ In the end, the blackmail problem was solved when thebookmakers met and agreed not to pay any more blackmail money, and theUkrainian police were prodded into arresting the gang responsible.
+By 2018, we had come full circle, and about ﬁfty bad people were operatingDDoS-as-a-service, mostly for gamers who wanted to take down their opponents’teamspeak servers.
+ The services were sold online as ‘booters’ that would bootyour opponents out of the game; a few dollars would get a ﬂood of perhaps100Gbit/sec.
+ Service operators also called them, more euphemistically, ‘stres-sors’ – with the line that you could use them to test the robustness of your ownwebsite.
+ This didn’t fool anyone, and just before Christmas 2018 the FBI tookdown ﬁfteen of these sites, arresting a number of their operators and causingthe volumes of DDoS tra�c to drop noticeably for several months [1445].
+Finally, where a more vulnerable fallback system exists, a common techniqueis to use a service-denial attack to force victims into fallback mode.
+ The classicexample is in payment cards.
+ Smartcards are generally harder to forge thanSecurity Engineering249Ross Anderson7.
+4.
+ NAMINGmagnetic strip cards, but perhaps 1% of them fail every year, thanks to staticelectricity and worn contacts.
+ Also, some tourists still use magnetic strip cards.
+So most card payment systems still have a fallback mode that uses the magneticstrip.
+ A simple attack is to use a false terminal, or a bug inserted into the cable toa genuine terminal, to capture card details and then write them to the magneticstrip of a card with a dead chip.
+7.
+4NamingNaming is a minor if troublesome aspect of ordinary distributed systems, butit becomes surprisingly hard in security engineering.
+ During the dotcom boomin the 1990s, when SSL was invented and we started building public-key cer-tiﬁcation authorities, we hit the problem of what names to put on certiﬁcates.
+A certiﬁcate that says simply “the person named Ross Anderson is allowed toadminister machine X” is little use.
+ I used to be the only Ross Anderson I knewof; but as soon as the ﬁrst search engines came along, I found dozens of us.
+ Iam also known by di↵erent names to dozens of di↵erent systems.
+ Names existin contexts, and naming the principals in secure systems is becoming ever moreimportant and di�cult.
+Conceptually, namespaces can be hierarchical or ﬂat.
+ You can identify meas ‘The Ross Anderson who teaches computer science at Cambridge, England’or as ‘The Ross Anderson who’s rossjanderson@gmail.
+com’ or even as ‘the RossAnderson with such-and-such a passport number’.
+ But these are not the samekind of thing, and linking them causes all sorts of problems.
+In general, using more names increases complexity.
+ A public-key certiﬁcatethat simply says “this is the key to administer machine X” is a bearer token,just like a metal door key; whoever controls the private key for that certiﬁcateis the admin, just as if the root password were in an envelope in a bank vault.
+But once my name is involved, and I have to present some kind of passport orID card to prove who I am, the system acquires a further dependency.
+ If mypassport is compromised the consequences could be far-reaching, and I reallydon’t want to give the government an incentive to issue a false passport in myname to one of its agents.
+After 9/11, governments started to force businesses to demand government-issue photo ID in places where this was not previously thought necessary.
+ Inthe UK, for example, you can no longer board a domestic ﬂight using just thecredit card with which you bought the ticket; you have to produce a passportor driving license – which you also need to order a bank transfer in a branch formore than £1000, to rent an apartment, to hire a lawyer or even to get a job.
+Such measures are not only inconvenient but introduce new failure modes intoall sorts of systems.
+There is a second reason that the world is moving towards larger, ﬂatter namespaces: the growing dominance of the large service ﬁrms in online authentication.
+Your name is increasingly a global one; it’s your Gmail or Hotmail address,your Twitter handle, or your Facebook account.
+ These ﬁrms have not merelybeneﬁted from the technical externalities, which we discussed in the chapter onSecurity Engineering250Ross Anderson7.
+4.
+ NAMINGauthentication, and business externalities, which we’ll discuss in the chapter oneconomics, they have sort-of solved some of the problems of naming.
+ But wecan’t be complacent as many other problems remain.
+ So it’s useful to canterthrough what a generation of computer science researchers have learned aboutnaming in distributed systems.
+7.
+4.
+1The Needham naming principlesDuring the last quarter of the twentieth century, engineers building distributedsystems ran up against many naming problems.
+ The basic algorithm used tobind names to addresses is known as rendezvous: the principal exporting a nameadvertises it somewhere, and the principal seeking to import and use it searchesfor it.
+ Obvious examples include phone books and ﬁle system directories.
+People building distributed systems soon realised that naming gets complexquickly, and the lessons are set out in a classic article by Needham [1424].
+ Hereare his ten principles.
+1.
+ The function of names is to facilitate sharing.
+ This continues to hold:my bank account number exists in order to share the information thatI deposited money last week with the teller from whom I am trying towithdraw money this week.
+ In general, names are needed when the datato be shared is changeable.
+If I only ever wished to withdraw exactlythe same sum as I’d deposited, a bearer deposit certiﬁcate would be ﬁne.
+Conversely, names need not be shared – or linked – where data will notbe; there is no need to link my bank account number to my telephonenumber unless I am going to pay my phone bill from the account.
+2.
+ The naming information may not all be in one place, and so resolvingnames brings all the general problems of a distributed system.
+ This holdswith a vengeance.
+ A link between a bank account and a phone numberassumes both of them will remain stable.
+ So each system relies on theother, and an attack on one can a↵ect the other.
+ Many banks use two-channel authorisation to combat phishing – if you order a payment online,you get a text message on your mobile phone saying ‘if you want to pay $Xto account Y, please enter the following four-digit code into your browser’.
+The standard attack is for the crook to claim to be you to the phonecompany and report the loss of your phone.
+ So they give him a new SIMthat works for your phone number, and he makes o↵ with your money.
+The phone company could stop that, but it doesn’t care too much aboutauthentication, as all it stands to lose is some airtime, whose marginalcost is zero.
+ And the latest attack is to use Android malware to stealauthentication codes.
+ Google could stop that by locking down the Androidplatform as tightly as Apple – but it lacks the incentive to do so.
+3.
+ It is bad to assume that only so many names will be needed.
+ The shortageof IP addresses, which motivated the development of IP version 6 (IPv6), iswell enough discussed.
+ What is less well known is that the most expensiveupgrade the credit card industry ever had to make was the move fromthirteen-digit credit card numbers to sixteen.
+ Issuers originally assumedSecurity Engineering251Ross Anderson7.
+4.
+ NAMINGthat thirteen digits would be enough, but the system ended up with tensof thousands of banks – many with dozens of products – so a six-digitbank identiﬁcation number was needed.
+Some issuers have millions ofcustomers, so a nine-digit account number is the norm.
+ And there’s alsoa check digit to detect errors.
+4.
+ Global names buy you less than you think.
+ For example, the 128-bit ad-dress in IPv6 can in theory enable every object in the universe to havea unique name.
+ However, for us to do business, a local name at my endmust be resolved into this unique name and back into a local name at yourend.
+ Invoking a unique name in the middle may not buy us anything; itmay even get in the way if the unique naming service takes time, costsmoney, or occasionally fails (as it surely will).
+ In fact, the name serviceitself will usually have to be a distributed system, of the same scale (andsecurity level) as the system we’re trying to protect.
+ So we can expectno silver bullets from this quarter.
+ Adding an extra name, or adoptinga more complicated one, has the potential to add extra costs and failuremodes.
+5.
+ Names imply commitments, so keep the scheme ﬂexible enough to cope withorganisational changes.
+ This sound principle was ignored in the designof the UK government’s key management system for secure email [115].
+There, principals’ private keys are generated from their email addresses.
+So the frequent reorganisations meant that the security infrastructure hadto be rebuilt each time – and that more money had to be spent solvingsecondary problems such as how people access old material.
+6.
+ Names may double as access tickets, or capabilities.
+ We have already seena number of examples of this in Chapters 2 and 3.
+ In general, it’s a bad ideato assume that today’s name won’t be tomorrow’s password or capability– remember the Utrecht fraud we discussed in section 4.
+5.
+ Norway, forexample, used to consider the citizen’s ID number to be public, but itended up being used as a sort of password in so many applications thatthey had to relent and make it private.
+ There are similar issues aroundthe US Social Security Number (SSN).
+ So the Department of Defensecreated a surrogate number called the EDIPI, which was supposed to benot sensitive; but, sure enough, people started using it as an authenticatorinstead of as an identiﬁer.
+I’ve given a number of examples of how things go wrong when a namestarts being used as a password.
+ But sometimes the roles of name andpassword are ambiguous.
+ In order to get entry to a car park I used to useat the university, I had to speak my surname and parking badge numberinto a microphone at the barrier.
+So if I say, “Anderson, 123”, whichof these is the password? In fact it was “Anderson”, as anyone can walkthrough the car park and note down valid badge numbers from the parkingpermits on the car windscreens.
+7.
+ Things are made much simpler if an incorrect name is obvious.
+ In stan-dard distributed systems, this enables us to take a liberal attitude tocaching.
+ In payment systems, credit card numbers used to be acceptedwhile the terminal was o✏ine so long as the credit card number appearsSecurity Engineering252Ross Anderson7.
+4.
+ NAMINGvalid (i.
+e.
+, the last digit is a proper check digit of the ﬁrst ﬁfteen) and it isnot on the hot card list.
+ The certiﬁcates on modern chip cards provide ahigher-quality implementation of the same basic concept; authenticationmechanisms such as crypto and security printing can give the added bene-ﬁt of making names resilient to spooﬁng.
+ As an example of what can stillgo wrong, the Irish police created over 50 dockets for Mr ‘Prawo Jazdy’,wanted for failing to pay over ﬁfty tra�c tickets – until they realised thatthis is Polish for ‘Driving licence’ [192].
+8.
+ Consistency is hard, and is often fudged.
+ If directories are replicated, thenyou may ﬁnd yourself unable to read, or to write, depending on whethertoo many or too few directories are available.
+ Naming consistency causesproblems for business in a number of ways, of which perhaps the most no-torious is the bar code system.
+ Although this is simple enough in theory– with a unique numerical code for each product – in practice di↵erentmanufacturers, distributors and retailers attach quite di↵erent descrip-tions to the bar codes in their databases.
+ Thus a search for products by‘Kellogg’s’ will throw up quite di↵erent results depending on whether ornot an apostrophe is inserted, and this can cause confusion in the supplychain.
+ Proposals to ﬁx this problem can be surprisingly complicated [914].
+There are also the issues of convergence discussed above; data might notbe consistent across a system, even in theory.
+ There are also the problemsof timeliness, such as whether a product has been recalled.
+9.
+ Don’t get too smart.
+ Phone numbers are much more robust than computeraddresses.
+ Early secure messaging systems – from PGP to governmentsystems – tried to link keys to email addresses, but these change whenpeople’s jobs do.
+ More modern systems such as Signal and WhatsApp usemobile phone numbers instead.
+ In the same way, early attempts to replacebank account numbers and credit card numbers with public-key certiﬁcatesin protocols like SET failed, though in some mobile payment systems, suchas Kenya’s M-Pesa, they’ve been replaced by phone numbers.
+ (I’ll discussfurther speciﬁc problems of public key infrastructures in section 21.
+6.
+)10.
+ Some names are bound early, others not; and in general it is a bad thingto bind early if you can avoid it.
+ A prudent programmer will normallyavoid coding absolute addresses or ﬁlenames as that would make it hardto upgrade or replace a machine.
+ It’s usually better to leave this to aconﬁguration ﬁle or an external service such as DNS.
+ Yet secure systemsoften want stable and accountable names as any third-party service usedfor last-minute resolution could be a point of attack.
+ Designers thereforeneed to pay attention to where the naming information goes, how devicesget personalised with it, and how they get upgraded – including the namesof services on which the security may depend, such as the NTP servicediscussed in section 7.
+2.
+6 above.
+7.
+4.
+2What else goes wrongThe Needham principles were crafted for the world of the early 1990s in whichnaming systems could be imposed at the system owner’s convenience.
+ Once weSecurity Engineering253Ross Anderson7.
+4.
+ NAMINGmoved to the reality of modern web-based (and interlinked) service industries,operating at global scale, we found that there is more to add.
+By the early 2000s, we had learned that no naming system can be globallyunique, decentralised and human-meaningful.
+ In fact, it’s a classic trilemma:you can only have two of those attributes (Zooko’s triangle) [37].
+ In the past,engineers went for naming systems that were unique and meaningful, like URLs,or unique and decentralised, as with public keys in PGP or the self-signed cer-tiﬁcates that function as app names in Android.
+ Human names are meaningfuland local but don’t scale to the Internet.
+ I mentioned above that as soon asthe ﬁrst search engines came along, I could instantly ﬁnd dozens of other peoplecalled Ross Anderson, but it’s even worse than that; half a dozen worked in ﬁeldsI’ve also worked in, such as software engineering and electricity distribution.
+The innovation from sites like Facebook is to show on a really large scale thatnames don’t have to be unique.
+ We can use social context to build systems thatare both decentralised and meaningful – which is just what our brains evolvedto cope with.
+ Every Ross Anderson has a di↵erent set of friends and you cantell us apart that way.
+How can we make sense of all this, and stop it being used to trip people up?It is sometimes helpful to analyse the properties of names in detail.
+7.
+4.
+2.
+1Naming and identityFirst, the principals in security protocols are usually known by many di↵erentkinds of name – a bank account number, a company registration number, apersonal name plus a date of birth or a postal address, a telephone number, apassport number, a health service patient number, or a userid on a computersystem.
+A common mistake is to confuse naming with identity.
+Identity is whentwo di↵erent names (or instances of the same name) correspond to the sameprincipal (this is known to computer scientists as an indirect name or symboliclink).
+ One classic example comes from the registration of title to real estate.
+Someone who wishes to sell a house often uses a di↵erent name than they didat the time it was purchased: they might have changed their name on marriage,or on gender transition, or started using their middle name instead.
+ A land-registration system must cope with a lot of identity issues like this.
+There are two types of identity failure leading to compromise: where I’mhappy to impersonate anybody, and where I want to impersonate a speciﬁc in-dividual.
+ The former case includes setting up accounts to launder cybercrimeproceeds, while an example of the latter is SIM replacement (I want to clonea CEO’s phone so I can loot a company bank account).
+ If banks (or phonecompanies) just ask people for two proofs of address, such as utility bills, that’seasy.
+ Demanding government-issue photo ID may require us to analyse state-ments such as “The Aaron Bell who owns bank account number 12345678 is theAaron James Bell with passport number 98765432 and date of birth 3/4/56”.
+This may be seen as a symbolic link between two separate systems – the bank’sand the passport o�ce’s.
+ Note that the latter part of this ‘identity’ encapsulatesa further statement, which might be something like “The US passport o�ce’sSecurity Engineering254Ross Anderson7.
+4.
+ NAMINGﬁle number 98765432 corresponds to the entry in the New York birth registerfor 3/4/56 of one Aaron James Bell.
+” If Aaron is commonly known as Jim, itgets messier still.
+In general, names may involve several steps of recursion, which gives attack-ers a choice of targets.
+ For example, a lot of passport fraud is pre-issue fraud:the bad guys apply for passports in the names of genuine citizens who haven’tapplied for a passport already and for whom copies of birth certiﬁcates are easyto obtain.
+ Postmortem applications are also common.
+ Linden Labs, the op-erators of Second Life, introduced a scheme whereby you prove you’re over 18by providing the driver’s license number or social security number of someonewho is.
+ Now a web search quickly pulls up such data for many people, such asthe rapper Tupac Amaru Shakur; and yes, Linden Labs did accept Mr Shakur’slicense number – even through the license had expired and he’s dead.
+There can also be institutional failure.
+ For example, the United Arab Emi-rates started taking iris scans of all visitors after women who had been deportedto Pakistan for prostitution o↵ences would turn up a few weeks later with agenuine Pakistani passport in a di↵erent name and accompanied by a di↵erent‘husband’.
+ Similar problems led many countries to issue biometric visas so theydon’t have to depend on passport issuers in countries they don’t want to haveto trust.
+In addition to corruption, a pervasive failure is the loss of original records.
+ Incountries where registers of births, marriages and deaths are kept locally and onpaper, some are lost, and smart impersonators exploit these.
+ You might thinkthat digitisation is ﬁxing this problem, but the long-term preservation of digitalrecords is a hard problem even for rich countries; document formats change,software and hardware become obsolete, and you either have to emulate oldmachines or translate old data, neither of which is ideal.
+ Various states have runpilot projects on electronic documents that must be kept forever, such as civilregistration, but we still lack credible standards.
+ Sensible developed countriesstill keep paper originals as the long-term document of record.
+ In less developedcountries, you may have to steer between the Scylla of ﬂaky government IT andthe Charybdis of natural disasters9.
+7.
+4.
+2.
+2Cultural assumptionsThe assumptions that underlie names change from one country to another.
+ Inthe English-speaking world, people may generally use as many names as theyplease; a name is simply what you are known by.
+ But some countries forbid theuse of aliases, and others require them to be registered.
+ The civil registrationof births, marriages, civil partnerships, gender transitions and deaths is an ex-tremely complex one, often politicised, tied up with religion in many countriesand with the issue of ID documents as well.
+ And incompatible rules betweencountries cause real problems for migrants, for tourists and indeed for companieswith overseas customers.
+In earlier editions of this book, I gave as an example that writers who change9while listening to the siren song of development consultants saying ‘put it on theblockchain!Security Engineering255Ross Anderson7.
+4.
+ NAMINGtheir legal name on marriage often keep publishing using their former name.
+ Somy lab colleague, the late Professor Karen Sp¨arck Jones, got a letter from theuniversity every year asking why she hadn’t published anything (she was downon the payroll as Karen Needham).
+ The publication-tracking system just couldnot cope with everything the personnel system knew.
+ And as software gets ineverything and systems get linked up, conﬂicts can have unexpected remotee↵ects.
+ For example, Karen was also a trustee of the British Library and wasnot impressed when it started to issue its own admission tickets using the nameon the holder’s home university library card.
+Such issues caused even morefriction when the university introduced an ID card system keyed to payrollnames to give uniﬁed access to buildings, libraries and canteens.
+ These issueswith multiple names are now mainstream; it’s not just professors, musiciansand novelists who use more than one name.
+ Trans people who want to stopﬁrms using names from a previous gender; women who want to stop usinga married name when they separate or divorce, and who perhaps need to ifthey’re ﬂeeing an abusive partner; people who’ve assumed new names followingreligious conversion – there’s no end of sources of conﬂict.
+ If you’re building asystem that you hope will scale up globally, you’ll eventually have to deal withthem all.
+Human naming conventions also vary by culture.
+ Chinese may have bothEnglish and Chinese given names if they’re from Hong Kong, with the Englishone coming before and the Chinese one coming after the family name.
+ Manypeople in South India, Indonesia and Mongolia have only a single name – amononym.
+ The Indian convention is to add two initials – for your place of birthand your father’s name.
+ So ‘BK Rajan’ may mean Rajan, son of Kumar, fromBangalore.
+ A common tactic among South Indian migrants to the USA is touse the patronymic (here, Kumar) as a surname; but when western computersystems misinterpret Rajan as a surname, confusion can arise.
+ Russians areknown by a forename, a patronymic and a surname.
+ Icelanders have no surname;their given name is followed by a patronymic if they are male and a matronymicif they are female.
+ In the old days, when ‘Maria Trosttad´ottir’ arrived at USimmigration and the o�cer learned that ‘Trosttad´ottir’ isn’t a surname or evena patronymic, their standard practice was to compel her to adopt as a surnamea patronymic (say, ‘Carlsson’ if her father was called Carl).
+ Many Indians in theUSA have had similar problems, all of which cause unnecessary o↵ence.
+ Andthen there are cultures where your name changes after you have children.
+Another cultural divide is often thought to be that between the English-speaking countries, where identity cards were unacceptable on privacy grounds10,and the countries conquered by Napoleon or by the Soviets, where identity cardsare the norm.
+ What’s less well known is that the British Empire happily imposedID on many of its subject populations, so the real divide is perhaps whether acountry was ever conquered.
+The local history of ID conditions all sorts of assumptions.
+ I know Germanswho have refused to believe that a country could function at all without a propersystem of population registration and ID cards yet admit they are asked fortheir ID card only rarely (for example, to open a bank account or get married).
+Their card number can’t be used as a name because it is a document number10unless they’re called drivers’ licences or health service cards!Security Engineering256Ross Anderson7.
+4.
+ NAMINGand changes every time a new card is issued.
+ The Icelandic ID card number,however, is static; it’s just the citizen’s date of birth plus two further digits.
+What’s more, the law requires that bank account numbers contain the accountholder’s ID number.
+ These are perhaps the extremes of private and public IDnumbering.
+Finally, in many less developed countries, the act of registering citizens andissuing them with ID is not just ine�cient but political [88].
+ The ruling tribemay seek to disenfranchise the others by making it hard to register births intheir territory or by making it inconvenient to get an ID card.
+ Sometimes cardsare reissued in the run-up to an election in order to refresh or reinforce thediscrimination.
+ Cards can be tied to business permits and welfare payments;delays can be used to extract bribes.
+Some countries (such as Brazil) haveseparate registration systems at the state and federal level, while others (suchas Malawi) have left most of their population unregistered.
+ There are manyexcluded groups, such as refugee children born outside the country of their par-ents’ nationality, and groups made stateless for religious or ideological reasons.
+Target 16.
+9 of the United Nations’ Sustainable Development Goals is to ‘providelegal identity for all, including birth registration’; and a number of companiessell ID systems and voting systems ﬁnanced by development aid.
+ These interactwith governments in all sorts of complex ways, and there’s a whole researchcommunity that studies this [88].
+ Oh, and if you think this is a third-worldproblem, there are several US states using onerous registration procedures tomake it harder for Black people to vote; and in the Windrush scandal, it emergedthat the UK government had deported a number of foreign-born UK residentswho were automatically entitled to citizenship as they had not maintained agood enough paper trail of their citizenship to satisfy increasingly xenophobicministers.
+In short, the hidden assumptions about the relationship between govern-ments and people’s names vary in ways that constrain system design and causeunexpected failures when assumptions are carried across borders.
+ The engineermust always be alert to the fact that a service-oriented ID is one thing and alegal identity or certiﬁcate of citizenship is another.
+ Governments are forevertrying to entangle the two, but this leads to all sorts of pain.
+7.
+4.
+2.
+3Semantic content of namesChanging from one type of name to another can be hazardous.
+ A bank got suedafter they moved from storing customer data by account number to storing it byname and address.
+ They wrote a program to link up all the accounts operatedby each of their customers, in the hope that it would help them target junk mailmore accurately.
+ The e↵ect on one customer was serious: the bank statementfor the account he kept for his mistress got sent to his wife, who divorced him.
+The semantics of names can change over time.
+ In many transport systems,tickets and toll tags can be bought for cash, which defuses privacy concerns, butit’s more convenient to link them to bank accounts, and these links accumulateover time.
+ The card that UK pensioners use to get free bus travel also started outanonymous, but in practice the bus companies try to link up the card numbersto other passenger identiﬁers.
+ In fact, I once got a hardware store loyalty cardSecurity Engineering257Ross Anderson7.
+4.
+ NAMINGwith a random account number (and no credit checks).
+ I was o↵ered the chanceto change this into a bank card after the store was taken over by a supermarketand the supermarket started a bank.
+7.
+4.
+2.
+4Uniqueness of namesHuman names evolved when we lived in small communities.
+ We started o↵ withjust forenames, but by the late Middle Ages the growth of travel led governmentsto bully people into adopting surnames.
+ That process took a century or so andwas linked with the introduction of paper into Europe as a lower-cost and moretamper-resistant replacement for parchment; paper enabled the badges, sealsand other bearer tokens, which people had previously used for road tolls andthe like, to be replaced with letters that mentioned their names.
+The mass movement of people, business and administration to the Internethas been too fast for social adaptation.
+ There are now way more people (andsystems) online than we’re used to dealing with.
+ So how can we make human-memorable names unique?As we discussed above, Facebook tells one JohnSmith from another the way humans do, by clustering each one with his set offriends and adding a photo.
+Perhaps the other extreme is cryptographic names.
+ Names are hashes eitherof public keys or of other stable attributes of the object being named.
+ All sorts ofmechanisms have been proposed to map real-world names, addresses and evendocument content indelibly and eternally on to the bitstring outputs of hashfunctions (see, for example, [845]).
+ You can even use hashes of biometrics or thesurface microstructure of objects, coupled with a suitable error-correction code.
+The world of cryptocurrency and blockchains makes much use of hash-basedidentiﬁers.
+ Such mechanisms can make it impossible to reuse names; as expireddomain names are often bought by bad people and exploited, this is sometimesimportant.
+This isn’t entirely new, as it has long been common in transaction process-ing to just give everything and everyone a number.
+ This can lead to failures,though, if you don’t put enough uniqueness in the right place.
+ For example, aUK bank assigned unique sequence numbers to transactions by printing themon the stationery used to capture the deal.
+ Once, when they wanted to send£20m overseas, the operator typed in £10m by mistake.
+ A second paymentof £10m was ordered – but this acquired the same transaction sequence num-ber from the paperwork.
+ So two payments were sent to SWIFT with the samedate, payee, amount and sequence number – and the second was discarded as aduplicate [309].
+7.
+4.
+2.
+5Stability of names and addressesMany names include some kind of address, yet addresses change.
+ While we stillhad a phone book in Cambridge, about a quarter of the addresses changed everyyear; with work email, the turnover is probably higher.
+ When we tried in thelate 1990s to develop a directory of people who use encrypted email, togetherwith their keys, we found that the main cause of changed entries was changes ofSecurity Engineering258Ross Anderson7.
+4.
+ NAMINGemail address [103].
+ (Some people had assumed it would be the loss or theft ofkeys; the contribution from this source was precisely zero.
+) Things are perhapsmore stable now.
+ Most people try to keep their personal mobile phone numbers,so they tend to be long-lived, and the same goes increasingly for personal emailaddresses.
+ The big service providers like Google and Microsoft generally don’tissue the same email address twice, but other ﬁrms still do.
+Distributed systems pioneers considered it a bad thing to put addressesin names [1353].
+But hierarchical naming systems can involve multiple lay-ers of abstraction with some of the address information at each layer formingpart of the name at the layer above.
+Also, whether a namespace is betterﬂat depends on the application.
+Often people end up with di↵erent namesat the departmental and organisational level (such as rja14@cam.
+ac.
+uk andross.
+anderson@cl.
+cam.
+ac.
+uk in my own case).
+ So a clean demarcation be-tween names and addresses is not always possible.
+Authorisations have many (but not all) of the properties of addresses.
+ Kent’sLaw tells designers that if a credential contains a list of what it may be used for,then the more things there are on this list the shorter its period of usefulness.
+ Asimilar problem besets systems where names are composite.
+ For example, someonline businesses recognize me by the combination of email address and creditcard number.
+ This is clearly bad practice.
+ Quite apart from the fact that I haveseveral email addresses, I have several credit cards.
+There are good reasons to use pseudonyms.
+ Until Facebook came along,people considered it sensible for children and young people to use online namesthat weren’t easily linkable to their real names and addresses.
+ When you go foryour ﬁrst job on leaving college aged 22, or for a CEO’s job at 45, you don’twant a search to turn up all your teenage rants.
+ Many people also change emailaddresses from time to time to escape spam; I used to give a di↵erent emailaddress to every website where I shop.
+ On the other hand, some police andother agencies would prefer people not to use pseudonyms, which takes us intothe whole question of traceability online – which I’ll discuss in Part II.
+7.
+4.
+2.
+6Restrictions on the use of namesThe interaction between naming and society brings us to a further problem:some names may be used only in restricted circumstances.
+ This may be laiddown by law, as with the US social security number and its equivalents in someother countries.
+ Sometimes it is a matter of marketing: a signiﬁcant minorityof customers avoid websites that demand too much information.
+Restricted naming systems interact in unexpected ways.
+ For example, it’sfairly common for hospitals to use a patient number as an index to medicalrecord databases, as this may allow researchers to use pseudonymous recordsfor some purposes.
+ This causes problems when a merger of health maintenanceorganisations, or a policy change, forces the hospital to introduce uniform names.
+There have long been tussles in Britain’s health service, for example, aboutwhich pseudonyms can be used for which purposes.
+Finally, when we come to law and policy, the deﬁnition of a name throwsup new and unexpected gotchas.
+ For example, regulations that allow police toSecurity Engineering259Ross Anderson7.
+4.
+ NAMINGcollect communications data – that is, a record of who called whom and when– are usually much more lax than the regulations governing phone tapping; inmany countries, police can get communications data just by asking the phonecompany.
+ This led to tussles over the status of URLs, which contain data suchas the parameters passed to search engines.
+Clearly some policemen wouldlike a list of everyone who hit a URL like http://www.
+google.
+com/search?q=cannabis+cultivation; just as clearly, many people would consider such large-scale trawling to be an unacceptable invasion of privacy.
+ The resolution in UKlaw was to deﬁne tra�c data as that which was su�cient to identify the machinebeing communicated with, or in lay language ‘Everything up to the ﬁrst slash.
+’I discuss this in much more detail later, in the chapter ‘Surveillance or Privacy?’7.
+4.
+3Types of nameNot only is naming complex at all levels – from the technical up through theorganisational to the political – but some of the really wicked issues go acrosslevels.
+ I noted in the introduction that names can refer not just to persons (andmachines acting on their behalf), but also to organisations, roles (‘the o�cer ofthe watch’), groups, and compound constructions: principal in role – Alice asmanager; delegation – Alice for Bob; conjunction – Alice and Bob.
+ Conjunctionoften expresses implicit access rules: ‘Alice acting as branch manager plus Bobas a member of the group of branch accountants’.
+That’s only the beginning.
+Names also apply to services (such as NFS,or a public-key infrastructure) and channels (which might mean wires, portsor crypto keys).
+The same name might refer to di↵erent roles: ‘Alice as acomputer game player’ ought to have less privilege than ‘Alice the system ad-ministrator’.
+ The usual abstraction used in the security literature is to treatthem as di↵erent principals.
+ So there’s no easy mapping between names andprincipals, especially when people bring their own devices to work or take workdevices home, and therefore may have multiple conﬂicting names or roles on thesame platform.
+ Many organisations are starting to distinguish carefully between‘Alice in person’, ‘Alice as a program running on Alice’s home laptop’ and ‘aprogram running on Alice’s behalf on the corporate cloud’, and we discussedsome of the possible mechanisms in the chapter on access control.
+Functional tensions are often easier to analyse if you work out how they’redriven by the underlying business processes.
+ Businesses mainly want to get paid,while governments want to identify people uniquely.
+ In e↵ect, business wantsyour credit card number while government wants your passport number.
+ Ananalysis based on incentives can sometimes indicate whether a naming systemmight be better open or closed, local or global, stateful or stateless – and whetherthe people who maintain it are the same people who will pay the costs of failure(economics is one of the key issues for dependability,and is the subject of thenext chapter).
+Finally, although I’ve illustrated many of the problems of naming with re-spect to people – as that makes the problems more immediate and compelling– many of the same problems pop up in various ways for cryptographic keys,unique product codes, document IDs, ﬁle names, URLs and much more.
+ Whenwe dive into the internals of a modern corporate network we may ﬁnd DNSSecurity Engineering260Ross Anderson7.
+5.
+ SUMMARYRound Robin to multiple machines, each on its own IP addresses, behind asingle name; or Anycast to multiple machines, each on the same IP address,behind a single name; or Cisco’s HSRP protocol, where the IP address and theEthernet MAC address move from one router to another router.
+ (I’ll discussmore technical aspects of network security in Part 2.
+) Anyway, as systems scale,it becomes less realistic to rely on names that are simple, interchangeable andimmutable.
+ You need to scope naming carefully, understand who controls thenames on which you rely, work out how slippery they are, and design yoursystem to be dependable despite their limitations.
+7.
+5SummaryMany secure distributed systems have incurred large costs, or developed seri-ous vulnerabilities, because their designers ignored the basics of how to build(and how not to build) distributed systems.
+ Most of these basics have been incomputer science textbooks for a generation.
+Many security breaches are concurrency failures of one kind or another;systems use old data, make updates inconsistently or in the wrong order, orassume that data are consistent when they aren’t or even can’t be.
+ Using timeto order transactions may help, but knowing the right time is harder than itseems.
+Fault tolerance and failure recovery are critical.
+Providing the ability torecover from security failures, as well as from random physical and softwarefailures, is the main purpose of the protection budget for many organisations.
+ Ata more technical level, there are signiﬁcant interactions between protection andresilience mechanisms.
+ Byzantine failure – where defective processes conspirerather than failing randomly – is an issue, and it interacts with our choice ofcryptographic tools.
+There are many di↵erent ﬂavors of redundancy, and we have to use theright combination.
+ We need to protect not just against failures and attemptedmanipulation, but also against deliberate attempts to deny service that may bepart of larger attack plans.
+Many problems also arise from trying to make a name do too much, ormaking assumptions about it which don’t hold outside of one particular system,culture or jurisdiction.
+ For example, it should be possible to revoke a user’saccess to a system by cancelling their user name without getting sued on accountof other functions being revoked.
+ The simplest solution is often to assign eachprincipal a unique identiﬁer used for no other purpose, such as a bank accountnumber or a system logon name.
+ But many problems arise when merging twosystems that use naming schemes that are incompatible.
+ Sometimes this caneven happen by accident.
+Security Engineering261Ross Anderson7.
+5.
+ SUMMARYResearch problemsI’ve touched on many technical issues in this chapter, from secure time protocolsto the complexities of naming.
+ But perhaps the most important research prob-lem is to work out how to design systems that are resilient in the face of malice,that degrade gracefully, and whose security can be recovered simply once theattack is past.
+ All sorts of remedies have been pushed in the past, from get-ting governments to issue everyone with ID to putting it all on the blockchain.
+However these magic bullets don’t seem to kill any of the goblins.
+It’s always a good idea for engineers to study failures; we learn more fromthe one bridge that falls down than from the thousand that don’t.
+ We now havea growing number of failed ID systems, such as the UK government’s Verifyscheme – an attempt to create a federated logon system for public service thatwas abandoned in 2019 [1392].
+There is a research community that studiesfailures of ID systems in less developed countries [88].
+ And then there’s thefailure of blockchains to live up to their initial promise, which I’ll discuss inPart 2 of this book.
+Perhaps we need to study more carefully the conditions under which wecan recover neatly from corrupt security state.
+ Malware and phishing attacksmean that at any given time a small (but nonzero) proportion of customer bankaccounts are under criminal control.
+ Yet the banking system carries on.
+ Theproportion of infected laptops, and phones, varies quite widely by country, andthe e↵ects might be worth more careful study.
+Classical computer science theory saw convergence in distributed systems asan essentially technical problem, whose solution depended on technical proper-ties (at one level, atomicity, consistency, isolation and durability; at another,digital signatures, dual control and audit).
+ Perhaps we need a higher-level viewin which we ask how we obtain su�cient agreement about the state of the worldand incorporate not just technical resilience mechanisms and protection tech-nologies, but also the mechanisms whereby people who have been victims offraud obtain redress.
+ Purely technical mechanisms that try to obviate the needfor robust redress may actually make things worse.
+Further readingIf the material in this chapter is unfamiliar to you, you may be coming to the sub-ject from a maths/crypto background or chips/engineering or even law/policy.
+Computer science students get many lectures on distributed systems; to catchup, I’d suggest Saltzer and Kaashoek [1640].
+ Other books we’ve recommendedto our students over the years include Tanenbaum and van Steen [1860] and Mul-lender [1353].
+ A 2003 report from the US National Research Council, ‘Who GoesThere? Authentication Through the Lens of Privacy’, discusses the tradeo↵s be-tween authentication and privacy and how they tend to scale poorly [1039].
+Finally, there’s a recent discussion of naming by Pat Helland [880].
+Security Engineering262Ross Anderson

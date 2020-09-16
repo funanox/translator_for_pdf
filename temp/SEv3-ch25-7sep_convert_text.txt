@@ -1,0 +1,1049 @@
+Chapter 25Taking StockBut: connecting the world meant that we also connected all the badthings and all the bad people, and now every social and politicalproblem is expressed in software.
+ We’ve had a horrible ‘oh shit’moment of realisation, but we haven’t remotelyworked out what to do about it.
+– Benedict EvansIf you campaign for liberty you’re likely to ﬁnd yourself drinking inbad company at the wrong end of the bar.
+– Whit Di�e25.
+1IntroductionOur security group at Cambridge runs a blog, www.
+lightbluetouchpaper.
+org,where we discuss the latest hacks and cracks.
+ Many of the attacks hinge onspeciﬁc applications, as does much of the cool research.
+ Not all applications arethe same, though.
+ If our blog software gets hacked it will just give a botnet onemore server, but there are other apps from which money can be stolen, othersthat people rely on for privacy, others that mediate power, and others that cankill.
+I’ve already discussed many apps from banking through alarms to prepay-ment meters.
+ In this chapter I’m going to brieﬂy describe four classes of ap-plication at the bleeding edge of security research.
+They are where we ﬁndinnovative attacks, novel protection problems, and thorny policy issues.
+ Theyare: autonomous and remotely-piloted vehicles; machine learning, from adver-sarial learning to more general issues of AI in society; privacy technologies; andﬁnally, electronic elections.
+ What these have in common is that while previously,security engineering was about managing complexity in technology with all itsexploitable side-e↵ects, we are now bumping up against complexity in humansociety.
+ Autonomous cars are hard because of the people driving other cars onthe same road.
+ AI is hard because our cool new pattern-matching tools, such asdeep neural networks, can pick out not just real patterns in human behaviour –78125.
+2.
+ AUTONOMOUS AND REMOTELY-PILOTED VEHICLESsometimes unexpected ones – but false ones too.
+ Privacy is hard because of therichness of human interaction in society.
+ And elections are hard not just becauseof the technical di�culty of counting votes in a way that preserves both privacyand auditability, but because of the huge variety of dirty tricks used by politicalplayers, both upstream and downstream of the voting process itself.
+ All of theseproblems explore, in various ways, the boundary between what humans can doand what machines can do.
+25.
+2Autonomous and remotely-piloted vehiclesThe aviation pioneer Lawrence Sperry invented the ﬁrst autopilot in 1912 anddemonstrated it in 1914, ﬂying past the judges in a ‘safer aircraft’ competitionin Paris with his hands up.
+ In the process he and his father Elmer invented theartiﬁcial horizon.
+ A ﬁxed-wing aircraft left to its own devices will eventuallygo into a spiral dive and crash; the pilot can keep it level with reference to thehorizon, but when ﬂying in cloud that external reference is missing.
+ A gyroscopecan provide the missing reference, and it can also drive the ailerons and elevatorsvia servos.
+In 1975, I got my ﬁrst proper job re-engineering a fast-jet inertial navigationset to work on the midget submarines used in the oil industry.
+ Engineers in thesame building were working on early head-up displays and satellite navigationequipment.
+ Each of these pieces of equipment weighed about 20kg and cost£250,000 – about $3M in today’s money.
+ All three together left little changeout of $10M and weighed as much as a person.
+Now, in 2020, you have all three in your phone.
+ Rather than three spinningmechanical gyros in a precision-engineered cage, your phone has a chip withMEMS accelerometers and gyros.
+ It also has a GPS chip for satellite navigationand a Google or Apple Maps app to show you how to walk, cycle or drive to yourdestination.
+ Over forty years, the cost has fallen by six orders of magnitude andthe mass by four.
+ This has driven rapid evolution of assistive technology on sea,air and land.
+ Pioneering single-handed yachtsmen developed self-steering gearto cross oceans from the 1920s, to give them time to sleep, cook and repair sails;amateurs now have smarter autopilots for coastal cruising.
+ Autonomous probesswim beneath the Antarctic ice to measure how quickly it’s melting.
+ The world’snavies develop underwater mines, autonomous submersibles to ﬁnd them, andmuch else.
+25.
+2.
+1DronesIn the air, early weapons such as the German V1 and V2 used twin-gyro autopi-lots, while the Cold War gave us the Tomahawk cruise missiles used to greate↵ect in both Gulf Wars.
+ In service since the early 1980s, these sneak under theenemy radar by ﬂying close to the ground, and use terrain contour matching toupdate their inertial navigation.
+ They were followed closely by a variety of un-manned aerial vehicles (UAVs), which saw their ﬁrst large-scale use in the warbetween Israel and Syria in 1982; the Israeli Air Force used them for reconnais-sance and as decoys, wiping out the Syrian air force with minimal losses.
+ TheSecurity Engineering782Ross Anderson25.
+2.
+ AUTONOMOUS AND REMOTELY-PILOTED VEHICLESbest-known of the next generation of UAVs was the Predator.
+ Initially designedas a reconnaissance vehicle, it could linger over a target area at medium alti-tude for many hours, and was adapted to carry Hellﬁre missiles to strike targetson the ground.
+ In service from 1995–2018, it saw service in Iraq, Afghanistan,Libya and elsewhere.
+ It was replaced by the larger, faster Reaper, which becamea mainstay of the war in Syria against Islamic State.
+ The world’s armed forcesnow have a large range of UAVs, right down to small drones that soldiers carryin their rucksacks and use to see what’s round the next corner.
+Through the 20th century, enthusiasts built small radio-controlled modelaircraft, but the FAA only issued its ﬁrst commercial drone permit in 2006.
+In 2010, Parrot unveiled its AR Drone, a quadcopter that could be controlledby wiﬁ from a smartphone, and in 2013 Amazon announced it was consideringdrones for delivery.
+ Interest took o↵ rapidly; within a couple of years our stu-dents were building drones and soon you could buy low-cost models in hobbyshops.
+ The main application in 2020 is aerial photography.
+ There have beenboth insurgent and criminal uses, though, with drones used to deliver bothdrugs and mobile phones to prisoners, while insurgents have ﬁtted drones withimprovised explosive devices for use as weapons.
+25.
+2.
+2Self-driving carsMost of the recent surge in interest though has been in self-driving cars andtrucks.
+In 2004, faced with mounting combat losses to improvised explosivedevices in Afghanistan and Iraq, DARPA decided to push the development ofself-driving vehicles, and announced a competition with a million-dollar prizefor whoever built one that could cross 149 miles of the Mojave desert the fastest.
+The prize went unclaimed as no vehicle ﬁnished the course, but the following yeara team from Stanford led by the roboticist Sebastian Thrun collected the prize,now two million.
+ His robot, Stanley, used machine learning and probabilisticreasoning to cope with terrain perception, collision avoidance, and stable vehiclecontrol on slippery and rugged terrain [1887].
+ This built on robotics researchgoing back to the 1980s, much of which DARPA had also funded.
+ Their nextchallenge in 2007 moved from the desert to a simulated urban environment;competitors had to detect and avoid other vehicles, and obey the rules of theroad.
+ This bootstrapped a research community and the technology started toimprove quickly.
+Previously, carmakers had been steadily adding assistive technology, startingwith antilock braking systems (ABS) in the last century and progressing throughadaptive cruise control (ACC), which I described in section 23.
+4.
+1, automaticemergency braking (AEB) and lane keeping assist (LKA).
+ The industry visionwas that these would eventually come together into a full autopilot.
+ Inspired bythe DARPA challenges, Google hired Sebastian Thrun to lead Project Chau↵eurin 2009 with a goal of building a fully self-driving car.
+ This was announced in2010, stimulating a market race involving both the tech and auto industries.
+Tesla was the ﬁrst to ﬁeld a product in 2014, when its ‘Autopilot’ softwarewas launched as an over-the-air upgrade that could take control on the freewayor in stop-start tra�c.
+ There was already a hype cycle underway for machinelearning, which I’ll discuss in the next section, and self-driving cars hitched aSecurity Engineering783Ross Anderson25.
+2.
+ AUTONOMOUS AND REMOTELY-PILOTED VEHICLESride.
+ Tesla’s Elon Musk was predicting full autonomy by 2018, and Google’sSergey Brin by 2017, before the Google car project was spun o↵ as Waymoin 2016.
+ People talked excitedly about low-cost robotaxis causing personal carownership to be replaced by mobility-as-a-service; the arrival of Uber added afurther competitor, and the hype scared even auto industry execs who shouldhave known better into predicting that by the mid-2020s people wouldn’t owntheir own cars any more.
+ The hype cycle passed, as it always does.
+ As I write in2020, Waymo is operating a limited self-driving car service in a 50-square-milearea of Phoenix [871].
+ The service isn’t available when it’s raining, or in duststorms, and is monitored in real-time by humans at a control centre.
+ It hadbeen announced several times, but problems kept on forcing the company toput safety drivers back in the cars.
+ So what’s going on?A large part of the answer is that other road users are unpredictable.
+ Au-tomation can deal with some of the resulting hazards: if the car in front brakessuddenly, a robot can react faster.
+ Adaptive cruise control cuts driver fatigueand even cuts congestion once enough vehicles use it, as it damps the propa-gation of shock waves through tra�c.
+ But even here there are limits.
+ Whenengineers extended the technology to automatic emergency braking, the inabil-ity to infer the intentions of other drivers became a limiting factor.
+ Suppose forexample you’re driving on an open country road when the car in front indicatesa turn and starts to slow down.
+ You maintain speed as you expect it’ll haveleft the road by the time you get there, and if not you’ll just overtake.
+ But theAEB might not understand this, so as you get too close to the turning car itactivates, throwing you forward on your seat belt.
+ Consumer tests of AEB sys-tems in 2020 still show quite some variability, both in the false alarm rate andin the ability to stop the car in time when a pedestrian dummy is pulled acrossthe road.
+ Some systems restrict activation to city rather than highway speeds,and in 2020 all tend to be options available on more expensive models.
+ AEBshould be in all new cars in about 2022.
+ Since 2016 insurers have been happythat it reduces the overall risk; I’ll discuss safety assurance in section 28.
+4.
+1.
+But each new assistive technology takes years to optimise and debug, andit’s not straightforward to combine a dozen of them into an autopilot.
+ The pa-per that Sebastian Thrun and his team wrote to describe Stanley gives a usefulinsight into the overall technology [1887].
+ There are several dozen programsinteracting loosely, reﬂecting our understanding of how humans do such tasks;your subconscious looks at all sorts of things and brings hazards to your atten-tion.
+ Simultaneous processes in Stanley handled path planning, steering controland obstacle avoidance; this used laser rangeﬁnders up to 22m, a colour camerabeyond that, and a radar beyond that (which was not used in the race, as Stan-ley was given over 2000 waypoints for a predetermined course).
+ Each of thesesystems had to solve many subproblems; the vision system, for example, hadto adapt to changing light conditions and road colour.
+ Stanley then had to beoptimised via extensive testing, where the objective function was to maximisethe mean distance between catastrophic failure (deﬁned as the human safetydriver taking over).
+Combining the subsystems means compromises, and while the main vendorshold their design details secret, we’re starting to learn about the optimisationsand what goes wrong with them from accidents.
+For example, when a self-Security Engineering784Ross Anderson25.
+2.
+ AUTONOMOUS AND REMOTELY-PILOTED VEHICLESdriving Uber killed Elaine Herzberg in Arizona in March 2018, it emerged atthe NTSB inquiry that Elaine had been pushing a bicycle and the vision sys-tem ﬂapped between identifying her as a pedestrian and as something else, butultimately she was not recognised as a pedestrian because she was not on acrosswalk.
+AEB might have stopped the car but it had been turned o↵ “toreduce the potential for erratic vehicle behavior” – in other words, because thefalse alarm rate was annoying [457].
+ Ultimately, Uber relied on the safety driver– who was unfortunately watching TV at the time1.
+Now we’ve known for decades that relying on humans to take over in anemergency takes time: a human has to react to an alarm, analyse the alarmdisplay on the console, scan the environment, acquire situational awareness, getinto the optical ﬂow, and take e↵ective control.
+ Even in commercial aviation,it takes a ﬂight crew about eight seconds to regain control properly after anautopilot failure.
+ You cannot expect a safety driver in a car to do much better.
+25.
+2.
+3The levels and limits of automationFor such reasons, the Society of Automotive Engineers sets out ﬁve levels ofautomation:1.
+ Driver assistance – the software controls either steering or speed, and thehuman driver does the rest of the work;2.
+ Partial automation – the software controls both steering and speed in somemodes but the human driver is responsible for monitoring the environmentand assuming control at zero notice if the software gets confused;3.
+ Conditional automation – the software monitors the environment, andcontrols both steering and speed, but assumes the human can take over ifit gets confused;4.
+ High automation – the software monitors the environment and drives thecar, in some driving conditions, without assuming that a human can in-tervene.
+ If it gets confused it stops at the side of the road;5.
+ Full automation – the software can do everything a human can.
+So far, vehicles available on the mass market only have advanced driverassistance systems (ADAS), namely levels one and two, and insurers considerwords like ‘autonomous’ and ‘autopilot’ to be dangerous as they cause customersto assume that a vehicle is operating at Level 4, which can lead to accidents.
+The Arizona crash can be seen as a car operating at Level 2 while the safetydriver operated at Level 3.
+ Level 4 often assumes a backup driver sitting ina control centre, overseeing several dozen ‘autonomous’ cars, but they won’thave the bandwidth to understand a hazard as quickly as a safety driver onthe spot.
+ They don’t feel the road noise and accelerations, they can’t use theirperipheral vision, and above all, they are not immersed in the optical ﬂow ﬁeld1In fact, the very ﬁrst fatal crash involving a Tesla on autopilot claimed the life of a driverwho appeared to be watching a movie on his laptop when his car ran under a truck [1394].
+Security Engineering785Ross Anderson25.
+2.
+ AUTONOMOUS AND REMOTELY-PILOTED VEHICLESthat is critical to driving a car (or landing an aircraft) safely, as we discussed insection 3.
+2.
+1.
+To what extent is Level 5 feasible at all, unless we invent artiﬁcial generalintelligence? John Naughton remarked that a downtown delivery driver’s jobis pretty safe, as the work demands all sorts of judgment calls such as whetheryou can double-park or even block a narrow street for half a minute while youdash up to a doorway and drop a parcel, as the cars behind honk at you [1417].
+Another hard case is the cluttered suburban street with cars parked either side,where you are forever negotiating who goes ﬁrst with oncoming vehicles, usinga wave, a nod or even just eye contact.
+ Even the current Level 2 systems tendto have di�culty when turning across tra�c because of their inability to do thistacit negotiation.
+ They end up having to be much more cautious than a humandriver and wait for a bigger gap, which annoys human drivers behind them.
+ Andif you’ve ever tried to ease a car through the hordes of students on bicycles in acollege town like Cambridge, or any urban tra�c in India, you know that dealingwith human tra�c complexity is hard in many other situations.
+ Can your self-driving car even detect hand signals from police o�cers to stop, let alone copewith eight students carrying a bed, or with an Indian temple procession?As of 2020, the Level 2 systems have lots of shortcomings.
+ Tesla can’t alwaysdetect stationary vehicles reliably; it uses vision, sonar and radar but no lidar.
+(One Tesla driver in North Carolina has been charged after running into theback of a stationary police car [1118].
+) The Range Rover can’t always detect theboundary between a paved road and grass, but perhaps that wasn’t a priority fora 4 x 4.
+ Many cars have issues with little roundabouts, not to mention potholesand other rough surfaces; the ﬁrst time I got a ride in one, my teeth were rattledas we went over speed bumps at almost 30mph.
+ Roadworks play havoc withautomatic lane-keeping systems, as old white lines that have been painted overcan be shiny black and very prominent in some light conditions, leading cars tooscillate back and forth between old and new markings [632].
+ There’s a hugeamount of research on such technical topics, from better algorithms for multi-sensor data fusion though driving algorithms that can provide an explanationfor their decisions, to getting cars to learn routes as they travel them, just likehumans do.
+ Tesla even has a ‘shadow mode’ for its autopilot; when it’s notin use, it still tries to predict what the driver will do next, and records itsmispredictions for later analysis.
+ This has enabled Tesla to collect billions ofmiles of training data across a vast range of road and weather conditions.
+I’ll discuss safety assurance in section 28.
+4.
+1 but the state of play in 2020 isthat while Tesla and NHTSA claimed that there are fewer crashes after a Teslacustomer activates Autosteer, an independent lab claimed there were more.
+ Nowas I discussed in section 14.
+3.
+1, falling asleep at the wheel is a major cause ofaccidents, accounting for 20% of the UK total.
+ These tend to be at the seriousend of the spectrum; they account for about 30% of fatal accidents and halfof fatal accidents on freeways.
+ (That’s why we have laws to limit commercialdrivers’ hours.
+) So we ought to be able to save lives with a system that keepsyour car in lane on the freeway, brakes to avoid collisions, and brings it to astop at the side of the road if you don’t respond to chimes.
+ Why is this nothappening?I suspect we’ll need to disentangle at least three di↵erent factors: the riskSecurity Engineering786Ross Anderson25.
+2.
+ AUTONOMOUS AND REMOTELY-PILOTED VEHICLESthermostat, the system’s a↵ordances, and the expectations created by mar-keting.
+ First, the risk thermostat is the mechanism whereby people adapt toa perceived reduction in risk by adopting more risky behaviour; we noted insection 3.
+2.
+5.
+7 that mandatory seat-belt laws caused people to drive faster, sothat the overall e↵ect was merely to move casualties from vehicle occupants topedestrians and cyclists, rather than to reduce their number overall.
+ Second,a↵ordances condition how we interact with technology, as we discussed in sec-tion 3.
+2.
+1, and if a driver assistance system makes driving easier, and apparentlysafer, people will relax and assume it is safer – disposing some of them to takemore risks.
+ Third, the industry’s marketing minimises the risks in subtle ways.
+For Tesla to call its autosteer feature an autopilot misled drivers to think theycould watch TV or have a nap.
+ That is not the case with an autopilot on anairplane, but most non-pilots don’t understand that.
+25.
+2.
+4How to hack a self-driving carThe electronic security of road vehicles started out in the last century withthe truck tachographs and speed limiters we discussed in section 14.
+3 and theremote key entry systems we discussed in section 4.
+3.
+1.
+ It has become a specialistdiscipline since about 2005, when the carmakers and tier-1 component vendorsstarted to hire experts.
+ By 2008, people were working on tamper resistance forengine control units: the industry had started using software to control enginepower output, so whether your car had 120 horsepower or 150 was down to asoftware switch which people naturally tried to hack.
+ The makers tried to stopthem.
+ They claimed they were concerned about the environmental impact ofimproperly tuned cars, but if you believe that, I have a bridge I’d like to sellyou.
+In 2010, Karl Koscher and colleagues got the attention of academics byshowing how to hack a late-model Ford.
+ Cars’ internal data communicationsuse a CAN bus which does not have strong authentication, so an attacker whogets control of (say) the radio can escalate this access to operate the door locksand the brakes [1085].
+ In 2015, Charlie Miller and Chris Valasek got the at-tention of the press when they hacked a Jeep Cherokee containing a volunteerjournalist, over its mobile phone link, slowed the vehicle down and drove it o↵the road [1316].
+ This compelled Chrysler to recall 1.
+4m vehicles for a softwarepatch, costing the company over $1bn.
+ This ﬁnally got the industry’s attention.
+There’s now a diverse community of people who hack cars and other vehicles.
+There are hobbyists who want to tune their cars; there are garages who also wantto use third-party components and services; and there are farmers who want torepair their tractors despite John Deere’s service monopoly, as I mentioned insection 24.
+6.
+ There are open-source software activists and safety advocates whobelieve we’re all safer if everything is documented [1792].
+ And there are theblack hats too: intelligence agencies that want to spy on vehicle occupants andthieves who just want to steal cars.
+Car theft is currently the main threat model, and we discussed the meth-ods used to defeat remote key entry and alarm systems in section 4.
+3.
+1.
+ Stateactors and others can take over the mobile phones embedded in cars, using thetechniques discussed in section 2.
+2.
+1.
+ The phones, navigation and infotainmentSecurity Engineering787Ross Anderson25.
+2.
+ AUTONOMOUS AND REMOTELY-PILOTED VEHICLESsystems are often poorly designed anyway – when you rent a car, or buy onesecondhand, you often see a previous user’s personal information, and we de-scribed in section 22.
+3.
+3 how an app that enables you to track and unlock arental car let you continue to do this once the car had been rented to somebodyelse.
+So what else might go wrong, especially as cars become more autonomous?A reasonable worst-case scenario might see a state actor, or perhaps an environ-mental activist group, trying to scare the public by causing thousands of simul-taneous road tra�c accidents.
+ A remote exploit such as that on the ChryslerJeep might already do this.
+ The CAN bus which most modern cars use forinternal data communications trusts all its nodes.
+ If one of them is subvertedit might be reprogrammed to transmit continuously; such a ‘blethering idiot’,as it’s called, makes the whole bus unusable.
+ If this is the powertrain bus, thecar becomes almost undriveable; the driver will still have some steering controlbut without power assistance to either steering or brakes.
+ If the car is travellingat speed, there’s a serious accident risk.
+ The possibility that a malicious actorcould hack millions of cars causing tens of thousands of road tra�c accidentssimultaneously is unacceptable, and such vulnerabilities therefore have to bepatched.
+But patching is expensive.
+The average car might contain 50–100electronic control units from 20 di↵erent vendors, and the integration testingneeded to get them to all work together smoothly is expensive.
+ I’ll discuss thisin more detail in section 27.
+5.
+4.
+Attacks are not limited to the cars themselves.
+ In 2017, Elon Musk toldan audience, “In principle, if someone was able to say hack all the autonomousTeslas, they could say – I mean just as a prank – they could say ‘send them allto Rhode Island’ – across the United States .
+.
+.
+ and that would be the end ofTesla and there would be a lot of angry people in Rhode Island.
+”.
+ His audiencelaughed, and three years later it emerged that he’d not been entirely joking.
+ Afew months previously, a hacker had gained control of the Tesla ‘mothership’server which controls its entire ﬂeet; luckily he was a white hat and reportedthe hack to Tesla [1119].
+ At the other end of the scale, the performance artistSimon Weckert pulled a handcart containing 99 Android phones around Berlinin February 2020, causing Google Maps to register a tra�c jam wherever hewent [1997].
+ As advanced driver assistance systems rely ever more extensivelyon cloud facilities, the scope for such indirect attacks will increase.
+And external attacks need not involve computers.
+ If car systems start toslow down automatically for pedestrians and cyclists, some of them may exploitthis.
+ In India and some parts of southern Europe, pedestrians walk throughcongested tra�c, ﬂagging cars to stop, and they do; it will be interesting to seeif this behaviour appears in London and New York as well.
+Companies will exploit assistance systems if they can.
+ Now that the initialdream of self-driving trucks seems some way o↵, and even the intermediatedream of multiple trucks driving in convoy between distribution hubs with asingle driver seems ambitious, may we expect lobbying to relax the legal limitson drivers’ hours? Trucking ﬁrms may argue that once the truck’s on autopiloton the freeway, the driver only has to do real work on arrival and departure, sohe should work ten hours a shift rather than eight.
+ But if the net e↵ect of thetechnology is to make truck drivers work more time for the same money, it willSecurity Engineering788Ross Anderson25.
+3.
+ AI / MLbe resented and perhaps sabotaged.
+Should Level 5 automation ever happen, even in restricted environments –so that we ﬁnally see the robotaxis Google hoped to invent – then we’ll haveto think about social hacking as a facet of safety.
+ If your 12-year-old daughtercalls a cab to get a ride home from school, then at present we have safeguards inthe form of laws requiring taxi drivers to have background checks for criminalrecords.
+ Uber tried to avoid these laws, claiming it wasn’t a taxi company buta ‘platform’; in London, the mayor had to ban them and ﬁght them in court foryears to get them to comply.
+ So how will safeguarding work with robotaxis?There will also be liability games.
+ At present, car companies try to blamedrivers for crashes, so each crash becomes a question of which driver was negli-gent.
+ If the computer was driving the car, though, that’s product liability, andthe manufacturer has to pay.
+ There have been some interesting tussles aroundthe safety ﬁgures for assisted driving, and speciﬁcally whether the carmakers un-dercount crashes with autopilot activated, which we’ll discuss in section 28.
+4.
+1.
+So much is entirely predictable.
+But what about new attacks on the AIcomponents of the systems themselves? For example, can you confuse a carby projecting a deceptive image on a bridge, or on the road, and cause it tocrash? That’s quite possible, and I’ve already seen a crash caused by visualconfusion.
+ On the road home from my lab, there was a house at a right-handbend whose owner often parked his car facing oncoming tra�c.
+ At night, in aleft-hand driving country like Britain, your driving reﬂex is to steer to the leftof the facing car, but then you’d notice you were heading for his garden wall,and swerve right to pass to the right of his car instead.
+ Eventually a large truckdidn’t swerve in time, and ended up in the wall.
+So could clever software fool a machine vision system in new ways, or waysthat might be easier for an attacker to scale? That brings us to the next topic,artiﬁcial intelligence, or to be more precise, machine learning.
+25.
+3AI / MLThe phrase artiﬁcial intelligence has meant di↵erent things at di↵erent times.
+For pioneers like Alan Turing, it ranged from the Turing test to attempts toteach a computer to play chess.
+ By the 1960s it meant text processing, fromEliza to early machine translation, and programming in Lisp.
+ In the 1980s therewas a surge of research spurred by Japan’s announcement of a huge research pro-gramme into ‘Fifth generation computing’, with which Western nations scram-bled to keep up; much of that e↵ort went into rule-based systems, and Prologjoined Lisp as one of the languages on the computer science curriculum.
+From the 1990s, the emphasis changed from handcrafted systems with lots ofrules to systems that learn from examples, now called machine learning (ML).
+Early mechanisms included logistic regressions, support vector machines (SVMs)and Bayesian classiﬁers; progress was driven by applications such as naturallanguage processing (NLP) and search.
+ While the NLP community developedcustom methods, the typical approach to designing a payment fraud detectoror spam ﬁlter was to collect large amounts of training data, write custom codeSecurity Engineering789Ross Anderson25.
+3.
+ AI / MLto extract a number of signals, and just see empirically which type of classiﬁerworked best on them.
+ Search became intensely adversarial during the 2000s assearch engine optimisation ﬁrms used all sorts of tricks to manipulate the signalson which search engines rely, and the engines fought back in turn, penalising orbanning sites that use underhand tricks such as hidden text.
+ Bing was an earlyuser of ML, but Google avoided it for years; the engineer who ran search from2000 until he retired in 2016, Amit Singhal, felt it was too hard to ﬁnd out, fora given set of results, exactly which of the many inputs was most responsible forwhich result.
+ This made it hard to debug machine-learning based algorithmsfor search ranking.
+ If you detected a botnet clicking on restaurants in Istanbuland wanted to tweak the algorithm to exclude them, it was easier to change afew ‘if’ statements than retrain a classiﬁer [1300].
+A sea change started in 2011 when Dan Cire¸san, Ueli Meier, Jonathan Masciand J¨urgen Schmidhuber trained a deep convolutional neural network to do aswell as humans on recognising handwritten digits and Chinese characters, andbetter than humans on tra�c signs [435].
+ The following year, Alex Krizhevsky,Ilya Sutskever and Geo↵ Hinton used a similar deep neural network (DNN) toget record-breaking results at classifying 1.
+2 million images [1098].
+ The race wason, other researchers piled in, and ‘deep learning’ started to get serious tractionat a variety of tasks.
+ The most spectacular result came in 2016 when DavidSilver and colleagues at Google Deepmind produced AlphaGo, which defeatedthe world Go champion Lee Sedol [1737].
+ This got the attention of the world.
+Before then, few research students wanted to study machine learning; since thenfew want to study anything else.
+ Undergraduates even pay attention in classeson probability and statistics, which were previously seen as a chore.
+25.
+3.
+1ML and securityThe interaction between machine learning and security goes back to the mid-1990s.
+ Malware writers started using tricks such as polymorphism to evade theclassiﬁers in anti-virus software, as I described in section 21.
+3.
+5; banks and creditcard companies started using machine learning to detect payment fraud, as Idescribed in section 12.
+5.
+4; and phone companies also used it for ﬁrst-generationmobiles, as I noted in section 22.
+2.
+ The arrival of spam as the Internet openedup to the public in the mid-1990s created a market for spam ﬁlters.
+Hand-crafted rules didn’t scale well enough for large mail service providers, especiallyonce botnets appeared and spam became the majority of email, so spam ﬁlteringbecame a big application.
+Alice Hutchings, Sergo Pastrana and Richard Clayton surveyed the use ofmachine-learning in such systems, and the tricks the bad guys have worked outto dupe them [939].
+ As spam ﬁltering takes user feedback as its ground truth,spammers learned to send spam to accounts they control at the big webmailﬁrms, and mark it ‘not spam’; other statistical analysis mechanisms are nowused to detect this.
+Poisoning a classiﬁer’s training data is a quite generalattack.
+Another is to look for weak points in a value chain: airline ticketfraudsters buy an innocuous ticket, pass the fraud checks, and then changeit just before departure to a ticket to a high-risk destination.
+ And there arevigorous discussions of such techniques on the underground forums where theSecurity Engineering790Ross Anderson25.
+3.
+ AI / MLbad actors trade not just services but boasts and tips.
+Battista Biggio andFabio Rolli give more technical background: in 2004, spammers found theycould confuse the early linear classiﬁers in spam ﬁlters by varying some of thewords, and an arms race took o↵ from there [241].
+It turns out that these attack ideas generalise to other systems, and thereare other attacks too.
+25.
+3.
+2Attacks on ML systemsThere are at least four types of attack on a machine-learning system.
+First, you can poison the training data.
+ If the model continues to train itselfin use, then it might be simple to lead it astray.
+ Tay was a chatbot released byMicrosoft in March 2016 on Twitter; trolls immediately started teaching it touse racist and o↵ensive language, and it was shut down after only 16 hours.
+Second, you can attack the model’s integrity in its inference phase, for ex-ample by causing it to give the wrong answer.
+ In 2013, Christian Szegedy andcolleagues found that the deep neural networks which had been found to classifyimages so well in 2012 were vulnerable to adversarial samples – images per-turbed very slightly would be wildly misclassiﬁed [1857].
+ The idea is to choosea perturbation that maximises the model’s prediction error.
+ It turns out thatneural networks have plenty of such blind spots, which are related to the train-ing data in non-obvious ways.
+ The decision space is high-dimensional, whichmakes blind spots mathematically inevitable [1706]; and with neural networksthe decision boundaries are convoluted, making them non-obvious.
+ Researchersquickly came up with real-world adversarial examples, ranging from small stick-ers that would cause a car vision system to misread a 30mph speed sign as60mph, to coloured spectacles that would cause a man wearing them to be mis-recognised as a woman, or not recognised at all [1720].
+ In the world of malwaredetection, people found that non-linear classiﬁers such as SVM and deep neuralnetworks were not actually harder to evade than linear classiﬁers provided youdid it right [241].
+Third, Florian Tram`er and colleagues showed that you can attack the model’sconﬁdentiality in the inference phase, by getting it to classify a number of probeinputs and building a successively better approximation.
+ The result is oftena good working imitation of the target model.
+ As in the manufacture of realgoods, a knock-o↵ is often cheaper; big models can cost a lot to train fromscratch.
+ This approximation attack works not just with neural networks butalso with other classiﬁers such as logistic regression and decision trees [1901].
+What’s more, many attacks turn out to be transferable, so an attackerdoesn’t need full access to the model (a so-called white-box attack) [1900].
+ Manyattacks can be developed on one model and then launched against another that’sbeen trained on the same data, or even just similar data (a black-box attack).
+The blind spots are a function of the training data, so in order to make attacksless transferable you have to make an e↵ort.
+ For example, Ilia Shumailov, YirenZhao, Robert Mullins and I have experimented with inserting keys in neuralnetworks so that the blind spots appear in di↵erent places, and models withdi↵erent keys are vulnerable to di↵erent adversarial samples [1733].
+ Kerckho↵s’Security Engineering791Ross Anderson25.
+3.
+ AI / MLprinciple applies in machine learning, as almost everywhere else in security.
+A variant on the conﬁdentiality attack is to extract sensitive training data.
+Large neural networks contain a lot of state, and the simplest way to deal withoutliers is often just to memorise them.
+So if some business claims that aclassiﬁer trained on a million medical records is not personal data because it’s“statistical machine learning”, take care.
+ Ways of combining machine learningwith di↵erential privacy, which we discussed in section 11.
+3, are a subject ofactive research [1493].
+Finally, you can deny service, and one way is to choose samples that willcause the classiﬁer to take as long as possible.
+ Ilia Shumailov and colleaguesfound that one can often deny service by posing a conundrum to a classiﬁer.
+Given a straight-through pipeline, as in a typical image-processing task, a con-fusing image can take 20% more time, but in more complex tasks such as naturallanguage processing you can invoke exception handling and slow things downhundreds of times [1730].
+More complex attacks straddle these categories.
+For example, there’s anarms race between online advertisers and the suppliers of ad-blocking software,and as the advertisers adopt ever more complicated ways of rendering web pagesto confuse the blockers, the blockers are starting to use image processing tech-niques on the rendered page to spot ads.
+ However this leaves them open toadvertisers using adversarial samples either to escape the ﬁlter, or to cause it towrongly block another part of the page [1899].
+So how can one use machine learning safely in the real world? That’s some-thing we’re still learning, but there are some things we can say.
+ First, one hasto take a systems security approach and look at the problem end-to-end.
+ Justas we sanitise inputs to web services, do penetration testing, and have mech-anisms for responsible disclosure and update, we need to do the same for MLsystems [659].
+Second, we need to draw on the experience of the last twenty years’ workon topics like card fraud, spam and intrusion detection.
+ As we mentioned insection 21.
+4.
+2.
+2, ML systems have been largely ine↵ective at real-world networkintrusion detection; Robin Sommer and Vern Paxson were the ﬁrst to give a goodexplanation why.
+ They discuss the lack of training data, the distance betweentheory and practice, the di�culties in evaluation, the high cost of errors andabove all the inability to deal with novel attacks [1802].
+ The problem of keepingcapable opponents out of complex corporate networks just isn’t one that artiﬁcialintelligence has ever been good at.
+There may occasionally be a change in emphasis, though.
+ If we want tolower the probability of a new adversarial attack causing real damage, there arevarious things we can do, depending on the context.
+ One is simply to detunethe classiﬁer; this is the approach in at least one machine-vision system usedin cars.
+ By making it less sensitive, you make it less easy to spoof, and thenyou complement it with other sensors such as radar and ultrasonics so that thevision system on its own is less critical.
+ An alternative approach is to head in theother direction, by making the ML component of your system su�ciently fragilethat an attack can be detected by other components – whereupon you switchto a defensive mode of operation, such as a low-sensitivity limp-home mode orSecurity Engineering792Ross Anderson25.
+3.
+ AI / MLstopping and waiting for a human to drive.
+ In other words, you set out to buildin situational awareness.
+ This is how we behave in real life; as I discussed insection 3.
+2.
+5.
+1, the ancestral evolutionary environment taught us to take extracare when we sense triggers such as adversarial intent and violations of tribaltaboos.
+ So we’ve experimented with using neural networks trained so that anumber of outputs and activations are considered to be taboo and avoided; ifany of these taboos is broken, an attack can be suspected [1733].
+The fundamental problem is that once we start letting machine learning blurthe boundary between code and data, and systems become data-driven, peopleare going to game them.
+ This brings us to the thorny problem of the interactionof machine learning and society.
+25.
+3.
+3ML and societyThe surge of interest in machine learning since 2016, and its representation as‘artiﬁcial intelligence’ in the popular press, has led to a lot of speculation aboutethics.
+ For example, the philosopher Dan Dennett objects on moral groundsto the existence of persons that are immortal and intelligent but not conscious.
+But companies already meet that deﬁnition! The history of corporate wrongdo-ing shows that corporations can behave very badly indeed (we discussed someexamples in section 12.
+2.
+6).
+ The most powerful ML systems belong to corpora-tions such as Google, Amazon, Microsoft and IBM, all of which have had tussleswith authority.
+ The interplay between ML, big data and monopoly adds to thethicket of issues that governments need to navigate as they ponder how to reg-ulate tech.
+ One aspect is that the tech majors’ ML o↵erings are now becomingplatforms on their own, and used by lots of startups solving speciﬁc real-worldproblems [658].
+One cross-cutting issue is prejudice.
+Aylin Caliskan, a Turkish researchstudent at Princeton, noticed that machine translations from Turkish to Englishcame out with gender bias; although Turkish has no grammatical gender, theEnglish translations of Turkish sentences would assign doctors as ‘he’ and nursesas ‘she’.
+ On further investigation, she and her supervisors Joanna Bryson andArvind Narayanan found that essentially all machine translation systems inuse were not merely sexist, but racist and homophobic too [369].
+In fact alarge number of natural-language systems based on machine learning inhale theprejudices of their training data.
+ If the big platforms’ ML engines can su↵useprejudice through the systems on which hundreds of downstream ﬁrms rely,there is deﬁnitely a public-policy issue.
+A related policy problem is redlining.
+When insurance companies usedpostcode-level claim statistics to decide the level of premiums, it was foundthat many minority areas su↵ered high premiums or were excluded from cover,breaking anti-discrimination laws.
+ I wrote in the second edition of this book in2008: “If you build an intrusion detection system based on data mining tech-niques, you are at serious risk of discriminating.
+If you use neural networktechniques, you’ll have no way of explaining to a court what the rules underly-ing your decisions are, so defending yourself could be hard.
+ Opaque rules canalso contravene European data protection law, which entitles citizens to knowthe algorithms used to process their personal data.
+”Security Engineering793Ross Anderson25.
+3.
+ AI / MLA second cross-cutting issue is snake oil, and the AI/ML gold rush has ledto thousands of startups, many of them stronger on marketing than on prod-uct.
+ Manish Raghavan and colleagues surveyed ‘AI’ systems used in employmentscreening and hiring, ﬁnding dozens of ﬁrms that claim their systems match newhires to the company’s requirements.
+ Most claim they don’t discriminate, yetas few employers retain comprehensive and accessible data on employee perfor-mance, it’s entirely unclear how such systems can even be trained, let alone howa ﬁrm that used such a system might defend a lawsuit for discrimination [1571].
+Applicants quickly learn to game the system, such as by slipping the word ‘Ox-ford’ or ‘Cambridge’ into their CV in white text.
+ A prudent employer woulddemand more transparent mechanisms, and devise independent metrics to vali-date their outcomes.
+ Even that is nontrivial, as machine learning can discovercorrelations that we do not understand.
+Arvind Narayanan has an interesting analysis of snake oil in AI [1382].
+ ‘AI’and even ‘ML’ are generic terms for a whole grab-bag of technologies.
+ Someof them have made real progress, like DNNs for face recognition, and indeedAlphaGo.
+ So companies exploit this hype, slapping the ‘AI’ label on whateverthey’re selling, even if its mechanisms use statistical techniques from a centuryago.
+ Digging deeper, Arvind argues that machine-learning systems can be sortedinto three categories:1.
+ ML has made real progress on tasks of perception, such as face recognition(see section 17.
+3), the recognition of songs by products like Shazam (seesection 24.
+4.
+3), medical diagnosis from scans, and speech-to-text – at allof which it has acquired the competence of skilled humans;2.
+ ML has made some progress on tasks of judgment, such as content recom-mendation and the recognition of spam and hate speech.
+ These have manyhard edge cases about which even skilled humans disagree.
+ The systemsthat perform them often rely on substantial human input – from a billionemail users clicking the ‘report spam’ button to the tens of thousands ofcontent moderators employed by the big tech companies;3.
+ ML has made no progress on tasks of social prediction, such as predictingemployee performance, school outcomes and future criminal behaviour.
+A very extensive study by Matthew Sagalnik and over 400 collaboratorshas concluded that insofar as life outcomes can be predicted at all, thiscan be done as well using simple linear regressions based on a handful ofvariables [1638].
+This is a falsiﬁable claim, so we’ll see how accurate it is over time, and ifthere’s a fourth edition of this book in 2030 we’ll have a lot more data then.
+ Amajor theme of research meanwhile will be to look for better ways for people andmachines to work together.
+ Intuitively, we want people to do the jobs involvingjudgment and machines to do the boring stu↵; but making that actually workcan be harder than it looks.
+ Often people end up being the machine’s servants,and according to one VC ﬁrm, 40% of ‘AI’ startups don’t actually use ML inany material way; they’re merely riding the wave of hype and employ peoplebehind the scenes [1960].
+ One way or another, there will be lots of bumps inthe road, and lots of debates about ethics and politics.
+Security Engineering794Ross Anderson25.
+3.
+ AI / MLPerhaps the best way to approach the ethics is this.
+ Many of the problemsnow being discussed in the context of AI ethics arose years ago for researchdone using traditional statistical methods on databases of personal information.
+(Indeed, linear regressions have been used continuously for about a century;they’ve just been rebranded as machine learning.
+)So our ﬁrst port of callshould be existing law and policy.
+ When we discussed ethics in the context ofrecords-based health and social-policy research in section 10.
+4.
+5.
+1, we observedthat many of the issues arose because IT companies and their customers ignoredthe wisdom that doctors, teachers and others had accumulated over years ofdealing with paper-based records.
+ The same mistakes are now being repeated,and excused as before with sales hype around ‘innovation’ and ‘disruption’.
+In the case of predicting which children are likely to turn to crime, it’sbeen known for years that such indicators can be deeply stigmatising.
+ In sec-tion 10.
+4.
+6 we noted that if you tell teachers which kids have had contact withsocial services, then the teachers will have lower expectations of them.
+ Bothchild welfare and privacy law argue against sharing such indicators.
+ How muchmore harmful might it be if clueless administrators buy software that claimsto be making predictions using the inscrutable magic that enabled AlphaGo tobeat Lee Sedol? As for ‘predictive policing’, studies suggest that it might justbe another way to get the computer to justify a policy of ‘round up the usualsuspects’ [677].
+ (In section 14.
+4 we discussed how curfew tags also have this ef-fect.
+) Similar issues arise with the use of ML techniques to advise judges in bailhearings about whether a suspect poses a ﬂight risk or reo↵ending risk, and alsoin sentencing hearings about whether a suspect is dangerous.
+ Such technologiesare likely to propagate existing social biases and power structures, and providelawmakers with an excuse to continue ine↵ective but populist policies, ratherthan nudging them to tackle the underlying problems.
+ML is nonetheless likely to upset some of the equilibria that have emergedover the years on issues like surveillance, privacy and censorship, as it makeseven more powerful tools available to already powerful actors, as well as creatingnew excuses to revive old abuses.
+ Many countries already restrict the use ofCCTV cameras; now that face-recognition systems enable pedestrians to berecognised, do we need to restrict them more? As we saw in section 17.
+3, anumber of cities (including San Francisco) have decided the answer is ‘yes’.
+In section 11.
+2.
+5 we discussed how location and social data can now make itvery hard to be anonymous, and how people’s Facebook data could be minedfor political ad targeting.
+ ML techniques make it easier to do tra�c analysis,by spotting patterns of communication [1719]; in fact, police and intelligenceagencies depend ever more on tra�c and social-network analysis of the sortdiscussed in sections 21.
+7, 23.
+3.
+1 and 26.
+2.
+2.
+In short, the charge sheet against machine learning is that it is one of thetechnologies helping entrench the power of the tech majors while pushing thebalance between privacy and surveillance towards surveillance and facilitatingauthoritarian government in other ways.
+It may be telling that Google andMicrosoft are funding big research programs to develop AI for social good.
+So what can we do as a practical matter to get some privacy in this electronicvillage in which we now live?Security Engineering795Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITY25.
+4PETS and operational securityEven if you don’t blurt out all your thoughts on Facebook, social structure –who hangs out with whom – says an awful lot, and has become much morevisible.
+ In section 11.
+2.
+5 we discussed research which suggested that as few asfour Facebook likes enable a careful observer to work out whether you’re straightor gay most of the time, and how this observation led among other things tothe Cambridge Analytica scandal, where voters’ preferences were documentedcovertly and in detail.
+Even if you don’t use Facebook at all, the tra�c data on who contacted whomgives a lot away to those who have access to it, as we discussed in section 11.
+4.
+1.
+This can cause problems for people who are in conﬂict with authority, such aswhistleblowers.
+ Anonymity can sometimes be a useful tool here.
+ The abuse ofacademic authority is countered by anonymous student feedback on professorsand anonymous refereeing of conference paper submissions.
+ If your employerpays your health insurance, you might want to buy an HIV test kit for cashand get the results anonymously online, as the mere fact that you took a testsays something, even if the result is negative.
+ Privacy can also be a necessaryprecursor of free speech.
+ People trying to innovate in politics or religion mayneed to develop their doctrine and build their numbers before going public.
+ Andthen there are opposition politicians digging a bear trap for the government ofthe day, whose concerns are more tactical.
+The importance of such activities to an open society is such that we considerprivacy and freedom of speech to be interlinked human rights.
+ We also enactlaws to protect whistleblowers.
+ But how can this work out in practice?In pre-technological societies, two people could walk a short distance awayfrom everyone else and have a conversation that left no hard evidence of whatwas said.
+ If Alice claimed that Bob had criticised the king, then Bob couldalways claim the converse – that it was Alice who’d proposed a demonstrationto increase the powers of parliament and he who’d refused out of loyalty.
+In other words, many communications were deniable.
+ Plausible deniabilityremains an important feature of some communications today, from everyday lifeup to the highest reaches of intelligence and diplomacy.
+ It can sometimes beﬁxed by convention: for example, a litigant in England can write a letter marked‘without prejudice’ to another proposing a settlement, and this letter cannot beused in evidence.
+ But most circumstances lack such clear and convenient rules,and the electronic nature of communication often means that ‘just steppingoutside for a minute’ isn’t an option.
+ What then?A related issue is anonymity.
+ Until the industrial revolution, most peoplelived in small villages, and it was a relief – in fact a revolution – to move intoa town.
+ You could change your religion, or vote for a land-reform candidate,without your landlord throwing you o↵ your farm.
+ In a number of ways, thee↵ect of the Internet has been to take us back to an ‘electronic village’: electroniccommunications have not only shrunk distance, but in some ways our freedomtoo.
+Can technology help? To make things a bit more concrete, let’s considersome people with speciﬁc privacy problems.
+Security Engineering796Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITY1.
+ Andrew is a missionary in Texas whose website has attracted a number ofconverts in Iran.
+ That country executes Muslim citizens who change theirreligion.
+ He suspects that some of the people who’ve contacted him aren’treal converts, but religious policemen hunting for apostates.
+ He can’t tella policeman apart from a real convert.
+ What sort of technology should heuse to communicate privately with converts?2.
+ Bella is your ten-year-old daughter, who’s been warned by her teacher toremain anonymous online.
+ What sort of training should you give her?3.
+ Charles is a psychoanalyst who sees private patients su↵ering from depres-sion, anxiety and other problems.
+ Previously he practised in a nondescripthouse in town which his patients could visit discreetly.
+ Since lockdown,he’s had to use tools like Skype and Zoom.
+ What’s prudent practice toprotect patient privacy?4.
+ Dai is a human-rights worker in Vietnam, in contact with people tryingto set up independent trade unions, microﬁnance cooperatives and thelike.
+ The police harass her frequently.
+ How should she communicate withcolleagues?5.
+ Elizabeth works as an analyst for an investment bank that’s advising on amerger.
+ She wants ways of investigating a takeover target without lettingthe target get wind of her interest – or even learn that anybody at all isinterested.
+ Her opponents are people like her at other ﬁrms.
+6.
+ Firoz is a gay man who lives in Tehran, where being gay is a capital o↵ence.
+He’d like some way to download porn and perhaps contact other gay menwithout getting hanged.
+7.
+ Graziano is a magistrate in Palermo setting up a hotline to let peopletip o↵ the authorities about Maﬁa activity.
+ He knows that some of thecops who sta↵ the o�ce in future will be in the Maﬁa’s pay – and thatpotential informants know this too.
+ How does he limit the damage thatcorrupt cops can do?8.
+ Hristo helps refugees enter the UK so they can claim asylum.
+ Most ofhis clients are ﬂeeing wars or bad government in the Middle East andNorth Africa.
+ He operates from Belgium and gets clients into trucks oron to speedboats depending on the weather.
+ He needs to coordinate withcolleagues in France, Britain and elsewhere.
+ How can they do this despitesurveillance from assorted security and intelligence agencies?9.
+ Irene is an investigative journalist on a combative newspaper who inviteswhistleblowers to contact her.
+ She dreams of landing the next Ed Snow-den.
+ What preparations should she make in case she does get contactedby a major source that the government would try hard to unmask?10.
+ Justin is running for elected o�ce.
+ Irene would happily dig the dirt onhis family; and there are many other people who want to read his email,send a racist tweet from his social media account, or wire his campaignwar chest to North Korea.
+ How can he frustrate them?Security Engineering797Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITYPrivacy isn’t just about encrypting messages.
+ If Andrew tells his convertsto download and use Wickr, then the police spies pretending to be converts willget the national ﬁrewall to detect anyone who uses it.
+ Andrew has to make histra�c look innocuous – so that the police can’t spot converts even when theyknow what apostate tra�c looks like.
+ If only a few dozen people use Wickr, thepolice can just break all their doors down.
+ So it’s not just about whether Wickris a more secure product than Signal or Skype, but how many people in thatcountry use it.
+And while technical measures may solve part of Andrew’s problem, theywon’t be much use with Bella’s.
+ One risk to children is that they’ll say somethingcareless that may embarrass them later.
+ Another is that political and mediascaremongering about child safety gets in the way of their welfare.
+ Most of youre↵ort will go into educating her.
+ As Bella grows up, she’ll have to become adeptwith the tools the rest of her peer group use; and soon enough she’ll adopther security procedures from them more than from you.
+ You have to impartunderstanding, not rituals.
+The intensity of attacks will vary widely.
+ Andrew and Firoz might face onlysporadic interest, while Graziano, Hristo and Justin have capable motivatedopponents.
+ As for Dai, she’s frequently put under surveillance.
+ She’s not usinganonymous communications to protect herself, but to protect others who haven’tcome to the police’s attention yet.
+There are radically di↵erent incentives.
+ Andrew, Charles, Dai, Graziano andIrene go to some trouble to protect vulnerable people they deal with, while thesites in which Firoz is interested don’t care much about his safety.
+ Andrew,Dai, Graziano and Hristo all have to think about dishonest insiders.
+ In Justin’scase it’s careless insiders: the juicy stu↵ that the Russians would like to give toIrene lives in the personal accounts of his campaign volunteers, as well as in thepersonal accounts of friends and family who’re hard to include in any organiseddefensive e↵ort.
+There are di↵erent thresholds for success and failure.
+ Hristo can only bejailed if the police prove a case against him beyond reasonable doubt; Irene cantake down Justin if she can defend a libel suit on the balance of the evidence;while mere suspicion could be bad news for Elizabeth or Firoz.
+ And there aredi↵erent costs of failure: Elizabeth might lose some money if she screws up,while Justin could lose his career and Firoz could lose his life.
+We discussed in section 22.
+2.
+1 how people who don’t want their phone callstraced buy prepaid mobile phones, use them for a while, and throw them away.
+But these burners, as they’re sometimes called, are hard to use properly; evenAl-Qaida couldn’t do it right.
+So what’s the state of play for hard privacyonline?25.
+4.
+1Anonymous messaging devicesAs we discussed in section 2.
+2.
+1.
+10, investigators often get much of their informa-tion from tra�c analysis.
+ Regardless of whether people use email, a messagingservice or the plain old telephone service, access to the social graph lets police-men map out friendship networks – and the marketers do this too when theySecurity Engineering798Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITYcan get their hands on it [598].
+ In the old days, encrypting your email tra�ccould be dangerous; if you were one of only 20 people in the country using PGP,that made you a suspect.
+ It’s more complex now that most people use webmailservices that are TLS encrypted by default, but the same principles apply.
+People under government surveillance like Hristo learned that normal privacyapps like WhatsApp or Signal aren’t enough on their own, even if lots of otherpeople use them for innocuous purposes.
+ Suppose Hristo uses Signal to arrangefor Kevan to bring eight people across the English Channel in a speedboat.
+ Butif a Royal Navy cutter arrests Kevan and they ﬁnd Hristo’s messages on hisphone, he faces extradition.
+ If Kevan, or Hristo, also uses their phone to chatwith their family, it might help the police to map their network using tra�canalysis.
+ There’s not just an issue of making networks hard to trace, but aboutwhat evidence can be seized when people are caught.
+ Similar problems are facedby Dai and by Graziano’s undercover operatives.
+So we’ve seen the development of a market for ‘crypto phones’ which not onlyprovide encrypted messaging, but try to support operational security (Opsec)as well.
+ We discussed Opsec in the corporate context in section 3.
+3.
+4, but itmatters even more here.
+The ﬁrst crypto phone on general sale was proba-bly Silent Circle’s Blackphone in 2014, which was sold to government agencies,special forces and human-rights workers.
+ There have since been a number ofcompeting systems.
+Ed Caesar describes some of the people who promotedcrypto phone businesses out of the Cyberbunker in Germany, which was thecountry’s biggest hoster of illegal web sites until it was raided and shut down inSeptember 2019 [364].
+ The handsets are typically modiﬁed so you can’t run apps(which could spy on you); they may have the microphone and camera disabledso GCHQ can’t turn them into monitoring devices; GPS may also be disabled;they can’t be read out by standard police forensic kiosks; and they’re part of aclosed system consisting of both phones and messaging servers where you don’tidentify the other party by a phone number but by a user ID.
+ Crypto phoneﬁrms found that some people were prepared to pay over a thousand dollars orEuros for a handset, and the same again for a six-monthly subscription to theassociated service.
+ The market includes all sorts of people, from cryptocurrencyoperators and spies through money launderers to drug dealers.
+ Network e↵ectsapply in covert communities too; Hristo, Kevan and the rest of the gang all needto use the same system.
+ And as some people smugglers also smuggle drugs, andsome smugglers make enough money to need fancy tax accountants who alsowork for the cryptocurrency crowd, network e↵ects can drag in all sorts of peoplewho seek privacy from state surveillance for reasons both good and bad.
+The emerging pattern is that, thanks to network e↵ects, one crypto phonesystem gets used ever more widely, until enough of its users are police targetsand the authorities bust it.
+ For the beneﬁt of non-UK readers, I might mentionhere that newspapers of the left and right see Hristo and his human cargoin somewhat di↵erent terms.
+ While some immigrant communities see Hristo’soperation as a family reuniﬁcation service, the conservative press stigmatisesrefugees and ministers have made immigration o↵ences a higher priority forthe agencies than organised acquisitive crime.
+ So what can Hristo buy to keepGCHQ o↵ his back?Until 2016, the market leader was Ennetcom, a Dutch company which usedSecurity Engineering799Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITYa private network of messaging servers in Canada to support anonymous userIDs.
+ In April of that year, the Dutch and Canadian authorities raided them andarrested the owner, who had been involved with CyberBunker.
+ In 2017, it wasthe turn of PGP Safe; four Dutchmen were arrested [1081].
+ The following year,the Dutch police also claimed to have broken a cryptophone system called IronChat [792].
+ In 2018, the market leader was a company called Phantom Secure;the US, Australian and the Canadian authorities closed down that system [1133].
+Its CEO Vincent Ramos pleaded guilty to supplying the phones to drug dealersworldwide, and at his sentencing hearing, prosecutors read out a message he sentto colleagues: “We are f–ing rich man .
+.
+.
+ get the f–ing Range Rover brand new.
+Cuz I just closed a lot of business.
+ This week man.
+ Sinaloa cartel, that’s what’sup” [278].
+ He got nine years in jail.
+ The next market leader, EncroChat, usedmodiﬁed Android phones.
+ In 2020, the French and Dutch police hacked its mainserver and infected all 50,000 devices in use worldwide with law-enforcementmalware that copied their messages in real time to the police.
+ On June 13th,EncroChat realised they’d been hacked and advised their customers to get rid oftheir phones at once [1922].
+ Hundreds of arrests followed all over Europe [572].
+So policemen like Graziano have a standard playbook for taking down cryptophone systems.
+ But he may also use them to protect those of his sources whoremain emplaced in the gangs and in the communities in which they swim.
+Indeed, when PGP ﬁrst came out in the 1990s, it was adopted by the ProvisionalIRA in their insurgency against British rule in Northern Ireland.
+ Up till then, abig headache for the police had been making unobtrusive regular contact withIRA informers, who lived in a nationalist community that hated the police andwhere informers were killed.
+ PGP made contact easy.
+ An informer simply hadto tell his handler his private key, and the cops could collect all his tra�c.
+ Hecould even report in by sending an encrypted email to himself.
+25.
+4.
+2Social supportThe journalist Irene probably has the hardest task.
+ If she’s approached by asenior civil servant who wants to spill the beans on the government’s latest folly,then as soon as the story appears the ‘mole hunt’ will begin.
+ Her informant –let’s call her Liz – will now be hunted by the police and intelligence apparatus.
+How can Irene help Liz minimise the probability of being identiﬁed, ﬁred, andprosecuted? We discussed whistleblowing brieﬂy in section 2.
+3.
+6, where we sawthat technical security is usually only one of the problems facing a whistleblower– and often not the most serious.
+The big problem is establishing trust, and that is a two-sided process.
+ Irenewill need to assess Liz as a source.
+ Does she have a real story to tell? Why’sshe telling it? Is it a semi-authorised leak, which she’s o↵ering with the tacitapproval of her minister as part of a political game? Can her story be stoodup with enough evidence, in case someone sues for libel? Is it a provocation,designed to discredit Irene or the newspaper she works for? Is Liz vulnerable,and in need of emotional support? When the story comes out, who else couldhave leaked it? If a hundred people could have leaked it, you can talk aboutanonymity; if the anonymity set size is only ten, you’re talking more aboutplausible deniability, and Irene will want to talk to Liz about what happensSecurity Engineering800Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITYwhen the PM’s goons interrogate her.
+But in many cases the whistleblowerwill be completely exposed once the story comes out.
+For example, if Liz’scomplaint is that a minister tried to rape her, then the conversation with Irenewill be about getting support and about whether people will believe her, ratherthan about how to use Signal.
+So best practice is for Irene to meet Liz in person as soon as possible afterLiz makes contact.
+ If Liz may be targeted by state actors, but has a reasonablechance of staying anonymous, Irene can give her a burner phone to establish achain of contact that’s independent of her existing home and work devices.
+ IfLiz is one of ten suspects after the story breaks and the Prime Minister startsshouting at the Director of the Security Service, then she’d better assume thatall ten of them will have all their known devices compromised by tea-time.
+When Ed Snowden decided to blow the whistle on illegal surveillance, heinitially had di�culty getting a journalist to use PGP encryption.
+ Afterwards,many newspapers rushed to provide technical means for whistleblowers to con-tact them, publishing PGP keys, the mobile numbers of journalists who useSignal, and a facility called SecureDrop that enables people to upload ﬁles.
+Mansoor Ahmed-Rengers, Darija Halatova, Ilia Shumailov and I did a study ofsuch mechanisms and found they su↵er from two types of problem [31].
+ First,such mechanisms are hard to use.
+ We discussed in section 3.
+2.
+1 how securityusability research started from the di�culty of using PGP, and the problem isstill there.
+ Second, a whistleblower needs to understand the hazards in order todevise sensible operational security procedures, but a typical newspaper doesn’tdiscuss them the way that, for example, this chapter does.
+ So Irene might wantto give Liz not just a burner phone but a training session on how to use toolslike Tails and Tor to upload ﬁles to SecureDrop2.
+ (A crypto phone would bemore usable but Irene probably doesn’t have the budget, and if Liz were caughtwith one, it could be a giveaway.
+)It would be a mistake, though, to think of Liz as Irene’s typical source.
+ Mostwhistleblowers are in an anonymity set of size one, and their disclosures are notabout state secrets but about fraud and abuse.
+ In section 12.
+2.
+6 we saw thatwhistleblowers stopped more of the really serious fraud than either auditors orregulators.
+ But often a decision to expose wrongdoing may carry some personalcost, such as getting ﬁred or being stigmatised.
+ Social support is often the key.
+It was only after several women who’d been raped by Harvey Weinstein foundthe courage to speak out that dozens of others came forward too.
+Support is critical for many of our other users, too.
+ Charles the psycho-analyst knows that the privacy he can o↵er his patient, whom we might callMary, is essential to the therapeutic work.
+ The move from an o�ce to video-conferencing not only creates some (small) actual risks but makes privacy lesscomprehensible to both, undermining its role as a facilitator in therapy.
+ Marymight be afraid that if her employer discovers she’s having therapy, she mightbe stigmatised by colleagues or passed over for promotion.
+ In most cases the2Even then, there’s lots more a journalist ought to be aware of, such as the machineidentiﬁcation codes that modern printers embed in documents and which we discussed insection 24.
+4.
+3.
+ They were used to trace Reality Winner, an NSA whistleblower who leakedan NSA document describing Russian interference in the 2016 election and got 63 monthsjail [174].
+Security Engineering801Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITYfear will be much greater than the actual risk, but sometimes the risk could bereal: she might be Dai, or Irene, or Liz.
+ So the therapeutic environment mustcalm her and inspire conﬁdence.
+ Charles cannot start o↵ the relationship witha detailed brieﬁng on opsec of the kind that Irene might give Liz at their ﬁrstmeeting.
+ Privacy advice, if any, may have to be drip-fed along with the rest ofthe support.
+When dealing with children such as Bella, the priority is also providing acalm and reassuring environment in which they can learn and develop.
+ Sensibleparents will see through the scaremongering around child safety; the rate atwhich children are abducted and murdered by strangers is about one in tenmillion population per year, a rate so low that rational people will ignore it.
+Your mission as a parent is to help your children grow into empowered citizens,not to train them to cower from imaginary monsters.
+Dai, the activist, is also a giver of support, to the people she’s trying torecruit.
+ Her case is much more tricky than Charles’s because the authorities aretrying to stop her being e↵ective.
+ I assume she’s known to the authorities andunder intermittent surveillance.
+Human-rights workers such as Dai do indeed use common tools such asSkype, Tails, Tor and PGP to protect their tra�c, but the attacks to whichthey’re subjected are not just technical; they’re the stu↵ of spy novels.
+ Thepolice enter their homes covertly to implant rootkits that sni↵ passwords, androom bugs to listen to conversations.
+ When they encrypt a phone call, they haveto wonder whether the secret police are getting one side of it (or both) froma hidden microphone.
+ Sometimes the microphone isn’t all that hidden; we’veheard from activists of the police standing openly outside their house pointinga shotgun mike at the window.
+Countering such attacks requires tradecraft in turn.
+ Some of this is just likein spy movies: leaving telltales to detect covert entry, keeping your laptop withyou at all times, and holding sensitive conversations in places that are hardto bug.
+ Other aspects of it are di↵erent: human-rights workers (like journal-ists but unlike spies) need to avoid breaking the law, and they also need tonurture multiple support structures – not just giving covert support to recruitsdownstream, but receiving overt support from overseas NGOs and governments.
+And to make recruits, they also need – while under intermittent observation – tomake covert contact with people who aren’t themselves under suspicion.
+ Dai’scase is the reverse of Charles’s, as when she acquires a new recruit, trainingthem in tradecraft is part of the induction, socialisation and support process.
+If you want to learn about what works and what doesn’t in tradecraft, thenhuman-rights workers are the people to talk to.
+ (The spies and smugglers mayknow more but they’re not talking.
+) The emerging picture is that the behaviourof both police and nonviolent government opponents is embedded in how asociety operates, and evolves over time.
+There’s a complex game where allbut the most totalitarian rulers attempt to marginalise, tame or co-opt theiropponents, while the opposition movements evolve in response.
+ Any movementthat starts being too nice to an unpopular ruler will lose credibility and bedisplaced by others.
+ The groups with the best opsec will be able to grow fastest,and the most militant groups may have the greatest credibility.
+ Pushed too hard,Security Engineering802Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITYnonviolent opposition can spawn either open insurrection or violent terrorism(and rulers who denounce nonviolent opposition as ‘terrorism’ may invite justthat).
+ So a smart secret police chief will cut Dai some slack, watch what shegets up to, and play a long game; the Putin philosophy is to tolerate rebelmovements until you can ﬁgure out how to lead them.
+ Just in case things heatup later, he’ll be sparing in the use of some of his capabilities, so he’s got stu↵in reserve for which she hasn’t developed countermeasures.
+25.
+4.
+3Living o↵ the landIrene, Charles and Dai may ﬁnd that their privacy tactics are inﬂuenced by thekind of support they have to give or receive, but they have something else incommon – that they have to make the smartest use they can of what’s availablerather than buying or building special tools.
+ We might perhaps call this livingo↵ the land3.
+In the old days, covertness could mean hiding in plain sight.
+ Every country’selite has places to hang out, so if a senior civil servant wants to meet an eminentjournalist, they can chat openly at a gentlemen’s club in London or a countryclub in Virginia without anyone taking any notice.
+ Such mechanisms allowedpeople to make contact discreetly, and establish trust at the same time.
+So the ﬁrst thing to ask when trying to improvise anonymous communica-tions is what clubs or platforms you already share.
+ One of the hard cases isChina, which blocks most of the services familiar to us at the Great Firewall.
+Even there, we ﬁnd platforms open to user content that have encrypted commu-nications: two examples are Linkedin and Amazon book reviews.
+ In the case ofIran, Andrew will have to ﬁgure out whether messaging systems such as Skypeand Signal are su�ciently widely used there for their use not to be suspicious.
+The second thing you have to think through is the threat model.
+ One thingmany of our users have in common is intermittent threat: most of the timethere’s no threat at all, but just occasionally it may become severe.
+ Even alarge secret police force can only work so many ﬁles at once.
+ Most of the time,nobody’s interested in Mary, or in Firoz either.
+However, if Mary suddenlybecomes a celebrity, people will get interested in her mental health quicklyenough.
+ If the government suddenly decides to go after Nur, then Skype mightprovide her with cover in Iran, but not in Saudi Arabia – because Skype belongsto Microsoft which generally complies with government warrants except in roguestates.
+ Even in Iran, some opsec is needed.
+ If Andrew uses Skype to talk to Nurthen he’d better not use the same username (or IP address) to talk to all hisother converts too, or the religious police will learn it from their bogus convertand come knocking.
+A third factor is capability, including support, and motivation.
+ Of all ourusers, Elizabeth the investment banker may be the simplest case.
+ Her work islawful and she has an IT team for support.
+ Tor provides fairly good anonymityif used with care, and the stakes are low; if a target suspects her interest,3This phrase is also used of hackers who attack systems by exploiting the target’s vul-nerabilities directly as they need to, and don’t leave remote access Trojans behind.
+ It seemsappropriate in this context too.
+Security Engineering803Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITYshe only loses some money, not her life.
+ Graziano faces higher risks but has anexperienced police organisation at his back.
+ Justin is also playing for high stakes,but has a much less tractable management problem.
+ An election campaign is along slog of fundraising with dozens of volunteers who’re hard to discipline andwhose focus is victory rather than security.
+ Liz faces signiﬁcant risks and thequality of support available from Irene may vary.
+ Dai, Firoz, Hristo and Nur allface extreme hazards without any capable technical support.
+Finally there’s the problem of forensics.
+ I’ll discuss this in detail later insection 26.
+5, but the main problem for the police is the sheer volume of datafound when searching a house nowadays: there can be terabytes of data scatteredover laptops, phones, tablets, cameras, TVs, memory sticks and all sorts of otherdevices.
+ If you don’t want a needle to be found, build a larger haystack.
+ So Firozmight have a lot of electronic junk scattered around his apartment, as cover forthe memory stick that has the contraband stashed in an encrypted volume.
+ Andthere are many ad-hoc ways in which content can be made inaccessible to thecasual searcher; he might damage the memory stick in some repairable way, orjust hide it physically.
+ The same approach might be taken by Nur, or anyonefor whom a police raid might be bad news.
+This all comes back to tradecraft.
+ What works will vary from one placeand time to another, as it depends on what the local opponents actually do.
+To defeat routine tra�c analysis, it might be enough to get a day job as areceptionist: if everyone in town calls the doctors’ surgery, then the fact thatsomeone called the surgery conveys little information.
+25.
+4.
+4Putting it all togetherReturning now to our list of users, how can we sum up what we’ve learned?1.
+ The missionary, Andrew, has one of the hardest secure communicationtasks.
+ He can’t meet his converts to train them in opsec, and needs touse something that’s available and inconspicuous.
+ Perhaps the simplestsolution for him is to use Skype or WhatsApp.
+2.
+ In the case of your daughter Bella, the goal is to help her grow into acapable adult.
+ I’d never dream of getting my grandkids to use Tor; that’sjust creepy.
+ What I do is to talk about scams, phishing and other abusesfrom time to time round the dinner table.
+ The kids enjoy this and slowlyabsorb the art of adversarial thinking.
+ It’s all in the same spirit as theboard games we play.
+3.
+ The psychoanalyst, Charles, should have a basic awareness of the risksand the possible mitigations.
+ As he gets to know his patient Mary hemay occasionally make suggestions he thinks are relevant and needful, solong as they go with the ﬂow and empower her rather than scaring her.
+But he may also be reluctant to make suggestions if this goes againstthe clinical method to which he is committed, by undermining her trustin the therapeutic environment.
+It may be too hard to negotiate thisenvironment; informed consent is a di�cult issue in therapy because ofthe asymmetric power relationship between the patient and the therapist.
+Security Engineering804Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITYIn practice both parties may lack relevant knowledge, and even if Maryknows more about the risks than Charles, she may feel unable to o↵er anysuggestions.
+4.
+ The human-rights activist Dai has one of the hardest jobs of all, but asshe’s shaken down by the secret police from time to time and works withother activists with whom she can share experiences, she can evolve goodtradecraft over time.
+5.
+ The M&A analyst Elizabeth may well ﬁnd that Tor does pretty well whatshe needs.
+ Her main problem will be using it properly and paying attentionto the kind of queries she makes of target websites so as not to give thegame away.
+6.
+ Firoz is in a bad way, and quite frankly were I in his situation I’d set outon the walk to Germany.
+ If that’s not possible then he should not just useTor, but get a Mac or Linux box so he’s less exposed to porn-site malware.
+He’ll need to think through in advance what happens if he gets raided bythe police.
+ (Perhaps he should join the Revolutionary Guard so the policewon’t raid him in the ﬁrst place.
+)7.
+ Graziano also has a hard job.
+ It’s bad enough defending a covert networkagainst one or two traitors at the client end (as Andrew must); defendingagainst occasional treachery at the server side is even harder.
+ Part of hissolution might be a compartmented police record keeping system, as wedescribed in section 10.
+2, to stop bent cops getting access to everything.
+He might also chat to informers using whatever mechanisms they use.
+8.
+ Hristo may see advantages in using a crypto phone, but when the copscrack it they may roll up his whole network.
+ In his shoes I’d learn fromDai that in the long run the group with the best opsec wins out.
+ So I’dfocus on that, and educate my colleagues about tra�c security.
+ If we use achat app such as Signal with ephemeral messages, and change phones andSIM cards regularly, then I can see which of my colleagues are disciplined,and decide who to trust with what.
+9.
+ Irene the journalist has one of the most challenging jobs of all.
+ A jour-nalist needs to be skilled not just at writing stories but at reading people,assessing truth and judging risk.
+ An investigative journalist also needstradecraft.
+ Just as any journalist nowadays needs to know how to drivea search engine, a sleuth needs to know how to protect her sources.
+ It’snot enough to have some basic familiarity with privacy tech; she needs toknow how to teach the right tactics to contacts who may be under extremestress and at risk of their lives.
+ That means understanding not just thepeople, but also the threats and the tools.
+ (And just as this job becomesever more critical and highly skilled, the budgets available to the press arecollapsing, as Google and Facebook eat all their advertising.
+)10.
+ Justin also has a di�cult problem.
+ It’s hard to protect short-lived high-consequence e↵orts sta↵ed by enthusiastic volunteers who are hard to dis-cipline and who may have unﬁxable bad technology habits.
+ However heprobably doesn’t understand his vulnerability, and will just press on, hop-ing for the best.
+Security Engineering805Ross Anderson25.
+4.
+ PETS AND OPERATIONAL SECURITYRichard Clayton wrote a thesis on anonymity and traceability in cyberspace,which analysed how complicated network anonymity has become [442].
+ Thereare many ways in which even people who made no particular e↵ort to hidethemselves end up not being traceable.
+It’s hard to establish responsibilitywhen abusive tra�c comes from a phone line in a multi-occupied student house,or a prepaid mobile phone.
+ ISPs also often keep inadequate logs and can’t tracetra�c afterwards.
+ But there are also many ways in which people who try tobe anonymous, fail; eventually people make mistakes, regardless of how muche↵ort they put into opsec.
+ And technology is making opsec harder all the time.
+This even applies to government security and intelligence agencies.
+25.
+4.
+5The name’s Bond.
+ James BondWe got a warning in January 2010 that traditional intelligence agency tradecraft,as described in the novels of Ian Fleming and John le Carr´e, was beginning tofray.
+ The Israelis sent a team of 26 Mossad agents to Dubai to kill Mahmoud al-Mabhouh, a senior Hamas o�cial who was there to buy arms from Iran.
+ In thepast such killings had been covert, but this time the UAE authorities collectedand examined all the CCTV footage, correlating it with the agents’ hotel staysand border crossings.
+ It turned out twelve of them used British passports – manyof them issued to Brits who’d emigrated to Israel, but with the agents’ photoson them – along with six Irish, four French, three Australian and one German.
+Britain and Australia expelled Israeli diplomats for passport o↵ences [307].
+ Inthe modern world of pervasive surveillance, biometrics at border controls andonline passport databases make it a lot harder to travel under a false name.
+A second warning came in 2013, when a report analysed the kidnapping of aMuslim cleric called Abu Omar in Italy in 2003, and pinned it on the CIA, lead-ing to a number of agents being charged by the Italian police in absentia [1274].
+The third warning came in 2014, when the Chinese stole the entire US securityclearance database from the O�ce of Personnel Management, as I described insection 2.
+2.
+2; this included not just the entire US intelligence community but22 million current and former federal employees.
+ The weaponisation of personalinformation continues; the 2016 Investigatory Powers Act enabled the UK gov-ernment to demand bulk personal datasets from ﬁrms who have them, givingthe agencies access to credit records, medical records and much else.
+ By the endof the decade, the military were worried that the Chinese were collecting per-sonal information on every single enlisted person for use in future informationwarfare, while intelligence agencies were starting to wonder whether the age oftraditional spying was over [1274].
+ The defence and intelligence communitieshave responded in various ways, with the Pentagon telling sta↵ not to use con-sumer DNA testing kits and the Chinese apparently favouring more low-techstu↵ like dead drops, but it’s not clear that there’s any silver bullet.
+ It’s hardto run covert operations when so much is known about almost everybody.
+In this context, China’s bid for ‘AI supremacy’ is concerning.
+ The country’spolitical structure encourages, rather than restrains, this technology’s worstuses: President Xi wants an an all-seeing digital system of social control, pa-trolled by precog algorithms that identify potential dissenters in real time [48].
+I discussed face recognition in section 17.
+3; as China’s cities are straddled withSecurity Engineering806Ross Anderson25.
+5.
+ ELECTIONSCCTV systems, they can surely follow people about.
+ But how well will thiswork overall? The use of machine learning in multisensor data fusion appli-cations isn’t straightforward, and it tends not to work well or at all at socialprediction – as we discussed earlier in this chapter.
+ In section 26.
+4.
+1 we discusshow the Chinese system appears to be using the dissident Uighur population ofSinkiang as the test case, with substantial human-rights abuses which have ledto US and EU sanctions against the Chinese ﬁrms involved.
+Meanwhile, in our somewhat more chaotic democracies, it’s hard to securepolitical campaigns from attack, as our discussion of Justin’s case brings out.
+The resulting operational problems from the 2018 US election are discussed byMaciej Ceglowski [397], who also warns of the broader problems of securingelections.
+ We turn to them next.
+25.
+5ElectionsAs I write in 2020, people are worried about the conduct and credibility of theforthcoming U.
+S, elections, following the controversy about Russian interferencein 2016 in both the UK Brexit referendum and the US elections later that year.
+Because of the huge diversity of voting systems, US elections have for years beena testbed for voting technology.
+ There have been very many attempts to defeatthe will of the people, ﬁrst by candidates, and more recently by external actors.
+We also have signiﬁcant experience from the Commonwealth, which containsmost of the other former British colonies; all of its member states hold electionsof some form or another [329].
+The story of election technology and its security is one of the co-evolutionof attack and defence over centuries.
+ In school, we all learned some variant ofthe history of how we evolved modern constitutions.
+ Participatory governmenthas long been widespread at the level of small groups such as villages, whereeveryone knows everyone else and decisions can be taken by consensus or by amajority; the problem is scaling it up to larger units such as cities and states.
+The Greeks and Romans experimented with mechanisms for selecting represen-tatives to sit in assemblies, councils and courts but found that, all too often,democracy degenerated into oligarchy, or a monarch seized power.
+ They devisedconstitutional mechanisms to reduce the risk of such failures, including the sep-aration of powers, voting by geographical constituencies rather than by tribe,selecting o�ceholders by lot rather than by ballot, and term limits.
+ Althoughthe Roman Empire ended these experiments, the ideal persisted through papalelections and medieval guilds via Swiss and Italian city-states.
+ In the EnglishCivil War, a parliament seized power from the king and cut his head o↵; thesettlement of 1689 made England a constitutional monarchy.
+ The seventeenthcentury also saw the ﬁrst assemblies in the New World, leading to the Americanrevolution in the eighteenth century, where the Founding Fathers were inspiredby the Greek and Roman model.
+Behind it lies another story of how the elites who enjoyed power kept manip-ulating the system so as to hang on to it.
+ Early elections had no privacy; Romanelectors lined up behind their candidate, and voting by open outcry remainedthe norm until the nineteenth century, leading to bribery and intimidation.
+ TheSecurity Engineering807Ross Anderson25.
+5.
+ ELECTIONStension in England was about social class: barons acquired some rights in 1215,followed by other property-owners in a series of reforms.
+ The ﬁrst modern re-form in 1832 introduced redistricting: few of the English cities that had sprungup in the industrial revolution had MPs, while other constituencies had fewvoters and the MP was selected by the local landowner.
+ It took a whole seriesof reform bills to extend and equalise the franchise to men of successively lowerwealth and income, but the high costs of campaigning limited political careersto the wealthy.
+ Eventually, secret ballots were introduced in 1872.
+ Meanwhilein America the story was more about race.
+ The Civil War ended slavery andextended the franchise to all men; but after the failure of Reconstruction, formerConfederate states devised literacy tests and other laws to stop black citizensvoting.
+ Only after World War I were women allowed to vote in either country.
+Abuses were rife: to this day, politicians in the UK, the USA and elsewhere tryby fair means and foul to get their supporters to vote more than their opponents.
+25.
+5.
+1The history of voting machinesFrom the late 1800s there were waves of technological innovation that tried topush back on electoral abuses in America, a story told by Douglas Jones andBarbara Simons [991].
+ Many cities and states had political ‘machines’ that notonly got out the vote but also manipulated it, exploiting the fact that electionsin America are organised at state and county level rather than nationally asin Britain.
+ In New York, Tammany Hall’s Boss Tweed would sometimes stu↵ballot boxes, and sometimes just have his precinct sta↵ make up the results.
+ Topush back on this, inventors came up with everything from transparent ballotboxes to voting machines that clocked a mechanical counter when a lever waspulled.
+Crooked politicians and o�cials adapted.
+ In Louisiana, the Long brothersdefeated the seals, set the count to the desired outcome and ran the state foryears.
+ Eventually people realised that the technicians in the county building whomaintain and program the machines controlled the outcome.
+ Mechanical votingmachines had about 100 bits of programmability, typically in the form of cotterpins and other mechanical linkages, which nobody else understood.
+ Wear andtear could also cover tampering; the technicians could cause an undercount for acandidate they didn’t favour by knocking a few teeth o↵ the relevant gearwheel.
+25.
+5.
+2Hanging chadsInventors devised a competing type of machine that punched a hole in a paperroll, inspired by the player piano; once punched cards were popularised by tab-ulating machines and computers, they became widely used.
+ The idea was thata vote punched as a hole in a card is both human-readable and capable of beingcounted quickly by machine.
+ It’s also anonymous once dropped into a ballotbox (unless you worry about ﬁngerprints).
+In the 2000 US presidential election, the result turned on Florida, which usedpunched-card machines, and the recount involved arguing over chads – the littlerectangles of cardboard that a voter punched out of the card.
+ Was a ‘hangingSecurity Engineering808Ross Anderson25.
+5.
+ ELECTIONSchad’, still attached to the card, a valid vote? What about a dimple, wherethe punch hadn’t penetrated? Vote-counting machines rejected over 100,000votes while George Bush’s majority over Al Gore was only 537.
+ Eventually theSupreme Court halted a recount, giving the election to Bush.
+ This created suchcontroversy that in 2002 Congress passed the Help America Vote Act (HAVA)which allocated $3.
+8 billion for the purchase of newer election equipment.
+A gold rush followed as companies scrambled to build and sell machines intothis huge new market.
+ This alarmed security engineers.
+ In fact, as the Floridarecount was underway, I was at the Applications Security conference in NewOrleans, whose attendees included many NSA and defense contractor sta↵, andwe organised a debate.
+Even though politicians thought that mechanical orpaper voting systems should be replaced with electronics as quickly as possible,security experts didn’t agree.
+ A large majority voted, on an old-fashioned showof hands, that we didn’t trust electronic elections.
+ A 1988 report by Roy Saltmanat the National Bureau of Standards had already spelled out most of what waslikely to go wrong [1641].
+Some of the new products were direct recording electronic (DRE) machines,the descendants of the lever machines of the 19th century, which typically pre-sented the candidates and other ballot options on a screen, then recorded thevoter’s input.
+ Later research showed that about a quarter of votes made witha DRE machine contained at least one error – deﬁned as a vote di↵erent fromvoter intent.
+ Such ‘vote ﬂipping’ was widely reported in Sarasota, Florida, in2006, and it was unclear whether the root cause was usability or technology(depending for example on how you classify insensitive touch screens).
+ Eitherway, a third of voters ignored wrong votes on the review screen [991].
+Many problems were reported in the 2002 elections [806]; the following sum-mer, the leading voting-machine supplier Diebold left its source code on anopen web site in a security lapse.
+ Yoshi Kohno and colleagues analysed it andfound that the equipment was“far below even the minimal standards of securityexpected in other contexts”: voters could cast unlimited votes, insiders couldidentify voters, and outsiders could also hack the system [1075].
+ Almost on cue,Diebold CEO Walden O’Dell, who was active in the campaign to re-elect Pres-ident Bush, wrote ‘I am committed to helping Ohio deliver its electoral votesto the President next year’ [1987].
+ This led to uproar, and calls for a law toimplement Yoshi’s key recommendation, that there should be a voter-veriﬁableaudit trail.
+ (The voting researcher Rebecca Mercuri had argued as early as 1992that DRE equipment should display the voter’s choice on a paper roll behinda window and get them to validate it prior to casting [1295].
+) In some DREmachines this is provided in the form of a nonvolatile memory cartridge thatrecords all voter actions, but this creates a tension with privacy.
+ Other DREmachines had no audit trail at all; all an auditor could do was ask them to printout the same result again.
+25.
+5.
+3Optical scanMost of the non-DRE equipment consisted of optical-scan machines that wouldscan a ballot paper or card that the voter had completed, whether with a penor a special ballot-marking device, and then dropped into a ballot box.
+ OpticalSecurity Engineering809Ross Anderson25.
+5.
+ ELECTIONSscan systems had been around since the 1980s, and had evolved from the mark-sense scanners used to score multiple-choice tests in schools.
+In the following electoral cycle, Californian Secretary of State Debra Bowenauthorized a large team of computer scientists, led by University of Californiaprofessors David Wagner and Matt Bishop, to do a thorough evaluation of thestate’s voting systems.
+The reports made depressing reading [306].
+All theDRE voting systems they examined had serious design ﬂaws that led directly tospeciﬁc vulnerabilities that attackers could exploit to a↵ect election outcomes.
+All of the previously approved voting machines – by Diebold, Hart and Sequoia– had their certiﬁcation withdrawn, and a late-submitted system from ES&Swas also decertiﬁed.
+ California could take such radical action, as perhaps three-quarters of the nine million people who voted in 2004 did so using a paper oroptical-scan ballot.
+A similar inspection of Florida equipment was carried out by scientists atFlorida State University, who reported a bundle of new vulnerabilities in theDiebold equipment in July 2007 [749].
+ Ohio followed suit and came to similarconclusions.
+All the evaluated equipment had serious security failings: datathat should have been encrypted wasn’t; encryption done badly (for example,the key stored in the clear next to the ciphertext); bu↵er overﬂows; uselessphysical security; SQL injection; audit logs that could be tampered with; andundocumented back doors [1261].
+But if you abandon DRE machines for optical scanning of paper ballots, asmost US counties have since 2006, you can do a hand recount if a close result ischallenged.
+ But there are still lots of things to go wrong.
+First, hundreds of counties use ballot-marking devices, so that the votermakes their choices on a touch screen, after which the machine prints out avoting form they can inspect visually and drop into a ballot box.
+ But somemachines make separate human-readable and machine-readable marks, and ifsuch a machine can be hacked, it could print a ballot card where the text says‘Gore’ but the barcode says ‘Bush’.
+ So there’s a lot of detail around what youinspect, and how; best practice is to design for a risk-limiting audit.
+ In the UK,the gold standard is still the hand-marked paper ballot, but in the USA thevendors of ballot-marking machines have enlisted disability rights campaignersto sell their equipment.
+Our experience in the UK is broadly comparable, although we never adoptedvoting machines.
+ Tony Blair’s government progressively expanded the use ofpostal and other absentee forms of ballot, which was criticised by oppositionparties as it made vote-buying and intimidation easier.
+ Party workers (of whichBlair’s Labour party had more) could pressure voters into opting for a postalballot, then collect their ballot forms, ﬁll them out, and submit them.
+ Plans toextend voting from the post to email and text were criticised for making thisexisting low-grade abuse easier and potentially open to automation.
+ Finally,in the May 2007 local government elections, electronic voting pilots were heldin eleven areas around the UK.
+ Two of my postdocs acted as scrutineers inthe Bedford election, and observed the same kind of shambles that had beenreported at various US elections.
+ The counting was slower than with paper;the system (optical-scan software) had a high error rate, resulting in manySecurity Engineering810Ross Anderson25.
+5.
+ ELECTIONSmore ballots than expected being sent to human adjudicators for decision.
+ (Theprinters had changed the ink halfway through the print run, so half the ballotpapers were ‘the wrong shade of black’.
+) Even worse, the software sometimessent the same ballot paper to multiple adjudicators, and it wasn’t clear whichof their decisions got counted.
+ In the end, so that everyone could go home,the returning o�cer accepted a letter of assurance (written on the spot by thevendor) saying that no vote would have been miscounted as a result.
+ Yet theexercise left the representatives from the various parties with serious misgivings.
+The Open Rights Group, which organised the volunteers, reported that it couldnot express conﬁdence in the results for the areas observed [1472].
+ The ElectoralCommission did not disagree, and this experience persuaded the UK to continueusing hand-counted, hand-marked paper ballots to this day.
+ (UK election abuseshappen at other places in the kill chain, from voter registration through postalvoting abuses to breaches of campaign ﬁnance limits: so ﬁxing the computerswon’t be enough to ﬁx the problems.
+)25.
+5.
+4Software independenceThis experience brought home both the importance of, and the di�culty ofachieving, software independence – the property that an undetected change orerror in voting software cannot cause an undetectable change or error in an elec-tion outcome [1608].
+ We must assume that vote-counting software is buggy andit may be malicious, so we should not have to depend on it, and the possibilityof a manual recount is a vital mitigation.
+ But how do you do that in practice?In Bedford the candidates reckoned that a manual recount would have led tothe same result but with a di↵erent majority, and didn’t want to spend another20 hours on a full manual recount.
+The consensus view in 2020 is that systems must be designed to support arisk-limiting audit that can place strict bounds on the probability of fraud orerror arising as a result of things going wrong with the software.
+ For opticalscan, this might mean keeping all the votes from each ballot box in a separatebundle, so that a candidate could challenge “let’s do a hand count of boxes17, 37 and 169” and this could be completed quickly.
+ If the count is close, ordiscrepancies are found, you can hand-count more boxes.
+ (In fact, an argumentover partial versus state-wide recounts ﬁgured in the Bush v Gore lawsuit in2000.
+)Cryptographers have tried to make vote-tallying more veriﬁable.
+ Researchinto cryptographic election mechanisms goes back to the early 1980s, whenDavid Chaum proposed giving voters a digital ballot token constructed using thesame general techniques as digital cash, which they can spend with the candidateof their choice.
+ In section 5.
+7.
+7 I described the mechanism: it’s an interestingcrypto design problem as you need to support anonymity and auditability atthe same time.
+ The voter needs to be conﬁdent that their vote has been talliedproperly but in order to prevent vote buying they must not be able to provethis to anybody else – the vote must be receipt-free.
+After more than thirty years of research, there are now well-understoodmechanisms for this.
+ For example, the free Election Guard system from JoshBenaloh and colleagues at Microsoft Research allows digital ballots to be castSecurity Engineering811Ross Anderson25.
+5.
+ ELECTIONSin a vote collection device such as a scanner or ballot-marker in such a way thatthe encrypted ballots can be counted – the homomorphic property of El-Gamalencryption is used so that multiplying two encrypted votes has the same e↵ectas adding two plaintext ones.
+ A bit more work is required to ensure that all theballots are well-formed and the result is decrypted properly, but the outcome isa software-independent count [223].
+ This was piloted in Fulton, Wisconsin, in2020 in a primary election for Wisconsin Supreme Court candidates.
+Cryptographic vote-tallying is marketed as ‘end-to-end veriﬁable’ but thisclaim is somewhat ambitious.
+ It solves only the vote-tallying part of the prob-lem.
+ As with the electronic signature devices discussed in section 18.
+6.
+1, youdon’t have a trustworthy user interface, so you still have to worry about bugsand Trojans in the ballot-marking device or scanner.
+ You still need the audit.
+You still have to worry about attacks on voter registration, on pollbooks, on re-sult aggregation, and on the announcement of results.
+ And if the vote collectiondevice is an app on the voter’s phone, you have to worry about vote-buying andintimidation, as with postal ballots.
+ Then you also have to worry about phonemalware, and about the quality of the design and implementation.
+ A detailedevaluation of such an app that has been used in some US elections found dozensof problems [615].
+25.
+5.
+5Why electronic elections are hardAnother interesting threat emerged in the Netherlands.
+ DRE voting machineshad been introduced progressively during the 1990s, and cyber-rights activistswere worried.
+They ran some tests and discovered that the machines fromthe leading vendor, Nedap, were vulnerable to a Tempest attack: using simpleequipment, an observer sitting outside the polling station could see what partya voter had selected [785].
+ From the security engineer’s perspective this wasuseful, as it led to the declassiﬁcation by the German intelligence folk of alot of Cold War Tempest material, as I discussed in section 19.
+3.
+2 (the Nedapmachines are also used in Germany).
+ The activists got the political result theywanted: the District Court in Amsterdam decertiﬁed all the Nedap machines.
+As for other countries, the picture is mixed.
+In some elections in less-developed countries, the state has systematically censored opposition parties’websites and run denial-of-service attacks; in others (typically the most back-ward), elections are rigged by more traditional methods such as ﬁling boguscriminal charges to get opposition candidates o↵ the ballot, or just kidnappingand murdering them.
+ The best survey of abuses worldwide may be the Com-monwealth’s 2020 report [329].
+ The news as I write this is of unrest following theelection in Belarus where ‘Europe’s last dictator’, Alexander Lukashenko, de-clared he’d won over 80% of the votes in an election at which exit polls suggestedthat his opponent Svetlana Tikhanovskaya had actually won 70% of the vote.
+His thugs compelled her to make a concession speech and drove her into exilein Lithuania, keeping her husband hostage.
+ Lukashenko then put the resultingdemonstrations down by force [611].
+ Another news story was the overthrowin a coup of the President of Mali, following allegations that he had stolen anelection ﬁve months previously [1200].
+In recent years there have also been many tussles over population registra-Security Engineering812Ross Anderson25.
+5.
+ ELECTIONStion; in section 7.
+4.
+2.
+2 I described how less developed countries rig elections byre-issuing the national ID card, and making cards harder to get for the ethnicgroups less likely to support the president.
+ Even where registration mechanismsare fairly robust, as in India with its Aadhaar biometric system mentioned insection 17.
+4, the authorities can attack voting rights directly: the governmentof Narendra Modi passed a law in 2019 to disenfranchise many Muslims, par-ticularly those in border areas.
+This is a very old playbook.
+As I already mentioned, right up until thetwentieth century, electoral history in the UK was about whether poor peoplecould vote, while in the USA it was about whether black people could vote.
+ Evenin Florida in 2000, more voters were disenfranchised as a result of registrationabuses than there were ballots disputed because of hanging chads.
+ And just asthe government can bias an election by making it harder to vote if you haven’tgot a car, it could make it harder to vote if you haven’t got a computer.
+ Therehave also been lawsuits over whether the ballots, or the voting machines, weremade so complex as to disenfranchise the less educated.
+Several disputes over technical security have got to court.
+ For example, thestate of Georgia appears a complete mess as I write in 2020; after years of tryingto make it harder to vote, failing to ﬁx known ﬂaws in Diebold machines andbeing targeted by the Russians, the state government was ordered by a court toreplace its systems.
+ The new systems were in meltdown during the June 2020primaries, with insu�cient capacity to meet voter demand [851].
+However the main focus of attention has shifted to the use of social media inelections.
+ Barack Obama used Facebook e↵ectively in 2008 and 2012, promptingothers to study social media; the 2016 election went to Donald Trump, who wasnot only much more skilful than Hilary Clinton at using Twitter, but endedup paying signiﬁcantly less for his Facebook ads.
+ As I explained in section 8.
+5,the ad auction mechanisms used by Google and Facebook multiply the amountthat you bid by a factor called ‘ad quality’, which is the probability that peoplewill click on the ad and, in the case of social media, share it.
+ The outcome isextremism bias: inﬂammatory ads are cheaper.
+Another factor in 2016 was Russian interference, as I described in sec-tion 2.
+2.
+3.
+ Russian agents not only campaigned for Trump, running troll farmsand social-media advertising campaigns aimed at suppressing black votes amongother things; they hacked the Gmail of Clinton campaign chair John Podesta.
+They hacked into systems in Illinois and Florida (and probably some otherstates) and could have manipulated voter registration, but they opted not topull the trigger on those attacks because they didn’t need them; they hackedthe electorate instead.
+ Had Clinton won, then if either of those states had votedfor her, evidence of ‘fraud’ could have emerged to undermine her presidency.
+How will this all a↵ect the election due in November 2020? As this book isdue for release then, I will merely note that there’s already been a ﬁasco overresult aggregation in the Democratic primary in Iowa [637], and the Russiansare once more running inﬂammatory pro-Republican campaigns online [1619].
+Both Twitter and Facebook have removed postings by Trump and his associatescontaining false information about Covid [1030], and there is concern that he orothers might use online media to undermine the electoral process, or conﬁdenceSecurity Engineering813Ross Anderson25.
+5.
+ ELECTIONSin the results.
+ Trump prepared the ground at the Republican National Conven-tion by claiming he could only lose if the election was stolen.
+ There is anxietywithin Facebook that although Zuckerberg has said he’ll block attempts at votersuppression, he’s been giving the right wing an easier ride [1740].
+ In August, themajor tech companies announced an alliance to ﬁght election manipulation [963].
+But what about a dispute over the result afterwards? There’s over a century ofAmerican political history to warn us against looking for technological solutionsto political problems.
+In the di↵erent political culture of Europe, we have a long tradition of cam-paign ﬁnance limits (America did too before the Citizens’ United decision of theSupreme Court turned it into a free-for-all).
+ Parties can spend only so muchper campaign, and per candidate; and most European countries forbid paid TVads during campaigns.
+ But enforcement has been getting steadily weaker.
+ Dur-ing the Brexit referendum, for example, both Leave campaigns exceeded thespending limit but just paid the £20,000 maximum ﬁne.
+ The Russian involve-ment in Brexit was largely in the form of ﬁnancial contributions and furthercampaigning on social media.
+ What might be done to block such abuses?At the 2019 conference of the Open Rights Group, I argued that we shouldextend the advertising ban from TV ads to all ads on Facebook, Twitter, andYouTube.
+ This is not just a matter of avoiding the worst of big-money poli-tics of the USA, but also because political ads that are targeted at individualsrather than at everybody foster extremism and fragment political discourse.
+ Thepoliticians’ job is to mediate conﬂicts between di↵erent stakeholders in society;if these groups end up in their own ﬁlter bubbles, then our politicians can betempted to inﬂame conﬂicts instead.
+ Banning ads will not be a panacea (Indiabanned Facebook ads in 2019) but it will keep election contests more within thecultural and economic space with which Europeans are familiar.
+Elections remain one of the tough security engineering problems.
+ While theindividual problems – such as voter registration, vote casting, vote counting, re-sult aggregation and audit – all have reasonably robust solutions, putting themtogether into a robust system is nontrivial.
+ Computer systems for registeringelectors, recording votes and tallying them have a number of properties whichmake them almost a pathological case for robust design, implementation, test-ing and deployment.
+ First, the election date is immovable and, ready or not,the software must be deployed then.
+ Second, di↵erent regions and countrieshave di↵erent requirements and they change over time.
+ Third, in the long gapbetween elections, sta↵ with experience move on and know-how is lost.
+ Fourth,operating systems and other software must be updated to ﬁx known vulnerabili-ties, and updates can also break security in unforeseen ways; a Windows updatecaused the EV2000 voting machine to highlight the last voter’s choice to thenext voter [991].
+ Yet most voting machines in use in the USA are no longermanufactured, so where are the updates to come from and how will they betested? Finally, elections are high-stress events, which increases the likelihoodof mistakes [1357].
+Let’s now look up from the engineering to the politics.
+ In the event of attack,the winners don’t want to investigate what might have gone wrong if they canpossibly avoid it – as we saw in both the USA and the UK in 20164.
+The4As I write, litigation continues in an attempt to force the release of the redacted parts ofSecurity Engineering814Ross Anderson25.
+6.
+ SUMMARY‘customer’ for an election is the losing side, and in the absence of any hope ofredress – whether through the courts, or through the ballot box next time –trust in democracy’s mechanisms can start to fail.
+ But there is no ‘designer’ toensure that the mechanisms and laws align all the way along the electoral cycle.
+On the contrary, it’s typically the incumbent who tweaks the laws, buys thevoting machines, and creates as many advantages for their own side, small andlarge, as the local political culture will tolerate.
+ And while voting mechanismscan support a democratic consensus, they cannot replace it: there are too manyother ways to undermine the outcome.
+ If the underlying social contract erodes,a hyper-partisan environment can lead incumbents to feel they do not dare tocede power.
+ In the worst cases the outcome can be civil war and failed states.
+25.
+6SummarySome of the most challenging security engineering problems in 2020 have to dowith the fact that as software becomes pervasive in the services we use and thedevices around us, the design of these services and devices comes up againstthe underlying complexity in human societies.
+We looked at four examples.
+Self-driving cars can cope with empty desert roads but ﬁnd real tra�c withhuman drivers very much harder.
+ Machine-learning mechanisms can go only sofar; they may be brilliant at pattern matching but lack understanding, whichopens up new possibilities of abuse at all levels in the stack – especially as peo-ple rush to use them for social prediction tasks for which they are intrinsicallyunsuited.
+ Privacy-enhancing tools and techniques are one way to explore thesecurity consequences of human complexity, but however hard we work to en-crypt and anonymise things, social structure tends to show through one way oranother.
+ And ﬁnally, we have elections; when incumbent rulers are prepared todo everything they think they can get away with – whether within or beyondthe law – to stay in o�ce, we can learn a lot about the limits of both technologyand law.
+As more and more of human life moves online, so the criticality and thecomplexity of online applications grow at the same time.
+ Many of the familiarproblems come back again and again, in ever less tractable forms.
+ Traditionalsoftware engineering tools helped developers get ever further up the mountainof systems complexity before they fell o↵.
+ What sort of tools, techniques, andgovernance processes are appropriate for dealing with the complexity of realsocieties? And how does this interact with politics? These are the topics wewill try to tackle in the third part of this book.
+Research ProblemsOne bundle of research problems is around how to split responsibility betweenpeople and automation.
+ HCI guru Ben Shneiderman argues that human controlplus extensive automation is the sweet spot for systems to be reliable, safe andtrustworthy [1723].
+ This is natural for ﬂight-control systems and life-supportthe Mueller report into that election.
+Security Engineering815Ross Anderson25.
+6.
+ SUMMARYmachinery, but scaling it up to things like recommender systems and hate-speech detection is not trivial.
+ How can humans do quality control on millionsof ﬁltering decisions being taken every second by a large tech company? Andwhat should the governance on top of that look like? Underlying it all is a longdebate about whether automation (including ML) is heading towards artiﬁcialintelligence or intelligence augmentation [87].
+As automation involving ML becomes more pervasive, the questions maybecome broader.
+ Architects and city planners will have to wrestle with howwe design living and working environments that have to take into account theinterests of multiple stakeholders.
+ Then there will be global social and politicalquestions around the coevolution of mechanisms and societies.
+ In the secondedition I said that “one of the critical research problems between now and thethird edition of this book .
+.
+.
+ will be how protection mechanisms scale.
+.
+.
+ howone goes about evolving ‘security’ (or any other emergent property) in a socio-technical system with billions of users.
+” I noted that simple systems of rules,such as the multilevel security beloved of governments, were never natural, andpeople always had to break them to get their work done.
+ So what lies beyond?We have more experience of that now; several large tech ﬁrms run systems withover a billion active users, and hundreds of ﬁrms have over a hundred million.
+In such systems, the technology and the behaviour adapt to each other, butthe system developers are much more powerful and have di↵erent incentives(they want data while users want privacy).
+ The basic mechanisms that humanshave for rule negotiation at scale are competition in the market and governmentregulation.
+ Neither of these is adequate on its own, and the interaction betweentech and politics may even undermine the machinery of selecting a government.
+We engineers need to care about these issues, and try to understand them.
+In the third section of this book we’ll try to tackle the broader policy andmanagement questions (such as surveillance versus privacy), how the evolutionof large complex systems can be managed and governed, and how technologycan be regulated to meet social goals such as safety and privacy.
+Further ReadingFor an introduction to car security, you might ﬁrst look at Charlie Miller andChris Valasek’s account of how they hacked a Jeep [1316], then at Craig Smith’s‘Car Hackers’ Handbook’ if you want to dive into the technical detail [1792].
+Nicolas Papernot’s “Marauder’s Map” may be the best introduction rightnow to the fast-moving ﬁeld of adversarial machine learning [1493], while GaryMcGraw and colleagues o↵er design principles plus a list of things to thinkabout when working on the security of systems with machine-learning compo-nents [1267].
+ Google’s Je↵ Dean, its SVP of machine learning, describes thecompany’s research on AI fairness at [528].
+ My own philosophical position onthe AI versus IA debate may be found at [87].
+As for personal privacy in the face of hostile state actors, that’s a movingconﬂict as the tools evolve on both sides.
+One starting point might be the“Surveillance Self-Defence” page on EFF website [618].
+ There’s an interestingSecurity Engineering816Ross Anderson25.
+6.
+ SUMMARYaccount by Ben Collier of the organisational and social dynamics of the Torproject, which maintains the leading online anonymity service, at [458].
+ Formore technical depth, see section 20.
+4 on Tor, or the anonymity bibliographyat [125].
+The history of US voting systems is told by Douglas Jones and Barbara Si-mons [991].
+ The US National Academies of Sciences, Engineering and Medicineproduced an extensive report on election security in response to the events of2016 [1388].
+ More recently, the Commonwealth produced a guide to the elec-tronic security of elections based on its own member states’ very diverse expe-riences, also covering the whole cycle from registration through vote casting,tallying and communication of the results [329].
+Security Engineering817Ross Anderson

@@ -1,0 +1,836 @@
+Chapter 23Electronic and InformationWarfareAll warfare is based on deception .
+.
+.
+ hold out baits to enticethe enemy.
+ Feign disorder, and crush him.
+– Sun TzuForce, and Fraud, are in warre the two Cardinal Virtues.
+– Thomas Hobbes23.
+1IntroductionFor decades, electronic warfare was a separate subject from computer security,even though they use some common technologies.
+ This started to change inthe last years of the twentieth century as the Pentagon started to fuse elementsof the two disciplines into the new subject of information warfare, followed byRussia and China.
+ The Russian denial-of-service attacks on Estonia in 2007put it ﬁrmly on many policy agendas; Stuxnet moved it into prime time; andthe Russian interference in two big political events of 2016, the UK Brexitreferendum and the US election, taught legislators that it could cost them theirjobs.
+There are other reasons why some knowledge of electronic warfare is im-portant to the security engineer.
+ Many technologies originally developed for thewarrior have been adapted for commercial use, and instructive parallels abound.
+The struggle for control of the electromagnetic spectrum was the ﬁrst area ofelectronic security to have experienced a lengthy period of coevolution of attackand defense involving capable motivated opponents, giving rise to deceptionstrategies and tactics of a unique depth and subtlety.
+ Although the subject lan-guished after the end of the Cold War in 1989, it has revived recently as Chinaworks to become a peer competitor to the USA, as Russia modernises its armedforces, and as AI ﬁnds its way into radar, sonar and related systems.
+ Warfareis about to get hi-tech again, unlike in 2000-2020 with its emphasis on spookshacking people’s phones and special forces then kicking down their doors.
+70423.
+2.
+ BASICSElectronic warfare was also our ﬁrst teacher about service-denial attacks, atopic that computer security people ignored for years, and about hybrid attacksthat involve both direct and psychological factors.
+ Finally, many of the tech-niques evolved to defeat enemy radars, including various kinds of decoys andjamming, have interesting parallels in the new ‘information warfare’ world offake news, troll farms and postmodern propaganda.
+23.
+2BasicsWhile old-fashioned computer security was about conﬁdentiality, integrity andavailability, electronic warfare has this the other way round.
+ The priorities are:1.
+ denial of service, which includes jamming, mimicry and physical attack;2.
+ deception, which may be targeted at automated systems or at people; and3.
+ exploitation, which includes not just eavesdropping but obtaining any op-erationally valuable information from the enemy’s use of his electronicsystems.
+At the level of doctrine, electromagnetic warfare is generally considered toconsist of• electronic attack, such as jamming enemy communications or radar, anddisrupting enemy equipment using high-power microwaves;• electronic protection, which is about retaining some radar and communica-tions capability in the face of attack.
+ It ranges from designing systems re-sistant to jamming, through hardening equipment to resist high-power mi-crowave attack, to the destruction of enemy jammers using anti-radiationmissiles; and• electronic support, which supplies the necessary intelligence and threatrecognition to allow e↵ective attack and protection.
+ It allows commandersto search for, identify and locate sources of intentional and unintentionalelectromagnetic energy.
+These deﬁnitions are taken from Schleher [1662].
+ The traditional topic ofcryptography, namely communications security (Comsec), is only a small partof electronic protection, just as it is only a small part of information protec-tion in modern civilian systems.
+Electronic support includes signals intelli-gence, or Sigint, which consists of communications intelligence (Comint) andelectronic intelligence (Elint).
+ The former collects enemy communications, in-cluding both message content and tra�c data about which units are communi-cating, while the latter concerns itself with recognizing hostile radars and othernon-communicating sources of electromagnetic energy.
+Deception is central to electronic attack.
+ The goal is to mislead the enemyby manipulating their perceptions in order to degrade the accuracy of theirintelligence and target acquisition.
+ Its e↵ective use depends on clarity about whoSecurity Engineering705Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMS(or what) is to be deceived, about what and how long, and – where the targetsof deception are human – the exploitation of pride, greed, laziness and othervices.
+ Deception can be extremely cost e↵ective and is increasingly relevant tocommercial systems.
+Physical destruction is an important part of the mix; while some enemysensors and communications links may be neutralized by jamming (so-called softkill), others will be destroyed (hard kill).
+ Successful electronic warfare dependson using the available tools in a coordinated way.
+Electronic weapon systems are like other weapons in that there are sensors,such as radar, infrared and sonar; communications links which take sensor datato the command and control center; and output devices such as jammers, lasers,missiles, bombs and so on.
+ I’ll discuss the communications system issues ﬁrst,as they are the most self-contained, then the sensors and associated jammers,and ﬁnally other devices such as electromagnetic pulse generators.
+ Once we’redone with electronic warfare, we’ll look at the lessons we might take over toinformation warfare.
+23.
+3Communications SystemsMilitary communications were dominated by physical dispatch until about 1860,then by the telegraph until 1915, and then by the telephone and radio until afterthe end of the Cold War [1380].
+ Nowadays, a typical command and controlstructure is made up of various tactical and strategic radio networks supportingdata, voice and images, operating over point-to-point links and broadcast.
+ Thereare also ﬁxed links including the Internet and classiﬁed IP networks.
+ Withoutsituational awareness and the means to direct forces, the commander is likelyto be ine↵ective.
+ But the need to secure communications is pervasive, and thethreats are very diverse.
+• One obvious type of tra�c is the communications between ﬁxed sites suchas army headquarters and the political leadership.
+ A signiﬁcant histor-ical threat here was that the cipher security might be penetrated andthe orders, situation reports and so on compromised, whether as a re-sult of cryptanalysis or – more likely – equipment sabotage, subversion ofpersonnel or theft of key material.
+ The insertion of deceptive messagesmay also be a threat in some circumstances.
+ Cipher security may includeprotection against tra�c analysis (such as by constant bitrate encryptionof some links) as well as of the transmitted message conﬁdentiality andauthenticity.
+ The secondary threat is that the link might be disrupted,whether by destruction of cables or relay stations, or by tra�c ﬂoodingwhere resources are shared.
+• There are more stringent requirements for communications with covertassets such as agents in the ﬁeld.
+ Here, in addition to cipher security,location security is important.
+ Agents have to take steps to minimize therisk of being caught as a result of communications monitoring.
+ If they sendmessages using a medium the enemy can monitor, such as the Internet orSecurity Engineering706Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMSradio, then some e↵ort may go into frustrating tra�c analysis and radiodirection ﬁnding.
+• Tactical communications, such as between HQ and a platoon in the ﬁeld,also have more stringent (but slightly di↵erent) needs.
+ Radio directionﬁnding is still an issue, but jamming may be at least as important, and de-liberately deceptive messages may also be a problem.
+ By the 1980s, therewas equipment that enabled an enemy air controller’s voice commands tobe captured, cut into phonemes and spliced back together into deceptivecommands, in order to gain a tactical advantage in air combat [730].
+ Asvoice morphing techniques are developed using deepfake techniques frommachine learning, the risk of spooﬁng attacks on communications will in-crease.
+ So cipher security may increasingly include authenticity as well asconﬁdentiality and covertness.
+• Control and telemetry communications, such as signals sent from an air-craft to a missile it has just launched, should be protected against jammingand modiﬁcation.
+ It would also be nice if they could be covert (so as notto trigger a target’s warning receiver) but that is in tension with the powerlevels needed to defeat defensive jamming systems.
+ A common solution isto make the communications adaptive – to start o↵ in a low-probability-of-intercept mode, but ramp up the power as needed in response to jamming.
+So the protection of communications will require some mix, depending onthe circumstances, of content secrecy, authenticity, resistance to tra�c analysisand radio direction ﬁnding, and resistance to various kinds of jamming.
+ Theseinteract in some subtle ways.
+ For example, one radio designed for use by dissi-dent organizations in Eastern Europe in the early 1980s operated in the radiobands normally occupied by the Voice of America and the BBC World Service– which were routinely jammed by the Russians.
+ The idea was that unless theRussians were prepared to turn o↵ their jammers, they would have to workharder at direction ﬁnding.
+Attack also generally requires a combination of techniques – even wherethe objective is not analysis or direction ﬁnding but simply denial of service.
+According to Soviet doctrine, a comprehensive and successful attack on a mil-itary communications infrastructure would involve destroying one third of itphysically, denying e↵ective use of a second third through techniques such asjamming, trojans or deception, and then allowing the adversary to disable theremaining third by attempting to pass all their tra�c over a third of their in-stalled capacity [1156].
+ This applies even in guerilla wars; in Malaya, Kenya andCyprus the rebels managed to degrade the telephone system enough to force thepolice to set up radio nets [1380].
+NATO developed a comparable doctrine, called Counter-Command, Controland Communications operations (C-C3, pronounced C C cubed), in the 80s.
+It achieved its ﬁrst ﬂowering in Gulf War 1.
+ Of course, attacking an army’scommand structures is much older; it’s basic common sense to shoot at ano�cer before shooting at his men.
+Security Engineering707Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMS23.
+3.
+1Signals intelligence techniquesBefore communications can be attacked, the enemy’s network must be mapped.
+The most expensive and critical task in signals intelligence is identifying andextracting the interesting material from the cacophony of radio signals and thehuge mass of tra�c on systems such as phone networks and the Internet.
+In the case of radio signals, communications intelligence agencies collect ahuge variety of signal types and build extensive databases of which stations orservices use which frequencies and how.
+ It is often possible to identify individualequipment by signal analysis.
+The giveaways can include any unintentionalfrequency modulation, the shape of the transmitter turn-on transient, the precisecenter frequency and the ﬁnal-stage ampliﬁer harmonics.
+ This RF ﬁngerprinting(RFID) technology was declassiﬁed in the mid-1990s for use in identifying clonedcellphones [776, 1662].
+ It is the direct descendant of the World War 2 techniqueof recognizing a wireless operator by his ﬁst – the way he used Morse Code [1224].
+Radio Direction Finding (RDF) is also critical.
+ In the old days, this involvedtriangulating the signal of interest using directional antennas at two monitoringstations.
+So spies might have several minutes to send a message home be-fore having to move.
+ Modern monitoring stations use time di↵erence of arrival(TDOA) to locate a suspect signal accurately and automatically by comparingthe phase of the signals received at two sites; nowadays, anything more than asecond or so of transmission can be a giveaway.
+Tra�c analysis – looking at the number of messages by source and destina-tion – can also give very valuable information.
+ Imminent attacks were signalledin World War 1 by a greatly increased volume of radio messages, and more re-cently by increased pizza deliveries to the Pentagon.
+ However, tra�c analysisreally comes into its own when sifting through tra�c on public networks, whereits importance (both for national intelligence and police purposes) is di�cult tooverstate.
+ Until the late 1990s, tra�c analysis was the domain of intelligenceagencies – when NSA ops people referred to themselves as ‘hunter-gatherers’,tra�c analysis was much of the ‘hunting’.
+In this century, however, tra�canalysis has come out of the shadows and become a major subject of study; Idiscuss this in the context of law-enforcement and intelligence surveillance insection 26.
+2.
+2.
+One of the basic techniques is the snowball search.
+ If you suspect Alice ofespionage (or drug dealing, or whatever), you note everyone she calls, and ev-eryone who calls her.
+ This gives you a list of dozens of suspects.
+ You eliminatethe likes of banks and doctors, who receive calls from too many people to an-alyze, and repeat the procedure on each remaining number.
+ Having done thisprocedure recursively two or three times, you amass thousands of contacts –they accumulate like a snowball rolling downhill.
+ You now sift the snowballyou’ve collected – for example, for people already on one of your blacklists,and for telephone numbers that appear more than once.
+ So if Bob, Camillaand Donald are Alice’s contacts, with Bob and Camilla in contact with Eveand Donald and Eve in touch with Farquhar, then all of these people may beconsidered suspects.
+ You now draw a friendship tree which gives a ﬁrst approx-imation to Alice’s network, and reﬁne it by collating it with other intelligencesources.
+ Covert community detection became a very hot topic after 9/11, andSecurity Engineering708Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMSresearchers have tried all sorts of hierarchical clustering and graph partitioningmethods to the problem.
+ One leading algorithm is by Mark Newman [1434]; ituses spectral methods to partition a network into its natural communities so asto maximise modularity.
+ The standard reference on such techniques is Easleyand Kleinberg [599].
+But even given good mathematical tools for analysing abstract networks,reality is messier.
+ People can have several numbers, and they also share numbers.
+When conspirators take active countermeasures, it gets harder still; Bob mightget a call from Alice at his work number and then call Eve from a phone box.
+ (Ifyou’re running a terrorist cell, your signals o�cer should get a job at a dentist’sor a doctor’s or some other place that has too many active contacts to analysee↵ectively).
+ Also, you’ll need some means of correlating telephone numbers topeople.
+ Even if you have access to the phone company’s database of unlistednumbers, prepaid mobile phones can be a serious headache, as can hacked PBXsand encrypted messaging services such as Signal.
+ Tying IP addresses to peopleis even harder; ISPs don’t always keep the Radius logs for long.
+ I discuss allthese issues in more detail elsewhere, including Ed Snowden’s revelations aboutwhat the NSA did in section 2.
+2.
+1 and the history of the Five Eyes intelligencesharing agreement in section 26.
+2.
+6.
+ For now, I’ll just remark that anonymouscommunications aren’t new.
+ There have been letter boxes and public phonebooths for generations.
+But they’re not a universal answer for the crook asthe discipline needed to use anonymous communications properly is beyondmost criminals.
+It was reported, for example, that one of the alleged 9/11masterminds was caught after he used in his mobile phone in Pakistan a prepaidSIM card that had been bought in Switzerland in the same batch as a SIM thathad been used in another Al-Qaida operation.
+Signals collection is not restricted to getting phone companies to give accessto the content of phone calls and the itemised billing records.
+ It also involvesa wide range of specialized facilities, as revealed by Ed Snowden in 2013 anddescribed in section 2.
+2.
+1.
+ Even before then, we knew the broad picture, thanksto a long series of leaks and work by investigative journalists.
+ A 1996 book byNicky Hager [849] described a Five Eyes collection network.
+ Known as Echelon,this consisted of a number of ﬁxed collection stations that monitored phone, faxand data tra�c with computers called dictionaries that searched passing tra�cfor interesting phone numbers, network addresses and machine-readable content;this tra�c selection was driven by search strings entered by intelligence analysts.
+Two years before Google was founded, Echelon was already a kind of Google forthe world’s phone system; the 2013 system described by Snowden extends this toIP networks and to the greater tra�c volumes of today.
+ It has become a massivedistributed search engine with over a hundred nodes worldwide.
+ Ingested tra�cis ﬁrst subject to massive data reduction – the video and the broadcast stu↵gets thrown away – and then content is kept for a period of a few days in caseanyone wants it.
+ Tra�c data is also kept, but for longer.
+This ﬁxed network is supplemented by tactical collection facilities as needed.
+Hager described, for example, the dispatch of Australian and New Zealand navyfrigates to monitor domestic communications in Fiji during military coups inthe 1980s.
+ Koch and Sperber discuss US and German installations in Germanyin the 1990s in [1062]; Fulghum describes airborne signals collection in [730];Security Engineering709Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMSsatellites are also used to collect signals, and there are covert collection facilitiestoo that are not known to the host country.
+ For example, in section 2.
+2.
+1.
+9 Idescribe Operation Socialist, where GCHQ hacked the Belgian phone companyto get access to third-party mobile-phone tra�c routed through Belgium andalso to the communications of EU institutions in Brussels.
+Since the Snowden revelations, over half of IP tra�c has been encrypted,which has shifted the focus of intelligence and law enforcement somewhat tocollection from endpoints.
+ This brings us to the topic of attacks.
+23.
+3.
+2Attacks on communicationsOnce you have mapped the enemy network, you may wish to attack it.
+ Peopleoften talk in terms of ‘codebreaking’ but this is a gross oversimpliﬁcation.
+First, although some systems have been broken by pure cryptanalysis, thisis fairly rare.
+ Most production attacks have been on the supply or custody ofequipment or key material.
+ Examples include the theft of the State Departmentcode book during World War 2 by the valet of the American ambassador toRome [1001]; errors in the manufacture and distribution of one-time pads lead-ing to the ‘Venona’ attacks on Soviet diplomatic tra�c [1001]; and the covertownership of the Swiss company Crypto AG by the CIA and Germany’s Bun-desnachrichtendienst, which I discuss in section 26.
+2.
+7.
+1.
+ Ed Snowden disclosedthe theft by GCHQ of the card personalisation ﬁles from Gemplus, which com-promised the keys in millions of SIM cards, giving the intelligence communityaccess to the tra�c of millions of mobile phones.
+ Even where attacks basedon cryptanalysis have happened, they have often been made much easier byoperational errors, as with the attacks on the German Enigma tra�c duringWorld War 2 [1002], or by political interference with cryptography.
+ This canbe overt, as with export controls (see sections 4.
+3.
+1 and 26.
+2.
+9), or subtle, aswith standards for random number generators (see section 2.
+2.
+1.
+5) and VPNs(section 2.
+2.
+1.
+7).
+ Such activities are known by the agencies as ‘crypto enabling’and their budgets are in nine ﬁgures.
+Other states play similar games: thehistory of Soviet intelligence during the Cold War reveals that the USA’s tech-nological advantage was largely nulliﬁed by Soviet skills in ‘using Humint inSigint support’ – recruiting traitors who sold key material, such as the Walkerfamily [118].
+ More recently, Chinese attacks on cloud service providers and onkey assets such as the O�ce of Personnel Management – which got them theclearance data ﬁles on essentially all US government employees – were describedin section 2.
+2.
+2.
+Second, access to content is often not the desired result.
+In tactical sit-uations, the goal is often to detect and destroy nodes, or to jam the tra�c.
+Jamming can involve not just noise insertion but active deception.
+ In WorldWar 2, the Allies used German speakers as bogus controllers to send Germannightﬁghters confusing instructions, and there was a battle of wits as authenti-cation techniques were invented and defeated.
+ I mentioned in an earlier chapterthe tension between intelligence and operational units: the former want to listento the other side’s tra�c, and the latter to deny them its use [150].
+ Compro-mises between these goals can be hard to ﬁnd.
+ It’s not enough to jam the tra�cyou can’t read as that tells the enemy what you can read!Security Engineering710Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMSMatters can be simpliﬁed if the opponent uses cryptography – especially ifthey’re competent and you can’t read their tra�c.
+ This removes the ops/inteltension, so you switch to RDF or the destruction of protected links as appro-priate.
+ This can involve the hard-kill approach of digging up cables or bombingtelephone exchanges (both of which the Allies did during Gulf War 1), the soft-kill approach of jamming, or whatever combination is e↵ective.
+Jamming isuseful where a link is to be disrupted for a short period, but is often expensive;not only does it tie up facilities, but the jammer itself becomes a target.
+ Caseswhere it is more e↵ective than physical attack include satellite links, where theuplink can often be jammed using a tight beam from a hidden location usingonly a modest amount of power.
+The increasing use of civilian infrastructure, and in particular the Internet,raises the question of whether systematic denial-of-service attacks might be usedto jam tra�c.
+ (There were anecdotes during the Bosnian war of Serbian infor-mation warfare cells attempting to DDoS NATO web sites.
+) This threat is stillconsidered real enough that many Western countries have separate intranets forgovernment and military use.
+23.
+3.
+3Protection techniquesSo communications security techniques involve not just protecting authenticityand conﬁdentiality, but also preventing tra�c analysis, direction ﬁnding, jam-ming and physical destruction.
+ Encryption can stretch to the ﬁrst of these ifapplied at the link layer, so that all links have a constant-rate pseudorandombitstream on them at all times.
+ But link-layer encryption is tricky over radio,because of the trade-o↵ between synchronisation and jamming; and on its ownit is not always enough, as enemy capture of a single node might put the wholenetwork at risk.
+Encryption alone cannot protect against RDF, jamming, and the destructionof links or nodes.
+For this, di↵erent technologies are needed.
+The obvioussolutions are:• redundant dedicated lines or optical ﬁbers;• highly directional transmission links, such as optical links using infraredlasers or microwave links using highly directional antennas and extremelyhigh frequencies;• low-probability-of-intercept (LPI), low-probability-of-position-ﬁx (LPPF) andanti-jam radio techniques.
+The ﬁrst two of these options are fairly straightforward, and where they’refeasible they are usually the best.
+ Cabled networks are very hard to destroycompletely, unless the enemy knows where the cables are and has physical accessto cut them.
+ Even with massive artillery bombardment, the telephone networkin Stalingrad remained in use (by both sides) all through the siege.
+The third option is a substantial subject in itself, which I will now describe(brieﬂy).
+Security Engineering711Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMSA number of LPI/LPPF/antijam techniques go under the generic name ofspread spectrum communications.
+They include frequency hoppers, direct se-quence spread spectrum (DSSS) and burst transmission.
+ From beginnings aroundWorld War 2, spread spectrum has spawned a substantial industry and the tech-nology (especially DSSS) has been applied to numerous other problems, rangingfrom high resolution ranging (in the GPS system) through radio protocols suchas Bluetooth.
+ I’ll look at each of these three approaches in turn.
+23.
+3.
+3.
+1Frequency hoppingFrequency hoppers are the simplest spread spectrum systems to understandand to implement.
+ They do exactly as their name suggests – they hop rapidlyfrom one frequency to another, with the sequence of frequencies determinedby a pseudorandom sequence known to the authorized principals.
+ They wereinvented, famously, over dinner in 1940 by actress Hedy Lamarr and screenwriterGeorge Antheil, who devised the technique as a means of controlling torpedoswithout the enemy detecting them or jamming their transmissions [1702].
+ Afrequency-hopping radar was independently developed at about the same timeby the Germans [1682].
+Hoppers are resistant to jamming by an opponent who doesn’t know the hopsequence.
+ If the hopping is slow and a nearby opponent has capable equipment,then an option might be follower jamming – observing the signal and followingit around the band, typically jamming each successive frequency with a singletone.
+ However if the hopping is fast enough, or propagation delays are excessive,the opponent may have to jam much of the band, which requires much morepower.
+ The ratio of the input signal’s bandwidth to that of the transmittedsignal is called the process gain of the system; thus a 100 bit/sec signal spreadover 10MHz has a process gain of 107/102 = 105 = 50dB.
+ The jamming margin,which is deﬁned as the maximum tolerable ratio of jamming power to signalpower, is essentially the process gain modulo implementation and other losses(strictly speaking, process gain divided by the minimum bit energy-to-noisedensity ratio).
+ The optimal jamming strategy, for an opponent who can’t predictor e↵ectively follow the hop sequence, is partial band jamming – to jam enoughof the band to introduce an unacceptable error rate in the signal.
+Frequency hopping is used in some civilian applications, such as Bluetooth,where it gives a decent level of interference robustness at low cost.
+On themilitary side of things, although hoppers can give a large jamming margin, theygive little protection against direction ﬁnding.
+ A signal analysis receiver thatsweeps across the frequency band of interest will usually intercept them (anddepending on the relevant bandwidths, sweep rate and dwell time, it mightintercept a hopping signal several times).
+Since frequency hoppers are simple to implement and give a useful levelof jam-resistance, they are often used in combat networks, such as man-packradios, with hop rates of 50–500 per second.
+ To disrupt these communications,the enemy will need a fast or powerful jammer, which is inconvenient for thebattleﬁeld.
+ Fast hoppers (deﬁned in theory as having hop rates exceeding thebit rate; in practice, with hop rates of 10,000 per second or more) can passthe limit of even large jammers.
+ Hoppers are less ‘LPI’ than the techniques I’llSecurity Engineering712Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMSN bitsN*RbitsNarrow band original signalOver sampled original signalSpread signalWide band pseudonoiseXORRFigure 23.
+1: – spreading in DSSS (courtesy of Roche and Dugelay)Wide band pseudonoiseSpread signalDemodulated signalRestored signalXORFigure 23.
+2: – unspreading in DSSS (courtesy of Roche and Dugelay)describe next, as an opponent with a sweep receiver can detect the presence of asignal; and slow hoppers have some vulnerability to eavesdropping and directionﬁnding, as an opponent with suitable wideband receiving equipment can oftenfollow the signal.
+23.
+3.
+3.
+2DSSSIn direct-sequence spread spectrum, we multiply the information-bearing se-quence by a much higher rate pseudorandom sequence, usually generated bysome kind of stream cipher (see Figures 23.
+1 and 23.
+2).
+ This spreads the spec-trum by increasing the bandwidth.
+ The technique was ﬁrst described by a Swissengineer, Gustav Guanella, in a 1938 patent application [1682], and developedextensively in the USA in the 1950s.
+ Its ﬁrst deployment in anger was in Berlinin 1959.
+Like hopping, DSSS can give substantial jamming margin (the two systemshave the same theoretical performance).
+ But it can also make the signal sig-niﬁcantly harder to intercept.
+The trick is to arrange things so that at theintercept location, the signal strength is so low that it is lost in the noise ﬂoorunless the opponent knows the spreading sequence with which to recover it.
+ Ofcourse, it’s harder to do both at the same time, since an antijam signal shouldbe high power and an LPI/LPPF signal low power; the usual tactic is to workin LPI mode until detected by the enemy (for example, when coming withinradar range) and then boost transmitter power into antijam mode.
+Security Engineering713Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMSThere is a large literature on DSSS, and the techniques have now been takenup by the commercial world as code division multiple access (CDMA) in variousmobile radio and phone systems.
+DSSS is sometimes referred to as “encrypting the RF” and it comes in anumber of variants.
+ For example, when the underlying modulation scheme isFM rather than AM it’s called chirp.
+ The classic introduction to the underly-ing mathematics and technology is [1525]; the engineering complexity is higherthan with frequency hop for various reasons.
+ For example, synchronization isparticularly critical.
+ One strategy is to have your users take turns at providinga reference signal.
+ If your users have access to a reference time signal (such asGPS, or an atomic clock) you might rely on this; but if you don’t control GPS,you may be open to synchronization attacks, and even if you do the GPS signalmight be jammed.
+ It was reported in 2000 that the French jammed GPS inGreece in an attempt to sabotage a British bid to sell 250 tanks to the Greekgovernment, a deal for which France was a competitor.
+ This caused the Britishtanks to get lost during trials.
+ When the ruse was discovered, the Greeks foundit all rather amusing [1918].
+ Now GPS jammers are commodity items and I’lldiscuss them in more detail a little later in this chapter.
+23.
+3.
+3.
+3Burst communicationsBurst communications, as their name suggests, involve compressing the data andtransmitting it in short bursts at times unpredictable by the enemy.
+ They arealso known as time-hop.
+ They are usually not so jam-resistant (except insofaras the higher data rate spreads the spectrum) but can be even more di�cultto detect than DSSS; if the duty cycle is low, a sweep receiver can easily missthem.
+ They are often used in radios for special forces and intelligence agents.
+Really high-grade room bugs often use burst.
+An interesting variant is meteor burst transmission (also known as meteorscatter).
+ This relies on the billions of micrometeorites that strike the Earth’satmosphere each day, each leaving a long ionization trail that persists for typi-cally a third of a second and provides a temporary transmission path betweena mother station and an area of maybe a hundred miles long and a few mileswide.
+ The mother station transmits continuously; whenever one of the daugh-ters is within such an area, it hears mother and starts to send packets of data athigh speed, to which mother replies.
+ With the low power levels used in covertoperations one can achieve an average data rate of about 50 bps, with an av-erage latency of about 5 minutes and a range of 500–1500 miles.
+ Meteor burstcommunications are used by special forces, and in civilian applications such asmonitoring rainfall in remote parts of the third world.
+ With higher power levels,and in higher latitudes, average data rates can rise into the tens of kilobits persecond, and the USAF in Alaska uses such systems as backup communicationsfor early warning radars.
+ In niche markets where low bit rates and high latencycan be tolerated, but where equipment size and cost are important, meteorscatter can be hard to beat.
+ The technology is described in [1661].
+Security Engineering714Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMS23.
+3.
+3.
+4Combining covertness and jam resistanceThere are some rather complex tradeo↵s between di↵erent LPI, LPPF and jamresistance features, and other aspects of performance such as resistance to fadingand multipath, and the number of users that can be accommodated simultane-ously.
+ They also behave di↵erently in the face of specialized jamming techniquessuch as swept-frequency jamming (where the jammer sweeps repeatedly throughthe target frequency band) and follower.
+ Some types of jamming translate be-tween di↵erent modes: for example, an opponent with insu�cient power toblock a signal completely can do partial time jamming on DSSS by emittingpulses that cover a part of the spectrum it uses, just like partial band jammingof frequency hop.
+There are also engineering tradeo↵s.
+ For example, DSSS tends to be abouttwice as e�cient as frequency hop in power terms, but frequency hop gives muchmore jamming margin for a given complexity of equipment.
+ On the other hand,DSSS signals are much harder to locate using direction-ﬁnding techniques [673].
+System survivability requirements can impose further constraints.
+ It maybe essential to prevent an opponent who has captured one radio and extractedits current key material from using this to jam a whole network.
+ So a typicalmilitary system will use some combination of tight beams, DSSS, hopping andburst.
+• Both DSSS and hopping are used with TDMA in Link 16, as it’s knownin NATO; it’s also known to US forces as the Tactical Digital InformationLink (TADIL), and was previously known as the Joint Tactical Informa-tion Distribution System (JTIDS) [1662].
+ TDMA separates transmissionfrom reception and lets users know when to expect their slot.
+ It has aDSSS signal with a 57.
+6KHz data rate and a 10MHz chip rate (and so ajamming margin of 36.
+5dB), which hops around in a 255MHz band withminimum jump of 30 MHz.
+ The hopping code is available to all users,while the spreading code is limited to individual circuits.
+ The rationaleis that if an equipment capture leads to the compromise of the spreadingcode, this would allow jamming of only a single 10MHz band, not thefull 255MHz.
+ Development started in 1967 with Gordon Welchman, whoalso broke German ciphers at Bletchley during World War 2; after pilotprojects in the 1970s, serious development started in the 1980s and thesystem was fully deployed from about 2000, seeing use in Afghanistan andIraq [1956].
+• The US armed forces have been supported by a series of satellite com-munications systems (MILSTAR and DSCS) with 1 degree beams froma geostationary orbit.
+ The e↵ect of the narrow beam is that users canoperate within three miles of the enemy without being detected.
+ Jam pro-tection is from hopping: its channels hop several thousand times a secondin bands of 2GHz.
+• French tactical radios have remote controls.
+ The soldier can use the hand-set a hundred yards from the radio.
+This means that attacks on thehigh-power emitter don’t have to endanger the troops so much [514].
+Security Engineering715Ross Anderson23.
+3.
+ COMMUNICATIONS SYSTEMSThere are also some system-level tricks, such as interference cancellation –where you communicate in a band which you’re jamming with a waveform knownto your own radios, so they can cancel it out or hop around it.
+ This can makejamming harder for the enemy by forcing them to spread their available powerover a larger bandwidth, and can make signals intelligence harder too [1601].
+23.
+3.
+4Interaction between civil and military usesCivil and military communications are increasingly intertwined.
+OperationDesert Storm (Gulf War 1 against Iraq) made extensive use of the Gulf States’civilian infrastructure: a huge tactical communications network was created in ashort space of time using satellites, radio links and leased lines, and experts fromvarious US armed services claim that the e↵ect of communications capabilityon the war was decisive [942].
+Another example of growing interdependency is the Global Positioning Sys-tem, GPS.
+ This started o↵ as a US military navigation system and had a selectiveavailability feature that limited the accuracy to about a hundred yards unlessthe user had the relevant cryptographic key.
+ This had to be turned o↵ duringGulf War 1 as there weren’t enough military GPS sets to go round and civilianequipment had to be used instead.
+ As time went on, GPS turned out to be souseful in civil aviation that the FAA helped ﬁnd ways to defeat selective avail-ability and give an accuracy of about 3 yards compared with a claimed 8 yardsfor the standard military receiver [630].
+ Finally, in May 2000, President Clintonannounced the end of selective availability.
+The US government still reserves the right to switch o↵ GPS, or to intro-duce errors, for example if terrorists are thought to be using it.
+ But so manydiverse systems now depend on GPS, from Google Maps to Uber, that respon-sible governments are unlikely to.
+ However there are many applications withmotivated opponents.
+ Some countries use GPS to do road pricing, or to enforceparole terms on released prisoners via electronic ankle tags, as I discussed insection 14.
+4 As a result, GPS jammers appeared in car magazines in 2007 for$700, and now cost under $100; they’re used by truck drivers to cheat roadtoll systems, company car drivers who want to stop their boss knowing wherethey’re going, and car thieves.
+ Cheap devices have short ranges, of typically5–10m.
+GPS spooﬁng takes slightly more work.
+ An example is meaconing, whereyou sample the signals at location A and retransmit them at location B (thisis also known as a wormhole attack).
+ The result is that anyone near B thinksthey’re near A instead.
+ This is used as a defensive mechanism in the limousinesof some heads of government (a sophisticated assassin could use this to targeta missile).
+Some countries engage in systematic GPS jamming, an examplebeing Russia along its border with Norway.
+ Spooﬁng can be largely detectedusing di↵erential GPS, where you use another receiver at a known location asa reference point (the FAA’s trick), and with interferometric GPS, also knownas S-GPS, where you use the signals captured by successive readings by thesame receiver to produce a synthetic aperture.
+ This also increases sensitivityand deals with multipath in urban canyons, the main source of large errors inSecurity Engineering716Ross Anderson23.
+4.
+ SURVEILLANCE AND TARGET ACQUISITIONcurrent equipment1.
+In addition to the US GPS system, Russia, China and Europe have separatenavigation satellite systems using the same principles; collectively, such systemsare known as GNSS.
+23.
+4Surveillance and Target AcquisitionThose aspects of electronic warfare that have to do with target acquisition andweapon guidance are where the arts of jamming and deception have been mosthighly developed.
+ (In fact, although there is much more in the open literatureon the application of electronic attack and defense to radar than to communi-cations, much of the same science applies to both.
+)The main methods used to detect hostile targets and guide weapons to themare sonar, radar and infrared.
+The ﬁrst to be developed was sonar, whichwas invented and deployed in World War 1 (under the name of ‘Asdic’), andstill dominates submarine warfare [846].
+Elsewhere the key sensor is radar.
+Although it was invented in 1904 as a maritime anti-collision device, its seriousdevelopment only occurred in the 1930s and it was used by all major participantsin World War 2 [855, 990].
+The electronic attack and protection techniquesdeveloped for it tend to be better developed than, and often go over to, systemsusing other sensors.
+23.
+4.
+1Types of radarThe wide range of deployed systems includes search radars, ﬁre-control radars,terrain-following radars, counter-bombardment radars and weather radars.
+ Theyhave a wide variety of signal characteristics.
+ For example, radars with a low RFand a low pulse repetition frequency (PRF) are better for search while high-frequency, high-PRF devices are better for tracking.
+ A classic textbook on thetechnology is by Schleher [1662].
+Early radar designs for search applications may have a rotating antennathat emits a sequence of pulses and detects echos.
+ In the days before digitalelectronics, the sweep in the display tube could be mechanically rotated in syncwith the antenna.
+ Fire control radars often used conical scan: the beam wouldbe tracked in a circle around the target’s position, and the amplitude of thereturns could drive positioning servos (and weapon controls) directly.
+ Now thebeams are generated electronically using multiple antenna elements, but trackingloops remain central.
+ Many radars have a range gate, circuitry which focuses ontargets within a certain range of distances from the antenna; if the radar hadto track all objects between (say) zero and 100 miles, then its pulse repetitionfrequency would be limited by the time it takes radio waves to travel 200 miles.
+This would have consequences for angular resolution and tracking performancegenerally.
+1Full disclosure: the company that developed S-GPS, Focal Point Positioning, was startedby one of my postdocs and I’m an investor in it.
+Security Engineering717Ross Anderson23.
+4.
+ SURVEILLANCE AND TARGET ACQUISITIONDoppler radar measures the velocity of the target by the change in frequencyin the return signal.
+ It is very important in distinguishing moving targets fromclutter, the returns reﬂected from the ground.
+ Doppler radars may have velocitygates that restrict attention to targets whose radial speed with respect to theantenna is within certain limits.
+An example of gating in a non-military application is adaptive cruise controlin cars.
+ This uses radar, gated to ignore vehicles whose relative speed is toogreat (so it doesn’t panic at oncoming vehicles) as well as vehicles that are toonear or too far.
+ You may notice that if another car pushes in close in frontof you, less than 20m away, your cruise control won’t notice it and won’t slowdown.
+23.
+4.
+2Jamming techniquesElectronic attack can be passive or active.
+The earliest countermeasure to be widely used was cha↵ – thin strips ofconducting foil that are cut to half the wavelength of the target signal andthen dispersed to provide a false return.
+Toward the end of World War 2,allied aircraft were dropping 2000 tons of cha↵ a day to degrade German airdefenses.
+ Cha↵ can be dropped directly by the aircraft attempting to penetratethe defenses (which isn’t ideal as they will then be at the apex of an elongatedsignal), or by support aircraft, or ﬁred forward into a suitable pattern usingrockets or shells.
+ The main counter-countermeasure against cha↵ is Doppler: ascha↵ is very light it comes to rest almost at once and can be distinguished fairlyeasily from moving targets.
+Other techniques include small decoys with active repeaters that retransmitradar signals and larger decoys that simply reﬂect them; sometimes one vehicle(such as a helicopter) acts as a decoy for another more valuable one (such as anaircraft carrier).
+ These principles are quite general.
+ Weapons that home in ontheir targets using radio direction ﬁnding (RDF) are decoyed by special dronesthat emit seduction RF signals, while infrared guided missiles are diverted usingﬂares.
+The passive countermeasure in which the most money has been invested isstealth – reducing the radar cross-section (RCS) of a vehicle so that it can bedetected only at very much shorter range.
+ This forces the enemy to place theirair defense radars closer together, so they have to buy a lot more of them.
+ Stealthincludes a wide range of techniques and a proper discussion is well beyond thescope of this book.
+ Some people think of it as ‘extremely expensive black paint’but there’s more to it than that.
+ As an aircraft’s RCS is typically a function ofits aspect, it may have a ﬂy-by-wire system that continually exhibits a low-RCSaspect to identiﬁed hostile emitters (the F117 became known to its pilots as the‘wobbly goblin’).
+Active countermeasures are much more diverse.
+ Early jammers simply gen-erated a lot of noise in the range of frequencies used by the target radar; thisis known as noise jamming or barrage jamming.
+ Some systems used systematicfrequency patterns, such as pulse jammers, or swept jammers that traversedthe frequency range of interest (also known as squidging oscillators).
+ But suchSecurity Engineering718Ross Anderson23.
+4.
+ SURVEILLANCE AND TARGET ACQUISITIONa signal is fairly easy to block – one trick is to use a guard band receiver, areceiver on a frequency adjacent to the one in use, and to blank the signal whenthis receiver picks up a jamming signal.
+ And jamming isn’t restricted to oneside; as well as being used by the target, the radar itself can also send spurioussignals from an auxiliary antenna to mask the real signal or to simply overloadthe defenses.
+At the other end of the scale lie hard-kill techniques such as anti-radiationmissiles (ARMs), often ﬁred by support aircraft, which home in on hostile sig-nals.
+Defenses against such weapons include the use of decoy transmitters,blinking transmitters on and o↵, and passive radar – which exploits the signalsfrom existing transmitters such as TV and radio stations when they bounce o↵targets.
+In the middle lies a large toolkit of deception jamming techniques.
+ Mostjammers used for self-protection are deception jammers of one kind or another;barrage and ARM techniques tend to be more suited to use by support vehicles.
+The usual goal with a self-protection jammer is to deny range and bearinginformation to attackers.
+ The basic trick is inverse gain jamming or inverse gainamplitude modulation.
+ This is based on the observation that the directionalityof the attacker’s antenna is usually not perfect; as well as the main beam it hassidelobes through which energy is also transmitted and received, albeit much lesse�ciently.
+ The sidelobe response can be mapped by observing the transmittedsignal, and a jamming signal can be generated so that the net emission is theinverse of the antenna’s directional response.
+ The e↵ect, as far as the attacker’sradar is concerned, is that the signal seems to come from everywhere; insteadof a ‘blip’ on the radar screen you see a circle centered on your own antenna.
+Inverse gain jamming is very e↵ective against the older conical-scan ﬁre-controlsystems.
+More generally, the technique is to retransmit the radar signal with a sys-tematic change in delay and/or frequency.
+ This can be non-coherent, in whichcase the jammer’s called a transponder, or coherent – that is, with the rightwaveform – when it’s a repeater.
+ Modern equipment stores received waveformsin digital radio frequency memory (DRFM) and manipulates them using signalprocessing.
+An elementary countermeasure is burn-through.
+ By lowering the pulse repe-tition frequency, the dwell time is increased and so the return signal is stronger –at the cost of less precision.
+ A more sophisticated countermeasure is range gatepull-o↵ (RGPO).
+ Here, the jammer transmits a number of fake pulses that arestronger than the real ones, thus capturing the receiver, and then moving themout of phase so that the target is no longer in the receiver’s range gate.
+ Similarly,with Doppler radars the basic trick is velocity gate pull-o↵ (VGPO).
+ With olderradars, successful RGPO would cause the radar to break lock and the targetto disappear from the screen.
+ Modern radars can reacquire lock very quickly,and so RGPO must either be performed repeatedly or combined with anothertechnique – commonly, with inverse gain jamming to break angle tracking atthe same time.
+An elementary counter-countermeasure is to jitter the pulse repetition fre-quency.
+ Each outgoing pulse is either delayed or not depending on a lag se-Security Engineering719Ross Anderson23.
+4.
+ SURVEILLANCE AND TARGET ACQUISITIONquence generated by a random number generator, so the jammer cannot an-ticipate when the next pulse will arrive and has to follow it.
+Such followerjamming can only make false targets that appear to be further away.
+ So thecounter-counter-countermeasure, or (counter)3-measure, is for the radar to havea leading edge tracker, which responds only to the ﬁrst return pulse; and the(counter)4-measures can include jamming at such a high power that the re-ceiver’s automatic gain control circuit is captured.
+ An alternative is cover jam-ming in which the jamming pulse is long enough to cover the maximum jitterperiod.
+The next twist of the screw may involve tactics.
+ Cha↵ is often used to force aradar into Doppler mode, which makes PRF jitter di�cult (as continuous wave-forms are better than pulsed for Doppler), while leading edge trackers may becombined with frequency agility and smart signal processing.
+ For example, truetarget returns ﬂuctuate, and have realistic accelerations, while simple transpon-ders and repeaters give out a more or less steady signal.
+ Of course, it’s alwayspossible for designers to be too clever; the Mig-29 could decelerate more rapidlyin level ﬂight by a rapid pull-up than some radar designers had anticipated,so pilots could use this manoeuvre to break radar lock.
+ And now CPUs arepowerful enough to manufacture realistic false returns.
+23.
+4.
+3Advanced radars and countermeasuresA number of advanced techniques are used to defend against jamming.
+Pulse compression was ﬁrst developed in Germany in World War 2, anduses a kind of direct sequence spread spectrum pulse, ﬁltered on return bya matched ﬁlter to compress it again.
+ This can give processing gains of 10–1000.
+ Pulse compression radars are resistant to transponder jammers, but arevulnerable to repeater jammers, especially those with digital radio frequencymemory.
+ However, the use of LPI waveforms is important if you don’t wish thetarget to detect you long before you detect it.
+Pulsed Doppler is much the same as Doppler, and sends a series of phase sta-ble pulses.
+ It has come to dominate many high-end markets, and is widely used,for example, in look-down shoot-down systems for air defense against low-ﬂyingintruders.
+ As with elementary pulsed tracking radars, di↵erent RF and pulserepetition frequencies give di↵erent characteristics: we want low frequency/PRFfor unambiguous range/velocity and also to reduce clutter – but this can leavemany blind spots.
+ Airborne radars that have to deal with many threats usehigh PRF and look only for velocities above some threshold, say 100 knots –but are weak in tail chases.
+ The usual compromise is medium PRF – but thissu↵ers from severe range ambiguities in airborne operations.
+ Also, search radarrequires long, diverse bursts but tracking needs only short, tuned ones.
+ An ad-vantage is that pulsed Doppler can discriminate some very speciﬁc signals, suchas modulation provided by turbine blades in jet engines.
+ The main deceptionstrategy used against pulsed Doppler is velocity gate pull-o↵, although a modernvariant is to excite multiple velocity gates with deceptive returns.
+Monopulse became one of the most popular techniques.
+It was used, forexample, in the Exocet missiles that proved so di�cult to jam in the FalklandsSecurity Engineering720Ross Anderson23.
+4.
+ SURVEILLANCE AND TARGET ACQUISITIONwar.
+ The idea is to have four linked antennas so that azimuth and elevationdata can be computed from each return pulse using interferometric techniques.
+Monopulse radars are di�cult and expensive to jam, unless a design defect canbe exploited; the usual techniques involve tricks such as formation jammingand terrain bounce.
+ Often the preferred defensive strategy is just to use toweddecoys.
+One powerful trick is passive coherent location.
+ Lockheed’s ‘Silent Sentry’system has no emitters at all, but rather uses reﬂections of commercial radioand television broadcast signals to detect and track airborne objects [164].
+Thereceivers, being passive, are hard to locate and attack; knocking out the sys-tem entails destroying major civilian infrastructure, which opponents will oftenprefer not to do for legal and propaganda reasons.
+ Passive coherent locationis e↵ective against some kinds of stealth technology, particularly those that en-tail steering the aircraft so that it presents the nulls in its radar cross-sectionto visible emitters.
+ Passive location actually goes back to the radar pioneerRobert Watson-Watt in the 1930s and appears to have been ﬁrst used by theGermans from 1942 when their Klein Heidelberg station exploited British ChainHome radar signals to track RAF aircraft (in EW parlance, it was a ‘hitchhiker’).
+When Britain realised this was happening in 1944, the Chain Home signals werejittered [824].
+One research frontier in 2020 is cognitive radar.
+ Attack and defence have be-come more complex since the arrival of digital radio frequency memory and othersoftware radio techniques.
+ Both radar and jammer waveforms may be adaptedto the tactical situation with much greater ﬂexibility than before.
+ Simon Haykinand colleagues studied the strategies and tactics used by bats, who adapt theirsonar intelligently while hunting insects, and applied this ﬁrst to radio for thee�cient use of spectrum, then to radar in a seminal 2006 paper [872].
+ From themoment a radar (or sonar) is switched on, it builds up knowledge of its environ-ment, the interesting aspects of which are mostly dynamic.
+ The basic idea isthat a cognitive radar does a recursive update of a model of its environment anduses this to illuminate it intelligently, using learning mechanisms.
+ This becomesadversarial with non-cooperative targets.
+ There is now vigorous research intothe fusion of ideas from the human visual system and neural networks moregenerally, Bayesian target tracking and signal processing.
+23.
+4.
+4Other sensors and multisensor issuesMuch of what I’ve said about radar applies to sonar as well, and a fair amountto infrared.
+ Passive decoys – ﬂares – worked very well against early heat-seekingmissiles which used a mechanically spun detector, but are less e↵ective againstmodern detectors that incorporate signal processing.
+ Flares are like cha↵ inthat they decelerate rapidly with respect to the target, so the attacker can ﬁlteron velocity or acceleration.
+ They are also like repeater jammers in that theirsignals are relatively strong and stable compared with real targets.
+Active infrared jamming is less widespread than radar jamming because it’sharder; it tends to exploit features of the hostile sensor by pulsing at a rate orin a pattern that causes confusion.
+ Some infrared defense systems are startingto employ lasers to disable the sensors of incoming weapons; and it’s emergedSecurity Engineering721Ross Anderson23.
+5.
+ IFF SYSTEMSthat a number of ‘UFO’ sightings have actually been due to various kinds ofjamming (both radar and infrared) [175].
+One growth area is multisensor data fusion whereby inputs from radars,infrared sensors, video cameras and even humans are combined to give bettertarget identiﬁcation and tracking than any could individually.
+ The Rapier airdefense missile, for example, used radar to acquire azimuth while tracking iscarried out optically in visual conditions.
+ Data fusion can be harder than itseems.
+ As I discussed in section 17.
+8, combining two alarm systems will generallyresult in improving either the false alarm or the missed alarm rate, while makingthe other worse.
+ If you scramble your ﬁghters when you see a blip on either theradar or the infrared, you’ll have more false alarms; but if you scramble onlywhen you see both then it will be easier for the enemy to jam you or sneakthrough.
+Things become more complex where the attacker’s on a platform that’s vul-nerable to counter-attack, such as a ship or aircraft.
+ It will have systems forthreat recognition, direction ﬁnding and missile approach warning, whose re-ceivers will be deafened by its jammer.
+ The usual trick is to turn the jammero↵ for a short ‘look-through’ period at random times.
+With multiple friendly and hostile platforms, things get more complex still.
+During the Cold War, you expected each side to have specialist support vehicleswith high-power dedicated equipment, which makes it to some extent an energybattle – “he with the most watts wins”.
+A SAM belt would have multipleradars at di↵erent frequencies to make jamming harder.
+ The overall e↵ect ofjamming (as of stealth) is to reduce the e↵ective range of radar.
+ But jammingmargin also matters, and who has the most vehicles, and the tactics employed;and the move to cognitive systems has changed doctrine to “subtly disruptthe enemy’s communications and radar networks without their realizing they’rebeing deceived” [721].
+23.
+5IFF SystemsWith multiple vehicles engaged, it’s also necessary to have a reliable way ofdistinguishing friend from foe.
+ Identify-Friend-or-Foe (IFF) systems are bothcritical and controversial, with a signiﬁcant number of ‘blue-on-blue’ incidentsin Iraq being due to equipment incompatibility between US and allied forces.
+Incidents in which US aircraft bombed British soldiers have contributed signiﬁ-cantly to loss of UK public support for the war, especially after the authoritiesin both countries tried and failed to cover up such incidents out of a wish toboth preserve technical security and also to minimise political embarrassment.
+IFF goes back in its non-technical forms to antiquity.
+ See for example Judges12:5–6 (which I quote at the head of the chapter on biometrics): the Israelitesidentiﬁed enemy soldiers by their inability to pronounce ‘Shibboleth’.
+ WorldWar 2 saw the French resistance asking people to pronounce ‘grenouille’, andanyone who couldn’t was presumed German.
+ In the early years of that conﬂict,air identiﬁcation was procedural: allied bombers would be expected to crossthe coast at particular times and places, while stragglers would announce theirSecurity Engineering722Ross Anderson23.
+5.
+ IFF SYSTEMSlack of hostile intent by a pre-arranged manoeuvre such as ﬂying an equilateraltriangle before crossing the coast.
+ German planes would roll over when the radiooperator challenged them, so as to create a ‘blip’ in their radar cross-section.
+There were then some early attempts at automation: when allied aircraft startedto carry IFF beacons, the German air defence found they could detect the planesby triggering them [824].
+The Korean war saw the arrival on both sides of jet aircraft and missiles,which made it impractical to identify targets visually.
+ Early IFF systems simplyused a serial number or ‘code of the day’, but this was wide open to spooﬁng,and the world’s air forces started work on cryptographic authentication.
+The legacy NATO system is the Mark XII, introduced in the 1960s anddesigned to solve the protocol problems discussed in section 4.
+3.
+3.
+ The MarkXII secure mode uses a 32-bit challenge and a 4-bit response.
+ If challenges orresponses are too long, then the radar’s pulse repetition frequency (and thusits accuracy) would be degraded.
+It sends 12–20 challenges in a series, andin the original implementation the responses were displayed on a screen at aposition o↵set by the arithmetic di↵erence between the actual response and theexpected one.
+ The e↵ect was that while a foe had a null or random response,a ‘friend’ would have responses clustered near the center screen, which wouldlight up.
+ Reﬂection attacks are prevented, and MIG-in-the-middle attacks mademuch harder, because the challenge uses a focused antenna, while the receiver isomnidirectional.
+ (The antenna used for the challenge is typically the ﬁre controlradar, which in older systems was conically scanned.
+)This has been largely replaced by the Mark XIIA which has a backwards-compatible mode, but uses spread-spectrum waveforms in the new Mode 5,which has been the focus of development e↵orts by the US services and NATOarmed forces during the 2010s.
+ Such systems also have compatibility modes withthe systems used by civil aircraft to ‘squawk’ their ID to secondary surveillanceradar.
+ However, the real problems are now air-to-ground.
+ NATO’s IFF systemsevolved for a Cold War scenario of thousands of tactical aircraft on each side ofthe Iron Curtain; how do they fare in a modern conﬂict like Iraq or Afghanistan?Historically, about 10–15% of casualties were due to ‘friendly ﬁre’ but inGulf War 1 this rose to 25%.
+ Such casualties are more likely at the interfacesbetween air and land battle, and between sea and land, because of the di↵er-ent services’ way of doing things; joint operations are thus particularly risky.
+Coalition operations also increase the risk because of di↵erent national systems.
+Following this experience, several experimental systems were developed to ex-tend IFF to ground troops.
+ But when Gulf War 2 came along, nothing decenthad been deployed.
+ A report from Britain’s National Audit O�ce describeswhat went wrong [1389].
+ In a world where defence is purchased not just bynation states, and not just by services, but by factions within these services,and where legislators try to signal their ‘patriotism’ to less-educated voters byblocking technical collaboration with allies (‘to stop them stealing our jobs andour secrets’), the institutional and political structures just aren’t conducive toproviding defense ‘public goods’ such as a decent IFF system that would workacross NATO.
+ And NATO is a broad alliance; as one insider told me, “Tryingto evolve a solution that met the aspirations of both the US at one extreme andGreece (for example) at the other was a near hopeless task.
+”Security Engineering723Ross Anderson23.
+6.
+ IMPROVISED EXPLOSIVE DEVICESProject complexity is one issue: it’s not too hard to stop your air force planesshooting each other, it’s a lot more complex to stop them shooting at your shipsor tanks, and it’s much harder still when a dozen nations are involved.
+ Thereare some sexy systems used by a small number of units in Iraq that let allsoldiers see each other’s positions superimposed in real time on a map displayon a helmet-mounted monocle.
+ They greatly increase force capability in mobilewarfare, allowing units to execute perilous maneuvers like driving through eachother’s kill zones, but are not a panacea in complex warfare such as Iraq in thelate 2000s and early 2010s: there, the key networks are social, not electronic, andit’s hard to automate networks with nodes of unknown trustworthiness [1659].
+The big-bang approach was tried, but failed; the Joint Tactical Radio System(JTRS, pronounced ‘jitters’) set out to equip all the US services with radios thatinteroperate and do at least two IFF modes.
+ However, it’s one of the Pentagon’sbiggest procurement failures, as they spent $6bn over 15 years without deliveringa single usable radio [1983].
+Experience has taught us that even with ‘hard-core’ IFF, where ships andplanes identify each other, the hardest issues weren’t technical but to do witheconomics, politics and doctrine.
+ Over two decades of wrangling within NATO,America wanted an expensive high-tech system, for which its defense industrywas lobbying hard, while European countries wanted something simpler andcheaper that they could also build themselves, for example by tracking unitsthrough the normal command-and-control system and having decent interfacesbetween nations.
+ But the USA refused to release the location of its units toanyone else for ‘security’ reasons.
+America spends more on defense than itsallies combined and believed it should lead; the allies didn’t want their owncapability further marginalised by yet more dependence on US suppliers.
+Underlying doctrinal tensions added to this.
+ US doctrine, the ‘Revolutionin Military A↵airs’ (RMA) promoted by Donald Rumsfeld and based on anelectronic system-of-systems, was not only beyond the allies’ budget but wasdistrusted, based as it is on minimising one’s own casualties through vast ma-terial and technological supremacy.
+ The Europeans argued that one shouldn’tautomatically react to sniper ﬁre from a village by bombing the village; as wellas killing ten insurgents, you kill a hundred civilians and recruit several hundredof their relatives to the other side.
+ The American retort to this was that Europewas too weak and divided to even deal with genocide in Bosnia.
+ The result wasdeadlock; countries decided to pursue national solutions, and no real progresshas been made on interoperability since the Cold War.
+ Allied forces in Iraq andAfghanistan were reduced to painting large color patches on the roofs of theirvehicles and hoping the air strikes would pass them by.
+ US aircraft duly bombedand killed a number of allied servicemen, which weakened the alliance.
+ Whatwill happen now, given deglobalisation and President Trump’s impatience withforeign allies, is anyone’s guess.
+23.
+6Improvised Explosive DevicesA signiﬁcant e↵ort was made in electronic-warfare measures to counter the im-provised explosive devices (IEDs) that were the weapon of choice of insurgents inSecurity Engineering724Ross Anderson23.
+6.
+ IMPROVISED EXPLOSIVE DEVICESIraq and Afghanistan.
+ The ﬁrst IED attack on U.
+S.
+ forces took place in March2003, and they rose to a peak of 25,000 in 2007 with over 100,000 in total.
+These bombs became the ‘signature weapon’ of the Iraq war, as the machine-gun was of World War 1 and the laser-guided bomb of Gulf War I.
+ And nowthat unmanned aerial vehicles can be built by hobbyists for under $1000, we arestarting to see improvised cruise missiles used in Syria and elsewhere, includingan attempt to assassinate Venezuela’s President Maduro.
+Anyway, over 33,000 jammers were made and shipped to coalition forces.
+The Department of Defense spent over $1bn on them in 2006, in an operationthat, according to insiders, “proved the largest technological challenge for DODin the war, on a scale last experienced in World War 2” [140].
+ The e↵ect wasthat the proportion of radio-controlled IEDs dropped from 70% to 10%, whilethe proportion triggered by command wires increased to 40%.
+Rebels have been building IEDs since at least Guy Fawkes, who tried toblow up England’s Houses of Parliament in 1605.
+ Many other nationalist andinsurgent groups have used IEDs, from anarchists through the Russian resistancein World War 2, the Irgun, ETA and the Viet Cong to Irish nationalists.
+ TheIRA got so expert at hiding IEDs in drains and culverts that the British Armyhad to use helicopters instead of road vehicles in the ‘bandit country’ near theIrish border in the 1980s and early 1990s.
+ They also ran bombing campaignsagainst the UK on a number of occasions in the twentieth century.
+In thelast of these, from 1970–94, they blew up the Grand Hotel in Brighton whenMargaret Thatcher was staying there for a party conference, killing several ofher colleagues; later, London su↵ered two incidents in which the IRA set o↵truckloads of home-made explosive causing widespread devastation.
+ The ﬁghtagainst the IRA involved a total of about 7,000 IEDs, and gave UK defensescientists much experience in jamming: barrage jammers were ﬁtted in VIPcars that would cause IEDs to go o↵ either too early or too late.
+ These weremade available to allies; such a jammer saved the life of President Musharraf ofPakistan when Al-Qaida tried to blow up his convoy in 2005.
+The electronic environment in Iraq turned out to be much more di�cult thaneither Belfast or Pakistan.
+ Bombers can use any device that will ﬂip a switchat a distance, and used everything from key fobs to cellphones.
+ Meanwhile theRF environment in Iraq had become complex and chaotic.
+ Millions of Iraqisused unregulated cellphones, walkie-talkies and satellite phones, as most of theoptical-ﬁbre and copper infrastructure had been destroyed in the 2003 war orlooted afterwards.
+ 150,000 coalition troops also sent out a huge variety of ra-dio emissions, which changed all the time as units rotated.
+ Over 80,000 radiofrequencies were in use, and monitored using 300 databases – many of themnot interoperable.
+ Allied forces only started to get on top of the problem whenhundreds of Navy electronic warfare specialists were deployed in Baghdad; afterthat, coalition jamming e↵orts were better coordinated and started to cut theproportion of IEDs detonated by radio.
+But the ‘success’ in electronic warfare did not translate into a reductionin allied casualties.
+The IED makers simply switched from radio-controlledbombs to devices detonated by pressure plates, command wires, passive infraredor volunteers.
+ The defence focus shifted to a mix of tactics: ‘right of boom’measures such as better vehicle armor and autonomous vehicles, and ‘left ofSecurity Engineering725Ross Anderson23.
+7.
+ DIRECTED ENERGY WEAPONSboom’ measures such as disrupting the bomb-making networks.
+ Better armorhad some e↵ect: while in 2003 almost every IED caused a coalition casualty, by2007 it took four devices on average [140].
+ Armored vehicles were also a keytactic in other insurgencies, while the DARPA investment in self-driving vehiclespaid o↵ a decade later in the form of a surge of work on driver assistance andeven autonomous road vehicles by commercial ﬁrms such as Waymo and Tesla.
+Network disruption, though, is a longer-term play as it depends on buildinggood sources of human intelligence; Britain and Israel spent years targetingbombmakers in Ireland and Lebanon respectively.
+23.
+7Directed Energy WeaponsIn the late 1930s, there was panic in Britain and America on rumors that theNazis had developed a high-power radio beam that would burn out vehicleignition systems.
+ British scientists studied the problem and concluded that thiswas infeasible [990].
+ They were correct – given the relatively low-powered radiotransmitters, and the simple but robust vehicle electronics, of the 1930s.
+Things started to change with the arrival of the atomic bomb.
+ The deto-nation of a nuclear device creates a large pulse of gamma-ray photons, whichin turn displace electrons from air molecules by Compton scattering.
+ The largeinduced currents give rise to an electromagnetic pulse (EMP), which may bethought of as a very high amplitude pulse of radio waves with a very short risetime.
+Where a nuclear explosion occurs within the earth’s atmosphere, the EMPenergy is predominantly in the VHF and UHF bands, though there is enoughenergy at lower frequencies for a radio ﬂash to be observable thousands of milesaway.
+ Within a few tens of miles of the explosion, the radio frequency energymay induce currents large enough to damage most electronic equipment thathas not been hardened.
+ The e↵ects of a blast outside the earth’s atmosphereare believed to be much worse (although there has never been a test).
+Thegamma photons can travel thousands of miles before they strike the earth’satmosphere, which could ionize to form an antenna on a continental scale.
+ It isreckoned that most electronic equipment in Northern Europe could be burnedout by a one megaton blast at a height of 250 miles above the North Sea.
+ Forthat matter, most electronic equipment on the US west coast, from Seattleto San Diego, could be wiped out by a blast 250 miles above Salt Lake City.
+Such an attack would kill no-one directly but could cause economic damage onthe scale of the coronavirus pandemic [122].
+ A Carrington event – a massivesolar ﬂare, as observed by the astronomer Richard Carrington in 1859 – wouldcause similar disruption; that caused auroras as far south as the Caribbean.
+Telegraph systems failed all over Europe and North America, sometimes givingtheir operators electric shocks.
+ Lloyd’s of London later estimated that the costof such an event to the USA alone could be in the low trillions of dollars, and thatsuch an event is inevitable every generation or two [917].
+ Smaller geomagneticstorms happen regularly, for example in 1989 and 2003.
+ For this reason, criticalmilitary systems are carefully shielded, big IT service ﬁrms disperse their datacentres round the globe, we have warning satellites, and well-run utilities spendSecurity Engineering726Ross Anderson23.
+8.
+ INFORMATION WARFAREmoney to protect critical assets such as large transformers.
+Western concern about EMP grew after the Soviet Union started a researchprogram on non-nuclear EMP weapons in the mid-80s.
+ At the time, the UnitedStates was deploying “neutron bombs” in Europe – enhanced radiation weaponsthat could kill people without demolishing buildings.
+ The Soviets portrayedthis as a “capitalist bomb” which would destroy people while leaving propertyintact, and responded by threatening a “socialist bomb” to destroy property (inthe form of electronics) while leaving the surrounding people intact.
+By the end of World War 2, the invention of the cavity magnetron had madeit possible to build radars powerful enough to damage unprotected electroniccircuitry at a range of several hundred yards.
+ The move from valves to transis-tors and integrated circuits has increased the vulnerability of most commercialelectronic equipment.
+ A terrorist group could in theory mount a radar in atruck and drive around a city’s ﬁnancial sector wiping out the banks.
+ In fact,the banks’ underground server farms would likely be una↵ected; the real dam-age would be to everyday electronic devices.
+ Replacing the millions of gadgetson which a city’s life depends would be extremely tiresome.
+For battleﬁeld use, it’s desirable for EMP weapons to ﬁt into a standardbomb or shell casing rather than having to be truck-mounted.
+ Their militaryuse is however limited.
+ The US tried a device called Blow Torch in Iraq as ameans of frying the electronics in IEDs, but it didn’t work well [140].
+ There’sa survey of usable technologies at [1082] that describes how power pulses inthe terawatt range can be generated using explosively-pumped ﬂux compres-sion generators and magnetohydrodynamic devices, as well as by high-powermicrowave transmitters.
+ But EMP bombs dropped from aircraft need to de-ploy antennas before detonation in order to get decent coupling, and even soare lethal to ordinary electronic equipment for a radius of only a few hundredmeters.
+ Military command and control systems that are already hardened fornuclear EMP should be una↵ected.
+The real signiﬁcance of EMP may be to give a blackmail weapon to countriessuch as Iran and North Korea with primitive nuclear technology.
+ When NorthKorea ﬁres a missile into the sea near Japan, it sends a signal: “We can switcho↵ your economy any time we like, and without directly killing a single Japanesecivilian either.
+” Japan is now developing anti-missile defences.
+ A massive attackon electronic communications is more of a threat to countries such as the USAand Japan that depend on them, than on countries such as North Korea (orIran) that don’t.
+This observation goes across to attacks on the Internet as well, so let’s nowturn to ‘Information Warfare’.
+23.
+8Information warfareThe phrase Information warfare came into use from about 1995.
+ Its popularitywas boosted by operational experience in Gulf War 1.
+ There, air power wasused to degrade the Iraqi defenses before the land attack was launched, andone goal of NSA personnel supporting the allies was to enable the initial attackSecurity Engineering727Ross Anderson23.
+8.
+ INFORMATION WARFAREto be made without casualties – even though the Iraqi air defenses were atthat time intact and alert.
+ The attack involved a mixture of standard e-wartechniques such as jammers and anti-radiation missiles; cruise missile attackson command centers; attacks by special forces who sneaked into Iraq and dugup lengths of communications cabling from the desert; and, allegedly, the use ofhacking tricks to disable computers and telephone exchanges.
+ (By 1990, the USArmy was already calling for bids for virus production [1206].
+) The operationachieved its goal of ensuring zero allied casualties on the ﬁrst night of the aerialbombardment.
+ Military planners and think tanks started to consider how tobuild on the success.
+In April 2007, information warfare was thrust back on the agenda by events inEstonia.
+ There, the government had angered Russia by moving an old Soviet warmemorial, and shortly afterwards the country was subjected to a number of dis-tributed denial-of-service attacks that appeared to originate from Russia [525].
+Estonia’s computer emergency response team tackled the problem with coolprofessionalism, but their national leadership invoked the NATO treaty, call-ing for US military help against Russia.
+Russia had deniability: the packetstorms were launched by Russian botnet herders, reacting to the news fromEstonia and egging each other on via chat rooms; the one man convicted ofthe attacks was an ethnic Russian teenager in Estonia itself.
+ There had beensimilar tussles between Israeli and Palestinian hackers, and between Indiansand Pakistanis.
+Estonia also had some minor street disturbances caused byrowdy ethnic Russians objecting to the statue’s removal.
+ Nonetheless NATOdid respond by setting up an information warfare centre in Tallinn, and as Idescribed in section 2.
+2.
+3, one outcome was the Tallinn Manual, which sets outthe military and international law applicable to online operations designed tohave real-world e↵ects in conﬂicts between states [1664].
+States must act in self-defense or with some other lawful justiﬁcation and inaccordance with the law of armed conﬂict.
+ Attacks are operations reasonablyexpected to cause injury to people or damage to property; they may only bedirected at combatants and their logistics, not at civilians; attacks must begeographically limited, not indiscriminate; and some targets are o↵-limits, fromhospitals and places of worship to nuclear power stations.
+ Interpretation couldkeep the lawyers busy though.
+ Infrastructure used by both military and civilianorganisations is fair game, and although ‘treachery’ is prohibited, ‘ruses of war’are not.
+In section 2.
+2.
+3, I described how Estonia was just a warm-up for later Russianoperations in Ukraine, where the Russians took down electricity infrastructureand did signiﬁcant damage to companies operating there by the NotPetya worm,which inﬂicted signiﬁcant collateral damage on some international companieswith o�ces in that country.
+But what’s information warfare anyway? The conventional view from themid-2000s, arising out of Gulf War 1, was expressed by Whitehead [1977]:The strategist .
+.
+.
+ should employ (the information weapon) as a pre-cursor weapon to blind the enemy prior to conventional attacks andoperations.
+Security Engineering728Ross Anderson23.
+8.
+ INFORMATION WARFARECynics took the view that it was just a remarketing of the things the agencieshave been doing for decades anyway, in an attempt to maintain their budgetspost-Cold-War.
+However the most far-sighted analyst at the time was Dorothy Denning of theNaval Postgraduate School whose 1999 book on the topic deﬁned informationwarfare as “operations that target or exploit information media in order to winsome advantage over an adversary” [539].
+ This was so broad that it includes notjust hacking but all of electronic warfare and all existing intelligence gatheringtechniques (from Sigint through satellite imagery to spies), but propaganda too.
+In a later article she discussed the role of the net in the propaganda and activismsurrounding the Kosovo war [540].
+A similar view of information warfare, from a writer whose backgroundwas defense planning rather than computer security, was given by EdwardWaltz [1977].
+ He deﬁned information superiority as “the capability to collect,process and disseminate an uninterrupted ﬂow of information while exploitingor denying an adversary’s ability to do the same”.
+ The aim of such superiority isto conduct operations without e↵ective opposition.
+ The book has less technicaldetail on computer security matters than Denning but set forth a ﬁrst attemptto formulate a military doctrine of information operations.
+23.
+8.
+1Attacks on control systemsIf you want to use computer exploitation to do real damage to a rival nation,perhaps the ﬁrst thing to look at is electricity generation and distribution.
+ Tak-ing down the grid is the cyber equivalent of a nuclear strike; once the electricitysupply fails, then pretty well everything else in a modern economy shuts downtoo.
+ For example, a ﬁve-week failure of the power supply to the central businessdistrict of Auckland, New Zealand, in 1996 led to 60,000 of the 74,000 employeeshaving to work from home or from relocated o�ces, while most of the area’s6,000 apartment dwellers moved out for the duration [839].
+ And perhaps theworst terrorist ‘near miss’ in recent history was an IRA attempt in 1996 to blowup transformers at the big substations that supply London [231].
+ This failedbecause a senior IRA commander was a British agent; had it been successful itwould have wrecked electricity supplies to much of London for many months,blacking out millions of people and businesses responsible for maybe a thirdof Britain’s GDP.
+ Finally, attacks on electricity transmission and distributionhave been a standard US tactic in wars from Serbia to Iraq.
+ (In fact, the Iraqinsurgency after 2003 was fuelled by delays in restoring the power supply, whichleft millions of Iraqis sweltering in the summer heat with no air conditioning.
+)Security researchers started paying attention to control systems in the mid2000s once it was noticed that the protocols used to manage assets such aselectricity grids and petrochemical plants, namely Modbus and DNP3, did notsupport authentication, as these systems had evolved in a world of private net-works – with ﬁxed LANs inside installations and leased lines linking them tocontrol centres.
+ Firms started moving to IP networks from the late 1990s be-cause it was cheaper, but this meant that, without authentication, anyone whoknew the IP address of a sensor could read it, and anyone who knew the addressof an actuator could operate it.
+ After one or two accidents caused by pranks,Security Engineering729Ross Anderson23.
+8.
+ INFORMATION WARFAREand an incident in 2000 where a disgruntled employee of a water company’s ITcontractor caused a spill of 800 tons of sewage in Maroochy, Australia [7], therestarted to emerge a control-systems security research community.
+Governments tried to help with regulation.
+ The US Departments of En-ergy and Homeland Security launched an initiative in 2006, and North Ameri-can Electric Reliability Corporation (NERC), which sets standards for the bulkpower system, ruled in its Critical Infrastructure Protection (CIP) standard thatany generator with a black-start capability would need to have basic informa-tion security compliance.
+ Black start is the ability to start up even if the gridis down; hydro power stations can do this, nuclear stations can’t, and coal-ﬁredstations can generally only do a black start if they have an auxiliary diesel gen-erator.
+ The industry’s response was that some coal-ﬁred plants scrapped theirdiesel plant, as information security could not be added to their regulated costbase and therefore came o↵ the bottom line [104].
+Attempts were also made to extend control-system protocols to support en-cryption and authentication, but this is seriously di�cult.
+ There are three mainvendors of electricity substations, and if one becomes the prime contractor ona project it will typically buy components from the other two, so compatibilityis essential.
+ Substations have a design life of typically 40 years and come withmaintenance contracts, so the rate of change is glacial.
+ The threat model isalso interesting.
+ Anyone who can get physical access can switch o↵ the powerby pressing the red button; they can even destroy the transformer by causingan internal short-circuit, which takes only one bullet.
+ It therefore makes lit-tle sense to encrypt or even just authenticate tra�c on the substation LAN,and doing that is hard anyway as some of the control tra�c has a 4ms latencyrequirement [731].
+ The only practical outcome was to secure the logical perime-ter – the communications from the substation to the network control centre –just as one secures the asset physically by using a cage or a building.
+ So onepractical outcome of this research programme was startups whose focus wasto enable energy companies and other utilities to protect their networks by re-perimeterising them.
+ The specialist ﬁrewalls and gateways they designed havenow become mainstream products and are widely used by energy companies.
+A second outcome was increased awareness of indirect threats to nationalelectricity supply.
+ I described in section 14.
+2.
+4 how most European governmentsdecided to install smart meters, following lobbying from the meter industry, andhow we found that the proposed UK installation was insecure; it amounted toputting a remotely commandable o↵ switch in every home in Britain, and noteven protecting it with appropriate cryptographic authentication.
+ GCHQ gotinvolved in the design, but even seven years later only a minority of UK smartmeters follow the ‘improved’ speciﬁcation.
+ As we discussed in section 14.
+2.
+4,the project has been a conspicuous failure in both ﬁnancial and energy-savingterms.
+A third outcome was a set of research tools.
+ The Shodan search engine,launched in 2009, crawls the Internet to locate and index connected devices, en-abling researchers to see which devices are vulnerable from their software updatestatus; in 2011, ´Eireann Leverett used this to locate thousands of vulnerable con-trol systems [1147].
+ A 2016 scan by Ariana Mirian and colleagues found some60,000 vulnerable devices round the world, ranging from electricity substationsSecurity Engineering730Ross Anderson23.
+8.
+ INFORMATION WARFAREto HVAC in government buildings; they also used honeypots to track the actorsscanning for such devices, and although over half were from known security com-panies, a signiﬁcant minority were in China or from shielded hosts [1321].
+ Morerecently our group has been involved in developing better honeypots to detectpeople doing scans and launching attacks on network-attached devices [1955]; bydeploying realistic honeypots in realistic network locations, it’s possible to pro-voke hostile action [573].
+ Our monitoring of underground crime forums, whichgoes back to the early days of control system security research, has detected nosustained competent interest in control system hacking by criminal groups, soit is reasonable to assume that the great majority of such activity is by stateactors or their proxies.
+The burst of research into control systems security ran in parallel with stateactors’ growing awareness of the potential.
+ It’s been reported that Idaho Na-tional Labs, which was involved in the US regulatory push and hosted some ofthe Scada security conferences at the time, helped the NSA and their Israelicounterparts develop the Stuxnet worm, which damaged Iran’s uranium enrich-ment capacity over the period 2008–2010; I described this in section 2.
+2.
+1.
+11.
+Finally, as I described in section 2.
+2.
+3, 2015 saw Russia responding to a con-ventional Ukrainian attack on power distribution in Crimea (a Ukrainian terri-tory that Russia had annexed) by a cyber attack that took down 30 Ukrainiansubstations, leaving 230,000 people in the dark for several hours [2067].
+ However,that seems to have been a warning rather than attempt to do serious economicdamage, and since then there seem to have been no serious cyber attacks onelectricity distribution.
+ There have been attacks on other control systems; no-tably, Iran tried to hack Israeli water distribution systems in April 2020 witha view to introducing toxic levels of chlorine into the rural water supply, butthe Israelis detected and stopped this.
+ They retaliated the following month byclosing down one of the harbours at the Iranian port of Bandar Abbas, causingtailbacks of trucks that stretched for miles [229].
+But the main action has moved elsewhere.
+23.
+8.
+2Attacks on other infrastructureAfter the Stuxnet story broke there was a surge of interest among governmentsworldwide in cyber-conﬂict.
+ The prices paid in underground markets for ex-ploitable vulnerabilities skyrocketed, and in addition to the overt markets invulnerabilites, there developed grey markets to which security researchers couldtake their ideas for resale to cyber-arms manufacturers.
+ In addition to vulner-abilities that governments could use to exploit the PCs or phones of their foes,both foreign and domestic, there emerged concern about attacks on informationinfrastructure such as the Internet itself.
+ The Russian attacks on Estonia in2007 and Georgia in 2008 focused minds somewhat, as did an attack by Pak-istan on YouTube in 2008 (Pakistan had planned to block the service only athome, but the BGP attack it mounted caused a global outage), and an incidentin 2010 when China Telecom hijacked 15% of Internet addresses for 18 minutes,which some observers interpreted as a test of a ‘cyber-nuke’.
+The European Network and Information Security Agency (ENISA) commis-Security Engineering731Ross Anderson23.
+8.
+ INFORMATION WARFAREsioned us to write a report on the Internet’s interconnect, which appeared in2011 [1906].
+ I discussed the main ﬁndings in section 21.
+2.
+1 on BGP security.
+It is certainly possible to tear up the Internet’s routing infrastructure by ad-vertising lots of bogus routes; a number of incidents (including the Pakistaniand Chinese ones) have taught us that.
+It is also true that if an opponentcould take down the Internet for a few days in a developed country, the resultwould be be chaos (and especially so since the coronavirus pandemic as evenmore human activities have been forced online).
+ One of the main technical re-straints on such action is that most capable opponents would themselves su↵ertremendous harm, given that the online services used in most countries are glob-alised.
+ However, China is largely immune, because of its policy of separatingits infrastructure from the rest of the Internet using the Great Firewall, andexcluding US service providers such as Google, Facebook and Twitter in favourof local champions.
+ North Korea is even more isolated.
+ Russia has been tryingto follow China, and as its service providers such as Vkontakte are much moreentangled with European and American infrastructure, President Putin passeda law in May 2019 requiring Russian ISPs to be able to operate independentlyof foreign Internet infrastructure by November.
+ In December, a successful testwas announced, though nobody noticed anything happening; a second test, duein March 2020, was apparently postponed because of the coronavirus [159].
+ Ifthat were to be made to work, then Russia, like China, would be in a positionto mount large-scale disruption attacks against the Internet in the rest of theworld.
+23.
+8.
+3Attacks on elections and political stabilityThe period 2011–16 saw the emphasis in information operations shift from at-tacks on infrastructure to political conﬂict.
+ The period started with the ArabSpring, which I will discuss in more detail in section 26.
+4.
+1.
+ There, social mediawere used to fuel an uprising against autocratic regimes across the Arab world;although the Tunisians overthrew their dictator and achieved democracy, theresults elsewhere ranged from civil war in Syria and the Yemen to state failurein Libya and crackdowns by rulers elsewhere.
+ I described in section 2.
+2.
+4 howArab governments splashed out on surveillance technology from the west andfrom Israel, and hired ex-NSA mercenaries, to track and harass their opponentsboth at home and abroad.
+By 2016, we’d seen substantial Russian interference in both the Brexit refer-endum and the US presidential election.
+ Russia has a long history of managedelections.
+ I wrote sarcastically in the ﬁrst edition in 2001: “I sincerely hope thatthe election of Vladimir Putin as the president of Russia had nothing to do withthe fact that the national electoral reporting system is run by FAPSI, a Russiansignals intelligence agency formed in 1991 as the successor to the KGB’s 8thand 16th directorates.
+ Its head, General Starovoitov, was reported to be an oldKGB type; his agency reported directly to President Yeltsin, who chose Putinas his successor.
+” [733, 1003] By the time Putin’s party was re-elected in 2007,the cheating had become so blatant – with gross media bias and state employeesordered to vote for the ruling party – that the international community wouldnot accept the result as free and fair.
+Security Engineering732Ross Anderson23.
+8.
+ INFORMATION WARFAREBy the 2012 election, as I noted in section 2.
+2.
+3, the Russian population wassu�ciently restive that Putin felt the need for external enemies to rally publicsupport.
+ He invaded the Ukraine in 2014, claiming simultaneously to be defend-ing it against fascists, and against gays and Jews, and annexed the Crimea –bringing down international sanctions.
+ This campaign involved ‘hybrid warfare’tactics that combined ‘little green men’ – Russian soldiers in uniforms with-out insignia, claimed to be Ukrainian anti-fascists – with various cyber-attacks,propaganda and even an attack on Ukrainian media, reporting falsely that apro-Russian candidate had won an election.
+ After Europe imposed sanctions onRussia as a punishment for invading the Ukraine, the Kremlin became a majorfunder of far-right groups throughout Europe, supporting the Brexit campaignsin the UK and the rise of parties such as AfD in Germany.
+ At the same timeas openly promoting fascist ideas – including the ideology of Ivan Ilyin at home– Putin has managed to retain the sympathy of swathes of the anti-fascist leftin Europe too.
+ The overall strategy since sanctions has been to disrupt andweaken the USA and the EU by all available means.
+The tactics used in such information warfare have a lot in common withelectronic warfare.
+ Putin, and other authoritarian leaders, often swamp targetaudiences, both at home and abroad, with fake news; this jamming underminestrust in more reliable media – who are in turn accused of being ‘fake news’.
+ If youcan’t stop your population from reading the New York Times, you just make surethey don’t believe it [474].
+ There are bulk decoys, like cha↵; after the Russiansshot down Malaysia Airlines’ ﬂight MH17 over Ukraine in 2014, they pushedmany di↵erent conspiracy theories in parallel [1593].
+ Many politicians use otherdecoys to distract the press from news that could damage them; Trump hasused everything from the WHO to hydroxychloroquine [1710].
+ The equivalentof deceiving IFF may be triangulation – the art of stealing a key aspect of theopponent’s brand (as when Boris Johnson made the NHS central to his pitchin the Brexit referendum).
+ The equivalent of an anti-radiation missile might beblocking an opponent’s website or choking o↵ their funding.
+ Corrupt leadersaccuse their opponents of corruption, while authoritarians who blame gays andJews for their country’s plight will happily accuse their opponents of fascism.
+So it is a mistake to think that the security of an election is limited tothe anonymous but veriﬁable tallying of the vote itself.
+ Just as an IED canbe defeated before the boom (by intelligence or jamming) or afterwards (byarmour), so also an election can be subverted before or after the vote.
+ Even inmature democracies, politicians are forever trying to manipulate the franchiseand the campaigning rules, such as campaign ﬁnance limits.
+ For example, theRussians contributed money to both the ‘Leave’ campaigns in Britain’s Brexitreferendum, which was illegal, and both campaigns separately broke overallﬁnance limits, for which they got ﬁned [1265].
+ The disclosure of these o↵encesdid not lead to a rerun of the vote; it merely helped paralyse UK politics for threeyears.
+ The UK Prime Minister David Cameron had earlier changed franchiserules to require all voters to register separately, rather than by households, tocut the number of young people on the electoral roll (this should have helpedhis Conservative party, but backﬁred in the referendum).
+The outcome wasmuch more due to discontent among voters and to blunders by complacent pro-remain politicians than to enemy action, but the existence of an enemy activelypromoting harmful outcomes did not help.
+ To this day, many remain supportersSecurity Engineering733Ross Anderson23.
+8.
+ INFORMATION WARFAREdo not accept the referendum result as valid – a truly wonderful outcome fromthe Russians’ point of view.
+Similar comments can be made on the US presidential election later thatyear; I discuss the political scientist Yochai Benkler’s analysis of the e↵ect onthat election of fake news in section 26.
+4.
+2.
+ Again, the role played by the Rus-sians was to exploit existing polarisation, throw petrol on the ﬁre where possible(for example by leaking hacked emails from the Clinton camp, as discussed insection 2.
+2.
+3) and to buy inﬂuence where they could [385].
+ Had Clinton won theelection, I expect evidence of hacked election systems would have emerged toenable Trump to refuse to accept defeat.
+ The fact that there are 6,000 di↵erentvoting systems across the USA makes the presidential ballot hard to steal out-right by technical means, but exposes its credibility to challenge.
+ An electionsystem is like an alarm; as we discussed in section 13.
+3, you can defeat an alarmby destroying conﬁdence in it, so that alarms are ignored.
+ The real customerfor an election is the losing party, and if one of the parties isn’t really preparedto accept defeat, then a pretext may be all they need.
+ Whether Trump wins orloses in November 2020, we can expect an increase in polarisation among theUS electorate and a decline in America’s standing in the world – again, a winfor Russia.
+China has largely refrained from interfering in other countries’ internal af-fairs; as I described in section 2.
+2.
+2, they have long taken the view that anuncensored Internet amounted to US subversion of communist party rule buttheir posture on that front has been defensive.
+ Their focus has been on buildingtheir economic, technological and intelligence capacity while not conducting at-tacks, whether disruptive or political, on other countries.
+ This capacity buildinghas had political consequences, most notably in the US e↵ort to prevent Huaweidominating 5G infrastructure, as I discuss in sections 2.
+2.
+2 and 22.
+2.
+4.
+ Thislooks set to become a frontier in the new cold war that’s emerging as Chinaseeks to become the USA’s peer competitor.
+ There are signs in 2020 thoughof more aggressive diplomacy as China seeks to entrench its narrative aroundcoronavirus and exploit the USA’s chaotic response to the pandemic.
+23.
+8.
+4DoctrineThe inclusion by Denning and Waltz of propaganda and other psychologicaloperations in information warfare back in 1999 was a minority view at the time,but has been borne out by events since.
+ It does have historical precedent.
+ FromRoman and Mongol e↵orts to promote a myth of invincibility, through the useof propaganda radio stations by both sides in World War 2 and the Cold War, tothe bombing of Serbian TV during the Kosovo campaign and denial-of-serviceattacks on Chechen web sites by Russian agencies – the tools may change butthe game remains the same.
+In the intervening twenty years, the names have changed: the Pentagonadopted ‘information warfare’ in 1998, changed it to ‘information operations’in 2006 and ‘cyberspace operations’ in 2013 [1164].
+There have been somebig blind spots: it wasn’t anybody’s job at the Pentagon in 2016 to worryabout people in St Petersburg pretending to be from Black Lives Matter [1221].
+Meanwhile a lot of wrong ideas have been gradually discarded.
+ It used to beSecurity Engineering734Ross Anderson23.
+9.
+ SUMMARYsaid that attribution would be too hard; that’s not been borne out.
+ Othersused to suggest that information warfare provided a casualty-free way to win:‘just hack the Iranian power grid and watch them sue for peace’.
+ Yet moredeveloped countries are more exposed, and if a cyber attack targets civilians toan even greater extent than the alternatives, then the attackers are likely to beportrayed as war criminals.
+ What’s more, if a NATO country is the aggressor,the Tallinn manual will bolster the prosecution.
+In the second edition of this book, I wondered whether cyber attacks wouldﬁnd their place in open conﬂict or in guerilla warfare.
+ So far we’ve seen theirdevelopment by Russia into a component of a hybrid warfare strategy honed inGeorgia and the Ukraine.
+ We’ve seen attacks on democratic mechanisms notjust in the UK and the USA but in Germany, France and elsewhere.
+ Will thisbe the future for the next ten years too, as the USA, Russia and China continueto smile sweetly at the United Nations while kicking each other under the table?Or are there other possibilities? We’ve seen cyber tactics being used by peacefuldemonstrators in the Arab spring, and by violent extremists in the Middle East,mostly without success.
+ What else is there? Or will states continue to be themain actors?23.
+9SummaryElectronic warfare ﬂourished during the Cold War, and developed a lot of inter-esting techniques, some of which have found their way into mainstream informa-tion security.
+ After being starved of attention and money for years, it’s startingto move back up the agenda as China aims to compete with the USA and theRussians also modernise their armed forces.
+ The AI revolution may change howthe game is played as cognitive radar and sonar, coupled with better techniquesfor multisensor data fusion, move the advantage from the platform with the mostmegawatts to the player with the smartest software.
+ It is likely, though, thatvictory will require e↵ective coordination of physical force and subtle deception.
+A decade ago, people already talked of electronic warfare becoming infor-mation warfare.
+ We have seen occasional use of cyber-weapons, from the 2010Stuxnet attack on Iran’s uranium enrichment facilities to the Russian NotPetyaattack on the Ukraine.
+ And it is easily observable that nation state actors aremaking preparations to attack other nations’ critical national infrastructure.
+However, the great majority of the information operations that have actuallybeen carried out in 2010–20 have been psychological operations and propaganda,aimed at sowing discord, disrupting political institutions such as elections, anddeepening political polarisation.
+ There are some interesting similarities betweenthe decoys, jamming and other techniques used to manipulate enemy radar, andthe techniques used to manipulate public opinion.
+Research ProblemsMy own research group has two relevant interests.
+ First, we’ve been looking atadversarial machine learning.
+ For example, if a missile uses a neural networkSecurity Engineering735Ross Anderson23.
+9.
+ SUMMARYto seek its target, then can we approximate that model well enough from ob-servations to determine whether there’s an evasion strategy better than randommaneuvering [2071]? Can we design camouﬂage that takes a lot of computa-tional e↵ort to understand? Can we add keys to neural networks so that di↵erentinstances of them are vulnerable to di↵erent adversarial samples, thus limitingan opponent’s ability to learn [1732]?Second, via the Cambridge Cybercrime Centre, we collect large amounts ofdata on spam, phish, malware, botnet command-and-control tra�c, and otheronline wickedness.
+ We develop better honeypots for capturing attack tra�c,including attacks aimed at embedded systems.
+We license our collections ofdata to over a hundred researchers worldwide.
+ They are now starting to includescrapes of underground fora for political extremism as well as for cybercrime.
+Further ReadingThe best all-round reference for the technical aspects of electronic warfare, fromradar through stealth to EMP weapons, is by Curtis Schleher [1662]; a good sum-mary was written by Doug Richardson [1601].
+ The classic introduction to theanti-jam properties of spread spectrum sequences is by Andrew Viterbi [1964];the history of spread spectrum is ably told by Robert Scholtz [1682]; the classicintroduction to the mathematics of spread spectrum is by Raymond Pickholtz,Donald Schilling and Lawrence Milstein [1525]; while the standard textbook isby Robert Dixon [567].
+ The most thorough reference on communications jam-ming is by Richard Poisel [1530].
+ Hugh Gri�ths and Nicholas Willis describethe electronic war between the RAF and the Luftwa↵e in World War 2 [824],while R.
+ V.
+ Jones’ overall history of British electronic warfare and scientiﬁc in-telligence gives a lot of insight not just into how the technology developed butalso into strategic and tactical deception [990, 992].
+ The various protocols usedin industrial control systems and surveyed, and their vulnerabilities discussed,by Santiago Figueroa-Lorenzo, Javier A˜norga, and Saioa Arrizabalaga in [684].
+The inadequacy of US power grid hardening against Carrington events and EMPare discussed by Matthew and Martin Weiss [2005].
+ For readings on informa-tion operations, I’d recommend the readings I list at the end of the chapterson psychology and on surveillance; for the Russian assault on democracy in theU.
+S.
+ and Europe, one starting point is a report to the Committee on ForeignRelations of the U.
+S.
+ Senate [385].
+Security Engineering736Ross Anderson

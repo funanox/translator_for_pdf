@@ -1,0 +1,377 @@
+Chapter 15Nuclear Command andControlIn Germany and Turkey they viewed scenes that were particularlydistressing.
+ On the runway stood a German (or Turkish)quick-reaction alert airplane loaded with nuclear weapons and witha foreign pilot in the cockpit.
+ The airplane was ready to take o↵ atthe earliest warning, and the nuclear weapons were fullyoperational.
+ The only evidence of U.
+S.
+ control was a lonely18-year-old sentry armed with a carbine and standing on thetarmac.
+ When the sentry at the German airﬁeld was asked how heintended to maintain control of the nuclear weapons should the pilotsuddenly decide to scramble (either through personal caprice orthrough an order from the German command circumventing U.
+S.
+command), the sentry replied that he would shoot the pilot; Agnewdirected him to shoot the bomb.
+– Jerome Wiesner, reporting to President Kennedy on nuclear arms commandand control after the Cuban crisis15.
+1IntroductionThe catastrophic harm that could result from the unauthorized use of a nuclearweapon, or from the proliferation of nuclear technology, has led the US andother nuclear powers to spend colossal amounts of money protecting not justnuclear warheads but also the supporting infrastructure, industry and materials.
+Nuclear arms control is at the heart of international diplomacy: while NorthKorea now has the bomb, South Africa and Libya were persuaded to give it up,Iran’s program has been stopped (by both diplomatic and cyber means) whileIraq and Syria have had their WMD programs terminated by force.
+A surprising amount of nuclear security know-how has been published.
+ Infact, there are limits on how much could be kept secret even if this was thoughtdesirable.
+ Many countries are capable of producing nuclear weapons but have48515.
+1.
+ INTRODUCTIONdecided not to (Japan, Australia, Switzerland, .
+.
+.
+)so maintain controls onnuclear materials in a civilian context.
+ Much of the real force of nonproliferationis cultural, built over the years through diplomacy and through the restraintof nuclear powers who since 1945 forebore use of these weapons even whenfacing defeat at the hands of non-nuclear states.
+ This is backed by internationalagreements, such as the Nonproliferation Treaty and the Convention on thePhysical Protection of Nuclear Material [949], enforced by the InternationalAtomic Energy Agency (IAEA).
+About ten tons of plutonium are produced by civil reactors each year, andif the human race is to rely on nuclear power long-term then we’ll be burning itin reactors as well as just making it as a side-e↵ect of burning uranium.
+ So wehave to guard the stu↵, in ways that inspire international conﬁdence – not justbetween governments but from an increasingly sceptical public1.
+A vast range of security technology has spun o↵ from the nuclear program.
+The US Department of Energy weapons laboratories – Sandia, Lawrence Liv-ermore and Los Alamos – have worked for two generations to make nuclearweapons and materials as safe as can be achieved.
+ I’ve already mentioned someof their more pedestrian spin-o↵s, from the discovery that passwords of morethan twelve digits were not usable under battleﬁeld conditions to high-end bur-glar alarm systems.
+ The trick of wrapping an optical ﬁber round the devices tobe protected and using interference e↵ects to detect a change in length of lessthan a micron, is also one of theirs – it was designed to loop round the warheadsin an armoury and alarm without fail if any of them are moved.
+In later chapters, we’ll see still more technology of nuclear origin.
+ For ex-ample, iris recognition – the most accurate system known for biometric identi-ﬁcation of individuals, and now used in India’s Aadhar identity system – wasdeveloped using US Department of Energy funds to control entry to the pluto-nium store, and much of the expertise in tamper-resistance and tamper-sensingtechnology originally evolved to prevent the abuse of stolen weapons or controldevices.
+ After 9/11, the US and its allies took many aggressive steps to controlnuclear proliferation including:1.
+ the invasion of Iraq in March 2003, for which the casus belli was a claimthat Iraq possessed weapons of mass destruction;2.
+ an agreement by Libya in December 2003 to abandon an undeclared weaponsprogram;3.
+ the disclosure in 2004 that Abdul Qadeer Khan, a senior scientist withPakistan’s nuclear program, had helped a number of other countries in-cluding Syria, Libya, Iran and North Korea get hold of weapons technol-ogy, and the dismantling of his network;4.
+ the Israeli operation ’Outside the Box’ where a suspected Syrian reactornear Deir-ez-Zor was bombed on September 6th, 2007;1For example, the British government was seriously embarrassed in 2007 when the safetyof its plutonium stockpile was criticised by eminent scientists [1626], and again in 2018 whenparliament’s public accounts committee criticised the weapons program’s crumbling facilities,aging workforce, specialist sta↵ shortages and endemic funding and practical problems [1560].
+Security Engineering486Ross Anderson15.
+1.
+ INTRODUCTION5.
+ the 2015 Joint Comprehensive Plan of Action whereby Iran agreed withthe USA, the UK, Russia, China, France, Germany and the EU to halt itsweapons program.
+Not all of the e↵orts were successful, the obvious case in point being NorthKorea, which had signed a treaty with the USA in 1994 to halt weapons develop-ment in return for oil shipments and help developing civil nuclear energy.
+ Thiscollapsed in 2003, after which Pyongyang withdrew from the Non-ProliferationTreaty and developed weapons.
+ This history makes many people apprehensive ofthe possible long-term e↵ects of the Trump administration’s 2018 abandonmentof the agreement with Iran (even though Iran was abiding by it).
+ And thenthere’s also its 2019 abandonment of the Intermediate-Range Nuclear ForcesTreaty with the Russia (even though that was the result of Russian cheating);and the fact that the New START treaty, signed in 2010 by Barack Obama, willrun out in February 2021, unless America elects a president in November 2020who agrees to renew it.
+Nuclear controls apply to more than just warheads and the ﬁssile materialsrequired for their construction.
+ Following 9/11, we learned that Al-Qaida hadtalked about a ‘dirty bomb’ – a device that would disperse radioactive materialover a city block – which might not kill anyone but could lead to panic, andin a ﬁnancial center could cause great economic damage.
+So in 2007, GAOinvestigators set up a bogus company and got a license from the Nuclear Reg-ulatory Commission authorizing them to buy isotopes.
+ The license was printedon ordinary paper; the investigators altered it to change the quantity of mate-rial they were allowed to buy, then used it to order dozens of moisture densitygauges containing americium-241 and cesium-137, which could have been usedin a dirty bomb [1112].
+ Thanks to the fear of terrorism, the control of nuclearmaterials has tightened and spread more widely in the economy.
+Nuclear safety continually teaches us lessons about the limits of assurance.
+For example, it’s tempting to assume that if a certain action that you don’twant to happen has a probability of 1 in 10 of happening through human error,then by getting ﬁve di↵erent people to check, you can reduce the probability to1 in 100,000.
+ The US Air Force thought so too.
+ Yet in October 2007, six UShydrogen bombs went missing for 36 hours after a plane taking cruise missilesfrom Minot Air Force Base in North Dakota to Barksdale in Louisiana wasmistakenly loaded with six missiles armed with live warheads.
+ All the missileswere supposed to be inspected by handlers in the storage area and checkedagainst a schedule (which was out of date), by ground crew waiting for theinspection to ﬁnish before moving any missiles, (they didn’t), by ground crewinspecting the missiles (they didn’t look in the glass portholes to see whetherthe warheads were real or dummy), by the driver calling in the identiﬁcationnumbers to a control centre (nobody there bothered to check), and ﬁnally bythe navigator during his preﬂight check (he didn’t look at the wing with the livemissiles).
+ The plane took o↵, ﬂew to Louisiana, landed, and sat unguarded onthe runway for nine hours before the ground crew arrived to unload the missilesand discovered they were live [187, 549].
+ This illustrates one of the limits toshared control.
+ People will rely on others and slack o↵ – a lesson also known inthe world of medical safety.
+ Indeed, in the USAF case it turned out that theairmen had replaced the o�cial procedures with an ‘informal’ schedule of theirSecurity Engineering487Ross Anderson15.
+2.
+ THE EVOLUTION OF COMMAND AND CONTROLown.
+ So how can you design systems that don’t fail in this way?In this chapter I describe the nuclear safety environment and some of thetricks that might ﬁnd applications (or pose threats) elsewhere.
+It has beenassembled from public sources – but even so there are useful lessons to be drawn.
+15.
+2The Evolution of Command and ControlThe ﬁrst atomic bomb to be used in combat was the ‘Little Boy’ dropped onHiroshima.
+ Its safety was somewhat improvised.
+ It came with three detonators,and the weapon o�cer was supposed to replace green dummy ones with redlive ones once the plane was airborne.
+ However, a number of heavily loadedB-29s had crashed on takeo↵ from Tinian, the base they used.
+ The Enola Gayweapon o�cer, Navy Captain Deak Parsons, reckoned that if the plane crashed,the primer might explode, detonating the bomb and wiping out the island.
+ Sohe spent the day before the raid practising removing and reinstalling the primer– a gunpowder charge about the size of a loaf of bread – so he could install itafter takeo↵ instead.
+Doctrine has rather moved away from improvisation, and if anything we’reat the other extreme now, with mechanisms and procedures tested and drilledand exercised and analysed by multiple experts from di↵erent agencies.
+ It hasbeen an evolutionary process.
+ When weapons started being carried in single-seat tactical aircraft in the 1950s, and being slung under the wings rather thanin a bomb bay, it was no longer possible to insert a bag of gunpowder manually.
+There was a move to combination locks: the pilot would arm the bomb aftertakeo↵ by entering a 6-digit code into a special keypad with a wired-seal lid.
+ Thisenabled some central control; the pilot might only get the code once airborne.
+But both the technical and procedural controls in the 1950s were primitive.
+15.
+2.
+1The Kennedy MemorandumThe Cuban missile crisis changed all that.
+The Soviet B-59 was a Foxtrot-class diesel-electric submarine which came under attack on 27th October 1962when a US battle group consisting of the aircraft carrier USS Randolph and 11destroyers started dropping depth charges nearby.
+ These were practice rounds,dropped in an attempt to force the submarine to the surface for identiﬁcation;but the ship’s captain, Valentin Savitsky, thought he was under attack, that warhad started, and so he should ﬁre a nuclear torpedo to destroy the carrier.
+ Butthis could only be done if the three senior o�cers on board agreed, and luckilyone of them, Vasily Arkhipov, refused.
+ Eventually the submarine surfaced andreturned to Russia.
+This made the risk that a world war might start by accident salient to USpolicymakers, and President Kennedy ordered his science adviser Jerome Wies-ner to investigate.
+ He reported that hundreds of US nuclear weapons were keptin allied countries such as Greece and Turkey, which were not particularly sta-ble and occasionally fought with each other.
+ These weapons were protected bytoken US custodial forces, so there was no physical reason why the weaponsSecurity Engineering488Ross Anderson15.
+2.
+ THE EVOLUTION OF COMMAND AND CONTROLcouldn’t be seized in time of crisis.
+ There was also some worry about unautho-rized use of nuclear weapons by US o�cers – for example, if a local commanderunder pressure felt that ‘if only they knew in Washington how bad things werehere, they would let us use the bomb.
+’ In [1825] we ﬁnd the passage quoted atthe head of this chapter.
+Kennedy’s response was National Security Action Memo no.
+ 160 [217].
+ Thisordered that America’s 7,000 nuclear weapons then dispersed to NATO com-mands should be got under positive US control using technical means, whetherthey were in the custody of US or allied forces.
+ Although this policy was sold toCongress as protecting US nuclear weapons from foreigners, the worries abouta crazy ‘Dr Strangelove’ (or a real-life Captain Savitsky) were actually at thetop of Wiesner’s list.
+The Department of Energy was already working on weapon safety devices.
+The basic principle was that a unique aspect of the environment had to be sensedbefore the weapon would arm.
+ For example, missile warheads and some free-fallbombs had to experience zero gravity, while artillery shells had to experiencean acceleration of thousands of G.
+ There was one exception: atomic demolitionmunitions.
+ These are designed to be taken to their targets by ground troopsand detonated using time fuses.
+ There appears to be no scope for a uniqueenvironmental sensor to prevent accidental or malicious detonation.
+The solution then under development was a secret arming code that activateda solenoid safe lock buried deep in the plutonium pit at the heart of the weapon.
+The main engineering problem was maintenance.
+ When the lock was exposed,for example to replace the power supply, the code might become known.
+ So itwas not acceptable to have the same code in every weapon.
+ Group codes wereone possibility – ﬁring codes shared by only a small batch of warheads.
+Following the Kennedy memo, it was proposed that all nuclear bombs shouldbe protected using code locks, and that there should be a ‘universal unlock’action message that only the president or his legal successors could give.
+ Theproblem was to ﬁnd a way to translate this code securely to a large numberof individual ﬁring codes, each of which enabled a small batch of weapons.
+The problem became worse in the 1960s and 1970s when the doctrine changedfrom massive retaliation to ‘measured response’.
+ Instead of arming all nuclearweapons or none, the President now needed to be able to arm selected batches(such as ‘all nuclear artillery in Germany’).
+ This starts to lead us to a systemof some complexity, especially when we realise we need disarming codes too,for maintenance purposes, and some means of navigating the trade-o↵s betweenweapons safety and e↵ective command.
+15.
+2.
+2Authorization, environment, intentThe deep question was the security policy that nuclear safety systems, and com-mand systems, should enforce.
+ What emerged in the USA was the rule of ‘au-thorization, environment, intent’.
+ For a warhead to detonate, three conditionsmust be met.
+Authorization: the use of the weapon in question must have been authorizedSecurity Engineering489Ross Anderson15.
+3.
+ UNCONDITIONALLY SECURE AUTHENTICATIONby the national command authority (i.
+e.
+, the President and his lawfulsuccessors in o�ce).
+Environment: the weapon must have sensed the appropriate aspect of theenvironment.
+ (With atomic demolition munitions, this requirement is re-placed by the use of a special container.
+)Intent: the o�cer commanding the aircraft, ship or other unit must unambigu-ously command the weapon’s use.
+In early systems, ‘authorization’ meant the entry into the device of a four-digit authorization code.
+The means of signalling ‘intent’ depended on the platform.
+ Aircraft typicallyuse a six-digit arming or ‘use control’ code.
+ The command consoles for inter-continental ballistic missiles are operated by two o�cers, each of whom mustenter and turn a key to launch the rocket.
+ Whatever the implementation, theremust be a unique signal; 22 bits derived from a six-digit code are believed to bea good tradeo↵ between a number of factors from usability to minimising therisk of accidental arming [1349].
+15.
+3Unconditionally Secure AuthenticationNuclear command and control drove the development of a theory of one-timeauthentication codes.
+ As I described in Chapter 5, “Cryptography”, these aresimilar in concept to the test keys invented to protect telegraphic money trans-fers, in that a keyed transformation is applied to the message in order to yielda short authentication code, also known as an authenticator or tag.
+ As the keysare only used once, authentication codes can be made unconditionally secure,in that the protection they give is independent of the computational resourcesavailable to the attacker.
+ So they do for authentication what the one-time paddoes for conﬁdentiality.
+Recall that we still have to choose the code length to bound the probabilityof a successful guess; this might be di↵erent depending on whether the opponentwas trying to guess a valid message from scratch (impersonation) or modify anexisting valid message so as to get another one (substitution).
+ In the GCM modeof operation discussed in Chapter 5, these are set equal at 2128 but this neednot be the case.
+An example should make this clear.
+ Suppose a commander has agreed anauthentication scheme with a subordinate under which an instruction is to beencoded as a three digit number from 000 to 999.
+ The instruction may havetwo values: ‘Attack Russia’ and ‘Attack China’.
+ One of these will be encodedas an even number, and the other by an odd number: which is which will bepart of the secret key.
+ The authenticity of the message will be vouched for bymaking its remainder, when divided by 337, equal to a secret number which isthe second part of the key.
+Suppose the key is that:• ‘Attack Russia’ codes to even numbers, and ‘Attack China’ to oddSecurity Engineering490Ross Anderson15.
+3.
+ UNCONDITIONALLY SECURE AUTHENTICATION• an authentic message has the remainder 12 when divided by 337.
+So ‘Attack Russia’ is ‘686’ (or ‘12’) and ‘Attack China’ is ‘349’.
+An enemy who has taken over the communications channel between thecommander and the subordinate, and who knows the scheme but not the key,has a probability of only 1 in 337 of successfully impersonating the commander.
+However, once he sees a valid message (say ‘12’ for ‘Attack Russia’), then hecan easily change it to the other by adding 337, and so (provided he understoodthe commander’s intent) he can send the missiles to the other country.
+ So theprobability of a successful substitution attack in this case is 1.
+As with computationally secure authentication, the unconditional varietycan provide message secrecy or not: it might work like a block cipher, or like aMAC on a plaintext message.
+ Similarly, it can use an arbitrator or not.
+ Onemight even want multiple arbitrators, so that they don’t have to be trusted indi-vidually.
+ Schemes may also combine unconditional and computational security.
+For example, an unconditional code without secrecy could have computationallysecure secrecy added by simply enciphering the message and the authenticatorusing a conventional cipher system.
+Authentication is in some sense the dual of coding in that in the latter,given an incorrect message, we want to ﬁnd the nearest correct one e�ciently;in the former, we want ﬁnding a correct message to be impossible unless you’veseen it already or are authorized to construct it.
+ And just as the designer of anerror-correcting code wants the shortest length of code for a given error recoverycapability, so the designer of an authentication code wants to minimize the keylength required to achieve a given bound on the deception probabilities.
+Quite a few details have to be ﬁxed before you have a fully-functioning com-mand and control system.
+ You have to work out ways to build the key controlmechanisms into warheads in ways that will resist disarming or dismantling bypeople without disarming keys.
+ You need mechanisms for generating keys andembedding them in weapons and control devices.
+ You have to think of all theways an attacker might social-engineer maintenance sta↵, and what you’ll doto forestall this.
+ And there is one element of cryptographic complexity.
+ Howdo you introduce an element of one-wayness, so that a maintenance man whodisarms a bomb to change the battery doesn’t end up knowing the universalunlock code? You may need to be able to derive the code to unlock this onespeciﬁc device from the universal unlock, but not vice-versa.
+ What’s more, youneed serviceable mechanisms for recovery and re-keying in the event that a crisiscauses you to authorize some weapons, that thankfully are stood down ratherthan used.
+ US systems now use public-key cryptography to implement this one-wayness, but you could also use one-way functions.
+ In either case, you will endup with an interesting mix of unconditional and computational security.
+One interesting spin-o↵ from authentication research was the GCM mode ofoperation for block ciphers, described in the chapter on ‘Cryptography’, whichhas become the most common mode of operation in modern ciphersuites.
+Security Engineering491Ross Anderson15.
+4.
+ SHARED CONTROL SCHEMES15.
+4Shared Control SchemesThe nuclear command and control business became even more complex with theconcern, from the late 1970s, that a Soviet decapitation strike against the USnational command authority might leave the arsenal intact but useless.
+ Therewas also concern that past a certain threshold of readiness, it wasn’t sensibleto assume that communications between the authority and ﬁeld commanderscould be maintained, because of the likely damage from electromagnetic pulses(and other possible attacks on communications).
+The solution was found in another branch of cryptomathematics known assecret sharing, whose development it helped to inspire.
+The idea is that intime of tension a backup control system will be activated in which combinationsof o�ce holders or ﬁeld commanders can jointly allow a weapon to be armed.
+Otherwise the problems of maintaining detailed central control of a large num-ber of weapons would likely become insoluble.
+ A particular case of this is insubmarine-launched ballistic missiles.
+ These exist to provide a second-strike ca-pability – to take vengeance on a country that has destroyed your country witha ﬁrst strike.
+ The UK government was concerned that, under the US doctrine,it is possible for the submarine commander to be left unable to arm his weaponsif the USA is destroyed, and the President and his lawful successors in o�ce arekilled.
+ So the British approach is for arming material to be kept in safes underthe control of the boat’s o�cers, along with a letter from the Prime Minister onthe circumstances in which weapons are to be used.
+ If the o�cers agree, thenthe missiles can be ﬁred.
+How can this be generalised? Well, you might just give half of the authen-tication key to each of two people, but then you need twice the length of key,assuming that the original security parameter must apply even if one of them issuborned.
+ An alternative approach is to give each of them a number and havethe two of them add up to the key.
+ This is how keys for automatic teller ma-chines are managed2.
+ But this may not be enough in command applications, asone cannot be sure that the people operating the equipment will consent, with-out discussion or query, to unleash Armageddon.
+ So a more general approachwas invented independently by Blakley and Shamir in 1979 [256, 1703].
+ Theirbasic idea is illustrated in the following diagram (Figure 15.
+1).
+Suppose the rule Britain wants to enforce is that if the Prime Minister isassassinated then a weapon can be armed either by any two cabinet ministers, orby any three generals, or by a cabinet minister and two generals.
+ To implementthis, let the point C on the z axis be the unlock code that has to be supplied tothe weapon.
+ We now draw a line at random through C and give each cabinetminister a random point on the line.
+ Now any two of them together can workout the coordinates of the line and ﬁnd the point C where it meets the z axis.
+Similarly, we embed the line in a random plane and give each general a randompoint on the plane.
+ Now any three generals, or two generals plus a minister, canreconstruct the plane and thence the ﬁring code C.
+By generalizing this simple construction to geometries of n dimensions, or to2Combining keys using addition or exclusive-or turns out to be a bad idea for ATMs asit opens up the system to attacks that I’ll discuss later under the rubric of ‘API security’.
+However in the context of unconditionally-secure authentication codes, addition may be OK.
+Security Engineering492Ross Anderson15.
+4.
+ SHARED CONTROL SCHEMESFigure 15.
+1: – Shared control using geometrygeneral algebraic structures rather than lines and planes, this technique enablesweapons, commanders and options to be linked together with a complexitylimited only by the available bandwidth.
+An introduction to secret sharingcan be found in [1829] and a more detailed exposition in [1750].
+ This inspiredthe development of threshold signature schemes, as described in Chapter 5,‘Cryptography’, and can be used in products that enforce a rule such as ‘Anytwo vice-presidents of the exchange may activate a cold bitcoin wallet’.
+In the typical military application, two-out-of-n control is used; n must belarge enough that at least two of the keyholders will be ready and able to dothe job, despite combat losses.
+ Many details need attention.
+ For example, thedeath of a commander shouldn’t give his deputy both halves of the key, andthere are all sorts of nitty-gritty issues such as who shoots whom when (on thesame side).
+ Banking is much the same; it may take two o�cers to release a largepayment, and you need to take care that delegation rules don’t allow both keysto fall into the one pair of hands.
+In some civilian applications, a number of insiders may conspire to break yoursystem.
+ The classic example is pay-TV where a pirate may buy several dozensubscriber cards and reverse engineer them for their secrets.
+ So the pay-TVoperator wants a system that’s robust against multiple compromised subscribers.
+I’ll talk about this traitor tracing problem more in the chapter on copyright.
+Security Engineering493Ross Anderson15.
+5.
+ TAMPER RESISTANCE AND PALS15.
+5Tamper Resistance and PALsIn modern weapons the solenoid safe locks have been superseded by permissiveaction links (PALs), which are used to protect most US nuclear devices.
+Asummary of the published information about PALs can be found in [217].
+ PALdevelopment started in about 1961, but deployment was slow.
+ Even twenty yearslater, about half the US nuclear warheads in Europe still used four-digit codelocks 3.
+ As more complex arming options were introduced, the codes increasedin length from 4 to 6 and ﬁnally to 12 digits.
+ Devices started to have multiplecodes, with separate ‘enable’ and ‘authorize’ commands and also the ability tochange codes in the ﬁeld (to recover from false alarms).
+The PAL system is supplemented by various coded switch systems and op-erational procedures, and in the case of weapons such as atomic demolitionmunitions, which are not big and complex enough for the PAL to be made inac-cessible, the weapon is also stored in tamper sensing containers called PAPS (forprescribed action protective system).
+ Other mechanisms used to prevent acciden-tal detonation include the deliberate weakening of critical parts of the detonatorsystem, so that they will fail if exposed to certain abnormal environments.
+Whatever combination of systems is used, there are penalty mechanismsto deny a thief the ability to obtain a nuclear yield from a stolen weapon.
+These mechanisms vary from one weapon type to another but include gas bottlesto deform the pit and hydride the plutonium in it, shaped charges to destroycomponents such as neutron generators and the tritium boost, and asymmetricdetonation that results in plutonium dispersal rather than yield.
+This self-destruct procedure will render them permanently inoperative, without yield, ifenemy capture is threatened.
+ It is always a priority to destroy the code.
+ It isassumed that a renegade government prepared to deploy “terrorists” to steal ashipment of bombs would be prepared to sacriﬁce some of the bombs (and sometechnical personnel) to obtain a single serviceable weapon.
+To perform authorized maintenance, the tamper protection must be disabled,and this requires a separate unlock code.
+ The devices that hold the variousunlock codes – for servicing and ﬁring – are themselves protected in similarways to the weapons.
+The assurance target is summarized in [1825]:It is currently believed that even someone who gained possessionof such a weapon, had a set of drawings, and enjoyed the technicalcapability of one of the national laboratories would be unable tosuccessfully cause a detonation without knowing the code.
+Meeting such an ambitious goal requires a very substantial e↵ort.
+ There areseveral examples of the level of care needed:• after tests showed that 1 mm chip fragments survived the protective det-onation of a control device carried aboard airborne command posts, the3Bruce Blair says that Strategic Air Command resisted the new doctrine and kept Min-uteman authorization codes at ’00000000’ until 1977, lying to a succession of Presidents andDefense Secretaries [255].
+ Others said that this was just the use control code.
+Security Engineering494Ross Anderson15.
+6.
+ TREATY VERIFICATIONsoftware was rewritten so that all key material was stored as two separatecomponents, which were kept at addresses more than 1 mm apart on thechip surface;• the ‘football’, the command device carried around behind the President,is as thick as it is because of fear that shaped charges might be used todisable its protective mechanisms.
+ Shaped charges can generate a plasmajet with a velocity of 8000m/s, which could in theory be used to disabletamper sensing circuitry.
+ So some distance may be needed to give thealarm circuit enough time to zeroize the code memory.
+This care must extend to many details of implementation and operation.
+ Theweapons testing process includes not just independent veriﬁcation and valida-tion, but hostile ‘black hat’ penetration attempts by competing agencies.
+ Eventhen, all practical measures are taken to prevent access by possible opponents.
+The devices (both munition and control) are defended in depth by armed forces;there are frequent zero-notice challenge inspections; and sta↵ may be made tore-sit the relevant examinations at any time of the day or night.
+I discuss tamper resistance in much more detail in its own chapter, as it’swidely used in applications such as bank cards and phones.
+ However, tamper re-sistance, secret sharing and one-time authenticators aren’t the only technologiesto have beneﬁted from the nuclear industry’s interest.
+ There are more subtlesystem lessons too.
+15.
+6Treaty VeriﬁcationA variety of veriﬁcation systems are used to monitor compliance with nuclearnonproliferation treaties.
+ For example, the IAEA and the US Nuclear Regu-latory Commission (NRC) monitor ﬁssile materials in licensed civilian powerreactors and other facilities.
+An interesting example comes from the tamper-resistant seismic sensor de-vices designed to monitor the Comprehensive Test Ban Treaty [1747].
+ The goalin this application was to have su�ciently sensitive sensors in each signatory’stest sites that any violation of the treaty (such as by testing too large a de-vice) can be detected with high probability.
+ The tamper sensing here is fairlystraightforward: the seismic sensors are ﬁtted in a steel tube and inserted intoa drill hole that is backﬁlled with concrete.
+ The whole assembly is so solid thatthe seismometers themselves can be relied upon to detect tampering eventswith a fairly high probability.
+ This physical protection is reinforced by randomchallenge inspections.
+The authentication process becomes somewhat more complex because of theassumption of pervasive deceit.
+Because there is no third party trusted byboth sides, and because the quantity of seismic data being transmitted is of theorder of 108 bits per day, a digital signature scheme (RSA) was used instead ofone-time authentication tags.
+ But this is only part of the answer.
+ One partymight always disavow a signed message by saying that the o�cial responsiblefor generating it had defected, and so the signature was forged.
+ So the keysSecurity Engineering495Ross Anderson15.
+7.
+ WHAT GOES WRONGhad to be generated within the seismic package itself once it had been sealedby both sides.
+ Also, if one side builds the equipment, the other will suspectit of having hidden functionality.
+ Several protocols were proposed of the cutand choose variety, in which one party would produce several devices of whichthe other party would dismantle a sample for inspection.
+ A number of theseissues have since resurfaced in electronic commerce.
+ (Many system designerssince could have saved themselves a lot of grief if they’d read the account ofthese treaty monitoring systems by Sandia’s former crypto chief Gus Simmonsin [1747].
+)15.
+7What Goes WrongDespite the huge amounts of money invested in developing high-tech protectionmechanisms, nuclear control and safety systems appear to su↵er from just thesame kind of design bugs, implementation blunders and careless operations asany others.
+15.
+7.
+1Nuclear accidentsThe main risk may be just an accident.
+ We’ve already had two nuclear accidentsrated at 74 on the International Nuclear and Radiological Event Scale, namelythose at Chernobyl and Fukushima, and quite a few less serious ones.
+ Britain’smain waste reprocessing plant at Sellaﬁeld, which stores 160 tonnes of plutonium– the world’s largest stockpile – has been plagued with scandals for decades.
+Waste documentation has been forged; radiation leaks have been covered up;workers altered entry passes so they could bring their cars into restricted areas;there have been reports of sabotage; and the nuclear police force only manageto clear up 10–20% of cases of theft or criminal damage [1131].
+ The task ofcleaning it all up could take a century and cost over $100bn; meanwhile it hasto be guarded [1867].
+ There are signiﬁcant and pervasive problems elsewhere inthe defence nuclear enterprise, including at the nuclear weapons factories and thesubmarine bases, ranging from dilapidated facilities, incompetent contractors,poor morale, project delays, spiralling costs, and 20 old submarines awaitingdisposal – nine of which still contain fuel [1560].
+ The situation in Russia appearsto be even worse.
+ A survey of nuclear safekeeping described how dilapidatedtheir security mechanisms became following the collapse of the USSR, with ﬁssilematerials occasionally appearing on the black market and whistleblowers beingprosecuted [953].
+15.
+7.
+2Interaction with cyberwarA second, and growing, concern is that nuclear safety might be underminedby the possibility of cyber-attack.
+ Even if the command and control channelitself has been made invulnerable to manipulation using the cryptographic and4The deﬁnition is ‘Major release of radioactive material with widespread health and envi-ronmental e↵ects requiring implementation of planned and extended countermeasures’Security Engineering496Ross Anderson15.
+7.
+ WHAT GOES WRONGtamper-resistance mechanisms described here, it might be subject to service-denial attack; and in 2018, the Trump administration changed doctrine to allowthe ﬁrst use of nuclear weapons in response to such an attack.
+ Another vitalquestion is whether commanders can believe what they see on their screens.
+ In1983, a new Soviet early-warning system malfunctioned at a time of internationaltension, reporting that the USA had launched ﬁve Minuteman missiles at Russia.
+The commander in the Moscow bunker, lieutenant-colonel Stanislav Petrov,decided it was probably a false alarm, as launching only ﬁve missiles would havebeen illogical, and held ﬁre until satellites conﬁrmed it was indeed a false alarm.
+That was probably the closest that the world got to accidental nuclear war(there had also been a US false alarm three years previously).
+ How would sucha system failure play out today, now that we have much more complex systems,with AI creeping into the command chain in all sorts of places without our evenrealising it? And never mind failures – what about attacks on our intelligence,surveillance and reconnaissance (ISR) capability, including the satellites thatwatch for missile launches, detect nuclear detonations and pass on orders?A 2018 report from the Nuclear Threat Initiative describes the concerns insome detail [1833].
+ It’s not enough to protect the weapons themselves, as acyber attack on the planning, early-warning or communications systems couldalso have catastrophic consequences.
+ The main risk is of use because of falsewarnings or miscalculation; there are also external dependencies, from networksto the electricity grid.
+ Attacks on conventional command-and-control networkscould be seen as strategic threats if these networks are also used for nuclearforces.
+ Such issues have been acknowledged in the Trump administration’s 2018Nuclear Posture Review.
+ Technical cybersecurity measures alone are unlikely tobe enough, as there are signiﬁcant soft issues, such as whether key people canbe undermined by making them look incompetent.
+There may also be fears that an opponent’s capability at cyber operationsmay render one’s own deterrent less e↵ective or overconﬁdence that one’s owncapability might make attacking a rival less risky.
+ I was personally told by a se-nior o�cial in the signals intelligence agency of a non-NATO nuclear power thatin a confrontation they ‘had the drop on’ a regional rival.
+ Regardless of whetherthis was actually true or not, such sentiments, when expressed in the corridors ofpower, can undermine deterrence and make nuclear conﬂict more likely.
+ More re-cently, the U.
+S.
+ National Security Commission on Artiﬁcial Intelligence warnedin 2019 that nuclear deterrence could be undermined if AI-equipped systemssucceed in tracking and targeting previously invulnerable military assets [1415].
+And it’s not just the declared nuclear states.
+ There are currently 22 countrieswith ﬁssile materials in su�cient quantity and quality to be useful in weapons,and 44 with civil nuclear programs (45 once the UAE goes critical).
+ Of thesecountries, 15 don’t even have cybersecurity laws; energy companies generallywon’t invest in cybersecurity unless their regulators tell them to, while somecompanies (and countries) have no real capability.
+This has all been made highly salient to governments by the US / Israeliattack on Iran’s uranium enrichment capability at Natanz using the Stuxnetvirus.
+ In 2009 their output of enriched uranium fell by 30% and in 2010 thevirus came to light.
+ It had infected the centrifuge controllers, causing them tospin up and then slow down in such a way as to destroy about 1000 of Iran’sSecurity Engineering497Ross Anderson15.
+7.
+ WHAT GOES WRONGﬂeet of 4,700.
+ US government involvement was ﬁnally admitted in 2012 [1028].
+15.
+7.
+3Technical failuresThere have also been a number of interesting high-tech security failures.
+ Oneexample is a possible attack discovered on a nuclear arms reduction treaty whichled to the development of a new branch of cryptomathematics – the study ofsubliminal channels – and is relevant to later work on copyright marking andsteganography.
+The story is told in [1753].
+During the Carter administration, the USAproposed a deal with the USSR under which each side would cooperate withthe other to verify the number of intercontinental ballistic missiles.
+ In orderto protect US Minuteman missiles against a Soviet ﬁrst strike, it was proposedthat 100 missiles be moved randomly around a ﬁeld of 1000 silos by giant trucks,which were designed so that observers couldn’t determine whether they weremoving a missile or not.
+ So the Soviets would have had to destroy all 1,000 silosto make a successful ﬁrst strike, which was thought impractical.
+But how could the USA assure the Soviets that there were at most 100missiles in the silo ﬁeld, but without letting them ﬁnd out where? The proposedsolution was that the silos would have a Russian sensor package that woulddetect the presence or absence of a missile, sign this single bit of information,and send it via a US monitoring facility to Moscow.
+ The catch was that onlythis single bit of information could be sent; if the Russians could smuggle anymore information into the message, they could locate the full silos – as it wouldtake only ten bits of address information to specify a single silo in the ﬁeld.
+(There were many other security requirements to prevent either side cheating,or falsely accusing the other of cheating: for more details, see [1752].
+)To see how subliminal channels work, consider the Digital Signature Algo-rithm described in the chapter on cryptography.
+ The system-wide values are aprime number p, a prime number q dividing p � 1, and a generator g of a sub-group of F ⇤p of order q.
+ The signature on the message M is r, s where r = (gk(mod p))(mod q), and k is a random session key.
+ The mapping from k to ris fairly random, so a signer who wishes to hide ten bits of information in thissignature for covert transmission to an accomplice can ﬁrst agree a conventionabout how the bits will be hidden (such as ‘bits 72–81’) and second, try out onevalue of k after another until the resulting value r has the desired substring.
+This could have caused a disastrous failure of the security protocol.
+ Butin the end, the “missile shell game”, as it had become known in the press,wasn’t used.
+ Eventually the medium range ballistic missile treaty (MRBM) usedstatistical methods.
+ The Russians could say ‘we’d like to look at the following20 silos’ and they would be uncapped for their satellites to take a look.
+ Withthe end of the Cold War, inspections have become much more intimate withinspection ﬂights in manned aircraft, with observers from both sides, ratherthan satellites.
+Still, the discovery of subliminal channels was signiﬁcant.
+ Ways in which theymight be abused include putting HIV status, or the fact of a felony conviction,into a digital passport or identity card.
+ Where this is unacceptable, the remedySecurity Engineering498Ross Anderson15.
+8.
+ SECRECY OR OPENNESS?is to use a completely deterministic signature scheme such as RSA instead ofone that uses a random session key like DSA.
+15.
+8Secrecy or Openness?Finally, the nuclear industry provides a nice case history of secrecy.
+In the1930s, physicists from many countries had freely shared the scientiﬁc ideas thatled to the bomb, but after the ‘atomic spies’ (Fuchs, the Rosenbergs and others)had leaked the designs of the Hiroshima and Nagasaki devices to the SovietUnion, things swung to the other extreme.
+The US adopted a policy thatatomic knowledge was born classiﬁed.
+ That meant that if you were within USjurisdiction and had an idea relevant to nuclear weapons, you had to keep itsecret regardless of whether you held a security clearance or even worked inthe nuclear industry.
+ This was in tension with the Constitution.
+ Things havegreatly relaxed since then, as the protection issues were thought through indetail.
+“We’ve a database in New Mexico that records the physical and chemicalproperties of plutonium at very high temperatures and pressures”, a formerhead of US nuclear security once told me.
+ “At what level should I classify that?Who’s going to steal it, and will it do them any good? The Russians, they’vegot that data for themselves.
+ The Israelis can ﬁgure it out.
+ Gaddaﬁ? What thehell will he do with it?”As issues like this got worked through, a lot of the technology has beendeclassiﬁed and published, at least in outline.
+ Starting from early publication atscientiﬁc conferences of results on authentication codes and subliminal channelsin the early 1980s, the beneﬁts of public design review have been found tooutweigh the advantage to an opponent of knowing broadly the system in use.
+Many implementation details are kept secret, including information thatcould facilitate sabotage, such as which of a facility’s ﬁfty buildings containsthe alarm response force.
+Yet the big picture is fairly open, with commandand control technologies on o↵er at times to other states, including potentiallyhostile ones.
+ The beneﬁts of reducing the likelihood of an accidental war wereconsidered to outweigh the possible beneﬁts of secrecy.
+ Post-9/11, we’d ratherhave decent command and control systems in Pakistan than risk having one oftheir weapons used against us by some mid-level o�cer su↵ering from an attackof religious zealotry.
+ This is a modern reincarnation of Kerckho↵s’ doctrine, thenineteenth-century maxim that the security of a system must depend on its key,not on its design remaining obscure [1042].
+The nuclear lessons could be learned more widely.
+ Post-9/11, a number ofgovernments talked up the possibility of terrorists using biological weapons, andimposed controls on research and teaching in bacteriology, virology, toxicologyand indeed medicine.
+My faculty colleagues in these disciplines were deeplyunimpressed.
+ “You just shouldn’t worry about anthrax,” one of the UK’s topvirologists told me.
+ “The real nasties are the things Mother Nature dreams uplike HIV and SARS and bird ﬂu.
+ If these policies mean that there aren’t anycapable public health people in Khartoum next time a virus comes down theSecurity Engineering499Ross Anderson15.
+9.
+ SUMMARYNile, we’ll be sorry.
+” Sadly, the events of 2020 conﬁrm this wisdom.
+15.
+9SummaryThe control of nuclear weapons, and subsidiary activities from protecting theintegrity of the national command system through physical security of nuclearfacilities to monitoring international arms control treaties, has made a hugecontribution to the development of security technology.
+The rational decision that weapons and ﬁssile material had to be protectedalmost regardless of the cost drove the development of a lot of mathematics andscience that has found application elsewhere.
+ The particular examples we’velooked at in this chapter are authentication codes, shared control schemes andsubliminal channels.
+ There are other examples scattered through the rest ofthis book, from alarms to iris biometrics and from tamper-resistant electronicdevices to seals.
+Yet even though we can protect the command and control channel that au-thorises the use of nuclear weapons, that is by no means the whole story.
+ Ifcyber attacks can undermine conﬁdence in deterrence by targeting a country’sintelligence, surveillance and reconnaissance capabilities, they can still be seri-ously destabilising.
+ At a time of nuclear brinkmanship, each side could thinkthey have an advantage because of an undeclared cyber capability.
+ And giventhat US presidents have used nuclear threats about a dozen times since 1945(Cuba, Vietnam and Iraq being merely the more obvious examples), we mightexpect several such crises each generation.
+Research ProblemsThe research problem I set at the end of this chapter in the ﬁrst edition in 2001was ‘Find interesting applications for technologies developed in this area, suchas authentication codes.
+’ By the second edition the Galois Counter mode ofoperation of block ciphers had been standardised, and by now it’s pervasive.
+What else might there be?The most serious research problem now might be the interaction betweensilicon and plutonium.
+The US/Israeli attack on Iran’s uranium enrichmentprogram in 2009-10 gave the world an example of cyber-attacks being used inthe nuclear world.
+ In what ways might the threat of such attacks increase therisk of nuclear conﬂict, and what can we do about it?Given that we can’tharden everything the way we harden the command and control channel, whatcan we do to maintain trust in the supporting systems such as surveillance, orat least ensure that they degrade in ways that don’t lead to lethal false alarms?Security Engineering500Ross Anderson15.
+9.
+ SUMMARYFurther ReadingAs my own direct experience of nuclear weapons is rather dated – consisting ofworking in the 1970s on the avionics of nuclear-capable aircraft – this chapterhas been assembled from published sources and conversations with insiders.
+ Oneof the best sources of public information on nuclear weapons is the Federation ofAmerican Scientists, who discuss everything from bomb design to the rationalefor the declassiﬁcation of many nuclear arms technologies [672].
+ Declassiﬁcationissues are also discussed in [2045], and the publicly available material on PALshas been assembled by Steve Bellovin [217].
+Gus Simmons was the guy at Sandia who designed the football; he was apioneer of authentication codes, shared control schemes and subliminal channels.
+His book [1749] remains the best reference for most of the technical materialdiscussed in this chapter.
+ A more concise introduction to both authenticationand secret sharing can be found in Doug Stinson’s textbook [1829].
+Control failures in nuclear installations are documented in many places.
+ Theproblems with Russian installations are discussed in [953]; US nuclear safety isoverseen by the Nuclear Regulatory Commission [1455]; and shortcomings withUK installations are documented in the quarterly reports posted by the Healthand Safety Executive [874].
+ The best and most up-to-date survey of problemscan be found in the Public Accounts Committee’s 2018 report ‘Ministry ofDefence nuclear programme’ [1560].
+ As for the interaction ‘between silicon andplutonium’, there’s a recent report on the subject from Chatham House [27].
+Security Engineering501Ross Anderson

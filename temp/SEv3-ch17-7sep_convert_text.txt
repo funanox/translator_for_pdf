@@ -1,0 +1,614 @@
+Chapter 17BiometricsAnd the Gileadites took the passages of Jordan before theEphraimites: and it was so, that when those Ephraimites whichwere escaped said, Let me go over; that the men of Gilead said untohim, Art thou an Ephraimite? If he said, Nay; Then said they untohim, Say now Shibboleth: and he said Sibboleth: for he could notframe to pronounce it right.
+ Then they took him, and slew him atthe passages of the Jordan: and there fell at that time of theEphraimites forty and two thousand.
+– Judges 12:5–617.
+1IntroductionThe above quotation may be the ﬁrst recorded military use of a security protocolin which the authentication relies on a property of the human being – in thiscase his accent.
+ (There had been less formal uses before this, as when Isaactried to identify Esau by his bodily hair but got deceived by Jacob, or indeedwhen people recognized each other by their faces – which I’ll discuss later.
+)Biometrics identify people by measuring some aspect of individual anatomyor physiology (such as your hand geometry or ﬁngerprint), some deeply ingrainedskill or behavior (such as your handwritten signature), or some combination ofthe two (such as your voice).
+In the 21st century the market has really taken o↵, with three major changessince the second edition of this book in 2008.
+1.
+ There are many large-scale programs by states to identify citizens usingbiometrics, of which the biggest single programme may be India’s Aadhaarproject, which has recorded the iris codes and ﬁngerprints of over a billionpeople.
+ International travel has been speeded up by international standardbiometric travel documents, the US-VISIT program which ﬁngerprintsvisitors to the USA, and face-recognition passport booths at the bordersof the European Union.
+52217.
+2.
+ HANDWRITTEN SIGNATURES2.
+ There has been a massive improvement in face recognition technology,brought about by the revolution in deep neural networks since 2012.
+ Thishas made passport booths steadily faster and more reliable, made masssurveillance easier, and led to concerns about privacy and human rights –particularly given its deployment in China.
+3.
+ Automatic ﬁngerprint readers are no longer a niche product for bank vaultsand welfare o�ces, but are deployed on hundreds of millions of mobilephones.
+ Now that people keep their entire lives in their phones, or on webservices for which their phones have the credentials, they are relied on tostop a lost or stolen phone turning from annoyance into disaster.
+The biometric systems market has taken o↵ like a rocket, growing from $50min 1998 to over $1.
+5bn in 2005 [997] and $33bn in 2019 [2038].
+I’ll start o↵ by describing the biometric techniques that predate the computerage – handwritten signatures, facial features and ﬁngerprints – then describehow they have been automated, and then go on to explore some more moderntechniques.
+17.
+2Handwritten signaturesHandwritten signatures had been used in classical China, but carved personalseals came to be considered higher status; they are still used for serious trans-actions in China, Japan and Korea.
+ Europe was the other way round: sealshad been used in medieval times, but as writing spread after the Renaissancepeople increasingly just wrote their names to assent to documents.
+ Over time,the signature became the standard.
+ Every day, billions of dollars’ worth of con-tracts are still concluded by handwritten signatures; how these will be replacedby electronic mechanisms remains a live policy and technology issue.
+Handwritten signatures are a weak authentication mechanism in that they’reeasy to forge, but they worked well enough for centuries because of the contextof their use.
+ An important factor is the liability for forgery.
+ Britain’s Bills ofExchange Act 1882 provides that a forged handwritten signature is null andvoid, and this has survived in the laws of many countries that were part of theBritish Empire at the time, such as Canada and Australia.
+ In these countries,manuscript signatures are better for the customer, as the bank carries most ofthe risk, but PINs and electronic tokens can be better for the bank – and sohave largely replaced them.
+ Europe also went for electronic signatures followinglobbying by the French and German smartcard industries.
+In the USA, thelaw makes banks liable for the electronic systems they deploy, so US banksgenerally stuck with chip and signature cards rather than going for chip andPIN.
+ Courier companies also collect handwritten signatures as proof of receiptas they’re the only thing that works for all recipients.
+ So the veriﬁcation ofhandwritten signatures continues to matter.
+Now the probability that a forged signature will be accepted as genuinemainly depends on the amount of care taken when examining it.
+ Many bankcard transactions in stores are accepted without even a glance at the specimenSecurity Engineering523Ross Anderson17.
+2.
+ HANDWRITTEN SIGNATURESsignature on the card – so much so that many Americans don’t even bother tosign their credit cards1.
+ But even diligent signature checking doesn’t reduce therisk to zero.
+ An experiment showed that 105 professional document examin-ers, who each did 144 pairwise comparisons, misattributed 6.
+5% of documents.
+Meanwhile, a control group of 34 untrained people of the same educational levelgot it wrong 38.
+3% of the time [1010], and the nonprofessionals’ performancecouldn’t be improved by giving them monetary incentives [1011].
+ Errors madeby professionals are a subject of continuing discussion in the industry but arethought to reﬂect the examiner’s preconceptions [198] and context [587].
+ As theparticipants in these tests were given reasonable handwriting samples ratherthan just a signature, it seems fair to assume that the results for verifying sig-natures on checks or delivery receipts would be even worse.
+In most of the English-speaking world, most documents do not need to beauthenticated by special measures.
+ The essence of a signature is the intent ofthe signer, so an illiterate’s ‘X’ on a document is perfectly valid.
+ A plaintextname at the bottom of an email message therefore has full legal force [2042],except where there are speciﬁc regulations to the contrary.
+The exceptions come from conventions and special rules that vary from onecountry to another.
+ For example, to buy a house in England using money bor-rowed from a bank of which you’re not an established customer, the procedureis to go to a lawyer’s o�ce with a document such as a passport, sign the prop-erty transfer and loan contracts, and get them countersigned by the lawyer.
+The requirement for government-issued photo ID was originally imposed by thelender’s insurers, and became a ‘know-your-customer’ (KYC) provision of anti-money-laundering regulations; the requirement that a real-estate purchase be inwriting was imposed centuries ago in order to collect tax on property transac-tions.
+Other types of document (such as expert testimony) may have to be no-tarized in particular ways.
+ Many of the anomalies go back to the nineteenthcentury, and the invention of the typewriter.
+ Some countries require that ma-chine written contracts be initialled on each page, while some don’t; clashes inconventions still cause serious problems.
+It’s rare for signatures to be disputed in court cases, as the context mostlymakes it clear who did what.
+ So this weak biometric mechanism actually worksfairly well in practice – the real problems come from a thicket of proceduralrules that vary by country and by application.
+ Lawmakers have made variousattempts to sort out the mess, and impose uniform rules for electronic docu-ments.
+In section 26.
+5.
+2 I discuss the Electronic Signatures in Global and NationalCommerce (‘ESIGN’) Act of 2000, which legitimised contracts made by clickingon buttons in web pages, and the much more heavyweight European eIDASRegulation (910/2014) which requires all Member States to accept electronicsignatures made using approved products.
+ This was originally designed to helpthe smartcard industry, but as many people and ﬁrms need to sign things occa-1Indeed it’s not in the cardholder’s interest to give a specimen signature to a thief – if thethief makes a random signature on a voucher, it’s easier for the real cardholder to disown it.
+Signing the card is in the bank’s interest but not the customer’s.
+Security Engineering524Ross Anderson17.
+2.
+ HANDWRITTEN SIGNATURESsionally and don’t want to buy special hardware, the latest regulation now allowsonline signature service ﬁrms to generate signatures in their cloud service thatare considered legally binding, even though the security of the customer’s phoneor laptop may leave a lot to be desired.
+ Signature services typically generate anelectronic document with a machine-written signature that we’re supposed topretend was handwritten; there’s also an electronic signature whose veriﬁcationby the service provider we’re supposed to trust.
+A separate topic is the automatic recognition of handwritten signatures,such as on checks.
+ This became one of the earliest topics of serious biometricresearch in the 1980s by ﬁrms selling check-processing equipment to banks.
+ Inearly systems, an operator was presented on screen with the check image andthe customer’s reference signature, and took the decision.
+ For cost reasons thiswas only done for amounts over a few thousand dollars; smaller checks just wentstraight through and it was up to the account holder to dispute them.
+ Fromthe early 1990s there were signature tablets which record not just the shape ofthe curve but also its dynamics (the velocity of the hand, where the pen waslifted o↵ the paper, and so on).
+ These are used by delivery drivers to collectreceipts for goods and also for credit card transactions.
+ Since the early 1990sthe better products can compare captured signatures against specimens enrolledpreviously.
+Like alarms, most biometric systems have a trade-o↵ between false acceptand false reject rates, often referred to in the banking industry as the fraud andinsult rates and in the biometric literature as type 1 and type 2 errors.
+ Manysystems can be tuned to favor one over the other.
+ The trade-o↵ is known asthe receiver operating characteristic, a term ﬁrst used by radar operators; ifyou turn up the gain on your radar set too high, you can’t see the target forclutter, while if it’s too low you can’t see it at all.
+ It’s up to the operator toselect a suitable point on the curve.
+ The equal error rate is when the systemis tuned so that the probabilities of false accept and false reject are equal.
+ Fortablet-based signature recognition systems, the equal error rate is at best 1%; forpurely optical comparison it’s several percent.
+ This is not fatal in an operationsuch as a check processing center, as the automated comparison is used as aﬁlter to select checks for human scrutiny.
+However, it is a show-stopper ina customer-facing application such as a retail store.
+If one transaction in ahundred fails, the aggravation to customers would be unacceptable.
+ So backin the 1990s, UK banks set a target for biometrics of a fraud rate of 1% andan insult rate of 0.
+01%, which was beyond the state of the art in signatureveriﬁcation and ﬁngerprint scanning – and indeed still is [719].
+ In fact, eventhe 1% equal error rate for tablets was achieved by excluding goats – a termused by the biometric community for people whose templates don’t classify well.
+Vendors typically exclude people without eyes from statistics on iris scannersand manual workers with worn ﬁngertips from ﬁngerprint statistics.
+ This canlead to deceptive performance claims and hide issues of social exclusion.
+In general, biometric mechanisms tend to be more robust in attended oper-ation where they assist a guard rather than replacing them.
+Security Engineering525Ross Anderson17.
+3.
+ FACE RECOGNITION17.
+3Face RecognitionRecognizing people by their facial features is the oldest identiﬁcation mechanismof all, going back at least to our early primate ancestors.
+ Biologists believe thata signiﬁcant part of our cognitive function evolved to provide e�cient ways ofrecognizing other people’s facial features and expressions [1604].
+ For example,we are very good at detecting whether another person is looking at us or not.
+The human ability to recognize faces is an important baseline for many rea-sons, of which one is the reliance placed on photo ID.
+ Drivers’ licenses, passportsand other kinds of identity card are not only used to control entry to computerrooms directly, but also to bootstrap most other systems.
+ The issue of a pass-word, or a smartcard, for access to a system is often the end point of a processthat was started by that person presenting photo ID when applying for a job oropening a bank account.
+So how good are we at identifying strangers by photo ID, as opposed toidentifying friends in the ﬂesh?The simple answer is that we’re not.
+Psychologists at the University ofWestminster conducted a fascinating experiment with the help of a supermarketchain and a bank [1035].
+ They recruited 44 students and issued each of themwith four credit cards each with a di↵erent photograph on it:• one of the photos was a ‘good, good’ one.
+ It was genuine and recent;• the second was a ‘bad, good one’.
+ It was genuine but a bit old, and thestudent now had di↵erent clothing, hairstyle or whatever.
+ In other words,it was typical of the photo that most people have on their photo ID;• the third was a ‘good, bad one’.
+ From a pile of a hundred or so randomphotographs of di↵erent people, investigators chose the one that mostlooked like the subject.
+ In other words, it was typical of the match thatcriminals could get with a stack of stolen cards;• the fourth was a ‘bad, bad’ one.
+ It was chosen at random except that ithad the same sex and race as the subject.
+ In other words, it was typicalof the match that really lazy, careless criminals would get.
+The experiment was conducted in a supermarket after normal business hours,but with experienced cashiers on duty, and aware of the purpose of the experi-ment.
+ Each student made several trips past the checkout using di↵erent cards.
+It transpired that none of the checkout sta↵ could tell the di↵erence between‘good, bad’ photos and ‘bad, good’ photos.
+ In fact, some of them could not eventell the di↵erence between ‘good, good’ and ‘bad, bad’.
+ Now this experimentwas done under optimum conditions, with experienced sta↵, plenty of time, andno threat of embarrassment or violence if a card was declined.
+ Real life perfor-mance can be expected to be worse.
+ In fact, many stores do not pass on to theircheckout sta↵ the reward o↵ered by credit card companies for capturing stolencards.
+ So even the most basic incentive is absent.
+ Yet at least two banks thathad experimented with photos on credit cards had experienced a substantialSecurity Engineering526Ross Anderson17.
+3.
+ FACE RECOGNITIONdrop in fraud [154].
+ The conclusion was that the beneﬁt to be had from photoID at the time was basically its deterrent e↵ect [689].
+So maybe people won’t use their facial-recognition skills e↵ectively in iden-tiﬁcation contexts, or maybe the information we use to identify people in socialcontexts is stored di↵erently in our brains from information we get by looking ata single photo.
+ Recognising passing strangers is in any case much harder thanrecognising people you know.
+ It’s reckoned that misidentiﬁcations are the maincause of false imprisonment, with 20% of witnesses making mistakes in identityparades [2044] – not as bad as the near-random outcomes when comparing faceswith photos, but still not good.
+Since photo-ID doesn’t work well with human guards, many people havetried to automate the process.
+ Attempts go back to the nineteenth century,when Francis Galton devised a series of spring-loaded “mechanical selectors” forfacial measurements [738].
+ But automated face recognition actually subsumesa number of separate problems, in most of which we don’t have the luxury oftaking careful 3-d measurements of the subject.
+ Automated passport controlbooths may be the easiest: the subject looks straight at the camera undercontrolled lighting conditions, and their face is compared with the one on ﬁle.
+In forensics, we may be trying to establish whether a suspect’s face ﬁts a low-quality recording on a security video.
+ The hardest of all is surveillance, wherewe may want to scan a moving crowd of people at an airport and try to pickout anyone who is on a list of thousands of known suspects.
+Early applications of face recognition were often just security theater.
+ In1998, the London borough of Newham placed video cameras prominently inthe high street and ran a PR campaign about how their new computer sys-tem constantly scanned the faces in the crowd for several hundred known localcriminals.
+ They got a signiﬁcant reduction in reported burglary, shoplifting andstreet crime, but later admitted that they only had 20 or 25 villains’ faces onthe system, and it never recognised any of them [1282].
+ After 9/11, a num-ber of places tried this.
+ In Tampa, Florida, a similar system was abandonedin 2003 after an ACLU freedom-of-information request discovered that it hadrecognised no villains [1597].
+ Face recognition was also tried at Boston’s Lo-gan airport; passengers passing through security screening were observed andmatched.
+ The system was found to be impractical, with no useful balance be-tween false matches and false alarms [316].
+ The Illinois Department of MotorVehicles adopted face recognition in 2003 to detect people applying for extradrivers’ licenses in false names [663].
+ In such an application, it may be worth-while to try to detect wrongdoers even if you only catch a quarter of them.
+As a baseline, tests done in 2001 by the UK National Physical Laboratory(NPL) of a number of biometric technologies found that face recognition wasalmost the worst; its single-attempt equal-error rate was almost 10% [1217].
+A UK Passport O�ce trial in 2005, that was a better approximation to ﬁeldconditions, found it recognised only 69% of users (and only 48% of disabled par-ticipants) [1920].
+ Face recognition was still adopted by the ICAO as a standardfor passports and ID cards with embedded chips; iris codes and ﬁngerprints wereoptional extras.
+ The typical installation has a row of booths relaying both liveand ﬁle photos to a human operator who is alerted to suspected mismatches.
+Security Engineering527Ross Anderson17.
+3.
+ FACE RECOGNITIONHowever, since the neural network revolution began in 2012, the performanceof facial recognition has improved remarkably, with error rates falling by an or-der of magnitude.
+ Getting through a passport booth is often a lot quicker nowthan in 2010, and you don’t always have to take o↵ your glasses.
+ But whatabout data? The best are probably from NIST’s Face Recognition Vendor Test(FRVT) which tests products against millions of law-enforcement mugshots,prison webcam images and wild photos for 1:1 veriﬁcation, one-to-many iden-tiﬁcation, face morph detection and face image quality assessment.
+ Accordingto the 2018 report, massive gains in accuracy were achieved in 2013–2018, andlargely due to the adoption of convolutional neural networks (CNNs).
+ The mostaccurate algorithms will ﬁnd matching entries when present, in galleries contain-ing 12 million individuals, with a miss rate approaching 0.
+1%; but in about 5%of images the identiﬁcation succeeds with low conﬁdence and human adjudica-tion is necessary.
+ A few algorithms correctly match side-view photos to galleriesof frontal photos; such pose invariance has been a long-sought milestone in facerecognition research.
+There is measurable racial bias.
+ U.
+S.
+-developed algorithms had signiﬁcantlyhigher rates of false positives in one-to-one matching of Asians, African Amer-icans and American Indians, while for one-to-many matching the highest falsepositive rates were for African American females.
+ Algorithms developed in Asiadid equally well for Asians and whites.
+ The remaining errors are in large partdue to long-run ageing, facial injury, poor image quality or a second face in shot,such as a face printed on a t-shirt [828].
+A 2018 study pitted face recognition algorithms against professional forensicface examiners, untrained superrecognisers (highly talented individuals), and acontrol group of random people.
+It found that both types of human expertwere signiﬁcantly better than the control group, and that four deep CNNs,developed between 2015 and 2017, identiﬁed faces within the range of humanexperts, with the most recent scoring above the median of the forensic experts.
+However, the best results could be achieved if algorithms and human expertsworked together [1522].
+As for what’s under the hood, a 2019 survey paper by Guodong Guo andNa Zhang explores the use of deep learning in face image analysis and recogni-tion, and discusses how systems handle variations in pose, age, illumination andexpression [834].
+ Most systems are CNNs but with a range of adaptations, e.
+g.
+with multiple CNNs looking for di↵erent types of feature in di↵erent regionsof two candidate faces simultaneously and an autoencoder looking for commonlatent features to give pose robustness; there are then various kinds of fusion,aggregation and ﬁltering.
+ There may also be mechanisms to correct for makeupand for facial expressions.
+ There are complex trade-o↵s in algorithm choice,with the best algorithm in ROC terms taking time linear in the gallery size,meaning half a second to match against 10m other faces; accuracy can doubleif three or more mugshots are available, as this enables the CNN to allow forageing.
+ But blur in video images is still a signiﬁcant problem, as is matchingstill images to video and visible-light images to near-infrared.
+The face-recognition revolution is continuing apace, with NIST reportingthat some algorithms doubled in accuracy during 2018 alone.
+ It is also becomingcontroversial.
+ Do we face a dystopian future where every other lamp post hasSecurity Engineering528Ross Anderson17.
+3.
+ FACE RECOGNITIONa 5g base station with an embedded CCTV that recognises all passers-by? Allof a sudden, CCTV changes from a tool for crime-scene forensics to one thatdoes real-time person recognition and tracking.
+ This appears to be the Chinesevision; ﬁrms there are training cameras not just to recognise individuals but alsogroups, with classiﬁers that alert if the subject appears to be an ethnic Uighuror Tibetan.
+ This has been interrupted by mandatory face masks during thecoronavirus pandemic, but it will no doubt resume afterwards.
+ Russia has beenusing its cameras to spot people breaking coronavirus quarantine orders, andclaims to have deployed 178,000 of them [1907].
+ Even in the West, do we face afuture in which the police get a feed not just from the automatic number-platerecognition systems that already track road vehicles, but a system that trackspedestrians too? Cynics would say that mobile phone location history alreadyworks ﬁne even if you’re wearing shades or a mask, so what’s the fuss about?But there are now companies with much larger collections of faces than lawenforcement, as they don’t face the legal restrictions, and whose services help lawenforcement solve crimes committed by people with no mugshots on ﬁle.
+ Theseﬁrms appear set to o↵er services more widely; they could potentially enable usersof augmented-reality glasses to identify most of the people they see – whether anattractive stranger on a subway, or a protester at a demonstration.
+ You couldﬁnd out their names, where they live and what they do online.
+ The company’sbacker remarks “Laws have to determine whatˆa˘A´Zs legal, but you canˆa˘A´Zt bantechnology.
+ Sure, that might lead to a dystopian future or something, but youcanˆa˘A´Zt ban it.
+” [897].
+The political and legal pushback has started.
+ A family in Evanston, Illinoisfound that photos of their kids that they’d uploaded into Flickr in 2005 hadended up in a database called MegaFace, used to train many of the new recogni-tion systems.
+ This is against Illinois law, and there are now several class actionsin progress.
+ As a result, some face-tagging features on social media don’t workin Illinois (or Texas for that matter) [898].
+ In 2018, Google decided not to makeface-recognition APIs available in its cloud platforms until their use was regu-lated.
+ If you train a system on criminal mugshots, it can look at any passer byand say ‘This robber is the closest match’.
+ Where the police are trigger-happy,that can kill.
+ In May 2019, San Francisco banned the use of face recognitionby its agencies including the transport authority and law enforcement.
+ In June2020, following worldwide protests over racism and biased policing, Amazon an-nounced a one-year pause in making its Rekognition face-recognition softwareavailable to law enforcement; their technology had been criticised for misidenti-fying people of colour.
+ The ACLU had shown that Amazon’s system generatedfalse matches of 28 members of Congress against mugshots of people who hadbeen arrested.
+ IBM and Microsoft also announced that they would stop sellingface-recognition products [2004].
+ As the technology is now a commodity, theself-restraint of the big four doesn’t stop second-tier ﬁrms selling it.
+ So the bigfour are now pushing for face-recognition products to be regulated.
+ Courts arealready engaged: in August 2020, the Court of Appeal in London found thatthe use of facial recognition by South Wales police breached privacy rights, dataprotection laws and equality laws [1592].
+Finally, facial recognition can be enhanced with special hardware.
+ In 2017,Apple introduced it on the iPhone X, in which a dot projector paints yourface with tens of thousands of dots and a camera reads them.
+ This deals withSecurity Engineering529Ross Anderson17.
+4.
+ FINGERPRINTSmakeup, some sunglasses and facial hair, and was claimed to have a false accep-tance rate of one in a million – as opposed to one in 50,000 for the ﬁngerprintreader that previous iPhones used.
+ However my eldest granddaughter’s iPhonecan be unlocked by both of her younger siblings, and this is a general problemfor families [526].
+17.
+4FingerprintsAutomatic ﬁngerprint identiﬁcation systems (AFIS) have been around for years.
+In 1998, they accounted for 78% of the $50m sales of biometric technology; thishad fallen to 43.
+5% of $1,539m by 20052.
+ AFIS products look at the frictionridges that cover the ﬁngertips and classify patterns of minutiae such as branchesand end points of the ridges.
+ Some also look at the pores in the skin of theridges [1213].
+The use of ﬁngerprints to identify people was discovered independently anumber of times.
+ Mark Twain mentions thumbprints in 1883 in Life on theMississippi where he claims to have learned about them from an old Frenchmanwho had been a prison-keeper; his 1894 novel Pudd’nhead Wilson made the ideapopular in the States.
+ Long before that, ﬁngerprints were accepted in a seventhcentury Chinese legal code as an alternative to a seal or a signature, and requiredby an eighth century Japanese code when an illiterate man wished to divorcehis wife.
+ They were also used in India centuries ago.
+ Following the invention ofthe microscope, they were mentioned by the English botanist Nathaniel Grewin 1684, and by Marcello Malpighi in Italy in 1686; in 1691, 225 citizens ofLondonderry in Ireland used their ﬁngerprints to sign a petition asking KingWilliam for reparations following the siege of the city.
+The ﬁrst modern systematic use was in India from 1858, by William Her-schel, grandson of the astronomer and a colonial magistrate.
+He introducedhandprints and then ﬁngerprints to sign contracts, stop impersonation of pen-sioners who had died, and prevent rich criminals paying poor people to servetheir jail sentences for them.
+Henry Faulds, a medical missionary in Japan,discovered them independently in the 1870s, and came up with the idea of usinglatent prints from crime scenes to identify criminals.
+ Faulds brought ﬁngerprintsto the attention of Charles Darwin, who in turn motivated Francis Galton tostudy them.
+ Galton wrote an article in Nature [738]; this got him in touch withthe retired Herschel, whose data convinced Galton that ﬁngerprints persistedthroughout a person’s life.
+ Galton went on to collect many more prints anddevise a scheme for classifying their patterns [739].
+ The Indian history is toldby Chandak Sengoopta, whose book also makes the point that ﬁngerprintingsaved two somewhat questionable Imperial institutions, namely the indenturedlabor system and the opium trade [1701].
+The practical introduction of the technique owes a lot to Sir Edward Henry,who had been a policeman in Bengal.
+ He wrote a book in 1900 describing asimpler and more robust classiﬁcation, of loops, whorls, arches and tents, thathe had developed with his assistants Azizul Haque and Hem Chandra Bose,2I don’t have comparable ﬁgures for 2019 as ﬁngerprint tech is now bundled with phonesor with other biometrics in systems such as Aadhaar.
+Security Engineering530Ross Anderson17.
+4.
+ FINGERPRINTSand that is still in use today.
+ In the same year he became Commissioner ofthe Metropolitan Police in London from where the technique spread round theworld3.
+ Henry’s real scientiﬁc contribution was to develop Galton’s classiﬁcationinto an indexing system.
+By assigning one bit to whether or not each of asuspect’s ten ﬁngers had a whorl – a type of circular pattern – he divided theﬁngerprint ﬁles into 1024 bins.
+ In this way, it was possible to reduce the numberof records that had to be searched by orders of magnitude.
+ Meanwhile, as Britainhad stopped sending convicted felons to Australia, there was a perceived needto identify previous o↵enders, so that they could be given longer jail sentences.
+Fingerprints are used by the world’s police forces for essentially two di↵erentpurposes: identifying people (their main use in the USA), and crime sceneforensics (their main use in Europe).
+17.
+4.
+1Verifying positive or negative identity claimsIn America nowadays – as in nineteenth-century England – quite a few criminalschange their names and move somewhere new on release from prison.
+ This is ﬁnewhen o↵enders go straight, but what about fugitives and recidivists? Americanpolice forces have historically used ﬁngerprints to identify arrested suspects todetermine whether they’re currently wanted by other agencies, whether theyhave criminal records and whether they’ve previously come to attention underother names.
+The FBI maintains the Next Generation Identiﬁcation (NGI)service system for this purpose; it identiﬁes about eight thousand fugitives amonth [1809].
+ Anyone wanting a US government clearance at Secret or abovemust have an FBI ﬁngerprint check, and checks are also run on some peopleapplying to work with children or the elderly.
+ Up to 100,000 checks are made aday, and about a million federal, local and state o�cers have access.
+ There’s a‘rap-back’ service to alert the employer of anyone with a clearance who gets intotrouble with the law [1378]; it’s also used to track reo↵ending by probationers,parolees and sex o↵enders.
+ The Department of Homeland Security’s IDENTsystem holds ﬁngerprints on 200 million aliens who have arrived at US ports; itmatches them against a watch list of bad guys, compiled with the help of policeforces and intelligence services worldwide.
+These are examples of one type of identity veriﬁcation – checking against ablacklist.
+ The other type is where the system checks a claim to identity, with themain US applications being building entry control and welfare payment [588].
+Banks have used them for years to identify customers in countries such as In-dia and Saudi Arabia, where the use of ink ﬁngerprints was already commonthanks to high levels of illiteracy.
+ India now has a national system, Aadhaar,with ﬁngerprints and iris codes of most residents, designed initially to supportwelfare payments and ensure that nobody can claim twice.
+ Its use has becomemandatory for many other transactions too.
+3In the Spanish version of history, they were ﬁrst used in Argentina where they secureda murder conviction in 1892; while Cuba, which set up its ﬁngerprint bureau in 1907, beatthe USA whose ﬁrst conviction was in Illinois in 1911.
+ The Croation version notes that theArgentinian system was developed by one Juan Vucetich, who had emigrated from Dalmatia.
+The German version refers to Professor Purkinje of Breslau, who wrote about ﬁngerprints in1828.
+ Success truly has many fathers!Security Engineering531Ross Anderson17.
+4.
+ FINGERPRINTSFingerprints have never taken o↵ for authenticating bank customers in NorthAmerica or Europe, though a few US banks do ask for ﬁngerprints if you casha check there and are not a customer.
+ They ﬁnd this cuts check fraud by abouta half.
+ Some have gone as far as ﬁngerprinting new customers, and found thatcustomer resistance is less than expected, especially if they use scanners ratherthan ink and paper [716].
+ These applications are not authentication, but ratheran attempt to identify and even deter customers who later turn out to be bad– another example being the large British van-hire company that demands athumbprint when you rent a van.
+ If the vehicle isn’t returned, or if it’s used in acrime, the thumbprint is given to the police.
+ They’re thus really a crime-sceneforensics application, which I’ll discuss in the following section.
+So how good are automatic ﬁngerprint identiﬁcation systems? A good ruleof thumb (if one might call it that) is that to verify a claim to identity, it maybe enough to scan a single ﬁnger, while to check someone against a blacklist ofmillions of felons, you had better scan all ten.
+ After the US DHS program setout to scan the two index ﬁngers of each arriving visitor, it was overwhelmedby false matches.
+ With 6,000,000 bad guys on the database, the false matchrate in 2004 was 0.
+31% and the missed match rate 4% [2027].
+ The programmoved to ‘10-prints’, where each visitor must present the four ﬁngers of eachhand, and then both thumbs, in three successive scans.
+ The European Unionwill be adopting a combination of 4-prints plus facial recognition from 2020;nonresidents will need both to get in, and either to get out.
+This is all about the trade-o↵ between false negatives and false positives – thereceiver operating characteristic, described in the previous section.
+ The bettersystems have an equal error rate of slightly below 1% per ﬁnger.
+ False acceptshappen because of features incorporated to reduce the false reject rate – suchas allowance for distortion and ﬂexibility in feature selection [1610].
+ Spottingreturning fugitives with high enough probability to deter them and high enoughcertainty to detain them (which means keeping false alarms at manageable lev-els) requires several ﬁngers to be matched – perhaps eight out of ten.
+ This doescause delays; a UK Passport O�ce study found that about 20% of participantsfailed to register properly when taking a 10-print, and that 10-print veriﬁcationtook over a minute [1920].
+ This is approximately my experience while ﬂyingin and out of the USA during the 2010s.
+ The cost of ﬁngerprinting everybodyis that a US airport getting a planeload of 300 international arrivals every 15minutes needs an extra 10 working immigration lanes.
+ The extra building andsta�ng costs swamp anything spent on hardware and software.
+ (For more onalgorithms and systems, see [973, 1211, 1213].
+)Errors are not uniformly distributed.
+A number of people such as man-ual workers and pipe smokers damage their ﬁngerprints frequently, and boththe young and the old have faint prints [392].
+ Automated systems also haveproblems with amputees, people with birth defects such as extra ﬁngers, andthe (rare) people born without conventional ﬁngerprint patterns at all [1120].
+When I was a kid, I slashed my left middle ﬁnger while cutting an apple, andthis left a scar about half an inch long.
+ When I presented this ﬁnger to thesystem used in 1989 by the FBI for building entry control, my scar crashed thescanner.
+ (It worked OK when I tried again ten years later.
+)Fingerprint identiﬁcation systems can be attacked in many ways.
+ An oldSecurity Engineering532Ross Anderson17.
+4.
+ FINGERPRINTStrick was for a crook to distract (or bribe) the o�cer ﬁngerprinting him, so thatthe o�cer takes the ﬁngers in the wrong order and instead of the hand beingindexed under the Henry system as ‘01101’ it becomes perhaps ‘01011’, so hisrecord isn’t found and he gets the lighter sentence due a ﬁrst o↵ender [1120].
+The ﬁrst high-proﬁle technical attack was in 2002, when Tsutomu Mat-sumoto and colleagues showed that ﬁngerprints could be molded and clonedquickly and cheaply using cooking gelatin [1246].
+He tested eleven commer-cially available ﬁngerprint readers and easily fooled all of them.
+ This promptedthe German computer magazine C’T to test a number of biometric devices thatwere o↵ered for sale at the CeBIT electronic fair in Hanover – nine ﬁngerprintreaders, one face-recognition system and one iris scanner.
+ They were all easy tofool – the low-cost capacitive sensors fell to such simple tricks as breathing ona ﬁnger scanner to reactivate a latent print left by a previous user [1877].
+ La-tent ﬁngerprints can also be reactivated – or transferred – using adhesive tape.
+The more expensive thermal scanners could still be defeated by rubber moldedﬁngers.
+In 2013, Apple introduced a ﬁngerprint scanner on the iPhone 5S and otherphone makers raced to follow suit.
+ Hackers duly demonstrated attacks, witha 2014 CCC presentation of a model of the German defence minister’s ﬁnger,created from a photograph [313].
+ Scanners on phones typically store 8–12 partialprints on registration and will unlock against any of them, which makes thescanner more usable but also more vulnerable.
+ In 2016, Aditi Roy and colleaguesinvented the ‘masterprint’: a fake ﬁngerprint that can be worn on your ﬁngertipand that’s designed to match at least one of the partial prints derived from atypical ﬁnger; it works against 6% of users’ prints [1625].
+ In 2017, Apple movedfrom ﬁngerprints to face recognition, as I discussed above, but most AndroidOEMs still use ﬁngerprints.
+ In 2019, it turned out that a new ultrasonic scanneron the Samsung S10 enrolled the screen protector instead of the customer’sﬁnger, leading to the phone being blocked from running a number of banks’apps [466].
+There are other angles too.
+ For example, the San Bernardino shooter usedan iPhone 5C, the last made without a scanner; if he’d used a later version, theFBI could have unlocked it by taking it to the morgue and pressing it againsthis ﬁnger, or by making a ﬁngertip mould from his ﬁle print.
+ And as govern-ment agencies collect more and more prints, they will be less and less private.
+(The Chinese already got all U.
+S.
+ federal employees’ prints via the OPM hackI discussed in section 2.
+2.
+2.
+) Fingerprint systems have also expanded rapidlyinto low-assurance applications, from entry into golf club car parks to auto-matic book borrowing in school libraries.
+ (Most European countries’ privacyauthorities have banned ﬁngerprint scanners in schools; Britain allows them,which causes pushback from privacy-conscious parents [190].
+) And the latesttwist comes from a Mitre project that developed software to harvest people’sﬁngerprints from photos they post on social media; these often show ﬁngers inenough detail to get matches against FBI databases [321].
+One ﬁnal reason for the success of ﬁngerprint identiﬁcation systems is theirdeterrent e↵ect, which is particularly pronounced in welfare payments.
+ Eventhough the cheap ﬁngerprint readers used to authenticate welfare claimants havean error rate as much as 5% [383], they turned out to be such an e↵ective waySecurity Engineering533Ross Anderson17.
+4.
+ FINGERPRINTSof reducing the welfare rolls that they were adopted in one place after anotherduring the nineties [1315].
+17.
+4.
+2Crime scene forensicsThe second use of ﬁngerprint recognition is in crime scene forensics – the mainapplication in Europe.
+Prints found at a crime scene are matched againstdatabase records, and any that match to more than a certain level are takenas evidence that a suspect visited the crime scene.
+ They are often enough tosecure a conviction on their own.
+ In many countries, ﬁngerprints are requiredfrom all citizens and all resident foreigners.
+The forensic error rate has become extremely controversial in recent years,the critical limitation being the size and quality of the image taken from thecrime scene.
+ The quality and procedure rules vary from one country to another.
+The UK used to require that ﬁngerprints match in sixteen points (correspondingminutiae), and a UK police expert claimed that this will only happen by chancesomewhere between one in four billion and one in ten billion matches [1120].
+Greece accepts 10, Turkey 8, while the USA has no set limit (it certiﬁes exam-iners instead).
+ This means that in the USA, matches can be found with poorerquality prints but they can be open to challenge in court.
+In the UK, ﬁngerprint evidence went for almost a century without a success-ful challenge; a 16-point ﬁngerprint match was considered hanging evidence.
+The courts’ conﬁdence was shattered by the McKie case [1273].
+ Shirley McKie,a Scottish policewoman, was prosecuted on the basis of a ﬁngerprint match onthe required sixteen points, veriﬁed by four examiners of the Scottish Crimi-nal Records O�ce.
+ She denied that it was her ﬁngerprint, and found that shecould not get an independent expert in Britain to support her; the professionclosed ranks.
+ She called two American examiners who presented testimony thatit is not an identiﬁcation.
+ The crime scene and ﬁle prints are side-by-side atFigure 17.
+1.
+(a) Crime scene print(b) Inked printFigure 17.
+1: The prints in the McKie caseSecurity Engineering534Ross Anderson17.
+4.
+ FINGERPRINTSShe was acquitted, which led to a political drama that ran on for years [1272].
+The ﬁrst problem was the nature of the case against her [1273].
+ A number ofsenior police o�cers had tried to persuade her to make a false statement in orderto explain the presence, at the scene of a gruesome murder, of the misidentiﬁedprint.
+ Her refusal to do so led to her being prosecuted for perjury, as a means ofdiscrediting her.
+ Her acquittal cast doubt on the reliability of police testimony,not just in her speciﬁc case but more generally.
+ The man convicted of the murderwas acquitted on appeal and sued the police for compensation.
+ The governmentpanicked at the prospect of dozens more appeals in other cases, and prosecutedits four ﬁngerprint experts for perjury.
+ That didn’t get anywhere either.
+ Theissue went back to the Scottish parliament again and again.
+ The police refusedto reinstate Shirley McKie, the o�cers involved got promoted, and the row gotever more acrimonious.
+ Eventually she won £750,000 compensation from thegovernment [189].
+The case led to wide discussion among experts of the value of ﬁngerprint iden-tiﬁcation, and to ﬁngerprint evidence being successfully challenged in a numberof other countries [760].
+ Two high-proﬁle cases in the USA were Stephan Cow-ans and Brandon Mayﬁeld.
+ Stephen Cowans had been convicted of shootinga police o�cer in 1997 following a robbery, but was acquitted on appeal sixyears later after he argued that his print was a misidentiﬁcation and saved upenough money to have the evidence tested for DNA.
+ The DNA didn’t match,which got the Boston and State police to reanalyze the ﬁngerprint, whereuponthey realised it was not a match after all.
+ Brandon Mayﬁeld was an Oregonlawyer who was mistakenly identiﬁed by the FBI as one of the perpetrators ofthe Madrid bombing, and held for two weeks until the Madrid police arrestedanother man whose ﬁngerprint was a better match.
+ The FBI, which had calledtheir match ‘absolutely incontrovertible’, agreed to pay Mayﬁeld $2m in 2006.
+In a subsequent study, psychologist Itiel Dror showed ﬁve ﬁngerprint exam-iners a pair of prints, told them they were from the Mayﬁeld case, and askedthem where the FBI had gone wrong.
+ Three of the examiners decided that theprints did not match and pointed out why; one was unsure; and one maintainedthat they did match.
+ He alone was right.
+ The prints weren’t the Mayﬁeld set,but were in each case a pair that the examiner himself had matched in a recentcriminal case [586].
+ Dror repeated this with six experts who each looked at eightprints, all of which they had examined for real in the previous few years.
+ Onlytwo of the experts remained consistent; the other four made six inconsistentdecisions between them.
+ The prints had a range of di�culty, and in only halfof the cases was misleading contextual information supplied [587].
+Prosecutors and police still insist to juries that forensic results are error-free, when FBI proﬁciency exams have long had an error rate of about onepercent [205], and misleading contextual information can push this up to tenpercent or in some cases over ﬁfty percent.
+Four comments are in order.
+• As Figure 17.
+1 should make clear, ﬁngerprint impressions are often verynoisy, being obscured by dirt.
+ So mistakes are quite possible, and the skill(and prejudices) of the examiner enter into the equation in a much biggerway than was accepted until the McKie case, the Mayﬁeld case, and theSecurity Engineering535Ross Anderson17.
+4.
+ FINGERPRINTSgeneral uproar that they have caused.
+ Dror’s work conﬁrmed that thecases in which misidentiﬁcations occur tend to be the di�cult ones [587].
+Yet the forensic culture was such that only certainty was acceptable; theInternational Association for Identiﬁcation, the largest forensic group, heldthat testifying about “possible, probable or likely identiﬁcation shall bedeemed .
+.
+.
+ conduct unbecoming.
+” [205]• Even if the probability of a false match on sixteen points were one in tenbillion (10�10) as claimed by police optimists, once many prints are com-pared against each other, probability theory starts to bite.
+ A system thatworked ﬁne in the old days as a crime scene print would be compared man-ually with the records of a hundred and ﬁfty-seven known local burglars,breaks down once thousands of prints are compared every year with anonline database of millions.
+ It was inevitable that sooner or later, enoughmatches would have been done to ﬁnd a 16-point mismatch.
+ Indeed, asmost people on the ﬁngerprint database are petty criminals who will notbe able to muster the resolute defence that Shirley McKie did, I wouldbe surprised if there hadn’t been other wrongful convictions already.
+ Andthings may get worse, because European police forces now link up theirbiometric databases (both ﬁngerprints and DNA) so that police forcescan search for matches across all EU member states [1905].
+ They mayeventually need more robust ways of handling false positives.
+• The belief that any security mechanism is infallible creates the compla-cency and carelessness needed to undermine its proper use.
+ No consid-eration appears to have been given to increasing the number of pointsrequired from sixteen to (say) twenty with the introduction of computermatching.
+ Sixteen was tradition, and nobody wanted either to challengethe system or make public funds available for defendants’ experts.
+ In theUK, all the experts were policemen or former policemen, so there wereno independents available for hire anyway.
+ Even so, it would have beenpossible to use randomised matching with multiple experts; but if the ﬁn-gerprint bureau had had to tell the defence in the perhaps 5–10% of caseswhen (say) one of four experts disagreed, then more defendants wouldhave been acquitted.
+• A belief of infallibility ensures that the consequences of the eventual failurewill be severe.
+ As with the Munden case described in section 12.
+4.
+3, whichhelped torpedo claims about cash machine security, an assumption thata security mechanism is infallible causes procedures, cultural assumptionsand even laws to spring up to ensure that its eventual failure will bedenied for as long as possible, and will thus have real impact when it canno longer be postponed.
+ In the Scottish case, there appears to have arisena hierarchical risk-averse culture in which examiners were predisposed toconﬁrm identiﬁcations made by colleagues (especially senior colleagues).
+This risk aversion backﬁred when four of them were tried for perjury.
+However, even when we do have a correct match its implications are notalways entirely obvious.
+ Fingerprints can be transferred using adhesive tape,and moulds can be made, using techniques originally devised for police use.
+So it’s possible that the suspect whose print is found at the crime scene wasSecurity Engineering536Ross Anderson17.
+5.
+ IRIS CODESframed by another criminal (or by the police – most fabrication cases involvelaw-enforcement personnel rather than other suspects [254]).
+ And even if thevillain wasn’t framed, he can always claim that he was (and the jury mightbelieve him).
+In the USA, the Supreme Court in its Daubert judgment held that trialjudges should screen the principles and methodology behind forensic evidence toensure it is relevant and reliable [516].
+ The judge ought to consider the refereedscientiﬁc literature – and in the case of ﬁngerprints this has been lacking, as lawenforcement agencies have been generally unwilling to submit their examinationprocedures to rigorous double-blind testing.
+A number of Daubert hearingsrelating to forensic ﬁngerprint evidence have been held in US trials, and theFBI has generally prevailed [761].
+ However, the bureau’s traditional line thatﬁngerprint examination has a zero error rate is now widely ridiculed [1809].
+17.
+5Iris codesWe turn now from the traditional ways of identifying people to the modern andinnovative.
+ Recognizing people by the patterns in the irises of their eyes has farand away the best error rates of any automated biometric system when mea-sured under lab conditions.
+ The initial research was funded by the Departmentof Energy, which wanted the best possible way of securing entry to premisessuch as plutonium stores, and the technology is now used in applications fromimmigration to welfare.
+ The international standards for machine-readable traveldocuments mandate the use of photographs, and permit both ﬁngerprints andirises.
+So far as is known, every human iris is measurably unique.
+ It is fairly easy todetect in a video picture, it does not wear out, and it is isolated from the externalenvironment by the cornea (which in turn has its own cleaning mechanism).
+ Theiris pattern contains a large amount of randomness, and appears to have manytimes the number of degrees of freedom of a ﬁngerprint.
+ It is formed between thethird and eighth month of gestation, and (like the ﬁngerprint pattern) appearsto be under limited genetic inﬂuence; the mechanisms that form it appear tobe chaotic.
+ The patterns are di↵erent even for identical twins (and for the twoeyes of a single individual), and they appear to be stable throughout life.
+Leonard Flom and Aran Saﬁr patented the idea of an iris identiﬁcation sys-tem in 1987, observing that every iris is di↵erent.
+In 1993, John Daugmanﬁgured out how to make the idea work, developing signal-processing techniquesthat extract the information from an image of the iris into a 256 byte iriscode.
+This involves a circular wavelet transform taken at a number of con-centric rings between the pupil and the outside of the iris (Figure 17.
+2).
+ Theresulting iris codes have the neat property that two codes computed from thesame iris will typically match in 90% of their bits [517].
+ This is much simplerthan in ﬁngerprint scanners where orienting and classifying the minutiae is a ﬁd-dly computational task.
+ The speed and accuracy of iris coding, and the expiryof the Daugman patents, have led to a number of commercial iris recognitionproducts [1996].
+ Iris codes provide the lowest false accept rates of any knownveriﬁcation system – zero, in tests conducted by both the US Department ofSecurity Engineering537Ross Anderson17.
+5.
+ IRIS CODESEnergy and the NPL [1217].
+ The equal error rate has been shown to be betterthan one in a million, and if one is prepared to tolerate a false reject rate of onein ten thousand then the theoretical false accept rate would be less than one ina trillion.
+ In practice, the false reject rate is signiﬁcantly higher than this; manythings, from eyelashes to hangovers, can cause the camera to not see enough ofthe iris.
+ The US Department of Defense found a 6% false reject rate in its 2002ﬁeld trials [1258]; a UK Passport O�ce trial found 4% for normal users and9% for disabled users [1920].
+ A further problem is failure to enrol; the PassportO�ce trial failed to enrol 10% of participants, and the rate was higher amongblack users, the over-60s and the disabled.
+Figure 17.
+2: – an iris with iris code (courtesy John Daugman)One practical problem with iris scanning used to be getting the picturecheaply without being too intrusive.
+ The iris is small (less than half an inch)and an image with several hundred pixels of iris is needed.
+ A cooperative subjectcan place his eye within a few inches of a video camera, and the best standardequipment will work up to a distance of two or three feet.
+All current irisscanning systems use infrared light, and some people feel uncomfortable whenthis is shone in their eyes.
+ Given more sophisticated cameras, with automaticfacial feature recognition, pan and zoom, it is now possible to capture iris codesfrom airline passengers covertly as they walk along a corridor [1240], and thecost came down after the key patent ran out in 2011.
+The ﬁrst large-scale deployment was in the United Arab Emirates, whichwanted to track people expelled from the country, particularly for prostitutiono↵ences.
+ Expellees would turn up again some weeks later with new and com-pletely valid passports from certain Asian countries, obtained by corruption.
+Since its deployment in 2003, this has led to the detention of over 330,000 peo-Security Engineering538Ross Anderson17.
+6.
+ VOICE RECOGNITION AND MORPHINGple attempting to enter the country despite a ban or with false papers.
+The largest deployment is the Aadhaar system in India, under which allresidents had their ﬁngerprints and irises scanned.
+ They get an Aadhaar cardwith a 10-digit number that enables a veriﬁer to look up their proﬁle in adatabase.
+ The initial motivation for the project was to enable the 300 millionIndians who live below the poverty line and get welfare, to move into the citiesto seek work.
+ Previously welfare was only available in their towns or villages.
+The system enrolled a billion people between 2011 and 2016, and all iris codeswere checked against each other for uniqueness.
+ Aadhaar is now mandatory formany purposes, and the collected ﬁngerprints are also made available to thepolice for crime scene forensics.
+Possible attacks on iris recognition systems include – in unattended operationat least – a simple photograph of the target’s iris.
+ There are terminals that willdetect such simple fakes, for example by measuring hippus – a natural ﬂuctuationin the diameter of the pupil that happens at about 0.
+5 Hz.
+ But the widely-soldcheap terminals don’t do this, and if liveness detection became widespread thenno doubt attackers would try more sophisticated tricks, such as printing thetarget’s iris patterns on a contact lens.
+The system in active use the longest is the UAE’s system for detecting de-portees who return with false papers.
+ A typical attack was for the returningdeportee to take atropine eyedrops on the plane, dilating her pupils; nowadayssuch travelers are held in custody until their eyes return to normal.
+As forAadhaar, the main abuses and disputes happen around the system rather thanthrough it.
+ In 2019, a hot issue is the authorities’ reluctance to register Mus-lims in Assam and other border regions, part of a larger policy of trying toportray them as illegal immigrants.
+ The Supreme Court of India has ruled thatservices should not be withheld from people who are not registered, but thishas not stopped registration being a requirement in practice for opening a bankaccount, buying a phone or SIM card, and school enrolment.
+Despite the di�culties, iris codes are in some sense the most powerful bio-metric as they can, in the correct circumstances, assure you that the individualin front of you is the same human as the one whose iris was initially regis-tered.
+ They alone can meet the goal of automatic recognition with zero falseacceptances.
+17.
+6Voice recognition and morphingVoice recognition – also known as speaker recognition – is the problem of iden-tifying a speaker from a short utterance.
+ While speech recognition systems areconcerned with transcribing speech and need to ignore speech idiosyncrasies,voice recognition systems need to amplify and classify them.
+ There are manysubproblems, such as whether the recognition is text-dependent or not, whetherthe environment is noisy, whether operation must be real time and whether oneneeds only to verify speakers or to recognize them from a large set.
+As with ﬁngerprints, the technology is used for both identiﬁcation and foren-sics.
+ In forensic phonology, the task is usually to match a recorded telephoneSecurity Engineering539Ross Anderson17.
+7.
+ OTHER SYSTEMSconversation, such as a bomb threat, to speech samples from a number of sus-pects.
+Typical techniques involve ﬁltering and extracting features from thespectrum; for more details see [1058].
+ A more straightforward biometric au-thentication objective is to verify a claim to identity in some telephone systems.
+These range from telephone banking to the identiﬁcation of military personnel,with the NSA maintaining a standard corpus of test data for evaluating speakerrecognition systems.
+ In the UK, asylum seekers are required to ring in severaltimes every week [1902].
+ Such systems tend to use caller-ID to establish wherepeople are, and are also used for people like football hooligans who’re undercourt orders not to go to certain places at certain times.
+ The only system I’veused personally is run by one of the banks I use, and authenticates you to theirphone app when you change your phone.
+ But a major UK bank was embar-rassed when it ﬁelded a voice biometric system in a phone app in 2016, only tohave it broken the following year by a BBC reporter who got his non-identicaltwin to mimic his voice [1744].
+Quite apart from the possibility that a relative or a villain might some-how manage to imitate you, there are some powerful attacks.
+ In [730] thereis a description of a 1990s system ﬁelded in US EP-3 aircraft that breaks upintercepted messages from enemy aircraft and ground controllers into quartersecond segments that are then cut and pasted to provide new, deceptive mes-sages.
+ That was primitive compared with what can now be done two decadeslater.
+ There are now many videos online of public ﬁgures appearing to say in-appropriate things, and ‘Deepfake’ editing software now enables such voice andimage morphing to be done in near real time.
+ Most recently, criminals used AIto impersonate a chief executive’s voice and order a payment of e220,000: thevictim of that deception wasn’t even a machine, but another executive [1841].
+This may be the ﬁrst case of voice morphing software being used in a real fraud;we can be sure it won’t be the last.
+17.
+7Other systemsMany other biometric technologies have been proposed [1315].
+ Typing patterns,were used in products in the 1980s but don’t appear to have been successful(typing patterns, also known as keystroke dynamics, had a famous precursorin the wartime technique of identifying wireless telegraphy operators by theirﬁst, the way in which they used a Morse key).
+ Vein patterns have been used inone or two systems but don’t seem to have been widely sold (in the NPL trials,the vein was the worst of the lot [1217]).
+ Hand geometry was used for a whilein some airports, and has a historic predecessor in the system of Bertillonage,whereby the French police in the 19th century identiﬁed criminals by a systemof physical measurements.
+There has been growing interest recently in stylometry, the science of iden-tifying authors, whether of text or of code, from their writing styles.
+ This goesback at least a century; as a young man, the famous cryptologist William Fried-man was hired along with his wife Elizebeth by an eccentric millionaire to studywhether Bacon wrote Shakespeare.
+ (They eventually debunked the idea but gotinterested in cryptography in the process.
+) Computers make it possible to runSecurity Engineering540Ross Anderson17.
+8.
+ WHAT GOES WRONGever more subtle statistical tests, and modern applications range from tryingto identify people who post to cybercrime markets and extremist web forumsto the detection of plagiarism by college students [3].
+ Researchers have shownthat people can change their writing styles enough to defeat simple stylometryif they try [318].
+ But most people don’t, and with a bit more work, the fact ofan attempted obfuscation can usually be detected [28].
+ Stylometry also extendsto code; programmers can be recognised from their coding style [370].
+Other proposals include facial thermograms (maps of the surface tempera-ture of the face, derived from infrared images), the shape of the ear, gait, lipprints and electrocardiograms.
+ Bertillon used the shape of the ear in nineteenthcentury Paris.
+ And perhaps the huge investment in developing digital noses forquality control in the food and drink industries may lead to personal devicesthat recognize their master by scent.
+One ﬁnal biometric deserves mention – DNA.
+ This has become a valuabletool for crime scene forensics and for determining parenthood in child supportcases, but it is way too slow and expensive for real-time applications.
+ Beinggenotypic rather than phenotypic, its accuracy is limited by the incidence ofmonozygotic twins: about one white person in 120 has an identical twin.
+ There’salso a privacy problem in that it is possible to reconstruct a growing amount ofinformation about an individual from their DNA sample.
+ There have been majorprocedural problems, with false matches resulting from sloppy lab procedure.
+And there are also major data quality problems; the UK police have the biggestDNA database in the world, with records on almost six million people, butgot the names misspelled or even wrong for about half a million of them [878].
+They also had court judgments against them for retaining the DNA of innocentpeople, from acquitted suspects to bystanders [102].
+ The processes that workfor local policing don’t always scale nationally – small errors from mistypedrecords, to suspects giving false names that were never discovered because theyweren’t prosecuted, accumulate along with lab errors until the false-positive ratebecomes a serious operational and political issue.
+ In this context, many wereconcerned when in 2019, a Florida detective managed to get a warrant to searchall million records held by a private DNA testing company GEDmatch [899].
+It will be interesting to see whether this undermines the business of the largerconsumer DNA ﬁrms, such as 23andMe and ancestry.
+com, enough for them tolobby for stronger privacy laws.
+17.
+8What Goes WrongAs with other aspects of security, we ﬁnd the usual crop of failures due to bugs,blunders and complacency.
+ In section 3.
+4.
+9 I noted a report that the ﬁrm whichsupplies biometric building entry control systems to 5,700 organisations in 83countries left its database unprotected online.
+ And the second time Uber lostits London operating licence, it was because they failed to stop banned driversre-registering, thanks to a photo checking bug [310].
+ And the main problemfaced by DNA typing was an initially high rate of false positives, due to carelesslaboratory procedure.
+This led to disputed court cases and miscarriages ofjustice.
+ As with ﬁngerprints, any system that’s believed to be infallible willSecurity Engineering541Ross Anderson17.
+8.
+ WHAT GOES WRONGmake its operators careless enough to break it.
+Biometrics are also like many other physical protection mechanisms (alarms,seals, tamper sensing enclosures, .
+.
+.
+) in that environmental conditions can causehavoc.
+ Noise, dirt, vibration and unreliable lighting conditions all take theirtoll.
+ Some systems, like speaker recognition, are vulnerable to alcohol intakeand stress.
+ Changes in environmental assumptions, such as from closed to opensystems, from small systems to large ones, from attended to stand-alone, fromcooperative to recalcitrant subjects, and from veriﬁcation to identiﬁcation, canall break things.
+Many interesting attacks are more speciﬁc to biometric systems and applyto more than one type of biometric.
+• Forensic biometrics often don’t tell as much as one might assume.
+ Apartfrom the possibility that a ﬁngerprint or DNA sample might have beenplanted by the police, it may just be old.
+ The age of a ﬁngerprint can’tbe determined directly, and prints on areas with public access say little.
+A print on a bank door says much less than a print in a robbed vault.
+So in premises vulnerable to robbery, cleaning procedures may be criticalfor evidence.
+ If a suspect’s prints are found on a bank counter, and heclaims that he had gone there three days previously, he may be convictedby evidence that the branch counter is polished every evening.
+ Puttingthis in system terms, freshness is often a critical issue, and some quiteunexpected things can ﬁnd themselves inside the ‘trusted computing base’.
+• Another aspect of freshness is that most biometric systems can, at leastin theory, be attacked using suitable recordings.
+ We mentioned direct at-tacks on voice recognition, attacks on iris scanners by photos on a contactlens, and moulds of ﬁngerprints.
+ Even simpler still, in countries like SouthAfrica where ﬁngerprints are used to pay pensions, there are persistenttales of ‘Granny’s ﬁnger in the pickle jar’ being the most valuable prop-erty she bequeathed to her family.
+ The lesson to be learned here is thatunattended operation of biometric authentication devices is tricky.
+ At-tacks aren’t always straightforward; although it’s easy to make a mouldfrom a good ﬁngerprint [406], the casual prints that people leave lyingaround on doorknobs, beer glasses and so on are often too smudged andfragmentary to pass an identiﬁcation system.
+ But attacks are deﬁnitelypossible, and deﬁnitely happen.
+ Defences are also possible; voice recog-nition systems can demand that you read out an unpredictable challengeto thwart recordings, while one version of the app that EU citizens useto apply for residence in the UK post-Brexit took a video of your face ascolours change on the phone screen in front of you.
+• Most biometrics are not as accurate for all people, and some of the pop-ulation can’t be identiﬁed as reliably as the rest (or even at all).
+ Theelderly, and manual workers, often have damaged or abraded ﬁngerprints;there’s a tradition of hardcore criminals doing this deliberately.
+ Peoplewith dark eyes, and large pupils, give poorer iris codes.
+ Disabled peoplewith no ﬁngers, or no eyes, risk exclusion.
+ (That’s one reason Aadhaaruses both irises and ﬁngerprints.
+) Illiterates who make an ‘X’ are more atrisk from signature forgery.
+Security Engineering542Ross Anderson17.
+8.
+ WHAT GOES WRONGBiometric engineers sometimes refer to such subjects dismissively as ‘goats’,but this is foolish and discriminatory.
+ A biometric system that is (or isseen to be) socially regressive – that puts the disabled, the poor, the oldand ethnic minorities at greater risk of impersonation – should meet withprincipled resistance.
+ It might be defeated by legal challenges [1552].
+ Itmay also be defeated by villains who pretend to be disabled.
+ And some-times the lack of heed for minority population groups is so o↵ensive as to beunlawful.
+ For example, in 2019 the UK Home O�ce deployed a passportapp despite knowing that it didn’t work properly for black people [1950].
+• A point that follows from this is that systems may be vulnerable to col-lusion.
+ Alice opens a bank account and her accomplice Betty withdrawsmoney from it; Alice then complains of theft and produces a watertightalibi.
+ Quite apart from simply letting Betty take a rubber impression ofher ﬁngertip, Alice might voluntarily decrease handwriting ability; by giv-ing several slightly di↵erent childish sample signatures, she can force themachine to accept a lower threshold than usual.
+ She can spend a coupleof weeks building a wall in her garden, and wear her ﬁngerprints ﬂat, soas to degrade registration in a ﬁngerprint system.
+ She might register fora voice recognition system when drunk.
+• The next issue is compulsion.
+If you get arrested in China, and sinceAugust 2020 in Hong Kong, the police will hold your ﬁnger to your phoneto unlock it.
+ If it uses face recognition they’ll pin your head and pointyour phone at you; if you want to resist you have to close your eyes andscrunch up your face [1348].
+• The statistics are often not understood by system designers, and the birth-day theorem is a big soft spot.
+ With 10,000 biometrics in a database, forexample, there are about 50,000,000 pairs.
+ So even with a false-acceptrate of only one in a million, the likelihood of there being at least one falsematch will rise above one-half as soon as there are somewhat over a thou-sand people enrolled4.
+ So identiﬁcation is a lot tougher than veriﬁcation.
+The practical consequence is that a system designed for authenticationmay fail when you try to rely on it for evidence.
+• Another aspect of statistics comes into play when designers assume that bycombining biometrics they can get a lower error rate.
+ But a combinationwill often improve either the false accept rate or the false reject rate, whilemaking the other worse.
+ If you install two di↵erent burglar alarms at yourhome, then the probability that they will be simultaneously defeated goesdown while the number of false alarms goes up.
+• The statistics are often somewhat uneven, so that as well as so-called‘goats’, whose biometrics typically fall outside the normal parameter range,there may be ‘lambs’ who are particularly easy to impersonate, and ‘wolves’who are particularly good at impersonating others.
+ So it is vital to test4More precisely, 1177: a false match pairing in a database of N people becomes likelierthan not as soon as N >p1.
+386/f where f is the single false-match rate, here 10�6 [519].
+Check: 1177 people make 1177 x 1176 / 2 = 692,076 pairings, and the probability that noneof these makes a false match is: 0.
+999999692,076 = 0.
+500Security Engineering543Ross Anderson17.
+9.
+ SUMMARYsystems thoroughly on substantial and diverse populations before deploy-ment.
+• Many vendors have claimed that their products protect privacy, as what’sstored is not the image of your face or ﬁngerprint or iris, but rather atemplate that’s derived from it, somewhat like a one-way hash, and fromwhich you can’t be identiﬁed.
+ It’s been argued from this that biometricdata are not personal data, in terms of privacy law, and can thus be passedaround without restriction.
+ These claims were exploded by Andy Adlerwho came up with an interesting hill-climbing attack on face recognitionsystems.
+Given a recogniser that outputs how close an input image isto a target template, the input face is successively altered to increase thematch.
+ With the tested systems, this led rapidly to a recognizable image ofthe target – a printout of which would be accepted as the target’s face [24].
+He then showed how this hill-climbing technique could be used to attackother biometrics, including some based on ﬁngerprints [25].
+• It’s worth thinking what happens when humans and computers disagree.
+Iris data can’t be matched by unaided humans at all; most of the iris codeis derived from phase information to which the human eye is not sensitive.
+But what happens when a guard and a program disagree on whether asubject’s face matches a ﬁle photo? Psychologists advise that biometricsystems should be used in ways that support and empower human cogni-tion and that work within our social norms [586].
+ Yet we engineers oftenﬁnd it easier to treat the users as a nuisance that must adapt to our tech-nology.
+ This may degrade the performance of the humans.
+ For examplewhen an automated ﬁngerprint database pulls out what it thinks is themost likely print and presents it to the examiner: is he not likely to bebiased in its favour? Would it not perhaps be better for the computerto test the examiner’s alertness constantly by giving him the three bestmatches plus two poor matches, or would that be too annoying?• Finally, Christian fundamentalists are uneasy about biometrics.
+ They ﬁndRevelation 13:16-18 talking about the Antichrist: ‘And he causes all, bothsmall and great, rich and poor, free and slave, to receive a mark on theirright hand or on their foreheads, and that no one may buy or sell exceptone who has the mark or the name of the beast, or the number of hisname.
+’So there are some non-trivial problems.
+ But biometrics have now gone main-stream, and a good security engineer needs to know how to use them appropri-ately.
+17.
+9SummaryBiometric measures of one kind or another have been used to identify peoplesince ancient times, with handwritten signatures, facial features and ﬁngerprintsbeing the traditional methods.
+ Three systems are now deployed at scale: ﬁn-gerprint recognition on our phones, iris recognition in India and the MiddleSecurity Engineering544Ross Anderson17.
+9.
+ SUMMARYEast, and facial recognition – which has become rapidly more accurate thanksto the neural network revolution.
+ These systems have di↵erent strengths andweaknesses, and the statistics of error rates can be deceptively di�cult.
+When a biometric becomes very widely used, there may be an increased riskof forgery in unattended operation: photographs of irises, ﬁngerprint mouldsand even good old-fashioned forged signatures must all be thought of in systemdesign.
+Context matters; even a weak biometric like handwritten signatureveriﬁcation can be e↵ective if it is well embedded in the social and legal matrix.
+Biometrics are usually more powerful in attended operation, where withgood system design the relative strengths and weaknesses of the human andthe machine may complement one another.
+ Forensic uses are problematic, andcourts are much less blindly trusting of even ﬁngerprint evidence than they wereten years ago.
+ Historically, many biometric systems achieved most of their e↵ectby deterring criminals rather than actually identifying them.
+And althoughthere’s now the prospect of identifying people at scale from face recognition,and authoritarian countries like Russia and China are doing it, there’s nowserious debate about whether we should allow the large-scale routine use of thistechnology in democracies.
+Research ProblemsMany practical research problems relate to the design, or improvement, of bio-metric systems.
+ The hot topic in 2019 is the scalability of mass surveillanceCCTV systems, and the policy questions this raises about privacy, autonomyand sovereignty.
+Given that facial recognition technology is still improvingrapidly and ﬁnding new applications, the debate is likely to run for some timeand to drive technical research on related topics.
+One idea I thought up while writing this chapter for the ﬁrst edition in 2000was instrumenting a car so as to identify a driver by the way in which he operatedthe gears and the clutch.
+ If your car thinks it’s been stolen, it phones a controlcenter which calls you to check.
+ There is now research showing that users ofhaptic systems can be recognised by the way in which they use tools [1478].
+ Sohere’s another idea.
+ Can we identify humans, and AI/ML systems, by otherlearned skills? For example, the quote at the head of this chapter – where theEphraimites were spotted and killed for their inability to say the Hebrew letter‘shin’ – is actually about a skill that people learn when young or, with moredi�culty, as an adult.
+The ability to speak a language ﬂuently in the localdialect is one of the most universal and visceral ways of identifying the in-groupfrom the out-group.
+ The cool crowd speak the latest slang and dance the latestdance.
+ Now that robots, as well as humans, have skills that are acquired onlywith e↵ort, does this lead anywhere interesting?Further ReadingThe standard British history of ﬁngerprints is by Commander G.
+T.
+C.
+ Lam-bourne [1120], while the history in India is told by Chandak Sengoopta [1701].
+Security Engineering545Ross Anderson17.
+9.
+ SUMMARYThe McKie case is described in a book by Ian McKie and Michael Russella [1273].
+A good technical reference on automated ﬁngerprint identiﬁcation systems is thebook by Davide Maltoni, Dario Maio, Anil Jain and Salil Prabhakar [1213].
+ Asfor facial recognition, see Guodong Guo and Na Zhang [834].
+ The standardwork on iris codes is by John Daugman [517].
+ For speaker recognition forensics,see Richard Klevans and Robert Rodman [1058].
+As for the future, the US Department of Homeland Security is buildinga new Homeland Advanced Recognition Technology (HART) database whichwill include multiple forms of biometrics, from face recognition to DNA, andconsolidate records on both US residents and foreigners; there’s a descriptionand a discussion of the policy implications by the EFF [1196].
+ And the errorsin biometric forensics are mirrored in other forensic techniques; a 2009 reportfrom the US National Research Council showed that apart from DNA analysis,most forensic methods were unreliable in various ways, relating not only to theunderlying science and technology but also to the fragmented nature of forensicpractice, the lack of standards and poor governance [1413].
+ As a recent example,Sophie Nightingale and Hany Farid found that a common method of identifyingdenim clothes by seam patterns was nowhere near as reliable or reproducible asforensic examiners had claimed for many years [1447].
+Security Engineering546Ross Anderson

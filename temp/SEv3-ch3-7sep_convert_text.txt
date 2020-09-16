@@ -1,0 +1,1328 @@
+Chapter 3Psychology and UsabilityHumans are incapable of securely storing high-qualitycryptographic keys, and they have unacceptable speed and accuracywhen performing cryptographic operations.
+ (They are also large,expensive to maintain, di�cult to manage, and they pollute theenvironment.
+ It is astonishing that these devices continue to bemanufactured and deployed.
+ But they are su�ciently pervasive thatwe must design our protocols around their limitations.
+)– KAUFMANN, PERLMAN AND SPECINER [1025]Only amateurs attack machines; professionals target people.
+– BRUCE SCHNEIERMetternich told lies all the time, and never deceived any one;Talleyrand never told a lie and deceived the whole world.
+– THOMAS MACAULAY3.
+1IntroductionMany real attacks exploit psychology at least as much as technology.
+ We saw inthe last chapter how some online crimes involve the manipulation of angry mobs,while both property crimes and espionage make heavy use of phishing, in whichvictims are lured by an email to log on to a website that appears genuine butthat’s actually designed to steal their passwords or get them to install malware.
+Online frauds like phishing are often easier to do, and harder to stop, thansimilar real-world frauds because many online protection mechanisms are neitheras easy to use nor as di�cult to forge as their real-world equivalents.
+ It’s mucheasier for crooks to create a bogus bank website that passes casual inspectionthan to build an actual bogus bank branch in a shopping street.
+We’ve evolved social and psychological tools over millions of years to helpus deal with deception in face-to-face contexts, but these are less e↵ective whenwe get an email that asks us to do something.
+ For an ideal technology, good use753.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHwould be easier than bad use.
+ We have many examples in the physical world: apotato peeler is easier to use for peeling potatoes than a knife is, but a lot harderto use for murder.
+ But we’ve not always got this right for computer systems yet.
+Much of the asymmetry between good and bad on which we rely in our dailybusiness doesn’t just depend on formal exchanges – which can be automatedeasily – but on some combination of physical objects, judgment of people, andthe supporting social protocols.
+ So, as our relationships with employers, banksand government become more formalised via online communication, and we loseboth physical and human context, the forgery of these communications becomesmore of a risk.
+Deception, of various kinds, is now the principal mechanism used to defeatonline security.
+ It can be used to get passwords, to compromise conﬁdentialinformation or to manipulate ﬁnancial transactions directly.
+ Hoaxes and fraudshave always happened, but the Internet makes some of them easier, and letsothers be repackaged in ways that may bypass our existing controls (be theypersonal intuitions, company procedures or even laws).
+Another driver for the surge in attacks based on social engineering is thatpeople are getting better at technology.
+ As designers learn how to forestall theeasier technical attacks, psychological manipulation of system users or opera-tors becomes ever more attractive.
+ So the security engineer absolutely mustunderstand basic psychology, as a prerequisite for dealing competently with ev-erything from passwords to CAPTCHAs and from phishing to social engineeringin general; a working appreciation of risk misperception and scaremongering isalso necessary to understand the mechanisms underlying angry online mobs andthe societal response to emergencies from terrorism to pandemic disease.
+ So justas research in security economics led to a real shift in perspective between theﬁrst and second editions of this book, research in security psychology has mademuch of the di↵erence to how we view the world between the second edition andthis one.
+In the rest of this chapter, I’ll ﬁrst survey relevant research in psychology,then work through how we apply the principles to make password authenticationmechanisms more robust against attack, to security usability more generally, andbeyond that to good design.
+3.
+2Insights from psychology researchPsychology is a huge subject, ranging from neuroscience through to clinical top-ics, and spilling over into cognate disciplines from philosophy through artiﬁcialintelligence to sociology.
+ Although it has been studied for much longer thancomputer science, our understanding of the mind is much less complete: thebrain is so much more complex.
+ There’s one central problem – the nature ofconsciousness – that we just don’t understand at all.
+ We know that ‘the mindis what the brain does’, yet the mechanisms that underlie our sense of self andof personal history remain obscure.
+Nonetheless a huge amount is known about the functioning of the mindand the brain, and we’re learning interesting new things all the time.
+ In whatSecurity Engineering76Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHfollows I can only o↵er a helicopter tour of three of the themes in psychologyresearch that are very relevant to our trade: cognitive psychology, which studiestopics such as how we remember and what sort of mistakes we make; socialpsychology, which deals with how we relate to others in groups and to authority;and behavioral economics, which studies the heuristics and biases that lead usto make decisions that are consistently irrational in measurable and exploitableways.
+3.
+2.
+1Cognitive psychologyCognitive psychology is the classical approach to the subject – building on earlyempirical work in the nineteenth century.
+ It deals with how we think, remember,make decisions and even daydream.
+ Twentieth-century pioneers such as UlricNeisser discovered that human memory doesn’t work like a video recorder: ourmemories are stored in networks across the brain, from which they are recon-structed, so they change over time and can be manipulated [1427].
+ There aremany well-known results.
+ For example, it’s easier to memorise things that arerepeated frequently, and it’s easier to store things in context.
+ Many of theseinsights are used by marketers and scammers, but misunderstood or just ignoredby most system developers.
+For example, most of us have heard of George Miller’s result that humanshort-term memory can cope with about seven (plus or minus two) simultaneouschoices [1317] and, as a result, many designers limit menu choices to about ﬁve.
+But this is not the right conclusion.
+People search for information ﬁrst byrecalling where to look, and then by scanning; once you’ve found the relevantmenu, scanning ten items is only twice as hard as scanning ﬁve.
+The reallimits on menu size are screen size, which might give you ten choices, and withspoken menus, where the average user has di�culty dealing with more than threeor four [1544].
+ Here, too, Miller’s insight is misused because spatio-structuralmemory is a di↵erent faculty from echoic memory.
+ This illustrates why a broadidea like 7+/-2 can be hazardous; you need to look at the detail.
+In recent years, the centre of gravity in this ﬁeld has been shifting fromapplied cognitive psychology to the human-computer interaction (HCI) researchcommunity, because of the huge amount of empirical know-how gained not justfrom lab experiments, but from the iterative improvement of ﬁelded systems.
+As a result, HCI researchers not only model and measure human performance,including perception, motor control, memory and problem-solving; they havealso developed an understanding of how users’ mental models of systems work,how they di↵er from developers’ mental models, and of the techniques (such astask analysis and cognitive walkthrough) that we can use to explore how peoplelearn to use and understand systems.
+Security researchers need to ﬁnd ways of turning these ploughshares intoswords (the bad guys are already working on it).
+ There are some low-hangingfruit; for example, the safety research community has put a lot of e↵ort intostudying the errors people make when operating equipment [1589].
+ It’s saidthat ‘to err is human’ and error research conﬁrms this: the predictable varietiesof human error are rooted in the very nature of cognition.
+ The schemata, ormental models, that enable us to recognise people, sounds and concepts soSecurity Engineering77Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHmuch better than computers, also make us vulnerable when the wrong modelgets activated.
+Human errors made while operating equipment fall into broadly three cat-egories, depending on where they occur in the ‘stack’: slips and lapses at thelevel of skill, mistakes at the level of rules, and misconceptions at the cognitivelevel.
+• Actions performed often become a matter of skill, but we can slip whena manual skill fails – for example, pressing the wrong button – and wecan also have a lapse where we use the wrong skill.
+ For example, whenyou intend to go to the supermarket on the way home from work you maytake the road home by mistake, if that’s what you do most days (this isalso known as a capture error).
+ Slips are exploited by typosquatters, whoregister domains similar to popular ones, and harvest people who maketyping errors; other attacks exploit the fact that people are trained toclick ‘OK’ to pop-up boxes to get their work done.
+ So when designinga system you need to ensure that dangerous actions, such as installingsoftware, require action sequences that are quite di↵erent from routineones.
+ Errors also commonly follow interruptions and perceptual confusion.
+One example is the post-completion error: once they’ve accomplished theirimmediate goal, people are easily distracted from tidying-up actions.
+ Morepeople leave cards behind in ATMs that give them the money ﬁrst andthe card back second.
+• Actions that people take by following rules are open to errors when theyfollow the wrong rule.
+ Various circumstances – such as information over-load – can cause people to follow the strongest rule they know, or themost general rule, rather than the best one.
+ Phishermen use many tricksto get people to follow the wrong rule, ranging from using https (be-cause ‘it’s secure’) to starting URLs with the impersonated bank’s name,as www.
+citibank.
+secureauthentication.
+com – for most people, lookingfor a name is a stronger rule than parsing its position.
+• The third category of mistakes are those made by people for cognitivereasons – either they simply don’t understand the problem, or pretendthat they do, and ignore advice in order to get their work done.
+ The sem-inal paper on security usability, Alma Whitten and Doug Tygar’s “WhyJohnny Can’t Encrypt”, demonstrated that the encryption program PGPwas simply too hard for most college students to use as they didn’t un-derstand the subtleties of private versus public keys, encryption and sig-natures [2018].
+ And there’s growing realisation that many security bugsoccur because most programmers can’t use security mechanisms either.
+Both access control mechanisms and security APIs are hard to under-stand and ﬁddly to use; security testing tools are often not much better.
+Programs often appear to work even when protection mechanisms are usedin quite mistaken ways.
+ Engineers then copy code from each other, andfrom online code-sharing sites, so misconceptions and errors are propa-gated widely [11].
+ They often know this is bad, but there’s just not thetime to do better.
+Security Engineering78Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHThere is some important science behind all this, and here are just two exam-ples.
+ James Gibson developed the concept of action possibilities or a↵ordances:the physical environment may be climbable or fall-o↵-able or get-under-able foran animal, and similarly a seat is sit-on-able.
+ People have developed great skillat creating environments that induce others to behave in certain ways: we buildstairways and doorways, we make objects portable or graspable; we make pensand swords [762].
+ Often perceptions are made up of a↵ordances, which can bemore fundamental than value or meaning.
+ In exactly the same way, we designsoftware artefacts to train and condition our users’ choices, so the a↵ordancesof the systems we use can a↵ect how we think in all sorts of ways.
+ We can alsodesign traps for the unwary: an animal that mistakes a pitfall for solid groundis in trouble.
+Gibson also came up with the idea of optical ﬂows, further developed byChristopher Longuet-Higgins [1185].
+ As our eyes move relative to the environ-ment, the resulting optical ﬂow ﬁeld lets us interpret the image, understandingthe size, distance and motion of objects in it.
+ There is an elegant mathematicaltheory of optical parallax, but our eyes deal with it di↵erently: they containreceptions for speciﬁc aspects of this ﬂow ﬁeld which assume that objects in itare rigid, which then enables us to resolve rotational and translational compo-nents.
+ Optical ﬂows enable us to understand the shapes of objects around us,independently of binocular vision.
+ We use them for some critical tasks such aslanding an aeroplane and driving a car.
+In short, cognitive science gives useful insights into how to design systeminterfaces so as to make certain courses of action easy, hard or impossible.
+ Itis increasingly tied up with research into computer human interaction.
+Youcan make mistakes more or less likely by making them easy or di�cult; insection 28.
+2.
+2 I give real examples of usability failures causing serious accidentsinvolving both medical devices and aircraft.
+ Yet security can be even harderthan safety if we have a sentient attacker who can provoke exploitable errors.
+What can the defender expect attackers to do? They will use errors whosee↵ect is predictable, such as capture errors; they will exploit perverse a↵or-dances; they will disrupt the ﬂows on which safe operation relies; and they willlook for, or create, exploitable dissonances between users’ mental models of asystem and its actual logic.
+ To look for these, you should try a cognitive walk-through aimed at identifying attack points, just as a code walkthough can beused to search for software vulnerabilities.
+ Attackers also learn by experimentand share techniques with each other, and develop tools to look e�ciently forknown attacks.
+ So it’s important to be aware of the attacks that have alreadyworked.
+ (That’s one of the functions of this book.
+)3.
+2.
+2Gender, diversity and interpersonal variationMany women die because medical tests and technology assume that patientsare men, or because engineers use male crash-test dummies when designingcars; protective equipment, from sportswear through stab-vests to spacesuits,gets tailored for men by default [498].
+ So do we have problems with informationsystems too? They are designed by men, and young geeky men at that, yetover half their users may be women.
+ This realisation has led to research onSecurity Engineering79Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHgender HCI – on how software should be designed so that women can also use ite↵ectively.
+ Early experiments started from the study of behaviour: experimentsshowed that women use peripheral vision more, and it duly turned out thatlarger displays reduce gender bias.
+Work on American female programmerssuggested that they tinker less than males, but more e↵ectively [202].
+ But howmuch is nature, and how much nurture? Societal factors matter, and US womenwho program appear to be more thoughtful, but lower self-esteem and higherrisk-aversion leads them to use fewer features.
+Gender has become a controversial topic in psychology research.
+ In the early2000s, discussion of male aptitude for computer science was sometimes in termsof an analysis by Simon Baron-Cohen which gives people separate scores assystemisers (good at geometry and some kinds of symbolic reasoning) and asempathisers (good at intuiting the emotions of others and social intelligencegenerally) [176].
+ Most men score higher at systematising, while most women dobetter at empathising.
+ The correspondence isn’t exact; a minority of men arebetter at empathising while a minority of women are better at systematising.
+Baron-Cohen’s research is in Asperger’s and autism spectrum disorder, whichhe sees as an extreme form of male brain.
+ This theory gained some tractionamong geeks who saw an explanation of why we’re often introverted with moreaptitude for understanding things than for understanding people.
+ If we’re bornthat way, it’s not out fault.
+ It also suggests an explanation for why geek couplesoften have kids on the spectrum.
+Might this explain why men are more interested in computer science thanwomen, with women consistently taking about a sixth of CS places in the USAand the UK? But here, we run into trouble.
+ Women make up a third of CSstudents in the former communist countries of Poland, Romania and the Balticstates, while numbers in India are close to equal.
+ Male dominance of softwareis also a fairly recent phenomenon.
+When I started out in the 1970s, therewere almost as many women programmers as men, and many of the pioneerswere women, whether in industry, academia or government.
+ This suggests thatthe relevant di↵erences are more cultural than genetic or developmental.
+ Theargument for a ‘male brain / female brain’ explanation has been progressivelyundermined by work such as that of Daphna Joel and colleagues who’ve shownby extensive neuroimaging studies that while there are recognisable male andfemale features in brains, the brains of individuals are a mosaic of both [985].
+And although these features are visible in imaging, that does not mean they’reall laid down at birth: our brains have a lot of plasticity.
+ As with our muscles thetissues we exercise grow bigger.
+ Perhaps nothing else might have been expectedgiven the variance in gender identity, sexual preference, aggression, empathyand so on that we see all around us.
+Other work has shown that gender performance di↵erences are absent innewborns, and appear round about age 6–7, by which time children have longlearned to distinguish gender and adapt to the social cues all around them,which are reinforced in developed countries by a tsunami of blue/pink genderedtoys and marketing.
+ (Some believe that women are happier to work in com-puting in India because India escaped the home computer boom in the 1980sand its evolution into gaming.
+) This is reinforced in later childhood and ado-lescence by gender stereotypes that they internalise as part of their identity;Security Engineering80Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHin cultures where girls aren’t supposed to be good at maths or interested incomputers, praise for being ‘good at maths’ can evoke a stereotype threat (thefear of conﬁrming a negative stereotype about a group to which one belongs).
+Perhaps as a result, men react better to personal praise (‘That was really cleverof you!’) while women are motivated better by performance praise (‘You musthave put in a hell of a lot of e↵ort’).
+ So it may not be surprising that we see adeﬁcit of women in disciplines that praise genius, such as mathematics.
+ What’smore, similar mechanisms appear to underlie the poorer academic performanceof ethnic groups who have been sigmatised as non-academic.
+ In short, peopleare not just born di↵erent; we learn to be di↵erent, shaped by power, by cul-tural attitudes, by expectations and by opportunities.
+ There are several layersbetween gene and culture with emergent behaviour, including the cell and thecircuit.
+ So if we want more e↵ective interventions in the pipeline from schoolthrough university to professional development, we need a better understandingof the underlying neurological and cultural mechanisms.
+ For a survey of this,see Gina Rippon [1605].
+Gender matters at many levels of the stack, from what a product shoulddo through how it does it.
+ For example, should a car be faster or safer? Thisis entangled with social values.
+ Are men better drivers because they win carraces, or are women better drivers because they have fewer insurance claims?Digging down, we ﬁnd gendered and cultural attitudes to risk.
+ In US surveys,risks are judged lower by white people and by men, and on closer study this isbecause about 30% of white males judge risks to be extremely low.
+ This bias isconsistent across a wide range of hazards but is particularly strong for handguns,second-hand cigarette smoke, multiple sexual partners and street drugs.
+ Asianmales show similarly low sensitivity to some hazards, such as motor vehicles.
+White males are more trusting of technology, and less of government [693].
+We engineers must of course work with the world as it is, not as it mightbe if our education system and indeed our culture had less bias; but we mustbe alert to the possibility that computer systems discriminate because they arebuilt by men for men, just like cars and spacesuits.
+ For example, Tyler Mooreand I did an experiment to see whether anti-phishing advice given by banks totheir customers was easier for men to follow than women, and we found thatindeed it was [1337].
+ No-one seems to have done much work on gender andsecurity usability, so there’s an opportunity.
+But the problem is much wider.
+ Many systems will continue to be designedby young ﬁt straight clever men who are white or Asian and may not thinkhard or at all about the various forms of prejudice and disability that they donot encounter directly.
+ You need to think hard about how you mitigate thee↵ects.
+ It’s not enough to just have your new product tested by a token geekgirl on your development team; you have to think also of the less educatedand the vulnerable – including older people, children and women ﬂeeing abusiverelationships (about which I’ll have more to say later).
+ You really have to thinkof the whole stack.
+ Diversity matters in corporate governance, market research,product design, software development and testing.
+ If you can’t ﬁx the imbalancein dev, you’d better make it up elsewhere.
+ You need to understand your users;it’s also good to understand how power and culture feed the imbalance.
+As many of the factors relevant to group behaviour are of social origin, weSecurity Engineering81Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHnext turn to social psychology.
+3.
+2.
+3Social psychologyThis attempts to explain how the thoughts, feelings, and behaviour of individu-als are inﬂuenced by the actual, imagined, or implied presence of others.
+ It hasmany aspects, from the identity that people derive from belonging to groups –whether of gender, tribe, team, profession or even religion – through the self-esteem we get by comparing ourselves with others.
+ The results that put it onthe map were three early papers that laid the groundwork for understandingthe abuse of authority and its relevance to propaganda, interrogation and ag-gression.
+ They were closely followed by work on the bystander e↵ect which isalso highly relevant to crime and security.
+3.
+2.
+3.
+1Authority and its abuseIn 1951, Solomon Asch showed that people could be induced to deny the evidenceof their own eyes in order to conform to a group.
+ Subjects judged the lengths oflines after hearing wrong opinions from other group members, who were actuallythe experimenter’s stooges.
+ Most subjects gave in and conformed, with only 29%resisting the bogus majority [135].
+Stanley Milgram was inspired by the 1961 trial of Nazi war criminal AdolfEichmann to investigate how many experimental subjects were prepared to ad-minister severe electric shocks to an actor playing the role of a ‘learner’ at thebehest of an experimenter while the subject played the role of the ‘teacher’ –even when the ‘learner’ appeared to be in severe pain and begged the subject tostop.
+ This experiment was designed to measure what proportion of people willobey an authority rather than their conscience.
+ Most did – Milgram found thatconsistently over 60% of subjects would do downright immoral things if theywere told to [1312].
+ This experiment is now controversial but had real inﬂuenceon the development of the subject.
+The third was the Stanford Prisoner Experiment which showed that normalpeople can behave wickedly even in the absence of orders.
+ In 1971, experimenterPhilip Zimbardo set up a ‘prison’ at Stanford where 24 students were assignedat random to the roles of 12 warders and 12 inmates.
+ The aim of the experimentwas to discover whether prison abuses occurred because warders (and possiblyprisoners) were self-selecting.
+ However, the students playing the role of wardersrapidly became sadistic authoritarians, and the experiment was halted after sixdays on ethical grounds [2073].
+ This experiment is also controversial now and it’sunlikely that a repeat would get ethical approval today.
+ But abuse of authority,whether real or ostensible, is a real issue if you are designing operational securitymeasures for a business.
+During the period 1995–2005, a telephone hoaxer calling himself ‘O�cerScott’ ordered the managers of over 68 US stores and restaurants in 32 USstates (including at least 17 McDonald’s stores) to detain some young employeeon suspicion of theft and strip-search them.
+ Various other degradations wereordered, including beatings and sexual assaults [2033].
+ A former prison guardSecurity Engineering82Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHwas tried for impersonating a police o�cer but acquitted.
+ At least 13 peoplewho obeyed the caller and did searches were charged with crimes, and seven wereconvicted.
+ McDonald’s got sued for not training its store managers properly,even years after the pattern of hoax calls was established; and in October 2007,a jury ordered them to pay $6.
+1 million dollars to one of the victims, who hadbeen strip-searched when she was an 18-year-old employee.
+ It was a nasty case,as she was left by the store manager in the custody of her boyfriend, who thencommitted a further indecent assault on her.
+ The boyfriend got ﬁve years, andthe manager pleaded guilty to unlawfully detaining her.
+ McDonald’s arguedthat she was responsible for whatever damages she su↵ered for not realizing itwas a hoax, and that the store manager had failed to apply common sense.
+ AKentucky jury didn’t buy this and ordered McDonald’s to pay up.
+ The storemanager also sued, claiming to be another victim of the ﬁrm’s negligence towarn her of the hoax, and got $1.
+1 million [1088].
+ So US employers now riskheavy damages if they fail to train their sta↵ to resist the abuse of authority.
+3.
+2.
+3.
+2The bystander e↵ectOn March 13, 1964, a young lady called Kitty Genovese was stabbed to deathin the street outside her apartment in Queens, New York.
+ The press reportedthat thirty-eight separate witnesses had failed to help or even to call the police,although the assault lasted almost half an hour.
+ Although these reports werelater found to be exaggerated, the crime led to the nationwide 911 emergencynumber, and also to research on why bystanders often don’t get involved.
+John Darley and Bibb Latan´e reported experiments in 1968 on what factorsmodulated the probability of a bystander helping someone who appeared tobe having an epileptic ﬁt.
+ They found that a lone bystander would help 85%of the time, while someone who thought that four other people could see thevictim would help only 31% of the time; group size dominated all other e↵ects.
+Whether another bystander was male, female or even medically qualiﬁed madeessentially no di↵erence [513].
+ The di↵usion of responsibility has visible e↵ectsin many other contexts.
+ If you want something done, you’ll email one personto ask, not three people.
+ Of course, security is usually seen as something thatother people deal with.
+However, if you ever ﬁnd yourself in danger, the real question is whether atleast one of the bystanders will help, and here the recent research is much morepositive.
+ Lasse Liebst, Mark Levine and others have surveyed CCTV footage ofa number of public conﬂicts in several countries over the last ten years, ﬁndingthat in 9 out of 10 cases, one or more bystanders intervened to de-escalate a ﬁght,and that the more bystanders intervene, the more successful they are [1163].
+ Soit would be wrong to assume that bystanders generally pass by on the otherside; so the bystander e↵ect’s name is rather misleading.
+3.
+2.
+4The social-brain theory of deceptionOur second big theme, which also ﬁts into social psychology, is the growing bodyof research into deception.
+ How does deception work, how can we detect andmeasure it, and how can we deter it?Security Engineering83Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHThe modern approach started in 1976 with the social intelligence hypothe-sis.
+ Until then, anthropologists had assumed that we evolved larger brains inorder to make better tools.
+ But the archaeological evidence doesn’t supportthis.
+ All through the paleolithic period, while our brains evolved from chimpsize to human size, we used the same simple stone axes.
+ They only became moresophisticated in the neolithic period, by which time our ancestors were anatom-ically modern homo sapiens.
+ So why, asked Nick Humphrey, did we evolve largebrains if we didn’t need them yet? Inspired by observing the behaviour of bothcaged and wild primates, his hypothesis was that the primary function of theintellect was social.
+ Our ancestors didn’t evolve bigger brains to make bettertools, but to use other primates better as tools [934].
+ This is now supportedby a growing body of evidence, and has transformed psychology as a discipline.
+Social psychology had been a poor country cousin until then and was not seenas rigorous; since then, people have realised it was probably the driving force ofcognitive evolution.
+ Almost all intelligent species developed in a social context.
+(One exception is the octopus, but even it has to understand how predators andprey react.
+)The primatologist Andy Whiten then collected much of the early evidenceon tactical deception, and recast social intelligence as the Machiavellian brainhypothesis: we became smart in order to deceive others, and to detect decep-tion too [360].
+ Not everyone agrees completely with this characterisation, asthe positive aspects of socialisation, such as empathy, also matter.
+ But HugoMercier and Dan Sperber have recently collected masses of evidence that themodern human brain is more a machine for arguing than anything else [1294].
+Our goal is persuasion rather than truth; rhetoric comes ﬁrst, and logic second.
+The second thread coming from the social intellect hypothesis is theory ofmind, an idea due to David Premack and Guy Woodru↵ in 1978 but developedby Heinz Wimmer and Josef Perner in a classic 1983 experiment to determinewhen children are ﬁrst able to tell that someone has been deceived [2029].
+ Inthis experiment, the Sally-Anne test, a child sees a sweet hidden under a cupby Sally while Anne and the child watch.
+ Anne then leaves the room and Sallyswitches the sweet to be under a di↵erent cup.
+ Anne then comes back and thechild is asked where Anne thinks the sweet is.
+ Normal children get the rightanswer from about age ﬁve; this is when they acquire the ability to discernothers’ beliefs and intentions.
+ Simon Baron-Cohen, Alan Leslie and Uta Friththen showed that children on the Aspergers / autism spectrum acquire thisability signiﬁcantly later [177].
+Many computer scientists and engineers appear to be on the spectrum tosome extent, and we’re generally not as good at deception as neurotypical peo-ple are.
+ This has all sorts of implications! We’re under-represented in politics,among senior executives and in marketing.
+ Oh, and there was a lot less cy-bercrime before underground markets brought together geeks who could writewicked code with crooks and spooks who could use it for wicked purposes.
+ Geeksare also more likely to be whistleblowers; we’re less likely to keep quiet aboutan uncomfortable truth just to please others, as we place less value on theiropinions.
+ But this is a complex ﬁeld.
+ Some well-known online miscreants whoare on the spectrum were hapless more than anything else; Gary McKinnonclaimed to have hacked the Pentagon to discover the truth about ﬂying saucersSecurity Engineering84Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHand didn’t anticipate the ferocity of the FBI’s response.
+ And other kinds ofempathic deﬁcit are involved in many crimes.
+ Other people with dispositionalempathy deﬁcits include psychopaths who disregard the feelings of others butunderstand them well enough to manipulate them, while there are many peoplewhose deﬁcits are situational, ranging from Nigerian scammers who think thatany white person who falls for their lure deserves it as they must be a racist, tosoldiers and terrorists who consider their opponents to be less than human orto be morally deserving of death.
+ I’ll discuss radicalisation in more detail laterin section 26.
+4.
+2.
+The third thread is self-deception.
+ Robert Trivers argues that we’ve evolvedthe ability to deceive ourselves in order to better deceive others: “If deceit isfundamental in animal communication, then there must be strong selection tospot deception and this ought, in turn, to select for a degree of self-deception,rendering some facts and motives unconscious so as to not betray – by thesubtle signs of self-knowledge – the deception being practiced” [904].
+ We forgetinconvenient truths and rationalise things we want to believe.
+ There may wellbe a range of self-deception abilities from honest geeks through to the greatsalesmen who have a magic ability to believe completely in their product.
+ Butit’s controversial, and at a number of levels.
+ For example, if Tony Blair reallybelieved that Iraq had weapons of mass destruction when he persuaded Britainto go to war in 2003, was it actually a lie? How do you deﬁne sincerity? Howcan you measure it? And would you even elect a national leader if you expectedthat they’d be unable to lie to you? There is a lengthy discussion in [904], andthe debate is linked to other work on motivated reasoning.
+ Russell Golman,David Hagman and George Loewenstein survey research on how people avoidinformation, even when it is free and could lead to better decision-making:people at risk of illness avoid medical tests, managers avoid information thatmight show they made bad decisions, and investors look at their portfolios lesswhen markets are down [781].
+ This strand of research goes all the way backto Sigmund Freud, who described various aspects of the denial of unpleasantinformation, including the ways in which we try to minimise our feelings of guiltfor the bad things we do, and to blame others for them.
+It also links up with ﬁlter-bubble e↵ects on social media.
+ People prefer tolisten to others who conﬁrm their beliefs and biases, and this can be analysedin terms of the hedonic value of information.
+ People think of themselves ashonest and try to avoid the ethical dissonance that results from deviations [172];criminologists use the term neutralisation to describe the strategies that rule-breakers use to minimise the guilt that they feel about their actions (there’s anoverlap with both ﬁlter e↵ects and self-deception).
+ A further link is to HugoMercier and Dan Sperber’s work on the brain as a machine for argument, whichI mentioned above.
+The fourth thread is intent.
+ The detection of hostile intent was a big deal inour ancestral evolutionary environment; in pre-state societies, perhaps a quarterof men and boys die of homicide, and further back many of our ancestors werekilled by animal predators.
+ So we appear to have evolved a sensitivity to soundsand movements that might signal the intent of a person, an animal or even a god.
+As a result, we now spend too much on defending against threats that involvehostile intent, such as terrorism, and not enough on defending against againstSecurity Engineering85Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHepidemic disease, which kills many more people, or climate change, which couldkill even more.
+There are other reasons why we might want to think about intent morecarefully.
+ In cryptography, we use logics of belief to analyse the security of au-thentication protocols, and to deal with statements such as ‘Alice believes thatBob believes that Charlie controls the key K’; we’ll come to this in the nextchapter.
+ And now we realise that people use theories of mind to understandeach other, philosophers have got engaged too.
+ Dan Dennett derived the in-tentional stance in philosophy, arguing that the propositional attitudes we usewhen reasoning – beliefs, desires and perceptions – come down to the intentionsof people and animals.
+A related matter is socially-motivated reasoning: people do logic much betterif the problem is set in a social role.
+ In the Wason test, subjects are told theyhave to inspect some cards with a letter grade on one side, and a numerical codeon the other, and given a rule such as “If a student has a grade D on the frontof their card, then the back must be marked with code 3”.
+ They are shown fourcards displaying (say) D, F, 3 and 7 and then asked “Which cards do you haveto turn over to check that all cards are marked correctly?” Most subjects getthis wrong; in the original experiment, only 48% of 96 subjects got the rightanswer of D and 7.
+ However the evolutionary psychologists Leda Cosmides andJohn Tooby found the same problem becomes easier if the rule is changed to ‘Ifa person is drinking beer, he must be 20 years old’ and the individuals are a beerdrinker, a coke drinker, a 25-year-old and a 16-year old.
+ Now three-quarters ofsubjects deduce that the bouncer should check the age of the beer drinker andthe drink of the 16-year-old [483].
+ Cosmides and Tooby argue that our ability todo logic and perhaps arithmetic evolved as a means of policing social exchanges.
+The next factor is rationalisation or minimsation – the process by whichpeople justify bad actions or make their harm appear to be less.
+ I mentionedNigerian scammers who think that white people who fall for their scam mustthink Africans are stupid, so they deserve it; there are many more examples ofscammers seeing foreign targets as fair game.
+ The criminologist Donald Cresseydeveloped a Fraud Triangle theory to explain the factors that lead to fraud: aswell as motive and opportunity, there must be a rationalisation.
+ People mayfeel that their employer has underpaid them so it’s justiﬁable to ﬁddle expenses,or that the state is wasting money on welfare when they cheat on their taxes.
+Minimisation is very common in cybercrime.
+Kids operating DDoS-for-hireservices reassured each other that o↵ering a ‘web stresser’ service was legal, andsaid on their websites that the service could only be used for legal purposes.
+ Soundermining minimisation can work as a crime-ﬁghting tool.
+ The UK NationalCrime Agency bought Google ads to ensure that anyone searching for a webstresser service would see an o�cial warning that DDoS was a crime.
+ A mere£3,000 spent between January and June 2018 suppressed demand growth; DDoSrevenues remained constant in the UK while they grew in the USA [454].
+Finally, the loss of social context is a factor in online disinhibition.
+ Peoplespeak more frankly online, and this has both positive and negative e↵ects.
+ Shypeople can ﬁnd partners, but we also see vicious ﬂame wars.
+ John Suler analysesthe factors as anonymity, invisibility, asynchronicity and the loss of symbols ofauthority and status; in addition there are e↵ects relating to psychic boundariesSecurity Engineering86Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHand self-imagination which lead us to drop our guard and express feelings froma↵ection to aggression that we normally rein in for social reasons [1845].
+Where all this leads is that the nature and scale of online deception can bemodulated by suitable interaction design.
+ Nobody is as happy as they appearon Facebook, as attractive as they appear on Instagram or as angry as theyappear on Twitter.
+ They let their guard down on closed groups such as thosesupported by WhatsApp, which o↵er neither celebrity to inspire performance,nor anonymity to promote trolling.
+ However, people are less critical in closedgroups, which makes them more suitable for spreading conspiracy theories, andfor radicalisation [523].
+3.
+2.
+5Heuristics, biases and behavioural economicsOne ﬁeld of psychology that has been applied by security researchers since themid-2000s has been decision science, which sits at the boundary of psychologyand economics and studies the heuristics that people use, and the biases that in-ﬂuence them, when making decisions.
+ It is also known as behavioural economics,as it examines the ways in which people’s decision processes depart from therational behaviour modeled by economists.
+ An early pioneer was Herb Simon– both an early computer scientist and a Nobel-prizewinning economist – whonoted that classical rationality meant doing whatever maximizes your expectedutility regardless of how hard that choice is to compute.
+ So how would peoplebehave in a realistic world of bounded rationality? The real limits to humanrationality have been explored extensively in the years since, and Daniel Kah-neman won the Nobel prize in economics in 2002 for his major contributions tothis ﬁeld (along with the late Amos Tversky) [1004].
+3.
+2.
+5.
+1Prospect theory and risk misperceptionKahneman and Tversky did extensive experimental work on how people madedecisions faced with uncertainty.
+ They ﬁrst developed prospect theory whichmodels risk appetite: in many circumstances, people dislike losing $100 theyalready have more than they value winning $100.
+ Framing an action as avoidinga loss can make people more likely to take it; phishermen hook people by sendingmessages like ‘Your PayPal account has been frozen, and you need to click hereto unlock it.
+’ We’re also bad at calculating probabilities, and use all sorts ofheuristics to help us make decisions:• we often base a judgment on an initial guess or comparison and then adjustit if need be – the anchoring e↵ect;• we base inferences on the ease of bringing examples to mind – the avail-ability heuristic, which was OK for lion attacks 50,000 years ago but givesthe wrong answers when mass media bombard us with images of terrorism;• we’re more likely to be sceptical about things we’ve heard than aboutthings we’ve seen, perhaps as we have more neurons processing vision;• we worry too much about events that are very unlikely but have very badconsequences;Security Engineering87Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCH• we’re more likely to believe things we’ve worked out for ourselves ratherthan things we’ve been told.
+Behavioral economics is not just relevant to working out how likely peopleare to click on links in phishing emails, but to the much deeper problem of theperception of risk.
+ Many people perceive terrorism to be a much worse threatthan epidemic disease, road tra�c accidents or even food poisoning: this iswrong, but hardly surprising to a behavioural economist.
+ We overestimate thesmall risk of dying in a terrorist attack not just because it’s small but because ofthe visual e↵ect of the 9/11 TV coverage, the ease of remembering the event, theoutrage of an enemy attack, and the e↵ort we put into thinking and worryingabout it.
+ (There are further factors, which we’ll explore in Part III when wediscuss terrorism.
+)The misperception of risk underlies many other public-policy problems.
+ Thepsychologist Daniel Gilbert, in an article provocatively entitled ‘If only gay sexcaused global warming’, compares our fear of terrorism with our fear of climatechange.
+ First, we evolved to be much more wary of hostile intent than of nature;100,000 years ago, a man with a club (or a hungry lion) was a much worse threatthan a thunderstorm.
+ Second, global warming doesn’t violate anyone’s moralsensibilities; third, it’s a long-term threat rather than a clear and present danger;and fourth, we’re sensitive to rapid changes in the environment rather than slowones [764].
+ There are many more risk biases: we are less afraid when we’re incontrol, such as when driving a car, as opposed to being a passenger in a caror airplane; and we are more afraid of uncertainty, that is, when the magnitudeof the risk is unknown (even when it’s small) [1671, 1675].
+ We also indulgein satisﬁcing which means we go for an alternative that’s ‘good enough’ ratherthan going to the trouble of trying to work out the odds perfectly, especially forsmall transactions.
+ (The misperception here is not that of the risk taker, but ofthe economists who ignored the fact that real people include transaction costsin their calculations.
+)So, starting out from the folk saying that a bird in the hand is worth twoin the bush, we can develop quite a lot of machinery to help us understand andmodel people’s attitudes towards risk.
+3.
+2.
+5.
+2Present bias and hyperbolic discountingSaint Augustine famously prayed ‘Lord, make me chaste, but not yet.
+’Weﬁnd a similar sentiment with applying security updates, where people may paymore attention to the costs as they’re immediate and determinate in time, stor-age and bandwidth, than the unpredictable future beneﬁts.
+ This present biascauses many people to decline updates, which was the major source of technicalvulnerability online for many years.
+ One way software companies pushed backwas by allowing people to delay updates: Windows has ‘restart / pick a time /snooze’.
+ Reminders cut the ignore rate from about 90% to about 34%, and mayultimately double overall compliance [726].
+ A better design is to make updatesso painless that they can be made mandatory, or nearly so; this is the approachnow followed by some web browsers, and by cloud-based services generally.
+Security Engineering88Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHHyperbolic discounting is a model used by decision scientists to quantifypresent bias.
+ Intuitive reasoning may lead people to use utility functions thatdiscount the future so deeply that immediate gratiﬁcation seems to be the bestcourse of action, even when it isn’t.
+ Such models have been applied to try toexplain the privacy paradox – why people say in surveys that they care aboutprivacy but act otherwise online.
+ I discuss this in more detail in section 8.
+6.
+6:other factors, such as uncertainty about the risks and about the e�cacy ofprivacy measures, play a part too.
+ Taken together, the immediate and determi-nate positive utility of getting free stu↵ outweighs the random future costs ofdisclosing too much personal information, or disclosing it to dubious websites.
+3.
+2.
+5.
+3Defaults and nudgesThis leads to the importance of defaults.
+ Many people usually take the easiestpath and use the standard conﬁguration of a system, as they assume it willbe good enough.
+ In 2009, Richard Thaler and Cass Sunnstein wrote a best-seller ‘Nudge’ exploring this, pointing out that governments can achieve manypolicy goals without infringing personal liberty simply by setting the right de-faults [1876].
+ For example, if a ﬁrm’s sta↵ are enrolled in a pension plan bydefault, most will not bother to opt out, while if it’s optional most will notbother to opt in.
+ A second example is that many more organs are made avail-able for transplant in Spain, where the law lets a dead person’s organs be usedunless they objected, than in Britain where donors have to consent actively.
+ Athird example is that tax evasion can be cut by having the taxpayer declare thatthe information in the form is true when they start to ﬁll it out, rather than atthe end.
+ The set of choices people have to make, the order in which they makethem, and the defaults if they do nothing, are called the choice architecture.
+Sunnstein got a job in the Obama administration implementing some of theseideas while Thaler won the 2017 economics Nobel prize.
+Defaults matter in security too, but often they are set by an adversary soas to trip you up.
+ For example, Facebook defaults to fairly open informationsharing, and whenever enough people have ﬁgured out how to increase theirprivacy settings, the architecture is changed so you have to opt out all overagain.
+ This exploits not just hazardous defaults but also the control paradox –providing the illusion of control causes people to share more information.
+ Welike to feel in control; we feel more comfortable driving in our cars than lettingsomeone else ﬂy us in an airplane – even if the latter is an order of magnitudesafer.
+ “Privacy control settings give people more rope to hang themselves,” asbehavioral economist George Loewenstein puts it.
+ “Facebook has ﬁgured thisout, so they give you incredibly granular controls.
+” [1533]3.
+2.
+5.
+4The default to intentionalityBehavioral economists follow a long tradition in psychology of seeing the mindas composed of interacting rational and emotional components – ‘heart’ and‘head’, or ‘a↵ective’ and ‘cognitive’ systems.
+ Studies of developmental biologyhave shown that, from an early age, we have di↵erent mental processing systemsfor social phenomena (such as recognising parents and siblings) and physicalSecurity Engineering89Ross Anderson3.
+2.
+ INSIGHTS FROM PSYCHOLOGY RESEARCHphenomena.
+ Paul Bloom argues that the tension between them explains whymany people believe that mind and body are basically di↵erent [268].
+ Childrentry to explain what they see using physics, but when their understanding fallsshort, they explain phenomena in terms of intentional action.
+ This has survivalvalue to the young, as it disposes them to get advice from parents or other adultsabout novel natural phenomena.
+ Bloom suggests that it has an interesting sidee↵ect: it predisposes humans to believe that body and soul are di↵erent, andthus lays the ground for religious belief.
+ This argument may not overwhelmthe faithful (who will retort that Bloom simply stumbled across a mechanismcreated by the Intelligent Designer to cause us to have faith in Him).
+ But itmay have relevance for the security engineer.
+First, it goes some way to explaining the fundamental attribution error –people often err by trying to explain things from intentionality rather than fromcontext.
+ Second, attempts to curb phishing by teaching users about the gorydesign details of the Internet – for example, by telling them to parse URLs inemails that seem to come from a bank – will be of limited value once they getbewildered.
+ If the emotional is programmed to take over whenever the rationalruns out, then engaging in a war of technical instruction and counter-instructionwith the phishermen is unsound, as they’ll be better at it.
+ Safe defaults wouldbe better.
+3.
+2.
+5.
+5The a↵ect heuristicNudging people to think in terms of intent rather than of mechanism can exploitthe a↵ect heuristic, explored by Paul Slovic and colleagues [1787].
+ The idea isthat while the human brain can handle multiple threads of cognitive processing,our emotions remain resolutely single-threaded, and they are even less good atprobability theory than the rational part of our brains.
+ So by making emotionsalient, a marketer or a fraudster can try to get you to answer questions usingemotion rather than reason, and using heuristics rather than calculation.
+ Acommon trick is to ask an emotional question (whether ‘How many dates didyou have last month?’ or even ‘What do you think of President Trump?’) tomake people insensitive to probability.
+So it should not surprise anyone that porn websites have been used to installa lot of malware – as have church websites, which are often poorly maintainedand easy to hack.
+ Similarly, events that evoke a feeling of dread – from cancerto terrorism – not only scare people more than the naked probabilities justify,but also make those probabilities harder to calculate, and deter people fromeven making the e↵ort.
+Other factors that can reinforce our tendency to explain things by intentinclude cognitive overload, where the rational part of the brain simply getstired.
+ Our capacity for self-control is also liable to fatigue, both physical andmental; some mental arithmetic will increase the probability that we’ll pick upa chocolate rather than an apple.
+ So a bank that builds a busy website may beable to sell more life insurance, but it’s also likely to make its customers morevulnerable to phishing.
+Security Engineering90Ross Anderson3.
+3.
+ DECEPTION IN PRACTICE3.
+2.
+5.
+6Cognitive dissonanceAnother interesting o↵shoot of social psychology is cognitive dissonance theory.
+People are uncomfortable when they hold conﬂicting views; they seek out infor-mation that conﬁrms their existing views of the world and of themselves, and tryto reject information that conﬂicts with their views or might undermine theirself-esteem.
+ One practical consequence is that people are remarkably able topersist in wrong courses of action in the face of mounting evidence that thingshave gone wrong [1863].
+ Admitting to yourself or to others that you were dupedcan be painful; hustlers know this and exploit it.
+ A security professional should‘feel the hustle’ – that is, be alert for a situation in which recently establishedsocial cues and expectations place you under pressure to ‘just do’ somethingabout which you’d normally have reservations.
+ That’s the time to step backand ask yourself whether you’re being had.
+ But training people to perceive thisis hard enough, and getting the average person to break the social ﬂow and say‘stop!’ is hard.
+ There have been some experiments, for example with traininghealth-service sta↵ to not give out health information on the phone, and train-ing people in women’s self-defence classes to resist demands for extra personalinformation.
+ The problem with mainstreaming such training is that the moneyavailable for it is orders of magnitude less than the marketing budgets of theﬁrms whose business model is to hustle their customers.
+3.
+2.
+5.
+7The risk thermostatSome interesting empirical work has been done on how people manage their ex-posure to risk.
+ John Adams studied mandatory seat belt laws, and establishedthat they don’t actually save lives: they just transfer casualties from vehicleoccupants to pedestrians and cyclists [20].
+ Seat belts make drivers feel safer, sothey drive faster in order to bring their perceived risk back up to its previouslevel.
+ He calls this a risk thermostat and the model is borne out in other appli-cations too [19].
+ The lesson is that testing needs to have ecological validity: youneed to evaluate the e↵ect of a proposed intervention in as realistic a setting aspossible.
+3.
+3Deception in practiceThis takes us from the theory to the practice.
+ Deception often involves an abuseof the techniques developed by compliance professionals – those people whosejob it is to get other people to do things.
+ While a sales executive might dazzleyou with an o↵er of a ﬁnance plan for a holiday apartment, a police o�cer mightnudge you by their presence to drive more carefully, a park ranger might tellyou to extinguish campﬁres carefully and not feed the bears, and a corporatelawyer might threaten you into taking down something from your website.
+The behavioural economics pioneer and apostle of ‘nudge’, Dick Thaler,refers to the selﬁsh use of behavioural economics as ‘sludge’ [1875].
+ But it’sodd that economists ever thought that the altruistic use of such techniqueswould ever be more common than the selﬁsh ones.
+ Not only do marketers pushSecurity Engineering91Ross Anderson3.
+3.
+ DECEPTION IN PRACTICEthe most proﬁtable option rather than the best value, but they use every otheravailable trick too.
+ Stanford’s Persuasive Technology Lab has been at the fore-front of developing techniques to keep people addicted to their screens, and oneof their alumni, ex-Googler Tristan Harris, has become a vocal critic.
+ Sometimesdubbed ‘Silicon valley’s conscience’, he explains how tech earns its money bymanipulating not just defaults but choices, and asks how this can be done eth-ically [867].
+ Phones and other screens present menus and thus control choices,but there’s more to it than that.
+ Two techniques that screens have made main-stream are the casino’s technique of using intermittent variable rewards to createaddiction (we check our phones 150 times a day to see if someone has rewardedus with attention) and bottomless message feeds (to keep us consuming evenwhen we aren’t hungry any more).
+ But there are many older techniques thatpredate computers.
+3.
+3.
+1The salesman and the scamsterDeception is the twin brother of marketing, so one starting point is the hugeliterature about sales techniques.
+One eminent writer is Robert Cialdini, apsychology professor who took summer jobs selling everything from used carsto home improvements and life insurance in order to document the tricks ofthe trade.
+ His book ‘Inﬂuence: science and Practice’ is widely read by salesprofessionals and describes six main classes of technique used to inﬂuence peopleand close a sale [424].
+These are:1.
+ Reciprocity: most people feel the need to return favours;2.
+ Commitment and consistency: people su↵er cognitive dissonance if theyfeel they’re being inconsistent;3.
+ Social proof: most people want the approval of others.
+ This means fol-lowing others in a group of which they’re a member, and the smaller thegroup the stronger the pressure;4.
+ Liking: most people want to do what a good-looking or otherwise likeableperson asks;5.
+ Authority: most people are deferential to authority ﬁgures (recall theMilgram study mentioned above);6.
+ Scarcity: we’re afraid of missing out, if something we might want couldsuddenly be unavailable.
+All of these are psychological phenomena that are the subject of continuingresearch.
+They are also traceable to pressures in our ancestral evolutionaryenvironment, where food scarcity was a real threat, strangers could be dangerousand group solidarity against them (and in the provision of food and shelter) wasvital.
+ All are used repeatedly in the advertising and other messages we encounterconstantly.
+Security Engineering92Ross Anderson3.
+3.
+ DECEPTION IN PRACTICEFrank Stajano and Paul Wilson built on this foundation to analyse the prin-ciples behind scams.
+ Wilson researched and appeared in nine seasons of TVprograms on the most common scams – ‘The Real Hustle’ – where the scamswould be perpetrated on unsuspecting members of the public, who would thenbe given their money back, debriefed and asked permission for video footage tobe used on TV.
+ The know-how from experimenting with several hundred fraudson thousands of marks over several years was distilled into the following sevenprinciples [1820].
+1.
+ Distraction – the fraudster gets the mark to concentrate on the wrongthing.
+ This is at the heart of most magic performances.
+2.
+ Social compliance – society trains us not to question people who seem tohave authority, leaving people vulnerable to conmen who pretend to befrom their bank or from the police.
+3.
+ The herd principle – people let their guard down when everyone aroundthem appears to share the same risks.
+ This is a mainstay of the three-cardtrick, and a growing number of scams on social networks.
+4.
+ Dishonesty – if the mark is doing something dodgy, they’re less likely tocomplain.
+Many are attracted by the idea that ‘you’re getting a gooddeal because it’s illegal’, and whole scam families – such as the resale offraudulently obtained plane tickets – turn on this.
+5.
+ Kindness – this is the ﬂip side of dishonesty, and an adaptation of Cialdini’sprinciple of reciprocity.
+ Many social engineering scams rely on the victims’helpfulness, from tailgating into a building to phoning up with a sob storyto ask for a password reset.
+6.
+ Need and greed – sales trainers tell us we should ﬁnd what someone reallywants and then show them how to get it.
+ A good fraudster can help themark dream a dream and use this to milk them.
+7.
+ Time pressure – this causes people to act viscerally rather than stoppingto think.
+ Normal marketers use this all the time (‘only 2 seats left at thisprice’); so do crooks.
+The relationship with Cialdini’s principles should be obvious.
+ A cynic mightsay that fraud is just a subdivision of marketing; or perhaps that, as marketingbecomes ever more aggressive, it comes to look ever more like fraud.
+ When weinvestigated online accommodation scams we found it hard to code detectors,since many real estate agents use the same techniques.
+ In fact, the fraudsters’behaviour was already well described by Cialdini’s model, except the scamstersadded appeals to sympathy, arguments to establish their own credibility, andways of dealing with objections [2062].
+ (These are also found elsewhere in theregular marketing literature.
+)Oh, and we ﬁnd the same in software, where there’s a blurry dividing linebetween illegal malware and just-about-legal ‘Potentially Unwanted Programs’(PUPs) such as browser plugins that replace your ads with di↵erent ones.
+ Onegood distinguisher seems to be technical: malware is distributed by many smallSecurity Engineering93Ross Anderson3.
+3.
+ DECEPTION IN PRACTICEbotnets because of the risk of arrest, while PUPs are mostly distributed byone large network [954].
+ But crooks use regular marketing channels too: BenEdelman found in 2006 that while 2.
+73% of companies ranked top in a websearch were bad, 4.
+44% of companies that appeared alongside in the search adswere bad [612].
+ Bad companies were also more likely to exhibit cheap trustsignals, such as TRUSTe privacy certiﬁcates on their websites.
+ Similarly, boguslandlords often send reference letters or even copies of their ID to prospectivetenants, something that genuine landlords never do.
+And then there are the deceptive marketing practices of ‘legal’ businesses.
+ Totake just one of many studies, a 2019 crawl of 11K shopping websites by AruneshMathur and colleagues found 1,818 instances of ‘dark patterns’ – manipulativemarketing practices such as hidden subscriptions, hidden costs, pressure selling,sneak-into-basket tactics and forced account opening.
+ Of these at least 183 wereclearly deceptive [1242].
+ What’s more, the bad websites were among the mostpopular; perhaps a quarter to a third of websites you visit, weighted by tra�c,try to hustle you.
+ This constant pressure from scams that lie just short of thethreshold for a fraud prosecution has a chilling e↵ect on trust generally.
+ Peopleare less likely to believe security warnings if they are mixed with marketing, orsmack of marketing in any way.
+ And we even see some loss of trust in softwareupdates; people say in surveys that they’re less likely to apply a security-plus-features upgrade than a security patch, though the ﬁeld data on upgrades don’t(yet) show any di↵erence [1591].
+3.
+3.
+2Social engineeringHacking systems through the people who operate them is not new.
+ Military andintelligence organisations have always targeted each other’s sta↵; most of theintelligence successes of the old Soviet Union were of this kind [118].
+ Privateinvestigation agencies have not been far behind.
+Investigative journalists, private detectives and fraudsters developed thefalse-pretext phone call into something between an industrial process and anart form in the latter half of the 20th century.
+ An example of the industrialprocess was how private detectives tracked people in Britain.
+ Given that thecountry has a National Health Service with which everyone’s registered, the trickwas to phone up someone with access to the administrative systems in the areayou thought the target was, pretend to be someone else in the health service,and ask.
+ Colleagues of mine did an experiment in England in 1996 where theytrained the sta↵ at a local health authority to identify and report such calls1.
+They detected about 30 false-pretext calls a week, which would scale to 6000a week or 300,000 a year for the whole of Britain.
+ That eventually got sort-ofﬁxed but it took over a decade.
+ The real ﬁx wasn’t the enforcement of privacylaw, but that administrators simply stopped answering the phone.
+Another old scam from the 20th century is to steal someone’s ATM card andthen phone them up pretending to be from the bank asking whether their card’sbeen stolen.
+ On hearing that it has, the conman says ‘We thought so.
+ Please1The story is told in detail in chapter 9 of the second edition of this book, available freeonline.
+Security Engineering94Ross Anderson3.
+3.
+ DECEPTION IN PRACTICEjust tell me your PIN now so I can go into the system and cancel your card.
+’The most rapidly growing recent variety is the ‘authorised push payment’, wherethe conman again pretends to be from the bank, and persuades the customerto make a transfer to another account, typically by confusing the customerabout the bank’s authentication procedures, which most customers ﬁnd rathermysterious anyway2.
+As for art form, one of the most disturbing security books ever published isKevin Mitnick’s ‘Art of Deception’.
+ Mitnick, who was arrested and convictedfor breaking into US phone systems, related after his release from prison howalmost all of his exploits had involved social engineering.
+ His typical hack wasto pretend to a phone company employee that he was a colleague, and solicit‘help’ such as a password.
+ Ways of getting past a company’s switchboard andwinning its people’s trust are a staple of sales-training courses, and hackers applythese directly.
+ A harassed system administrator is called once or twice on trivialmatters by someone claiming to be the CEO’s personal assistant; once this ideahas been accepted, the caller demands a new password for the boss.
+ Mitnickbecame an expert at using such tricks to defeat company security procedures,and his book recounts a fascinating range of exploits [1325].
+Social engineering became world headline news in September 2006 when itemerged that Hewlett-Packard chairwoman Patricia Dunn had hired privateinvestigators who used pretexting to obtain the phone records of other boardmembers of whom she was suspicious, and of journalists she considered hostile.
+She was forced to resign.
+The detectives were convicted of fraudulent wirecommunications and sentenced to do community service [138].
+In the sameyear, the UK privacy authorities prosecuted a private detective agency that didpretexting jobs for top law ﬁrms [1138].
+Amid growing publicity about social engineering, there was an audit of theIRS in 2007 by the Treasury Inspector General for Tax Administration, whosesta↵ called 102 IRS employees at all levels, asked for their user IDs, and toldthem to change their passwords to a known value; 62 did so.
+ What’s worse,this happened despite similar audit tests in 2001 and 2004 [1673].
+ Since then,a number of audit ﬁrms have o↵ered social engineering as a service; they phishtheir audit clients to show how easy it is.
+ Since the mid-2010s, opinion hasshifted against this practice, as it causes a lot of distress to sta↵ without changingbehaviour very much.
+Social engineering isn’t limited to stealing private information.
+ It can alsobe about getting people to believe bogus public information.
+ The quote fromBruce Schneier at the head of this chapter appeared in a report of a stock scam,where a bogus press release said that a company’s CEO had resigned and itsearnings would be restated.
+ Several wire services passed this on, and the stockdropped 61% until the hoax was exposed [1670].
+ Fake news of this kind hasbeen around forever, but the Internet has made it easier to promote and socialmedia seem to be making it ubiquitous.
+ We’ll revisit this issue when I discusscensorship in section 26.
+4.
+2Very occasionally, a customer can confuse the bank; a 2019 innovation was the ‘callham-mer’ attack, where someone phones up repeatedly to ‘correct’ the spelling of ‘his name’ andchanges it one character at a time into another one.
+Security Engineering95Ross Anderson3.
+3.
+ DECEPTION IN PRACTICE3.
+3.
+3PhishingWhile phone-based social engineering was the favoured tactic of the 20th cen-tury, online phishing seems to have replaced it as the main tactic of the 21st.
+The operators include both spooks and crooks, while the targets are both yoursta↵ and your customers.
+ It is di�cult enough to train your sta↵; training theaverage customer is even harder.
+ They’ll assume you’re trying to hustle them,ignore your warnings and just ﬁgure out the easiest way to get what they wantfrom your system.
+ And you can’t design simply for the average.
+ If your systemsare not safe to use by people who don’t speak English well, or who are dyslexic,or who have learning di�culties, you are asking for serious legal trouble.
+ So theeasiest way to use your system had better be the safest.
+The word ‘phishing’ appeared in 1996 in the context of the theft of AOLpasswords.
+ By then, attempts to crack email accounts to send spam had becomecommon enough for AOL to have a ‘report password solicitation’ button on itsweb page; and the ﬁrst reference to ‘password ﬁshing’ is in 1990, in the context ofpeople altering terminal ﬁrmware to collect Unix logon passwords [443].
+ Also in1996, Tony Greening reported a systematic experimental study: 336 computerscience students at the University of Sydney were sent an email message askingthem to supply their password on the pretext that it was required to ‘validate’the password database after a suspected break-in.
+ 138 of them returned a validpassword.
+ Some were suspicious: 30 returned a plausible looking but invalidpassword, while over 200 changed their passwords without o�cial prompting.
+But very few of them reported the email to authority [812].
+Phishing attacks against banks started seven years later in 2003, with half-a-dozen attempts reported [441].
+ The early attacks imitated bank websites, butwere both crude and greedy; the attackers asked for all sorts of informationsuch as ATM PINs, and their emails were also written in poor English.
+ Mostcustomers smelt a rat.
+By about 2008, the attackers learned to use betterpsychology; they often reused genuine bank emails, with just the URLs changed,or sent an email saying something like ‘Thank you for adding a new email addressto your PayPal account’ to provoke the customer to log on to complain that theyhadn’t.
+ Of course, customers who used the provided link rather than typingin www.
+paypal.
+com or using an existing bookmark would get their accountsemptied.
+ By then phishing was being used by state actors too; I described insection 2.
+2.
+2 how Chinese intelligence compromised the Dalai Lama’s privateo�ce during the 2008 Olympic games.
+ They used crimeware tools that wereoriginally used by Russian fraud gangs, which they seemed to think gave themsome deniability afterwards.
+Fraud losses grew rapidly but stabilised by about 2015.
+ A number of coun-termeasures helped bring things under control, including more complex logonschemes (using two-factor authentication, or its low-cost cousin, the request forsome random letters of your password); a move to webmail systems that ﬁlterspam better; and back-end fraud engines that look for cashout patterns.
+ Thecompetitive landscape was rough, in that the phishermen would hit the easiesttargets at any time in each country, both in terms of stealing their customer cre-dentials and using their accounts to launder stolen funds.
+ Concentrated lossescaused the targets to wake up and take action.
+ Since then, we’ve seen large-Security Engineering96Ross Anderson3.
+3.
+ DECEPTION IN PRACTICEscale attacks on non-ﬁnancial ﬁrms like Amazon; in the late 2000s, the crookwould change your email and street address, then use your credit card to ordera wide-screen TV.
+ Since about 2016, the action has been in gift vouchers.
+As we noted in the last chapter, phishing is also used at scale by botmastersto recruit new machines to their botnets, and in targeted ways both by crooksaiming at speciﬁc people or ﬁrms, and by intelligence agencies.
+ There’s a bigdi↵erence between attacks conducted at scale, where the economics dictate thatthe cost of recruiting a new machine to a botnet can be at most a few cents,and targeted attacks, where spooks can spend years trying to hack the phoneof a rival head of government, or a smart crook can spend weeks or months ofe↵ort stalking a chief ﬁnancial o�cer in the hope of a large payout.
+ The luresand techniques used are di↵erent, even if the crimeware installed on the target’slaptop or phone comes from the same stable.
+ Cormac Herley argues that thisgulf between the economics of targeted crime and volume crime is one of thereasons why cybercrime isn’t much worse than it is [887].
+ After all, given thatwe depend on computers, and that all computers are insecure, and that thereare attacks all the time, how come civilisation hasn’t collapsed? Cybercrimecan’t always be as easy as it looks.
+Another factor is that it takes time for innovations to be developed anddisseminated.
+We noted that it took seven years for the bad guys to catchup with Tony Greening’s 1995 phishing work.
+As another example, a 2007paper by Tom Jagatic and colleagues showed how to make phishing much moree↵ective by automatically personalising each phish using context mined fromthe target’s social network [971].
+I cited that in the second edition of thisbook, and in 2016 we saw it in the wild: a gang sent hundreds of thousandsof phish with US and Australian banking Trojans to individuals working inﬁnance departments of companies, with their names and job titles apparentlyscraped from LinkedIn [1297].
+ This seems to have been crude and hasn’t reallycaught on, but once the bad guys ﬁgure it out we may see spear-phishing atscale in the future, and it’s interesting to think of how we might respond.
+ Theother personalised bulk scams we see are blackmail attempts where the victimsget email claiming that their personal information has been compromised andincluding a password or the last four digits of a credit card number as evidence,but the yield from such scams seems to be low.
+As I write, crime gangs have been making ever more use of spear-phishing intargeted attacks on companies where they install ransomware, steal gift couponsand launch other scams.
+ In 2020, a group of young men hacked Twitter, whereover a thousand employees had access to internal tools that enabled them to takecontrol of user accounts; the gang sent bitcoin scam tweets from the accountsof such well-known users as Bill Gates, Barack Obama and Elon Musk [1292].
+They appear to have honed their spear-phishing skills on SIM swap fraud, whichI’ll discuss later in sections 3.
+4.
+1 and 12.
+7.
+4.
+ The spread of such ‘transferableskills’ among crooks is similar in many ways to the adoption of mainstreamtechnology.
+Security Engineering97Ross Anderson3.
+3.
+ DECEPTION IN PRACTICE3.
+3.
+4OpsecGetting your sta↵ to resist attempts by outsiders to inveigle them into revealingsecrets, whether over the phone or online, is known in military circles as opera-tional security or Opsec.
+ Protecting really valuable secrets, such as unpublishedﬁnancial data, not-yet-patented industrial research and military plans, dependson limiting the number of people with access, and also on doctrines about whatmay be discussed with whom and how.
+ It’s not enough for rules to exist; youhave to train the sta↵ who have access, explain the reasons behind the rules,and embed them socially in the organisation.
+ In our medical privacy case, weeducated health service sta↵ about pretext calls and set up a strict callbackpolicy: they would not discuss medical records on the phone unless they hadcalled a number they had got from the health service internal phone book ratherthan from a caller.
+ Once the sta↵ have detected and defeated a few false-pretextcalls, they talk about it and the message gets embedded in the way everybodyworks.
+Another example comes from a large Silicon Valley service ﬁrm, which suf-fered intrusion attempts when outsiders tailgated sta↵ into buildings on campus.
+Stopping this with airport-style ID checks, or even card-activated turnstiles,would have changed the ambience and clashed with the culture.
+ The solutionwas to create and embed a social rule that when someone holds open a buildingdoor for you, you show them your badge.
+ The critical factor, as with the bogusphone calls, is social embedding rather than just training.
+Often the hardest people to educate are the most senior; a consultancy sentthe ﬁnance directors of 500 publicly-quoted companies a USB memory stick aspart of an anonymous invitation saying ‘For Your Chance to Attend the Partyof a Lifetime’, and 46% of them put it into their computers [1031].
+ In my ownexperience in banking, the people you couldn’t train were those who were paidmore than you, such as traders in the dealing rooms.
+Some operational security measures are common sense, such as not throwingsensitive papers in the trash.
+ Less obvious is the need to train the people youtrust.
+ A leak of embarrassing emails that appeared to come from the o�ce ofUK Prime Minister Tony Blair and was initially blamed on ‘hackers’ turned outto have been ﬁshed out of the trash at his personal pollster’s home by a privatedetective [1208].
+People operate systems however they have to, and this usually means break-ing some of the rules in order to get their work done.
+ Research shows thatcompany sta↵ have only so much compliance budget, that is, they’re only pre-pared to put so many hours a year into tasks that are not obviously helpingthem achieve their goals [196].
+ You need to ﬁgure out what this budget is, anduse it wisely.
+ If there’s some information you don’t want your sta↵ to be trickedinto disclosing, it’s safer to design systems so that they just can’t disclose it, orat least so that disclosures involve talking to other sta↵ members or jumpingthrough other hoops.
+But what about a ﬁrm’s customers? There is a lot of scope for phishermento simply order bank customers to reveal their security data, and this happensat scale, against both retail and business customers.
+ There are also the manySecurity Engineering98Ross Anderson3.
+4.
+ PASSWORDSsmall scams that customers try on when they ﬁnd vulnerabilities in your businessprocesses.
+ I’ll discuss both types of fraud further in the chapter on banking andbookkeeping.
+3.
+3.
+5Deception researchFinally, a word on deception research.
+ Since 9/11, huge amounts of money havebeen spent by governments trying to ﬁnd better lie detectors, and deceptionresearchers are funded across about ﬁve di↵erent subdisciplines of psychology.
+The polygraph measures stress via heart rate and skin conductance; it has beenaround since the 1920s and is used by some US states in criminal investiga-tions, as well as by the Federal government in screening people for Top Secretclearances.
+ The evidence on its e↵ectiveness is patchy at best, and surveyed ex-tensively by Aldert Vrij [1970].
+ While it can be an e↵ective prop in the hands ofa skilled interrogator, the key factor is the skill rather than the prop.
+ When usedby unskilled people in a lab environment, against experimental subjects tellinglow-stakes lies, its output is little better than random.
+ As well as measuringstress via skin conductance, you can measure distraction using eye movementsand guilt by upper body movements.
+ In a research project with Sophie van derZee, we used body motion-capture suits and also the gesture-recognition cam-eras in an Xbox and got slightly better results than a polygraph [2063].
+ Howeversuch technologies can at best augment the interrogator’s skill, and claims thatthey work well should be treated as junk science.
+ Thankfully, the governmentdream of an e↵ective interrogation robot is some way o↵.
+A second approach to dealing with deception is to train a machine-learningclassiﬁer on real customer behaviour.
+ This is what credit-card fraud engineshave been doing since the late 1990s, and recent research has pushed into otherﬁelds too.
+ For example, Noam Brown and Tuomas Sandholm have created apoker-playing bot called Pluribus that beat a dozen expert players over a 12-day marathon of 10,000 hands of Texas Hold ’em.
+ It doesn’t use psychology butgame theory, playing against itself millions of times and tracking regret at bidsthat could have given better outcomes.
+ That it can consistently beat expertswithout access to ‘tells’ such as its opponents’ facial gestures or body languageis itself telling.
+ Dealing with deception using statistical machine learning ratherthan physiological monitoring may also be felt to intrude less into privacy.
+3.
+4PasswordsThe management of passwords gives an instructive context in which usability,applied psychology and security meet.
+ Passwords have been one of the biggestpractical problems facing security engineers since perhaps the 1970s.
+ In fact,as the usability researcher Angela Sasse puts it, it’s hard to think of a worseauthentication mechanism than passwords, given what we know about humanmemory: people can’t remember infrequently-used or frequently-changed items;we can’t forget on demand; recall is harder than recognition; and non-meaningfulwords are more di�cult.
+To place the problem in context, most passwords you’re asked to set are notSecurity Engineering99Ross Anderson3.
+4.
+ PASSWORDSfor your beneﬁt but for somebody else’s.
+ The modern media ecosystem is drivenby websites seeking to maximise both their page views and their registered userbases so as to maximise their value when they are sold.
+That’s why, whenyou’re pointed to a news article that’s so annoying you feel you have to leave acomment, you ﬁnd you have to register.
+ Click, and there’s a page of ads.
+ Fillout the form with an email address and submit.
+ Got the CAPTCHA wrong, sodo it again and see another page of ads.
+ Click on the email link, and see a pagewith another ad.
+ Now you can add a comment that nobody will ever read.
+ Insuch circumstances you’re better to type random garbage and let the browserremember it; or better still, don’t bother.
+ Even major news sites use passwordsagainst the reader’s interest, for example by limiting the number of free pageviews you get per month unless you register again with a di↵erent browser.
+ Thisecosystem is described in detail by Ryan Holiday [913].
+Turning now to the more honest uses, the password system used by a bigmodern service ﬁrm has a number of components.
+1.
+ The visible part is the logon page, which asks you to choose a passwordwhen you register and probably checks its strength in some way.
+ It laterasks for this password whenever you log on.
+2.
+ There will be recovery mechanisms that enable you to deal with a forgot-ten password or even a compromised account, typically by asking furthersecurity questions, or via your primary email account, or by sending anSMS to your phone.
+3.
+ Behind this lie technical protocol mechanisms for password checking, typi-cally routines that encrypt your password when you enter it at your laptopor phone, and then either compare it with a local encrypted value, or takeit to a remote server for checking.
+4.
+ There are often protocol mechanisms to synchronise passwords across mul-tiple platforms, so that if you change your password on your laptop, yourphone won’t let you use that service until you enter the new one there too.
+And these mechanisms may enable you to blacklist a stolen phone withouthaving to reset the passwords for all the services it was able to access.
+5.
+ There will be intrusion-detection mechanisms to propagate an alarm if oneof your passwords is used somewhere it probably shouldn’t be.
+6.
+ There are single-signon mechanisms to use one logon for many websites, aswhen you use your Google or Facebook account to log on to a newspaper.
+Let’s work up from the bottom.
+ Developing a full-feature password manage-ment system can be a lot of work, and providing support for password recoveryalso costs money (a few years ago, the UK phone company BT had two hun-dred people in its password-reset centre).
+ So outsourcing ‘identity management’can make business sense.
+ In addition, intrusion detection works best at scale: ifsomeone uses my gmail password in an Internet cafe in Peru while Google knowsI’m in Scotland, they send an SMS to my phone to check, and a small websitecan’t do that.
+ The main cause of attempted password abuse is when one ﬁrmgets hacked, disclosing millions of email addresses and passwords, which the badSecurity Engineering100Ross Anderson3.
+4.
+ PASSWORDSguys try out elsewhere; big ﬁrms spot this quickly while small ones don’t.
+ Thebig ﬁrms also help their customers maintain situational awareness, by alertingyou to logons from new devices or from strange places.
+ Again, it’s hard to dothat if you’re a small website or one that people visit infrequently.
+As for syncing passwords between devices, only the device vendors can reallydo that well; and the protocol mechanisms for encrypting passwords in transitto a server that veriﬁes them will be discussed in the next chapter.
+ That bringsus to password recovery.
+3.
+4.
+1Password recoveryThe experience of the 2010s, as the large service ﬁrms scaled up and peoplemoved en masse to smartphones, is that password recovery is often the hardestaspect of authentication.
+ If people you know, such as your sta↵, forget theirpasswords, you can get them to interact with an administrator or manager whoknows them.
+But for people you don’t know such as your online customersit’s harder.
+ And as a large service ﬁrm will be recovering tens of thousands ofaccounts every day, you need some way of doing it without human interventionin the vast majority of cases.
+During the 1990s and 2000s, many websites did password recovery using‘security questions’ such as asking for your favourite team, the name of yourpet or even that old chestnut, your mother’s maiden name.
+ Such near-publicinformation is often easy to guess so it gave an easier way to break into accountsthan guessing the password itself.
+ This was made even worse by everyone askingthe same questions.
+ In the case of celebrities – or abuse by a former intimatepartner – there may be no usable secrets.
+ This was brought home to the publicin 2008, when a student hacked the Yahoo email account of US Vice-Presidentialcandidate Sarah Palin via the password recovery questions – her date of birthand the name of her ﬁrst school.
+ Both of these were public information.
+ Sincethen, crooks have learned to use security questions to loot accounts when theycan; at the US Social Security Administration, a common fraud was to open anonline account for a pensioner who’s dealt with their pension by snail mail inthe past, and redirect the payments to a di↵erent bank account.
+ This peakedin 2013; the countermeasure that ﬁxed it was to always notify beneﬁciaries ofaccount changes by snail mail.
+In 2015, ﬁve Google engineers published a thorough analysis of security ques-tions, and many turned out to be extremely weak.
+ For example, an attackercould get a 19.
+7% success rate against ‘Favourite food?’ in English.
+ Some 37%of people provided wrong answers, in some cases to make them stronger, butsometimes not.
+ Fully 16% of people’s answers were public.
+ In addition to beinginsecure, the ‘security questions’ turned out to be hard to use: 40% of English-speaking US users were unable to recall the answers when needed, while twiceas many could recover accounts using an SMS reset code [291].
+Given these problems with security and memorability, most websites nowlet you recover your password by an email to the address with which you ﬁrstregistered.
+ But if someone compromises that email account, they can get allyour dependent accounts too.
+Email recovery may be adequate for websitesSecurity Engineering101Ross Anderson3.
+4.
+ PASSWORDSwhere a compromise is of little consequence, but for important accounts – suchas banking and email itself – standard practice is now to use a second factor.
+This is typically a code sent to your phone by SMS, or better still using anapp that can encrypt the code and tie it to a speciﬁc handset.
+ Many serviceproviders that allow email recovery are nudging people towards using such a codeinstead where possible.
+ Google research shows that SMSs stop all bulk passwordguessing by bots, 96% of bulk phishing and 76% of targeted attacks [574].
+But this depends on phone companies taking care over who can get a re-placement SIM card, and many don’t.
+ The problem in 2020 is rapid growth inattacks based on intercepting SMS authentication codes, which mostly seem toinvolve SIM swap, where the attacker pretends to be you to your mobile phonecompany and gets a replacement SIM card for your account.
+ SIM-swap attacksstarted in South Africa in 2007, became the main form of bank fraud in Nige-ria, then caught on in America – initially as a means of taking over valuableInstagram accounts, then to loot people’s accounts at bitcoin exchanges, thenfor bank fraud more generally [1092].
+ I will discuss SIM-swap attacks in moredetail in section 12.
+7.
+4.
+Attackers have also exploited the SS7 signalling protocol to wiretap targets’mobile phones remotely and steal codes [489].
+ I’ll discuss such attacks in moredetail in the chapters on phones and on banking.
+ The next step in the arms racewill be moving customers from SMS messages for authentication and accountrecovery to an app; the same Google research shows that this improves theselast two ﬁgures to 99% for bulk phishing and 90% for targeted attacks [574].
+ Asfor the targeted attacks, other research by Ariana Mirian along with colleaguesfrom UCSD and Google approached gangs who advertised ‘hack-for-hire’ ser-vices online and asked them to phish Gmail passwords.
+Three of the gangssucceeded, defeating SMS-based 2fa with a middleperson attack; forensics thenrevealed 372 other attacks on Gmail users from the same IP addresses duringMarch to October 2018 [1322].
+ This is still an immature criminal market, but tostop such attacks an app or authentication token is the way to go.
+ It also raisesfurther questions about account recovery.
+ If I use a hardware security key on myGmail, do I need a second one in a safe as a recovery mechanism? (Probably.
+)If I use one app on my phone to do banking and another as an authenticator,do I comply with rules on two-factor authentication? (See section 12.
+7.
+4 in thechapter on banking.
+)Email notiﬁcation is the default for telling people not just of suspiciouslogin attempts, but of logins to new devices that succeeded with the help ofa code.
+ That way, if someone plants malware on your phone, you have somechance of detecting it.
+ How a victim recovers then is the next question.
+ If allelse fails, a service provider may eventually let them speak to a real person.
+But when designing such a system, never forget that it’s only as strong as theweakest fallback mechanism – be it a recovery email loop with an email provideryou don’t control, a phone code that’s vulnerable to SIM swapping or mobilemalware, or a human who’s open to social engineering.
+Security Engineering102Ross Anderson3.
+4.
+ PASSWORDS3.
+4.
+2Password choiceMany accounts are compromised by guessing PINs or passwords.
+There arebotnets constantly breaking into online accounts by guessing passwords andpassword-recovery questions, as I described in 2.
+3.
+1.
+4, in order to use emailaccounts to send spam and to recruit machines to botnets.
+And as peopleinvent new services and put passwords on them, the password guessers ﬁnd newtargets.
+ A recent example is cryptocurrency wallets: an anonymous ‘bitcoinbandit’ managed to steal $50m by trying lots of weak passwords for ethereumwallets [809].
+ Meanwhile, billions of dollars’ worth of cryptocurrency has beenlost because passwords were forgotten.
+So passwords matter, and there arebasically three broad concerns, in ascending order of importance and di�culty:1.
+ Will the user enter the password correctly with a high enough probability?2.
+ Will the user remember the password, or will they have to either write itdown or choose one that’s easy for the attacker to guess?3.
+ Will the user break the system security by disclosing the password to athird party, whether accidentally, on purpose, or as a result of deception?3.
+4.
+3Di�culties with reliable password entryThe ﬁrst human-factors issue is that if a password is too long or complex, usersmight have di�culty entering it correctly.
+ If the operation they’re trying to per-form is urgent, this might have safety implications.
+ If customers have di�cultyentering software product activation codes, this can generate expensive calls toyour support desk.
+ And the move from laptops to smartphones during the 2010shas made password rules such as ‘at least one lower-case letter, upper-case let-ter, number and special character’ really ﬁddly and annoying.
+ This is one of thefactors pushing people toward longer but simpler secrets, such as passphrasesof three or four words.
+ But will people be able to enter them without makingtoo many errors?An interesting study was done for the STS prepayment meters used to sellelectricity in many less-developed countries.
+ The customer hands some moneyto a sales agent, and gets a 20-digit number printed out on a receipt.
+ They takethis receipt home, enter the numbers at a keypad in the meter, and the lightscome on.
+ The STS designers worried that since a lot of the population wasilliterate, and since people might get lost halfway through entering the number,the system might be unusable.
+ But illiteracy was not a problem: even peoplewho could not read had no di�culty with numbers (‘everybody can use a phone’,as one of the engineers said).
+ The biggest problem was entry errors, and thesewere dealt with by printing the twenty digits in two rows, with three groups offour digits in the ﬁrst row followed by two in the second [93].
+ I’ll describe thisin detail in section 14.
+2.
+A quite di↵erent application is the ﬁring codes for US nuclear weapons.
+These consist of only 12 decimal digits.
+ If they are ever used, the operators willbe under extreme stress, and possibly using improvised or obsolete communi-cations channels.
+ Experiments suggested that 12 digits was the maximum thatSecurity Engineering103Ross Anderson3.
+4.
+ PASSWORDScould be conveyed reliably in such circumstances.
+ I’ll discuss how this evolvedin 15.
+2.
+3.
+4.
+4Di�culties with remembering the passwordOur second psychological issue is that people often ﬁnd passwords hard to re-member [2076].
+ Twelve to twenty digits may be easy to copy from a telegram ora meter ticket, but when customers are expected to memorize passwords, theyeither choose values that are easy for attackers to guess, or write them down,or both.
+ In fact, standard password advice has been summed up as: “Choose apassword you can’t remember, and don’t write it down”.
+The problems are not limited to computer access.
+ For example, one chain ofcheap hotels in France introduced self service.
+ You’d turn up at the hotel, swipeyour credit card in the reception machine, and get a receipt with a numericalaccess code to unlock your room door.
+ To keep costs down, the rooms did nothave en-suite bathrooms.
+ A common failure mode was that you’d get up in themiddle of the night to go to the bathroom, forget your access code, and realiseyou hadn’t taken the receipt with you.
+ So you’d have to sleep on the bathroomﬂoor until the sta↵ arrived the following morning.
+Password memorability can be discussed under ﬁve main headings: na¨ıvechoice, user abilities and training, design errors, operational failures and vulner-ability to social-engineering attacks.
+3.
+4.
+4.
+1Na¨ıve choiceSince the mid-1980s, people have studied what sort of passwords people choose,and found they use spouses’ names, single letters, or even just hit carriagereturn giving an empty string as their password.
+ Cryptanalysis of tapes froma 1980 Unix system showed that of the pioneers, Dennis Ritchie used ‘dmac’(his middle name was MacAlistair); the later Google chairman Eric Schmidtused ‘wendy!!!’ (his wife’s name) and Brian Kernighan used ‘/.
+,/.
+,’ [795].
+ FredGrampp and Robert Morris’s classic 1984 paper on Unix security [805] reportsthat after software became available which forced passwords to be at least sixcharacters long and have at least one nonletter, they made a ﬁle of the 20 mostcommon female names, each followed by a single digit.
+ Of these 200 passwords,at least one was in use on each of several dozen machines they examined.
+ Atthe time, Unix systems kept encrypted passwords in a ﬁle /etc/passwd thatall system users could read, so any user could verify a guess of any other user’spassword.
+ Other studies showed that requiring a non-letter simply changed themost popular password from ‘password’ to ‘password1’ [1672].
+In 1990, Daniel Klein gathered 25,000 Unix passwords and found that 21–25% of passwords could be guessed depending on the amount of e↵ort putin [1056].
+ Dictionary words accounted for 7.
+4%, common names for 4%, combi-nations of user and account name 2.
+7%, and so on down a list of less probablechoices such as words from science ﬁction (0.
+4%) and sports terms (0.
+2%).
+ Otherpassword guesses used patterns, such as by taking an account ‘klone’ belong-ing to the user ‘Daniel V.
+ Klein’ and trying passwords such as klone, klone1,Security Engineering104Ross Anderson3.
+4.
+ PASSWORDSklone123, dvk, dvkdvk, leinad, neilk, DvkkvD, and so on.
+ The following year,Alec Mu↵ett released ‘crack’, software that would try to brute-force Unix pass-words using dictionaries and patterns derived from them by a set of manglingrules.
+The largest academic study of password choice of which I am aware is by JoeBonneau, who in 2012 analysed tens of millions of passwords in leaked passwordﬁles, and also interned at Yahoo where he instrumented the login system tocollect live statistics on the choices of 70 million users.
+ He also worked out thebest metrics to use for password guessability, both in standalone systems andwhere attackers use passwords harvested from one system to crack accounts onanother [289].
+ This work informed the design of password strength checkers andother current practices at the big service ﬁrms.
+3.
+4.
+4.
+2User abilities and trainingSometimes you can train the users.
+ Password checkers have trained them to uselonger passwords with numbers as well as letters, and the e↵ect spills over towebsites that don’t use them [444].
+ But you do not want to drive customersaway, so the marketing folks will limit what you can do.
+ In fact, research showsthat password rule enforcement is not a function of the value at risk, but ofwhether the website is a monopoly.
+ Such websites typically have very annoyingrules, while websites with competitors, such as Amazon, are more usable, placingmore reliance on back-end intrusion-detection systems.
+In a corporate or military environment you can enforce password choice rules,or password change rules, or issue random passwords.
+ But then people will haveto write them down.
+ So you can insist that passwords are treated the same wayas the data they protect: bank master passwords go in the vault overnight, whilemilitary ‘Top Secret’ passwords must be sealed in an envelope, in a safe, in aroom that’s locked when not occupied, in a building patrolled by guards.
+ Youcan send guards round at night to clean all desks and bin everything that hasn’tbeen locked up.
+ But if you want to hire and retain good people, you’d betterthink things through a bit more carefully.
+ For example, one Silicon Valley ﬁrmhad a policy that the root password for each machine would be written downon a card and put in an envelope taped to the side of the machine – a morehuman version of the rule that passwords be treated the same way as the datathey protect.
+ The domestic equivalent is the card in the back of your wiﬁ routerwith the password.
+While writing the ﬁrst edition of this book, I could not ﬁnd any account ofexperiments on training people in password choice that would hold water by thestandards of applied psychology (i.
+e.
+, randomized controlled trials with adequatestatistical power).
+ The closest I found was a study of the recall rates, forgettingrates, and guessing rates of various types of password [345]; this didn’t tell usthe actual e↵ects of giving users various kinds of advice.
+ We therefore decidedto see what could be achieved by training, and selected three groups of about ahundred volunteers from our ﬁrst-year science students [2055]:• the red (control) group was given the usual advice (password at least sixcharacters long, including one nonletter)Security Engineering105Ross Anderson3.
+4.
+ PASSWORDS• the green group was told to think of a passphrase and select letters fromit to build a password.
+ So ‘It’s 12 noon and I am hungry’ would give‘I’S12&IAH’• the yellow group was told to select eight characters (alpha or numeric) atrandom from a table we gave them, write them down, and destroy thisnote after a week or two once they’d memorized the password.
+What we expected to ﬁnd was that the red group’s passwords would be easierto guess than the green group’s which would in turn be easier than the yellowgroup’s; and that the yellow group would have the most di�culty rememberingtheir passwords (or would be forced to reset them more often), followed by greenand then red.
+ But that’s not what we found.
+About 30% of the control group chose passwords that could be guessed usingAlec Mu↵ett’s ‘crack’ software, versus about 10 percent for the other two groups.
+So passphrases and random passwords seemed to be about equally e↵ective.
+When we looked at password reset rates, there was no signiﬁcant di↵erencebetween the three groups.
+ When we asked the students whether they’d foundtheir passwords hard to remember (or had written them down), the yellow grouphad signiﬁcantly more problems than the other two; but there was no signiﬁcantdi↵erence between red and green.
+The conclusions we drew were as follows.
+• For users who follow instructions, passwords based on mnemonic phraseso↵er the best of both worlds.
+ They are as easy to remember as naivelyselected passwords, and as hard to guess as random passwords.
+• The problem then becomes one of user compliance.
+ A signiﬁcant numberof users (perhaps a third of them) just don’t do what they’re told.
+So when the army gives soldiers randomly-selected passwords, its value comesfrom the fact that the password assignment compels user compliance, ratherthan from the fact that they’re random (as mnemonic phrases would do just aswell).
+But centrally-assigned passwords are often inappropriate.
+When you areo↵ering a service to the public, your customers expect you to present broadlythe same interfaces as your competitors.
+ So you must let users choose their ownwebsite passwords, subject to some lightweight algorithm to reject passwordsthat are ‘clearly bad’.
+ (GCHQ suggests using a ‘bad password list’ of the 100,000passwords most commonly found in online password dumps.
+) In the case ofbank cards, users expect a bank-issued initial PIN plus the ability to change thePIN afterwards to one of their choosing (though again you may block a ‘clearlybad’ PIN such as 0000 or 1234).
+ Over half of cardholders keep a random PIN,but about a quarter choose PINs such as children’s birth dates which have lessentropy than random PINs would, and have the same PIN on di↵erent cards.
+The upshot is that a thief who steals a purse or wallet may have a chance ofabout one in eleven to get lucky, if he tries the most common PINs on all thecards ﬁrst in o✏ine mode and then in online mode, so he gets six goes at each.
+Banks that forbid popular choices such as 1234 can increase the odds to aboutone in eighteen [295].
+Security Engineering106Ross Anderson3.
+4.
+ PASSWORDS3.
+4.
+4.
+3Design errorsAttempts to make passwords memorable are a frequent source of severe designerrors.
+ The classic example of how not to do it is to ask for ‘your mother’smaiden name’.
+ A surprising number of banks, government departments andother organisations still authenticate their customers in this way, though nowa-days it tends to be not a password but a password recovery question.
+ You couldalways try to tell ‘Yngstrom’ to your bank, ‘Jones’ to the phone company, ‘Ger-aghty’ to the travel agent, and so on; but data are shared extensively betweencompanies, so you could easily end up confusing their systems – not to mentionyourself.
+ And if you try to phone up your bank and tell them that you’ve de-cided to change your mother’s maiden name from Yngstrom to yGt5r4ad – oreven Smith – then good luck.
+ In fact, given the large number of data breaches,you might as well assume that anyone who wants to can get all your commonpassword recovery information – including your address, your date of birth, yourﬁrst school and your social security number, as well as your mother’s maidenname.
+Some organisations use contextual security information.
+ A bank I once usedasks its business customers the value of the last check from their account thatwas cleared.
+ In theory, this could be helpful: if someone overhears me doing atransaction on the telephone, then it’s not a long-term compromise.
+ The detailsbear some attention though.
+ When this system was ﬁrst introduced, I wonderedwhether a supplier, to whom I’d just written a check, might impersonate me,and concluded that asking for the last three checks’ values would be safer.
+ Butthe problem we actually had was unexpected.
+ Having given the checkbook toour accountant for the annual audit, we couldn’t talk to the bank.
+ I also don’tlike the idea that someone who steals my physical post can also steal my money.
+The sheer number of applications demanding a password nowadays exceedsthe powers of human memory.
+ A 2007 study by Dinei Florˆencio and CormacHerley of half a million web users over three months showed that the average userhas 6.
+5 passwords, each shared across 3.
+9 di↵erent sites; has about 25 accountsthat require passwords; and types an average of 8 passwords per day.
+ Bonneaupublished more extensive statistics in 2012 [289] but since then the frequency ofuser password entry has fallen, thanks to smartphones.
+ Modern web browsersalso cache passwords; see the discussion of password managers at section 3.
+4.
+11below.
+ But many people use the same password for many di↵erent purposesand don’t work out special processes to deal with their high-value logons suchas to their bank, their social media accounts and their email.
+So you haveto expect that the password chosen by the customer of the electronic bankingsystem you’ve just designed, may be known to a Maﬁa-operated porn site aswell.
+ (There’s even a website, http://haveibeenpwned.
+com, that will tell youwhich security breaches have leaked your email address and password.
+)One of the most pervasive and persistent errors has been forcing users tochange passwords regularly.
+ When I ﬁrst came across enforced monthly pass-word changes in the 1980s, I observed that it led people to choose passwordssuch as ‘julia03’ for March, ‘julia04’ for April, and so on, and said as much inthe ﬁrst (2001) edition of this book (chapter 3, page 48).
+ However, in 2003, BillBurr of NIST wrote password guidelines recommending regular update [1096].
+Security Engineering107Ross Anderson3.
+4.
+ PASSWORDSThis was adopted by the Big Four auditors, who pushed it out to all their auditclients3.
+ Meanwhile, security usability researchers conducted survey after surveyshowing that monthly change was suboptimal.
+ The ﬁrst systematic study byYinqian Zhang, Fabian Monrose and Mike Reiter of the password transforma-tion techniques users invented showed that in a system with forced expiration,over 40% of passwords could be guessed from previous ones, that forced changedidn’t do much to help people who chose weak passwords, and that the e↵ort ofregular password choice may also have diminished password quality [2070].
+ Fi-nally a survey was written by usability guru Lorrie Cranor while she was ChiefTechnologist at the FTC [492], and backed up by an academic study [1505].
+In 2017, NIST recanted; they now recommend long passphrases that are onlychanged on compromise4.
+ Other governments’ agencies such as Britain’s GCHQfollowed, and Microsoft ﬁnally announced the end of password-expiration poli-cies in Windows 10 from April 2019.
+ However, many ﬁrms are caught by thePCI standards set by the credit-card issuers, which haven’t caught up and stilldictate three-monthly changes; another problem is that the auditors dictatecompliance to many companies, and will no doubt take time to catch up.
+The current fashion, in 2020, is to invite users to select passphrases of threeor more random dictionary words.
+ This was promoted by a famous xkcd cartoonwhich suggested ‘correct horse battery staple’ as a password.
+ Empirical research,however, shows that real users select multi-word passphrases with much lessentropy than they’d get if they really did select at random from a dictionary;they tend to go for common noun bigrams, and moving to three or four wordsbrings rapidly diminishing returns [296].
+ The Electronic Frontier Foundationnow promotes using dice to pick words; they have a list of 7,776 words (65, soﬁve dice rolls to pick a word) and note that a six-word phrase has 77 bits ofentropy and is memorable [290].
+3.
+4.
+4.
+4Operational failuresThe most pervasive operational error is failing to reset default passwords.
+ Thishas been a chronic problem since the early dial access systems in the 1980sattracted attention from mischievous schoolkids.
+ A particularly bad exampleis where systems have default passwords that can’t be changed, checked bysoftware that can’t be patched.
+ We see ever more such devices in the Internetof Things; they remain vulnerable for their operational lives.
+ The Mirai botnetshave emerged to recruit and exploit them, as I described in Chapter 2.
+Passwords in plain sight are another long-running problem, whether on stickynotes or some electronic equivalent.
+ A famous early case was R v Gold andSchifreen, where two young hackers saw a phone number for the developmentversion of Prestel, an early public email service run by British Telecom, in anote stuck on a terminal at an exhibition.
+ They dialed in later, and found thewelcome screen had a maintenance password displayed on it.
+ They tried this3Our university’s auditors wrote in their annual report for three years in a row that weshould have monthly enforced password change, but couldn’t provide any evidence to supportthis and weren’t even aware that their policy came ultimately from NIST.
+ Unimpressed, weasked the chair of our Audit Committee to appoint a new lot of auditors, and eventually thathappened.
+4NIST SP 800-63-3Security Engineering108Ross Anderson3.
+4.
+ PASSWORDSon the live system too, and it worked! They proceeded to hack into the Dukeof Edinburgh’s electronic mail account, and sent mail ‘from’ him to someonethey didn’t like, announcing the award of a knighthood.
+ This heinous crime soshocked the establishment that when prosecutors failed to persuade the courtsto convict the young men, Britain’s parliament passed its ﬁrst Computer MisuseAct.
+A third operational issue is asking for passwords when they’re not reallyneeded, or wanted for dishonest reasons, as I discussed at the start of thissection.
+ Most of the passwords you’re forced to set up on websites are therefor marketing reasons – to get your email address or give you the feeling ofbelonging to a ‘club’ [294].
+ So it’s perfectly rational for users who never plan tovisit that site again to express their exasperation by entering ‘123456’ or evenruder words in the password ﬁeld.
+A fourth is atrocious password management systems: some don’t encryptpasswords at all, and there are reports from time to time of enterprising hackerssmuggling back doors into password management libraries [427].
+But perhaps the biggest operational issue is vulnerability to social-engineeringattacks.
+3.
+4.
+4.
+5Social-engineering attacksCareful organisations communicate security context in various ways to help sta↵avoid making mistakes.
+ The NSA, for example, had di↵erent colored internaland external telephones, and when an external phone in a room is o↵-hook,classiﬁed material can’t even be discussed in the room – let alone on the phone.
+Yet while many banks and other businesses maintain some internal securitycontext, they often train their customers to act in unsafe ways.
+Because ofpervasive phishing, it’s not prudent to try to log on to your bank by clickingon a link in an email, so you should always use a browser bookmark or typein the URL by hand.
+ Yet bank marketing departments send out lots of emailscontaining clickable links.
+ Indeed much of the marketing industry is devotedto getting people to click on links.
+Many email clients – including Apple’s,Microsoft’s, and Google’s – make plaintext URLs clickable, so their users maynever see a URL that isn’t.
+ Bank customers are well trained to do the wrongthing.
+A prudent customer should also be cautious if a web service directs themsomewhere else – yet bank systems use all sorts of strange URLs for their ser-vices.
+ A spam from the Bank of America directed UK customers to mynew-card.
+com and got the certiﬁcate wrong (it was for mynewcard.
+bankofamerica.
+com).
+There are many more examples of major banks training their customers topractice unsafe computing – by disregarding domain names, ignoring certiﬁcatewarnings, and merrily clicking links [582].
+ As a result, even security expertshave di�culty telling bank spam from phish [443].
+It’s not prudent to give out security information over the phone to unidenti-ﬁed callers – yet we all get phoned by bank sta↵ who demand security informa-tion.
+ Banks also call us on our mobiles now and expect us to give out securityinformation to a whole train carriage of strangers, rather than letting us textSecurity Engineering109Ross Anderson3.
+4.
+ PASSWORDSa response.
+ (I’ve had a card blocked because a bank security team phoned mewhile I was driving; it would have been against the law to deal with the callother than in hands-free mode, and there was nowhere safe to stop.
+) It’s alsonot prudent to put a bank card PIN into any device other than an ATM or aPIN entry device (PED) in a store; and Citibank even asks customers to dis-regard and report emails that ask for personal information, including PIN andaccount details.
+ So what happened? You guessed it – it sent its Australiancustomers an email asking customers ‘as part of a security upgrade’ to log onto its website and authenticate themselves using a card number and an ATMPIN [1087].
+ And in one 2005 case, the Halifax sent a spam to the mother of astudent of ours who contacted the bank’s security department, which told herit was a phish.
+ The student then contacted the ISP to report abuse, and foundthat the URL and the service were genuine [1241].
+ The Halifax disappearedduring the crash of 2008, and given that their own security department couldn’ttell spam from phish, perhaps that was justice (though it cost us taxpayers ashedload of money).
+3.
+4.
+4.
+6Customer educationAfter phishing became a real threat to online banking in the mid-2000s, bankstried to train their customers to look for certain features in websites.
+ This hasbeen partly risk reduction, but partly risk dumping – seeing to it that customerswho don’t understand or can’t follow instructions can be held responsible forthe resulting loss.
+The general pattern has been that as soon as customersare trained to follow some particular rule, the phishermen exploit this, as thereasons for the rule are not adequately explained.
+At the beginning, the advice was ‘Check the English’, so the bad guys eithergot someone who could write English, or simply started using the banks’ ownemails but with the URLs changed.
+ Then it was ‘Look for the lock symbol’,so the phishing sites started to use SSL (or just forging it by putting graphicsof lock symbols on their web pages).
+ Some banks started putting the last fourdigits of the customer account number into emails; the phishermen responded byputting in the ﬁrst four (which are constant for a given bank and card product).
+Next the advice was that it was OK to click on images, but not on URLs;the phishermen promptly put in links that appeared to be images but actuallypointed at executables.
+ The advice then was to check where a link would reallygo by hovering your mouse over it; the bad guys then either inserted a non-printing character into the URL to stop Internet Explorer from displaying therest, or used an unmanageably long URL (as many banks also did).
+This sort of arms race is most likely to beneﬁt the attackers.
+ The coun-termeasures become so complex and counterintuitive that they confuse moreand more users – exactly what the phishermen need.
+ The safety and usabilitycommunities have known for years that ‘blame and train’ is not the way to dealwith unusable systems – the only real ﬁx is to design for safe usability in theﬁrst place [1451].
+Security Engineering110Ross Anderson3.
+4.
+ PASSWORDS3.
+4.
+4.
+7Phishing warningsPart of the solution is to give users better tools.
+ Modern browsers alert youto wicked URLs, with a range of mechanisms under the hood.
+ First, there arelists of bad URLs collated by the anti-virus and threat intelligence community.
+Second, there’s logic to look for expired certiﬁcates and other compliance failures(as the majority of those alerts are false alarms).
+There has been a lot of research, in both industry and academia, about howyou get people to pay attention to warnings.
+ We see so many of them, most areirrelevant, and many are designed to shift risk to us from someone else.
+ So whendo people pay attention? In our own work, we tried a number of things and foundthat people paid most attention when the warnings were not vague and general(‘Warning - visiting this web site may harm your computer!’) but speciﬁc andconcrete (‘The site you are about to visit has been conﬁrmed to contain softwarethat poses a signiﬁcant risk to you, with no tangible beneﬁt.
+ It would try to infectyour computer with malware designed to steal your bank account and credit carddetails in order to defraud you) [1327].
+ Subsequent research by Adrienne PorterFelt and Google’s usability team has tried many ideas including making warningspsychologically salient using faces (which doesn’t work), simplifying the text(which helps) and making the safe defaults both attractive and prominent (whichalso helps).
+ Optimising these factors improves compliance from about 35% toabout 50% [675].
+ However, if you want to stop the great majority of peoplefrom clicking on known-bad URLs, then voluntary compliance isn’t enough.
+You either have to block them at your ﬁrewall, or block them at the browser (asboth Chrome and Firefox do for di↵erent types of certiﬁcate error – a matter towhich we’ll return in 21.
+6.
+1).
+3.
+4.
+5System issuesNot all phishing attacks involve psychology.
+ Some involve technical mechanismsto do with password entry and storage together with some broader system issues.
+As we already noted, a key question is whether we can restrict the numberof password guesses.
+ Security engineers sometimes refer to password systems as‘online’ if guessing is limited (as with ATM PINs) and ‘o✏ine’ if it is not (thisoriginally meant systems where a user could fetch the password ﬁle and takeit away to try to guess the passwords of other users, including more privilegedusers).
+ But the terms are no longer really accurate.
+ Some o✏ine systems canrestrict guesses, such as payment cards which use physical tamper-resistance tolimit you to three PIN guesses, while some online systems cannot.
+ For example,if you log on using Kerberos, an opponent who taps the line can observe your keyencrypted with your password ﬂowing from the server to your client, and thendata encrypted with that key ﬂowing on the line; so they can take their time totry out all possible passwords.
+ The most common trap here is the system thatnormally restricts password guesses but then suddenly fails to do so, when itgets hacked and a one-way encrypted password ﬁle is leaked, together with theencryption keys.
+ Then the bad guys can try out their entire password dictionaryagainst each account at their leisure.
+Password guessability ultimately depends on the entropy of the chosen pass-Security Engineering111Ross Anderson3.
+4.
+ PASSWORDSwords and the number of allowed guesses, but this plays out in the context of aspeciﬁc threat model, so you need to consider the type of attacks you are tryingto defend against.
+ Broadly speaking, these are as follows.
+Targeted attack on one account: an intruder tries to guess a speciﬁc user’spassword.
+ They might try to guess a rival’s logon password at the o�ce,in order to do mischief directly.
+Attempt to penetrate any account belonging to a speciﬁc target: an en-emy tries to hack any account you own, anywhere, to get information thatmight might help take over other accounts, or do harm directly.
+Attempt to penetrate any account on a target system: the intruder triesto get a logon as any user of the system.
+ This is the classic case of thephisherman trying to hack any account at a target bank so he can launderstolen money through it.
+Attempt to penetrate any account on any system: the intruder merelywants an account at any system in a given domain but doesn’t care whichone.
+Examples are bad guys trying to guess passwords on any onlineemail service so they can send spam from the compromised account, anda targeted attacker who wants a logon to any random machine in thedomain of a target company as a beachhead.
+Attempt to use a breach of one system to penetrate a related one: theintruder has got a beachhead and now wants to move inland to capturehigher-value targets.
+Service denial attack: the attacker may wish to block one or more legitimateusers from using the system.
+This might be targeted on a particularaccount or system-wide.
+This taxonomy helps us ask relevant questions when evaluating a passwordsystem.
+3.
+4.
+6Can you deny service?There are basically three ways to deal with password guessing when you detect it:lockout, throttling, and protective monitoring.
+ Banks may freeze your card afterthree wrong PINs; but if they freeze your online account after three bad passwordattempts they open themselves up to a denial-of-service attack.
+ Service canalso fail by accident; poorly-conﬁgured systems can generate repeat fails withstale credentials.
+ So many commercial websites nowadays use throttling ratherthan lockout.
+ In a military system, you might not want even that, in case anenemy who gets access to the network could jam it with a ﬂood of false logonattempts.
+ In this case, protective monitoring might be the preferred option,with a plan to abandon rate-limiting if need be in a crisis.
+ Joe Bonneau andSoren Preibusch collected statistics of how many major websites use accountlocking versus various types of rate control [294].
+ They found that popular,growing, competent sites tend to be more secure, as do payment sites, whileSecurity Engineering112Ross Anderson3.
+4.
+ PASSWORDScontent sites do worst.
+ Microsoft Research’s Yuan Tian, Cormac Herley andStuart Schechter investigated how to do locking or throttling properly; amongother things, it’s best to penalise guesses of weak passwords (as otherwise anattacker gets advantage by guessing them ﬁrst), to be more aggressive whenprotecting users who have selected weak passwords, and to not punish IPs orclients that repeatedly submit the same wrong password [1888].
+3.
+4.
+7Protecting oneself or others?Next, to what extent does the system need to protect users and subsystemsfrom each other? In global systems on which anyone can get an account – suchas mobile phone systems and cash machine systems – you must assume thatthe attackers are already legitimate users, and see to it that no-one can usethe service at someone else’s expense.
+ So knowledge of one user’s password willnot allow another user’s account to be compromised.
+ This has both personalaspects, and system aspects.
+On the personal side, don’t forget what we said about intimate partner abusein 2.
+5.
+4: the passwords people choose are often easy for their spouses or partnersto guess, and the same goes for password recovery questions: so some thoughtneeds to be given to how abuse victims can recover their security.
+On the system side, there are all sorts of passwords used for mutual au-thentication between subsystems, few mechanisms to enforce password qualityin server-server environments, and many well-known issues (for example, thedefault password for the Java trusted keystore ﬁle is ‘changeit’).
+ Developmentteams often share passwords that end up in live systems, even 30 years afterthis practice led to the well-publicised hack of the Duke of Edinburgh’s emaildescribed in section 3.
+4.
+4.
+4.
+ Within a single big service ﬁrm you can lock stu↵down by having named crypto keys and seeing to it that each name generatesa call to an underlying hardware security module; or you can even use mecha-nisms like SGX to tie keys to known software.
+ But that costs real money, andmoney isn’t the only problem.
+ Enterprise system components are often hostedat di↵erent service companies, which makes adoption of better practices a hardcoordination problem too.
+ As a result, server passwords often appear in scriptsor other plaintext ﬁles, which can end up in Dropbox or Splunk.
+ So it is vitalto think of password practices beyond end users.
+ In later chapters we’ll look atprotocols such as Kerberos and ssh; for now, recall Ed Snowden’s remark thatit was trivial to hack the typical large company: just spear-phish a sysadminand then chain your way in.
+ Much of this chapter is about the ‘spear-phish asysadmin’ part; but don’t neglect the ‘chain your way in’ part.
+3.
+4.
+8Attacks on password entryPassword entry is often poorly protected.
+Security Engineering113Ross Anderson3.
+4.
+ PASSWORDS3.
+4.
+8.
+1Interface designThoughtless interface design is all too common.
+ Some common makes of cashmachine have a vertical keyboard at head height, making it simple for a pick-pocket to watch a woman enter her PIN before lifting her purse from her hand-bag.
+ The keyboards may have been at a reasonable height for the men whodesigned them, but women who are a few inches shorter are exposed.
+When entering a card number or PIN in a public place, I usually cover mytyping hand with my body or my other hand – but you can’t assume that allyour customers will.
+ Many people are uncomfortable shielding a PIN as it’s asignal of distrust, especially if they’re in a supermarket queue and a friend isstanding nearby.
+ UK banks found that 20% of users never shield their PIN [127]– and then used this to blame customers whose PINs were compromised by anoverhead CCTV camera, rather than designing better PIN entry devices.
+3.
+4.
+8.
+2Trusted path, and bogus terminalsA trusted path is some means of being sure that you’re logging into a genuinemachine through a channel that isn’t open to eavesdropping.
+ False terminalattacks go back to the dawn of time-shared computing.
+A public terminalwould be left running an attack program that looks just like the usual logonscreen – asking for a user name and password.
+When an unsuspecting userdid this, it would save the password, reply ‘sorry, wrong password’ and thenvanish, invoking the genuine password program.
+ The user assumed they’d madea typing error and just entered the password again.
+ This is why Windows had asecure attention sequence; hitting ctrl-alt-del was guaranteed to take you toa genuine password prompt.
+ But eventually, in Windows 10, this got removed toprepare the way for Windows tablets, and because almost nobody understoodit.
+ATM skimmers are devices that sit on an ATM’s throat, copy card details,and have a camera to record the customer PIN.
+ There are many variants onthe theme.
+ Fraudsters deploy bad PIN entry devices too, and have even beenjailed for attaching password-stealing hardware to terminals in bank branches.
+I’ll describe this world in much more detail in the chapter on banking andbookkeeping; the long-term solution has been to move from magnetic-strip cardsthat are easy to copy to chip cards that are much harder.
+ In any case, if aterminal might contain malicious hardware or software, then passwords alonewill not be enough.
+3.
+4.
+8.
+3Technical defeats of password retry countersMany kids ﬁnd out that a bicycle combination lock can usually be broken in afew minutes by solving each ring in order of looseness.
+ The same idea workedagainst a number of computer systems.
+ The PDP-10 TENEX operating systemchecked passwords one character at a time, and stopped as soon as one of themwas wrong.
+ This opened up a timing attack: the attacker would repeatedly placea guessed password in memory at a suitable location, have it veriﬁed as part ofa ﬁle access request, and wait to see how long it took to be rejected [1129].
+ AnSecurity Engineering114Ross Anderson3.
+4.
+ PASSWORDSerror in the ﬁrst character would be reported almost at once, an error in thesecond character would take a little longer to report, and in the third charactera little longer still, and so on.
+So you could guess the characters one afteranother, and instead of a password of N characters drawn from an alphabet ofA characters taking AN/2 guesses on average, it took AN/2.
+ (Bear in mindthat in thirty years’ time, all that might remain of the system you’re buildingtoday is the memory of its more newsworthy security failures.
+)These same mistakes are being made all over again in the world of embeddedsystems.
+With one remote car locking device, as soon as a wrong byte wastransmitted from the key fob, the red telltale light on the receiver came on.
+ Withsome smartcards, it has been possible to determine the customer PIN by tryingeach possible input value and looking at the card’s power consumption, thenissuing a reset if the input was wrong.
+ The reason was that a wrong PIN causeda PIN retry counter to be decremented, and writing to the EEPROM memorywhich held this counter caused a current surge of several milliamps – whichcould be detected in time to reset the card before the write was complete [1105].
+These implementation details matter.
+ Timing channels are a serious problemfor people implementing cryptography, as we’ll discuss at greater length in thenext chapter.
+A recent high-proﬁle issue was the PIN retry counter in the iPhone.
+ Mycolleague Sergei Skorobogatov noted that the iPhone keeps sensitive data en-crypted in ﬂash memory, and built an adapter that enabled him to save theencrypted memory contents and restore them to their original condition afterseveral PIN attempts.
+ This enabled him to try all 10,000 possible PINs ratherthan the ten PINs limit that Apple tried to impose [1777]5.
+3.
+4.
+9Attacks on password storagePasswords have often been vulnerable where they are stored.
+ In MIT’s ‘Com-patible Time Sharing System’ ctss – a 1960s predecessor of Multics – it oncehappened that one person was editing the message of the day, while another wasediting the password ﬁle.
+ Because of a software bug, the two editor temporaryﬁles got swapped, and everyone who logged on was greeted with a copy of thepassword ﬁle! [476].
+Another horrible programming error struck a UK bank in the late 1980s,which issued all its customers with the same PIN by mistake [54].
+As theprocedures for handling PINs meant that no one in the bank got access to any-one’s PIN other than their own, the bug wasn’t spotted until after thousands ofcustomer cards had been shipped.
+ Big blunders continue: in 2019 the securitycompany that does the Biostar and AEOS biometric lock system for building en-try control and whose customers include banks and police forces in 83 countriesleft a database unprotected online with over a million people’s IDs, plaintextpasswords, ﬁngerprints and facial recognition data; security researchers who dis-covered this from an Internet scan were able to add themselves as users [1864].
+5This was done to undermine an argument by then FBI Director James Comey that theiPhone was unhackable and so Apple should be ordered to produce an operating systemupgrade that created a backdoor; see section 26.
+2.
+8.
+Security Engineering115Ross Anderson3.
+4.
+ PASSWORDSAuditing provides another hazard.
+ When systems log failed password at-tempts, the log usually contains a large number of passwords, as users get the‘username, password’ sequence out of phase.
+ If the logs are not well protectedthen someone who sees an audit record of a failed login with a non-existent username of e5gv*8yp just has to try this as a password for all the valid user names.
+3.
+4.
+9.
+1One-way encryptionSuch incidents taught people to protect passwords by encrypting them usinga one-way algorithm, an innovation due to Roger Needham and Mike Guy.
+The password, when entered, is passed through a one-way function and theuser is logged on only if it matches a previously stored value.
+ However, it’soften implemented wrong.
+ The right way to do it is to generate a random key,historically known in this context as a salt; combine the password with the saltusing a slow, cryptographically strong one-way function; and store both the saltand the hash.
+3.
+4.
+9.
+2Password crackingSome systems that use an encrypted password ﬁle make it widely readable.
+ Unixused to be the prime example – the password ﬁle /etc/passwd was readable byall users.
+ So any user could fetch it and try to break passwords by encryptingall the passwords in a dictionary and comparing them with the encrypted valuesin the ﬁle.
+ We already mentioned in 3.
+4.
+4.
+1 the ‘Crack’ software that peoplehave used for years for this purpose.
+Most modern operating systems have sort-of ﬁxed this problem; in modernLinux distributions, for example, passwords are salted, hashed using 5000 roundsof SHA-512, and stored in a ﬁle that only the root user can read.
+ But there arestill password-recovery tools to help you if, for example, you’ve encrypted anO�ce document with a password you’ve forgotten [1674].
+ Such tools can alsobe used by a crook who has got root access, and there are still lots of badlydesigned systems out there where the password ﬁle is vulnerable in other ways.
+There is also credential stu�ng: when a system is hacked and passwordsare cracked (or were even found unencrypted), they are then tried out on othersystems to catch the many people who reused them.
+ This remains a live problem.
+So password cracking is still worth some attention.
+ One countermeasure worthconsidering is deception, which can work at all levels in the stack.
+ You canhave honeypot systems that alarm if anyone ever logs on to them, honeypotaccounts on a system, or password canaries – bogus encrypted passwords forgenuine accounts [996].
+3.
+4.
+9.
+3Remote password checkingMany systems check passwords remotely, using cryptographic protocols to pro-tect the password in transit, and the interaction between password security andnetwork security can be complex.
+ Local networks often use a protocol calledKerberos, where a server sends you a key encrypted under your password; if youSecurity Engineering116Ross Anderson3.
+4.
+ PASSWORDSknow the password you can decrypt the key and use it to get tickets that giveyou access to resources.
+ I’ll discuss this in the next chapter, in section 4.
+7.
+4; itdoesn’t always protect weak passwords against an opponent who can wiretapencrypted tra�c.
+ Web servers mostly use a protocol called TLS to encrypt yourtra�c from the browser on your phone or laptop; I discuss TLS in the followingchapter, in section 5.
+7.
+5.
+ TLS does not protect you if the server gets hacked.
+However there is a new protocol called Simultaneous Authentication of Equals(SAE) which is designed to set up secure sessions even where the password isguessable, and which has been adopted from 2018 in the WPA3 standard forWiFi authentication.
+ I’ll discuss this later too.
+And then there’s OAuth, a protocol which allows access delegation, so youcan grant one website the right to authenticate you using the mechanisms pro-vided by another.
+ Developed by Twitter from 2006, it’s now used by the mainservice providers such as Google, Microsoft and Facebook to let you log on tomedia and other sites; an authorisation server issues access tokens for the pur-pose.
+ We’ll discuss the mechanisms later too.
+ The concomitant risk is cross-siteattacks; we are now (2019) seeing OAuth being used by state actors in author-itarian countries to phish local human-rights defenders.
+ The technique is tocreate a malicious app with a plausible name (say ‘Outlook Security Defender’)and send an email, purportedly from Microsoft, asking for access.
+ If the targetresponds they end up at a Microsoft web page where they’re asked to authorisethe app to have access to their data [46].
+3.
+4.
+10Absolute limitsIf you have conﬁdence in the cryptographic algorithms and operating-systemsecurity mechanisms that protect passwords, then the probability of a success-ful password guessing attack is a function of the entropy of passwords, if theyare centrally assigned, and the psychology of users if they’re allowed to choosethem.
+ Military sysadmins often prefer to issue random passwords, so the prob-ability of password guessing attacks can be managed.
+ For example, if L is themaximum password lifetime, R is login attempt rate, S is the size of the pass-word space, then the probability that a password can be guessed in its lifetime isP = LR/S, according to the US Department of Defense password managementguideline [546].
+There are issues with such a ‘provable security’ doctrine, starting with theattackers’ goal.
+ Do they want to crack a target account, or just any account?If an army has a million possible passwords and a million users, and the alarmgoes o↵ after three bad password attempts on any account, then the attackercan just try one password for every di↵erent account.
+ If you want to stop this,you have to do rate control not just for every account, but for all accounts.
+To take a concrete example, Unix systems used to be limited to eight char-acter passwords, so there were 968 or about 252 possible passwords.
+ Some UKgovernment systems used to issue passwords randomly selected with a ﬁxedtemplate of consonants, vowels and numbers designed to make them easier toremember, such as CVCNCVCN (e.
+g.
+ fuR5xEb8).
+ If passwords are not casesensitive, the guess probability is cut drastically, to only one in 214.
+52.
+102 orabout 2�29.
+ So if an attacker could guess 100 passwords a second – perhapsSecurity Engineering117Ross Anderson3.
+4.
+ PASSWORDSdistributed across 10,000 accounts on hundreds of machines on a network, soas not to raise the alarm – then they would need about 5 million seconds, ortwo months, to get in.
+ If you’re defending such a system, you might ﬁnd it pru-dent to do rate control: set a limit of say one password guess per ten secondsper user account, and perhaps by source IP address.
+ You might also count thefailed logon attempts and analyse them: is there a constant series of guessesthat suggests an attacker using a botnet, or some other attempted intrusion?And what will you do once you notice one? Will you close the system down?Welcome back to the world of service denial.
+With a commercial website, 100 passwords per second may translate to onecompromised user account per second, because of poor user password choices.
+That may not be a big deal for a web service with 100 million accounts – but itmay still be worth trying to identify the source of any industrial-scale password-guessing attacks.
+ If they’re from a small number of IP addresses, you can blockthem, but doing this properly is harder than it looks, as we noted in section 3.
+4.
+6above.
+ And if an automated guessing attack does persist, then another way ofdealing with it is the CAPTCHA, which I’ll describe in section 3.
+5.
+3.
+4.
+11Using a password managerSince the 1980s, companies have been selling single sign-on systems that remem-ber your passwords for multiple applications, and when browsers came alongin the mid-1990s and people started logging into dozens of websites, passwordmanagers became a mass-market product.
+ Browser vendors noticed, and startedproviding much the same functionality for free.
+Choosing random passwords and letting your browser remember them canbe a pragmatic way of operating.
+ The browser will only enter the password intoa web page with the right URL (IE) or the same hostname and ﬁeld name (Fire-fox).
+ Browsers let you set a master password, which encrypts all the individualsite passwords and which you only have to enter when your browser is updated.
+The main drawbacks of password managers in general are that you might forgetthe master password; and that all your passwords may be compromised at once,since malware writers can work out how to hack common products.
+ This is aparticular issue when using a browser, and another is that a master password isnot always the default so many users don’t set one.
+ (The same holds for othersecurity services you get as options with platforms, such as encrypting yourphone or laptop.
+) An advantage of using the browser is that you may be ableto sync passwords between the browser in your phone and that in your laptop.
+Third-party password managers can o↵er more, such as choosing long ran-dom passwords for you, identifying passwords shared across more than one web-site, and providing more controllable ways for you to manage the backup andrecovery of your password collection.
+(With a browser, this comes down tobacking up your whole laptop or phone.
+) They can also help you track your ac-counts, so you can see whether you had a password on a system that’s announceda breach.
+ The downside is that many products are truly dreadful, with evensome hardware password managers storing all your secrets in the clear [130],while the top ﬁve software products su↵er from serious and systemic vulnerabil-ities, from autocomplete to ignoring subdomains [389].
+ How do you know thatSecurity Engineering118Ross Anderson3.
+4.
+ PASSWORDSany given product is actually sound?Many banks try to disable storage, whether by setting autocomplete="off"in their web pages or using other tricks that block password managers too.
+ Banksthink this improves security, but I’m not at all convinced.
+ Stopping people usingpassword managers or the browser’s own storage will probably make most ofthem use weaker passwords.
+ The banks may argue that killing autocompletemakes compromise following device theft harder, and may stop malware stealingthe password from the database of your browser or password manager, butthe phishing defence provided by that product is disabled – which may exposethe average customer to greater risk [1355].
+ It’s also inconvenient; one bankthat suddenly disabled password storage had to back down the following day,because of the reaction from customers [1278].
+ People manage risk in all sortsof ways.
+ I personally use di↵erent browsers for di↵erent purposes, and let themstore low-value passwords; for important accounts, such as email and banking, Ialways enter passwords manually, and always navigate to them via bookmarksrather than by clicking on links.
+ But most people are less careful.
+ And be sureto think through backup and recovery, and exercise it to make sure it works.
+What happens when your laptop dies? When your phone dies? When someonepersuades your phone company to link your phone number to their SIM? Whenyou die – or when you fall ill and your partner needs to manage your stu↵? Dothey know where to ﬁnd the master passwords? Writing them down in a bookcan make sense, if all you (and your executor) have to remember is ‘page 169,Great Expectations.
+’ Writing them down in a diary you tote with you, on apage saying ‘passwords’, is not so great.
+ Very few people get all this right.
+3.
+4.
+12Will we ever get rid of passwords?Passwords are annoying, so many people have discussed getting rid of them, andthe move from laptops to phones gives us a chance.
+ The proliferation of IoTdevices that don’t have keyboards will force us to do without them for somepurposes.
+ A handful of ﬁrms have tried to get rid of them completely.
+ Oneexample is the online bank Monzo, which operates exclusively via an app.
+ Theyleave it up to the customer whether they protect their phone using a ﬁnger-print, a pattern lock, a PIN or a password.
+ However they still use email toprompt people to upgrade, and to authenticate people who buy a new phone,so account takeover involves either phone takeover, or guessing a password ora password recovery question.
+ The most popular app that uses SMS to au-thenticate rather than a password may be WhatsApp.
+ I expect that this willbecome more widespread; so we’ll see more attacks based on phone takeover,from SIM swaps through Android malware, SS7 and RCS hacking, to simplephysical theft.
+ In such cases, recovery often means an email loop, making youremail password more critical than ever – or phoning a call centre and tellingthem your mother’s maiden name.
+ So things may change less than they seem.
+Joe Bonneau and colleagues analysed the options in 2012 [292].
+ There aremany criteria against which an authentication system can be evaluated, andwe’ve worked through them here: resilience to theft, to physical observation,to guessing, to malware and other internal compromise, to leaks from otherveriﬁers, to phishing and to targeted impersonation.
+ Other factors include easeSecurity Engineering119Ross Anderson3.
+4.
+ PASSWORDSof use, ease of learning, whether you need to carry something extra, error rate,ease of recovery, cost per user, and whether it’s an open design that anyonecan use.
+ They concluded that most of the schemes involving net beneﬁts werevariants on single sign-on – and OpenID has indeed become widespread, withmany people logging in to their newspaper using Google or Facebook, despite theobvious privacy cost6.
+ Beyond that, any security improvements involve givingup one or more of the beneﬁts of passwords, namely that they’re easy, e�cientand cheap.
+Bonneau’s survey gave high security ratings to physical authentication to-kens such as the CAP reader, which enables people to use their bank cards tolog on to online banking; bank regulators have already mandated two-factor au-thentication in a number of countries.
+ Using something tied to a bank card givesa more traditional root of trust, at least with traditional high-street banks; acustomer can walk into a branch and order a new card7.
+ Firms that are targetsof state-level attackers, such as Google and Microsoft, now give authenticationtokens of some kind or another to all their sta↵.
+Did the survey miss anything? Well, the old saying is ‘something you have,something you know, or something you are’ – or, as Simson Garﬁnkel engaginglyputs it, ‘something you had once, something you’ve forgotten, or something youonce were’.
+ The third option, biometrics, has started coming into wide use sincehigh-end mobile phones started o↵ering ﬁngerprint readers.
+ Some countries, likeGermany, issue their citizens with ID cards containing a ﬁngerprint, which mayprovide an alternate root of trust for when everything else goes wrong.
+ We’lldiscuss biometrics in its own chapter later in the book.
+Both tokens and biometrics are still mostly used with passwords, ﬁrst asa backstop in case a device gets stolen, and second as part of the process ofsecurity recovery.
+ So passwords remain the (shaky) foundation on which muchof information security is built.
+ What may change this is the growing number ofdevices that have no user interface at all, and so have to be authenticated usingother mechanisms.
+ One approach that’s getting ever more common is trust onﬁrst use, also known as the ‘resurrecting duckling’ after the fact that a ducklingbonds on the ﬁrst moving animal it sees after it hatches.
+ We’ll discuss this in thenext chapter, and also when we dive into speciﬁc applications such as securityin vehicles.
+Finally, you should think hard about how to authenticate customers or otherpeople who exercise their right to demand copies of their personal informationunder data-protection law.
+ In 2019, James Pavur sent out 150 such requests tocompanies, impersonating his ﬁanc´ee [1886].
+ 86 ﬁrms admitted they had infor-6Government attempts to set up single sign-on for public services have been less successful,with the UK ‘Verify’ program due to be shuttered in 2020 [1392].
+ There have been manyproblems around attempts to entrench government’s role in identity assurance, which I’lldiscuss further in the chapter on biometrics, and which spill over into issues from onlineservices to the security of elections.
+ It was also hard for other private-sector ﬁrms to competebecause of the network e↵ects enjoyed by incumbents.
+ However in 2019 Apple announced thatit would provide a new, more privacy-friendly single sign-on mechanism, and use the marketpower of its app store to force websites to support it.
+ Thus the quality and nature of privacyon o↵er is becoming a side-e↵ect of battles fought for other motives.
+ We’ll analyse this inmore depth in the chapter on economics.
+7This doesn’t work for branchless banks like Monzo; but they do take a video of you whenyou register so that their call centre can recognise you later.
+Security Engineering120Ross Anderson3.
+5.
+ CAPTCHASmation about her, and many had the sense to demand her logon and passwordto authenticate her.
+But about a quarter were prepared to accept an emailaddress or phone number as authentication; and a further 16 percent asked foreasily forgeable ID.
+ He collected full personal information about her, includingher credit card number, her social security number and her mother’s maidenname.
+ A threat intelligence ﬁrm with which she’d never interacted sent a listof her accounts and passwords that had been compromised.
+ Given that ﬁrmsface big ﬁnes in the EU if they don’t comply with such requests within 30 days,you’d better work out in advance how to cope with them, rather than leavingit to an assistant in your law o�ce to improvise a procedure.
+ If you abolishpasswords, and a former customer claims their phone was stolen, what do youdo then? And if you hold personal data on people who have never been yourcustomers, how do you identify them?3.
+5CAPTCHAsCan we have protection mechanisms that use the brain’s strengths rather thanits weaknesses?The most successful innovation in this ﬁeld is probably theCAPTCHA – the ‘Completely Automated Public Turing Test to Tell Comput-ers and Humans Apart’.
+ These are the little visual puzzles that you often have tosolve to post to a blog, to register for a free online account, or to recover a pass-word.
+ The idea is that people can solve such problems easily, while computersﬁnd them hard.
+CAPTCHAs ﬁrst came into use in a big way in 2003 to stop spammers usingscripts to open thousands of accounts on free email services, and to make itharder for attackers to try a few simple passwords with each of a large numberof existing accounts.
+ They were invented by Luis von Ahn and colleagues [1969],who were inspired by the test famously posed by Alan Turing as to whether acomputer was intelligent: you put a computer in one room and a human inanother, and invite a human to try to tell them apart.
+ The test is turned roundso that a computer can tell the di↵erence between human and machine.
+Early versions set out to use a known ‘hard problem’ in AI such as the recog-nition of distorted text against a noisy background.
+ The idea is that breakingthe CAPTCHA was equivalent to solving the AI problem, so an attacker wouldactually have to do the work by hand, or come up with a real innovation incomputer science.
+ Humans were good at reading distorted text, while programswere less good.
+ It turned out to be harder than it seemed.
+ A lot of the attackson CAPTCHAs, even to this day, exploit the implementation details.
+Many of the image recognition problems posed by early systems also turnedout not to be too hard at all once smart people tried hard to solve them.
+ Thereare also protocol-level attacks; von Ahn mentioned that in theory a spammercould get people to solve them as the price of access to free porn [1968].
+ Thissoon started to happen: spammers created a game in which you undress awoman by solving one CAPTCHA after another [191].
+ Within a few years, wesaw commercial CAPTCHA-breaking tools arriving on the market [843].
+ Withina few more, generic attacks using signal-processing techniques inspired by thehuman visual system had become fairly e�cient at solving at least a subsetSecurity Engineering121Ross Anderson3.
+6.
+ SUMMARYof most types of text CAPTCHA [746].
+And security-economics research inunderground markets has shown that by 2011 the action had moved to usinghumans; people in countries with incomes of a few dollars a day will solveCAPTCHAs for about 50c per 1000.
+From 2014, the CAPTCHA has been superseded by the ReCAPTCHA, an-other of Luis von Ahn’s inventions.
+ Here the idea is to get a number of users todo some useful piece of work, and check their answers against each other.
+ Theservice initially asked people to transcribe fragments of text from Google booksthat confused OCR software; more recently you get a puzzle with eight picturesasking ‘click on all images containing a shop front’, which helps Google train itsvision-recognition AI systems8.
+ It pushes back on the cheap-labour attack byputting up two or three multiple-choice puzzles and taking tens of seconds overit, rather than allowing rapid responses.
+The implementation of CAPTCHAs is often thoughtless, with accessibilityissues for users who are visually impaired.
+ And try paying a road toll in Portugalwhere the website throws up a CAPTCHA asking you to identify pictures withan object, if you can’t understand Portuguese well enough to ﬁgure out whatyou’re supposed to look for!3.
+6SummaryPsychology matters to the security engineer, because of deception and because ofusability.
+ Most real attacks nowadays target the user.
+ Various kinds of phishingare the main national-security threat, the principal means of developing andmaintaining the cybercrime infrastructure, and one of the principal threats toonline banking systems.
+ Other forms of deception account for much of the restof the cybercrime ecosystem, which is roughly equal to legacy crime in bothvolume and value.
+Part of the remedy is security usability, yet research in this ﬁeld was longneglected, being seen as less glamorous than cryptography or operating systems.
+That was a serious error on our part, and from the mid-2000s we have startedto realise the importance of making it easier for ordinary people to use systemsin safe ways.
+ Since the mid-2010s we’ve also started to realise that we also haveto make things easier for ordinary programmers; many of the security bugs thathave broken real systems have been the result of tools that were just too hard touse, from cryptographic APIs that used unsafe defaults to the C programminglanguage.
+ Getting usability right also helps business directly: PayPal has built a$100bn business through being a safer and more convenient way to shop online9.
+In this chapter, we took a whistle-stop tour through psychology researchrelevant to deception and to the kinds of errors people make, and then tackledauthentication as a case study.
+ Much of the early work on security usabilityfocused on password systems, which raise dozens of interesting questions.
+ We8There’s been pushback from users who see a ReCAPTCHA saying ‘click on all imagescontaining a helicopter’ and don’t want to help in military AI research.
+ Google’s own sta↵protested at this research too and the program was discontinued.
+ But other users still objectto working for Google for free.
+9Full disclosure: I consult for them.
+Security Engineering122Ross Anderson3.
+6.
+ SUMMARYnow have more and more data not just on things we can measure in the lab suchas guessability, memorability, and user trainability, but also on factors that canonly be observed in the ﬁeld such as how real systems break, how real attacksscale and how the incentives facing di↵erent players lead to unsafe equilibria.
+At the end of the ﬁrst workshop on security and human behavior in 2008,the psychologist Nick Humphrey summed up a long discussion on risk.
+ “We’reall agreed,” he said, “that people pay too much attention to terrorism and notenough to cybercrime.
+ But to a psychologist this is obvious.
+ If you want peopleto be more relaxed in airports, take away the tanks and guns, put in some nicesofas and Mozart in the loudspeakers, and people will relax soon enough.
+ Andif you want people to be more wary online, make everyone use Jaws as theirscreen saver.
+ But that’s not going to happen as the computer industry goes outof its way to make computers seem a lot less scary than they used to be.
+” And ofcourse governments want people to be anxious about terrorism, as it bids up thepolice budgets and helps politicians get re-elected.
+ So we give people the wrongsignals as well as spending our money on the wrong things.
+ Understanding themany tensions between the demands of psychology, economics and engineeringis essential to building robust systems at global scale.
+Research problemsSecurity psychology is one of the hot topics in 2020.
+ In the second edition of thisbook, I noted that the whole ﬁeld of security economics had sprung into life sincethe ﬁrst edition in 2001, and wrote ‘We also need more fundamental thinkingabout the relationship between psychology and security’.
+Security usabilityhas become a discipline too, with the annual Symposium on Usable Privacy andSecurity, and we’ve been running workshops to bring security engineers togetherwith anthropologists, psychologists, philosophers and others who work on riskand how people cope with it.
+My meta-algorithm for ﬁnding research topics is to look ﬁrst at applicationsand then at neighbouring disciplines.
+ An example of the ﬁrst is safe usability:as safety-critical products from cars to medical devices acquire not just softwareand Internet connections, but complex interfaces and even their own apps, howcan we design them so that they won’t harm people by accident, or as a resultof malice?An example of the second, and the theme of the Workshop on Securityand Human Behaviour, is what we can learn from disciplines that study howpeople deal with risk, ranging from anthropology and psychology to sociology,history and philosophy.
+ Our 2020 event is hosting leading criminologists.
+ Thepandemic now suggests that maybe we should work with architects too.
+ They’renow working out how people can be physically distant but socially engaged, andtheir skill is understanding how form facilitates human experience and humaninteraction.
+ There’s more to design than just hacking code.
+Security Engineering123Ross Anderson3.
+6.
+ SUMMARYFurther readingThe Real Hustle videos are probably the best tutorial on deception; a numberof episodes are on YouTube.
+ Meanwhile, the best book on social engineering isstill Kevin Mitnick’s ‘The Art of Deception’ [1325].
+ Amit Katwala wrote a shortsurvey of deception detection technologies [1024] while Tony Docan-Morgan hasedited a 2019 handbook on the state of deception research with 51 chapters byspecialists on its many aspects [569].
+For how social psychology gets used and abused in marketing, the must-read book is Tim Wu’s ‘The Attention Merchants’ which tells the history ofadvertising [2050].
+In the computer science literature, perhaps a good starting point is JamesReason’s ‘Human Error’, which tells us what the safety-critical systems com-munity has learned from many years studying the cognate problems in theirﬁeld [1589].
+ Then there are standard HCI texts such as [1544], while early pa-pers on security usability appeared as [493] and on phishing appeared as [976].
+As we move to a world of autonomous devices, there is a growing body of researchon how we can get people to trust robots more by Disneyﬁcation – for example,giving library robots eyes that follow the direction of travel, and making themchirp with happiness when they help a customer [1687].
+ Similar research onautonomous vehicles shows that people trust such vehicles more if they’re givensome personality, and the passengers are given some strategic control such asthe ability to select routes or even just to order the car to stop.
+As for behavioral economics, I get my students to read Danny Kahneman’sNobel prize lecture.
+ For more technical detail, there’s a volume of papers Dannyedited just before that with Tom Gilovich and Dale Gri�n [769], or the popscience book ‘Thinking, Fast and Slow’ that he wrote afterwards [1005].
+ Analternative view, which gives the whole history of behavioral economics, is DickThaler’s ‘Misbehaving: The Making of Behavioural Economics’ [1874].
+ For theapplications of this theory in government and elsewhere, the standard referenceis Dick Thaler and Cass Sunnstein’s ‘Nudge’ [1876].
+ Dick’s later second thoughtsabout ‘Sludge’ are at [1875].
+For a detailed history of passwords and related mechanisms, as well as manyempirical results and an analysis of statistical techniques for measuring bothguessability and recall, I strongly recommend Joe Bonneau’s thesis [289], anumber of whose chapters ended up as papers I cited above.
+Finally, if you’re interested in the dark side, ‘The Manipulation of HumanBehavior’ by Albert Biderman and Herb Zimmer reports experiments on inter-rogation carried out after the Korean War with US Government funding [239].
+Known as the Torturer’s Bible, it describes the relative e↵ectiveness of sensorydeprivation, drugs, hypnosis, social pressure and so on when interrogating andbrainwashing prisoners.
+As for the polygraph and other deception-detectiontechniques used nowadays, the standard reference is by Aldert Vrij [1970].
+Security Engineering124Ross Anderson

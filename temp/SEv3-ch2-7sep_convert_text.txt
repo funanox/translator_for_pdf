@@ -1,0 +1,1003 @@
+Chapter 2Who is the Opponent?Going all the way back to early time-sharing systems we systemspeople regarded the users, and any code they wrote, as the mortalenemies of us and each other.
+ We were likethe police force in a violent slum.
+– ROGER NEEDHAMFalse face must hidewhat the false heart doth know– MACBETH2.
+1IntroductionIdeologues may deal with the world as they would wish it to be, but engineersdeal with the world as it is.
+ If you’re going to defend systems against attack,you ﬁrst need to know who your enemies are.
+In the early days of computing, we mostly didn’t have real enemies; whilebanks and the military had to protect their systems, most other people didn’treally bother.
+ The ﬁrst computer systems were isolated, serving a single com-pany or university.
+ Students might try to hack the system to get more resourcesand sysadmins would try to stop them, but it was mostly a game.
+ When dial-upconnections started to appear, pranksters occasionally guessed passwords andleft joke messages, as they’d done at university.
+ The early Internet was a friendlyplace, inhabited by academics, engineers at tech companies, and a few hobby-ists.
+ We knew that malware was possible but almost nobody took it seriouslyuntil the late 1980s when PC viruses appeared, followed by the Internet wormin 1988.
+ (Even that was a student experiment that escaped from the lab; I tellthe story in section 21.
+3.
+2.
+)Things changed once everyone started to get online.
+ The mid-1990s saw theﬁrst spam, the late 1990s brought the ﬁrst distributed denial-of-service attack,and the explosion of mail-order business in the dotcom boom introduced creditcard fraud.
+ To begin with, online fraud was a cottage industry; the same person352.
+1.
+ INTRODUCTIONwould steal credit card numbers and use them to buy goods which he’d thensell, or make up forged cards to use in a store.
+ Things changed in the mid-2000swith the emergence of underground markets.
+ These let the bad guys specialise– one gang could write malware, another could harvest bank credentials, andyet others could devise ways of cashing out.
+ This enabled them to get good attheir jobs, to scale up and to globalise, just as manufacturing did in the lateeighteenth century.
+ The 2000s also saw the world’s governments putting in thee↵ort to ‘Master the Internet’ (as the NSA put it) – working out how to collectdata at scale and index it, just as Google does, to make it available to analysts.
+It also saw the emergence of social networks, so that everyone could have ahome online – not just geeks with the skills to create their own handcrafted webpages.
+ And of course, once everyone is online, that includes not just the spooksand the crooks but also the jerks, creeps, racists and bullies.
+Over the past decade, this threat landscape has stabilised.
+ We also knowquite a lot about it.
+ Thanks to Ed Snowden and other whistleblowers, we knowa lot about the capabilities and methods of Western intelligence services; we’vealso learned a lot about China, Russia and other nation-state threat actors.
+ Weknow a lot about cybercrime; online crime now makes up about half of all crime,by volume and by value.
+ There’s a substantial criminal infrastructure based onmalware and botnets with which we are constantly struggling; there’s also a largeecosystem of scams.
+ Many traditional crimes have gone online, and a typical ﬁrmhas to worry not just about external fraudsters but also about dishonest insiders.
+Some ﬁrms have to worry about hostile governments, some about other ﬁrms,and some about activists.
+ Many people have to deal with online hostility, fromkids su↵ering cyber-bullying at school through harassment of elected politiciansto people who are stalked by former partners.
+ And our politics may becomemore polarised because of the dynamics of online extremism.
+One of the ﬁrst things the security engineer needs to do when tackling anew problem is to identify the likely opponents.
+ Although you can design somespeciﬁc system components (such as cryptography) to resist all reasonable ad-versaries, the same is much less true for a complex real-world system.
+ You can’tprotect it against all possible threats and still expect it to do useful work ata reasonable cost.
+ So what sort of capabilities will the adversaries have, andwhat motivation? How certain are you of this assessment, and how might itchange over the system’s lifetime?In this chapter I will classify online andelectronic threats depending on motive.
+ First, I’ll discuss surveillance, intrusionand manipulation done by governments for reasons of state, ranging from cyber-intelligence to cyber-conﬂict operations.
+ Second, I’ll deal with criminals whosemotive is mainly money.
+ Third will be researchers who ﬁnd vulnerabilities forfun or for money, or who report them out of social conscience – compelling ﬁrmsto patch their software and clean up their operations.
+ Finally, I’ll discuss badactors whose reasons are personal and who mainly commit crimes against theperson, from cyber-bullies to stalkers.
+The big service ﬁrms, such as Microsoft, Google and Facebook, have to worryabout all four classes of threat.
+ Most ﬁrms and most private individuals willonly be concerned with some of them.
+ But it’s important for a security engineerto understand the big picture so you can help clients work out what their ownthreat model should be, and what sort of attacks they should plan to forestall.
+Security Engineering36Ross Anderson2.
+2.
+ THE SPOOKS2.
+2The spooksGovernments have a range of tools for both passive surveillance of networks andactive attacks on computer systems.
+ Hundreds of ﬁrms sell equipment for wire-tapping, for radio intercept, and for using various vulnerabilities to take overcomputers, phones and other digital devices.
+ However, there are signiﬁcant dif-ferences among governments in scale, objectives and capabilities.
+ We’ll discussfour representative categories – the USA and its allies, China, Russia and theArab world – from the viewpoint of potential opponents.
+ Even if the spooksaren’t in your threat model today, the tools they use will quite often end up inthe hands of the crooks too, sooner or later.
+2.
+2.
+1The Five EyesJust as everyone in a certain age range remembers where they were when JohnLennon was shot, everyone who’s been in our trade since 2013 remembers wherethey were when they learned of the Snowden revelations on Friday 7th June ofthat year.
+2.
+2.
+1.
+1PrismI was in a hotel in Palo Alto, California, reading the Guardian online before ascheduled visit to Google where I’d been as a scientiﬁc visitor in 2011, helpingdevelop contactless payments for Android phones.
+ The headline was ‘NSA Prismprogram taps in to user data of Apple, Google and others’; the article, writtenby Glenn Greenwald and Ewen MacAskill, describes a system called Prism thatcollects the gmail and other data of users who are not US citizens or permanentresidents, and is carried out under an order from the FISA court [817].
+ Afterbreakfast I drove to the Googleplex, and found that my former colleagues werejust as perplexed as I was.
+ They knew nothing about Prism.
+ Neither did thegmail team.
+ How could such a wiretap have been built? Had an order beenserved on Eric Schmidt, and if so how could he have implemented it without themail and security teams knowing? As the day went on, people stopped talking.
+It turned out that Prism was an internal NSA codename for an access channelthat had been provided to the FBI to conduct warranted wiretaps.
+US lawpermits US citizens to be wiretapped provided an agency convinces a courtto issue a warrant, based on ‘probable cause’ that they were up to no good;but foreigners could be wiretapped freely.
+ So for a foreign target like me, allan NSA intelligence analyst had to do was click on a tab saying he believed Iwas a non-US person.
+ The inquiry would be routed automatically via the FBIinfrastructure and pipe my Gmail to their workstation.
+ According to the article,this program had started at Microsoft in 2007; Yahoo had fought it in court,but lost, joining in late 2008; Google and Facebook had been added in 2009 andApple ﬁnally in 2012.
+ A system that people thought was providing targeted,warranted wiretaps to law enforcement was providing access at scale for foreignintelligence purposes, and according to a slide deck leaked to the Guardian itSecurity Engineering37Ross Anderson2.
+2.
+ THE SPOOKSwas ‘the SIGAD1 most used in NSA reporting’.
+The following day we learned that the source of the story was Edward Snow-den, an NSA system administrator who’d decided to blow the whistle.
+Thestory was that he’d smuggled over 50,000 classiﬁed documents out of a facilityin Hawaii on a memory stick and met Guardian journalists in Hong Kong [818].
+He tried to ﬂy to Latin America on June 21st to claim asylum, but after the USgovernment cancelled his passport he got stuck in Moscow and eventually gotasylum in Russia instead.
+ A consortium of newspapers coordinated a series ofstories describing the signals intelligence capabilities of the ‘Five Eyes’ countries– the USA, the UK, Canada, Australia and New Zealand – as well as how thesecapabilities were not just used but also abused.
+The ﬁrst story based on the leaked documents had actually appeared twodays before the Prism story; it was about how the FISA court had orderedVerizon to hand over all call data records (CDRs) to the NSA in February thatyear [814].
+ This hadn’t got much attention from security professionals as weknew the agencies did that anyway.
+ But it certainly got the attention of lawyersand politicians, as it broke during the Privacy Law Scholars’ Conference andshowed that US Director of National Intelligence James Clapper had lied toCongress when he’d testiﬁed that the NSA collects Americans’ domestic com-munications ‘only inadvertently’.
+ And what was to follow changed everything.
+2.
+2.
+1.
+2TemporaOn June 21st, the press ran stories about Tempora, a program to collect in-telligence from international ﬁbre optic cables [1199].
+ This wasn’t a completesurprise; the journalist Duncan Campbell had described a system called Eche-lon in 1988 which tapped the Intelsat satellite network, keeping voice calls ontape while making metadata available for searching so that analysts could selecttra�c to or from phone numbers of interest [373, 374] (I’ll give more historicalbackground in section 26.
+2.
+6).
+ Snowden gave us an update on the technology.
+ InCornwall alone, 200 transatlantic ﬁbres were tapped and 46 could be collectedat any one time.
+ As each of these carried 10Gb/s, the total data volume couldbe as high as 21Pb a day, so the incoming data feeds undergo massive volumereduction, discarding video, news and the like.
+ Material was then selected usingselectors – not just phone numbers but more general search terms such as IPaddresses – and stored for 30 days in case it turns out to be of interest.
+The Tempora program, like Echelon before it, has heavy UK involvement.
+Britain has physical access to about a quarter of the Internet’s backbone, asmodern cables tend to go where phone cables used to, and they were oftenlaid between the same end stations as nineteenth-century telegraph cables.
+ Soone of the UK’s major intelligence assets turns out to be the legacy of thecommunications infrastructure it built to control its nineteenth-century empire.
+And the asset is indeed signiﬁcant: by 2012, 300 analysts from GCHQ, and 250from the NSA, were sifting through the data, using 40,000 and 31,000 selectorsrespectively to sift 600m ‘telephone events’ each day.
+1SIGINT (Signals Intelligence) Activity DesignatorSecurity Engineering38Ross Anderson2.
+2.
+ THE SPOOKS2.
+2.
+1.
+3MuscularOne of the applications running on top of Tempora was Muscular.
+ Revealedon October 30th, this collected data as it ﬂowed between the data centres oflarge service ﬁrms such as Yahoo and Google [2016].
+ Your mail may have beenencrypted using SSL en route to the service’s front end, but it then ﬂowed in theclear between each company’s data centres.
+ After an NSA PowerPoint slide on‘Google Cloud Exploitation’ was published in the Washington Post – see ﬁgure2.
+1 – the companies scrambled to encrypt everything on their networks.
+ Execu-tives and engineers at cloud service ﬁrms took the smiley as a personal a↵ront.
+It reminded people in the industry that even if you comply with warrants, thespooks will also hack you if they can.
+ It made people outside the industry stopand think: Google had accreted so much access to all our lives via search, mail,maps, calendars and other services that unrestricted intelligence-service accessto its records (and to Facebook’s and Microsoft’s too) was a major privacybreach.
+Figure 2.
+1: Muscular – the slideTwo years later, at a meeting at Princeton which Snowden attended in theform of a telepresence robot, he pointed out that a lot of Internet communica-tions that appear to be encrypted aren’t really, as modern websites use contentdelivery networks (CDNs) such as Akamai and Cloudﬂare; while the web tra�cis encrypted from the user’s laptop or phone to the CDN’s point of presenceat their ISP, it isn’t encrypted on the backhaul unless they pay extra – whichmost of them don’t [86].
+ So the customer thinks the link is encrypted, and it’sprotected from casual snooping – but not from nation states or ﬁrms who canread backbone tra�c.
+2.
+2.
+1.
+4Special collectionThe NSA and CIA jointly operate the Special Collection Service (SCS) whosemost visible activity may be the plastic panels near the roofs of US and alliedSecurity Engineering39Ross Anderson2.
+2.
+ THE SPOOKSembassies worldwide; these hide antennas for hoovering up cellular communica-tion (a program known as ‘Stateroom’).
+ Beyond this, SCS implants collectionequipment in foreign telcos, Internet exchanges and government facilities.
+ Thiscan involve classical spy tradecraft, from placing bugs that monitor speech orelectronic communications, through recruiting moles in target organisations, tothe covert deployment of antennas in target countries to tap internal microwavelinks.
+ Such techniques are not restricted to state targets: Mexican drug car-tel leader ‘El Chapo’ Guzman was caught after US agents suborned his systemadministrator.
+Close-access operations include Tempest monitoring: the collection of infor-mation leaked by the electromagnetic emissions from computer monitors andother equipment, described in 19.
+3.
+2.
+ The Snowden leaks disclose the collectionof computer screen data and other electromagnetic emanations from a number ofcountries’ embassies and UN missions including those of India, Japan, Slovakiaand the EU.
+2.
+2.
+2.
+1.
+5Bullrun and EdgehillSpecial collection increasingly involves supply-chain tampering.
+ SCS routinelyintercepts equipment such as routers being exported from the USA, adds surveil-lance implants, repackages them with factory seals and sends them onward tocustomers.
+ And an extreme form of supply-chain tampering was when the NSAcovertly bought Crypto AG, a Swiss ﬁrm that was the main supplier of cryp-tographic equipment to non-aligned countries during the Cold War; I tell thestory in more detail later in section 26.
+2.
+7.
+1.
+Bullrun is the NSA codename, and Edgehill the GCHQ one, for ‘cryptoenabling’, a $100m-a-year program of tampering with supplies and suppliersat all levels of the stack.
+This starts o↵ with attempts to direct, or misdi-rect, academic research3; it continued with placing trusted people on standardscommittees, and using NIST’s inﬂuence to get weak standards adopted.
+ Onespectacular incident was the Dual EC_DRBG debacle, where NIST standardiseda random number generator based on elliptic curves that turned out to containan NSA backdoor.
+ Most of the actual damage, though, was done by restrictionson cryptographic key length, dovetailed with diplomatic pressure on allies to en-force export controls, so that ﬁrms needing export licenses could have their armstwisted to use an ‘appropriate’ standard, and was entangled with the CryptoWars (which I discuss in section 26.
+2.
+7).
+ The result was that many of the systemsin use today were compelled to use weak cryptography, leading to vulnerabili-ties in everything from hotel and car door locks to VPNs.
+ In addition to that,supply-chain attacks introduce covert vulnerabilities into widely-used software;many nation states play this game, along with some private actors [890].
+ We’llsee vulnerabilities that result from surveillance and cryptography policies in one2If the NSA needs to use high-tech collection against you as they can’t get a softwareimplant into your computer, that may be a compliment!3In the 1990s, when I bid to run a research program in coding theory, cryptography andcomputer security at the Isaac Newton Institute at Cambridge University, a senior o�cialfrom GCHQ o↵ered the institute a £50,000 donation not to go ahead, saying “There’s nothinginteresting happening in cryptography, and Her Majesty’s Government would like this stateof a↵airs to continue”.
+ He was shown the door.
+Security Engineering40Ross Anderson2.
+2.
+ THE SPOOKSchapter after another, and return in Part 3 of the book to discuss the policyhistory in more detail.
+2.
+2.
+1.
+6XkeyscoreWith such a vast collection of data, you need good tools to search it.
+TheFive Eyes search computer data using Xkeyscore, a distributed database thatenables an analyst to search collected data remotely and assemble the results.
+Exposed on July 31 2013, NSA documents describe it as its “widest-reaching”system for developing intelligence; it enables an analyst to search emails, SMSes,chats, address book entries and browsing histories [815].
+ Examples in a 2008training deck include “my target speaks German but is in Pakistan.
+ How can Iﬁnd him?” “Show me all the encrypted Word documents from Iran” and “Showme all PGP usage in Iran”.
+ By searching for anomalous behaviour, the analystcan ﬁnd suspects and identify strong selectors (such as email addresses, phonenumbers or IP addresses) for more conventional collection.
+Xkeyscore is a federated system, where one query scans all sites.
+ Its compo-nents bu↵er information at collection points – in 2008, 700 servers at 150 sites.
+Some appear to be hacked systems overseas from which the NSA malware canexﬁltrate data matching a submitted query.
+ The only judicial approval requiredis a prompt for the analyst to enter a reason why they believe that one of theparties to the conversation is not resident in the USA.
+ The volumes are suchthat tra�c data are kept for 30 days but content for only 3–5 days.
+ Tasked itemsare extracted and sent on to whoever requested them, and there’s a notiﬁcationsystem (Tra�cthief) for tipping o↵ analysts when their targets do anything ofinterest.
+ Extraction is based either on ﬁngerprints or plugins – the latter allowanalysts to respond quickly with detectors for new challenges like steganographyand homebrew encryption.
+Xkeyscore can also be used for target discovery: one of the training queriesis “Show me all the exploitable machines in country X” (machine ﬁngerprintsare compiled by a crawler called Mugshot).
+ For example, it came out in 2015that GCHQ and the NSA hacked the world’s leading provider of SIM cards,the Franco-Dutch company Gemalto, to compromise the keys needed to in-tercept (and if need be spoof) the tra�c from hundreds of millions of mobilephones [1658].
+ The hack used Xkeyscore to identify the ﬁrm’s sysadmins, whowere then phished; agents were also able to compromise billing servers to sup-press SMS billing and authentication servers to steal keys; another techniquewas to harvest keys in transit from Gemalto to mobile service providers.
+ Ac-cording to an interview with Snowden in 2014, Xkeyscore also lets an analystbuild a ﬁngerprint of any target’s online activity so that they can be followedautomatically round the world.
+ The successes of this system are claimed toinclude the capture of over 300 terrorists; in one case, Al-Qaida’s Sheikh Atiy-atallah blew his cover by googling himself, his various aliases, an associate andthe name of his book [1658].
+There’s a collection of decks on Xkeyscore with a survey by Morgan Marquis-Boire, Glenn Greenwald and Micah Lee [1230]; a careful reading of the decksSecurity Engineering41Ross Anderson2.
+2.
+ THE SPOOKScan be a good starting point for exploring the Snowden hoard4.
+2.
+2.
+1.
+7LonghaulBulk key theft and supply-chain tampering are not the only ways to defeatcryptography.
+ The Xkeyscore training deck gives an example: “Show me all theVPN startups in country X, and give me the data so I can decrypt and discoverthe users”.
+VPNs appear to be easily defeated; a decryption service calledLonghaul ingests ciphertext and returns plaintext.
+The detailed descriptionof cryptanalytic techniques is held as Extremely Compartmented Information(ECI) and is not found in the Snowden papers, but some of them talk of recentbreakthroughs in cryptanalysis.
+ What might these be?The leaks do show diligent collection of the protocol messages used to set upVPN encryption, so some cryptographers suggested in 2015 that some variant ofthe “Logjam attack” is feasible for a nation-state attacker against the 1024-bitprime used by most VPNs and many TLS connections with Di�e-Hellman keyexchange [26].
+ Others pointed to the involvement of NSA cryptographers inthe relevant standard, and a protocol ﬂaw discovered later; yet others pointedout that even with advances in number theory or protocol exploits, the NSAhas enough money to simply break 1024-bit Di�e-Hellman by brute force, andthis would be easily justiﬁed if many people used the same small number ofprime moduli – which they do [853].
+ I’ll discuss cryptanalysis in more detail inChapter 5.
+2.
+2.
+1.
+8QuantumThere is a long history of attacks on protocols, which can be spoofed, replayedand manipulated in various ways.
+ (We’ll discuss this topic in detail in Chap-ter 4.
+)The best-documented NSA attack on Internet tra�c goes under thecodename of Quantum and involves the dynamic exploitation of one of thecommunication end-points.
+ Thus, to tap an encrypted SSL/TLS session to awebmail provider, the Quantum system ﬁres a ‘shot’ that exploits the browser.
+There are various ﬂavours; in ‘Quantuminsert’, an injected packet redirects thebrowser to a ‘Foxacid’ attack server.
+ Other variants attack software updatesand the advertising networks whose code runs in mobile phone apps [1995].
+2.
+2.
+1.
+9CNEComputer and Network Exploitation (CNE) is the generic NSA term for hack-ing, and it can be used for more than just key theft or TLS session hijacking;it can be used to acquire access to tra�c too.
+Operation Socialist was theGCHQ codename for a hack of Belgium’s main telco Belgacom5, in 2010–11.
+GCHQ attackers used Xkeyscore to identify three key Belgacom technical sta↵,then used Quantuminsert to take over their PCs when they visited sites likeLinkedIn.
+ The attackers then used their sysadmin privileges to install malware4There’s also a search engine for the collection at https://www.
+edwardsnowden.
+com.
+5It is now called Proximus.
+Security Engineering42Ross Anderson2.
+2.
+ THE SPOOKSon dozens of servers, including authentication servers to leverage further access,billing servers so they could cover their tracks, and the company’s core Ciscorouters [734].
+ This gave them access to large quantities of mobile roaming tra�c,as Belgacom provides service to many foreign providers when their subscribersroam in Europe.
+ The idea that one NATO and EU member state would conducta cyber-attack on the critical infrastructure of another took many by surprise.
+The attack also gave GCHQ access to the phone system in the European Com-mission and other European institutions.
+ Given that these institutions makemany of the laws for the UK and other member states, this was almost as if aUS state governor had got his state troopers to hack AT&T so he could wiretapCongress and the White House.
+Belgacom engineers started to suspect something was wrong in 2012, andrealised they’d been hacked in the spring of 2013; an anti-virus company foundsophisticated malware masquerading as Windows ﬁles.
+ The story went pub-lic in September 2013, and the German news magazine Der Spiegel publishedSnowden documents showing that GCHQ was responsible.
+ After the Belgianprosecutor reported in February 2018, we learned that the attack must havebeen authorised by then UK Foreign Secretary William Hague, but there wasnot enough evidence to prosecute anyone; the investigation had been hamperedin all sorts of ways both technical and political; the software started deletingitself within minutes of discovery, and institutions such as Europol (whose headwas British) refused to help.
+ The Belgian minister responsible for telecomms,Alexander de Croo, even suggested that Belgium’s own intelligence service mighthave informally given the operation a green light [735].
+ Europol later adopteda policy that it will help investigate hacks of ‘suspected criminal origin’; it hasnothing to say about hacks by governments.
+A GCHQ slide deck on CNE explains that it’s used to support conventionalsigint both by redirecting tra�c and by “enabling” (breaking) cryptography;that it must always be “UK deniable”; and that it can also be used for “ef-fects”, such as degrading communications or “changing users’ passwords on ex-tremist website” [735].
+ Other papers show that the agencies frequently targetadmins of phone companies and ISPs in the Middle East, Africa and indeedworldwide – compromising a key technician is “generally the entry ticket to thenetwork” [1139].
+ As one phone company executive explained, “The MNOs wereclueless at the time about network security.
+ Most networks were open to theirsuppliers for remote maintenance with an ID and password and the techie inChina or India had no clue that their PC had been hacked”.
+The hacking tools and methods used by the NSA and its allies are now fairlywell understood; some are shared with law enforcement.
+ The Snowden papersreveal an internal store where analysts can get a variety of tools; a series ofleaks in 2016–7 by the Shadow Brokers (thought to be Russian military intelli-gence, the GRU) disclosed a number of actual NSA malware samples, used byhackers at the NSA’s Tailored Access Operations team to launch attacks [238].
+(Some of these tools were repurposed by the Russians to launch the NotPetyaworm and by the North Koreans in Wannacry, as I’ll discuss later.
+) The bestdocumentation of all is probably about a separate store of goodies used by theCIA, disclosed in some detail to Wikileaks in the ‘Vault 7’ leaks in 2017.
+ Theseinclude manuals for tools that can be used to install a remote access TrojanSecurity Engineering43Ross Anderson2.
+2.
+ THE SPOOKSon your machine, with components to geolocate it and to exﬁltrate ﬁles (in-cluding SSH credentials), audio and video; a tool to jump air gaps by infectingthumb drives; a tool for infecting wiﬁ routers so they’ll do man-in-the-middleattacks; and even a tool for watermarking documents so a whistleblower wholeaks them could be tracked.
+ Many of the tools are available not just for Win-dows but also for OSX and Android; some infect ﬁrmware, making them hardto remove.
+ There are tools for hacking TVs and IoT devices too, and toolsto hamper forensic investigations.
+ The Vault 7 documents are useful readingif you’re curious about the speciﬁcations and manuals for modern governmentmalware [2019].
+ As an example of the law-enforcement use of such tools, in June2020 it emerged that the French police in Lille had since 2018 installed malwareon thousands of Android phones running EncroChat, an encrypted messagingsystem favoured by criminals, leading to the arrest of 800 criminal suspects inFrance, the Netherlands, the UK and elsewhere, as well as the arrest of severalpolice o�cers for corruption and the seizure of several tons of drugs [1332].
+2.
+2.
+1.
+10The analyst’s viewpointThe intelligence analyst thus has a big bag of tools.
+ If they’re trying to ﬁnd thekey people in an organisation – whether the policymakers advising on a criticaldecision, or the lawyers involved in laundering an oligarch’s proﬁts – they canuse the tra�c data in Xkeyscore to map contact networks.
+ There are variousneat tools to help, such as ‘Cotraveler’ which ﬂags up mobile phones that havetraveled together.
+ We have some insight into this process from our own researchinto cybercrime, where we scrape tens of millions of messages from undergroundforums and analyse them to understand crime types new and old.
+ One mightdescribe the process as ‘adaptive message mining’.
+ Just as you use adaptivetext mining when you do a web search, and constantly reﬁne your search termsbased on samples of what you ﬁnd, with message mining you also have metadata– so you can follow threads, trace actors across forums, do clustering analysisand use various other tricks to ‘ﬁnd more messages like this one’.
+ The ability toswitch back and forth between the detailed view you get from reading individualmessages, and the statistical view you get from analysing bulk collections, isextremely powerful.
+Once the analyst moves from the hunting phase to the gathering phase, theycan use Prism to look at the targets’ accounts at Facebook, Google and Mi-crosoft, while Xkeyscore will let them see what websites they visit.
+ Tra�c dataanalysis gives still more: despite the growing use of encryption, the communi-cations to and from a home reveal what app or device is used when and for howlong6.
+ The agencies are pushing for access to end-to-end messaging systemssuch as WhatsApp; in countries like the UK, Australia and China, legislatorshave already authorised this, though it’s not at all clear which US companiesmight comply (I’ll discuss policy in Chapter 26).
+Given a high-value target, there’s a big bag of tools the analyst can installon their laptop or cellphone directly.
+They can locate it physically, turn itinto a room bug and even use it as a remote camera.
+They can download6See for example Hill and Mattu who wiretapped a modern smart home to measurethis [900].
+Security Engineering44Ross Anderson2.
+2.
+ THE SPOOKSthe target’s address book and contact history and feed that into Xkeyscore tosearch recursively for their direct and indirect contacts.
+ Meanwhile the analystcan bug messaging apps, beating the end-to-end encryption by collecting the callcontents once they’ve been decrypted.
+ They can set up an alarm to notify themwhenever the target sends or receives messages of interest, or changes location.
+The coverage is pretty complete.
+ And when it’s time for the kill, the target’sphone can be used to guide a bomb or a missile.
+ Little wonder Ed Snowdeninsisted that journalists interviewing him put their phones in the fridge!Finally, the analyst has also a proxy through which they can access theInternet surreptitiously – typically a machine on a botnet.
+ It might even be thePC in your home o�ce.
+2.
+2.
+1.
+11O↵ensive operationsThe Director NSA also heads the US Cyber Command, which since 2009 hasbeen one of ten uniﬁed commands of the United States Department of Defense.
+It is responsible for o↵ensive cyber operations, of which the one that madea real di↵erence was Stuxnet.
+This was a worm designed to damage Iran’suranium enrichment centrifuges by speeding them up and slowing them downin patterns designed to cause mechanical damage, and was developed jointly bythe USA and Israel [325, 826].
+ It was technically sophisticated, using four zero-day exploits and two stolen code-signing certiﬁcates to spread promiscuouslythrough Windows PCs, until it found Siemens programmable logic controllersof the type used at Iran’s Natanz enrichment plant – where it would then installa rootkit that would issue the destructive commands, while the PC assuredthe operators that everything was ﬁne.
+It was apparently introduced usingUSB drives to bridge the air gap to the Iranian systems, and came to lightin 2010 after copies had somehow spread to central Asia and Indonesia.
+ Twoother varieties of malware (Flame and Duqu) were then discovered using similartricks and common code, performing surveillance at a number of companies inthe Middle East and South Asia; more recent code-analysis tools have traceda lineage of malware that goes back to 2002 (Flowershop) and continued tooperate until 2016 (with the Equation Group tools) [2068].
+Stuxnet acted as a wake-up call for other governments, which rushed to ac-quire ‘cyber-weapons’ and develop o↵ensive cyber doctrine – a set of principlesfor what cyber warriors might do, developed with some thought given to ratio-nale, strategy, tactics and legality.
+ Oh, and the price of zero-day vulnerabilitiesrose sharply.
+2.
+2.
+1.
+12Attack scalingComputer scientists know the importance of how algorithms scale, and exactlythe same holds for attacks.
+ Tapping a single mobile phone is hard.
+ You have todrive around behind the suspect with radio and cryptanalysis gear in your car,risk being spotted, and hope that you manage to catch the suspect’s signal asthey roam from one cell to another.
+ Or you can drive behind them with a falseSecurity Engineering45Ross Anderson2.
+2.
+ THE SPOOKSbase station7 and hope his phone will roam to it as the signal is louder thanthe genuine one; but then you risk electronic detection too.
+ Both are highlyskilled work and low-yield: you lose the signal maybe a quarter of the time.
+So if you want to wiretap someone in central Paris often enough, why not justwiretap everyone? Put antennas on your embassy roof, collect it all, write thedecrypted calls and text messages into a database, and reconstruct the sessionselectronically.
+ If you want to hack everyone in France, hack the telco, perhapsby subverting the equipment it uses.
+ At each stage the capital cost goes up butthe marginal cost of each tap goes down.
+ The Five Eyes strategy is essentially tocollect everything in the world; it might cost billions to establish and maintainthe infrastructure, but once it’s there you have everything.
+The same applies to o↵ensive cyber operations, which are rather like sabo-tage.
+ In wartime, you can send commandos to blow up an enemy radar station;but if you do it more than once or twice, your lads will start to run into alot of sentries.
+ So we scale kinetic attacks di↵erently: by building hundreds ofbomber aircraft, or artillery pieces, or (nowadays) thousands of drones.
+ So howdo you scale a cyber attack to take down not just one power station, but theopponent’s whole power grid? The Five Eyes approach is this.
+ Just as Googlekeeps a copy of the Internet on a few thousand servers, with all the content andlinks indexed, US Cyber Command keeps a copy of the Internet that indexeswhat version of software all the machines in the world are using – the Mugshotsystem mentioned above – so a Five Eyes cyber warrior can instantly see whichtargets can be taken over by which exploits.
+A key question for competitor states, therefore, is not just to what extentthey can create some electronic spaces that are generally o↵-limits to the FiveEyes.
+It’s the extent to which they can scale up their own intelligence ando↵ensive capabilities rather than having to rely on America.
+ The number ofscans and probes that we see online indicates that the NSA are not alone intrying to build cyber weapons that scale.
+Not all of them might be nationstates; some might simply be arms vendors or mercenaries.
+ This raises a hostof policy problems to which we’ll return in Part 3.
+ For now we’ll continue tolook at capabilities.
+2.
+2.
+2ChinaChina is now the leading competitor to the USA, being second not just in termsof GDP but as a technology powerhouse.
+ The Chinese lack the NSA’s networkof alliances and access to global infrastructure (although they’re working hardat that).
+Within China itself, however, they demand unrestricted access tolocal data.
+ Some US service ﬁrms used to operate there, but trouble followed.
+After Yahoo’s systems were used to trap the dissident Wang Xiaoning in 2002,Alibaba took over Yahoo’s China operation in 2005; but there was still a rowwhen Wang’s wife sued Yahoo in US courts in 2007, and showed that Yahoo hadmisled Congress over the matter [1760].
+ In 2008, it emerged that the version ofSkype available in China had been modiﬁed so that messages were scanned forsensitive keywords and, if they were found, the user’s texts were uploaded to a7These devices are known in the USA as a Stingray and in Europe as an IMSI-catcher;they conduct a man-in-the-middle attack of the kind we’ll discuss in detail in section 22.
+2.
+1.
+Security Engineering46Ross Anderson2.
+2.
+ THE SPOOKSserver in China [1959].
+ In December 2009, Google discovered a Chinese attack onits corporate infrastructure, which became known as Operation Aurora; Chineseagents had hacked into the Google systems used to do wiretaps for the FBI(see Prism above) in order to discover which of their own agents in the USAwere under surveillance.
+Google had already su↵ered criticism for operatinga censored version of their search engine for Chinese users, and a few monthslater, they pulled out of China.
+ By this time, Facebook, Twitter and YouTubehad already been blocked.
+ A Chinese strategy was emerging of total domesticcontrol, augmented by ever-more aggressive collection overseas.
+From about 2002, there had been a series of hacking attacks on US and UKdefence agencies and contractors, codenamed ‘Titan Rain’ and ascribed to theChinese armed forces.
+ According to a 2004 study by the US Foreign MilitaryStudies O�ce (FMSO), Chinese military doctrine sees the country in a stateof war with the West; we are continuing the Cold War by attacking China,trying to overthrow its communist regime by exporting subversive ideas to itover the Internet [1881].
+ Chinese leaders see US service ﬁrms, news websitesand anonymity tools such as Tor (which the State Department funds so thatChinese and other people can defeat censorship) as being of one fabric withthe US surveillance satellites and aircraft that observe their military defences.
+Yahoo and Google were thus seen as fair game, just like Lockheed Martin andBAe.
+Our own group’s ﬁrst contact with the Chinese came in 2008.
+ We were askedfor help by the Dalai Lama, who had realised that the Chinese had hacked hiso�ce systems in the run-up to the Beijing Olympics that year.
+One of myresearch students, Shishir Nagaraja, happened to be in Delhi waiting for his UKvisa to be renewed, so he volunteered to go up to the Tibetan HQ in Dharamsalaand run some forensics.
+ He found that about 35 of the 50 PCs in the o�ce of theTibetan government in exile had been hacked; information was being siphonedo↵ to China, to IP addresses located near the three organs of Chinese statesecurity charged with di↵erent aspects of Tibetan a↵airs.
+ The attackers appearto have got in by sending one of the monks an email that seemed to come froma colleague; when he clicked on the attached PDF, it had a JavaScript bu↵eroverﬂow that used a vulnerability in Adobe Reader to take over his machine.
+This technique is called phishing, as it works by o↵ering a lure that someonebites on; when it’s aimed at a speciﬁc individual (as in this case) it’s called spearphishing.
+ They then compromised the Tibetans’ mail server, so that wheneverone person in the o�ce sent a .
+pdf ﬁle to another, it would arrive with anembedded attack.
+ The mail server itself was in California.
+This is pretty sobering, when you stop to think about it.
+ You get an emailfrom a colleague sitting ten feet away, you ask him if he just sent it – and when hesays yes, you click on the attachment.
+ And your machine is suddenly infected bya server that you rent ten thousand miles away in a friendly country.
+ We wrotethis up in a tech report on the ‘Snooping Dragon’ [1374].
+ After it came out, wehad to deal for a while with attacks on our equipment, and heckling at conferencetalks by Chinese people who claimed we had no evidence to attribute the attacksto their government.
+ Colleagues at the Open Net Initiative in Toronto followedthrough, and eventually found from analysis of the hacking tools’ dashboard thatthe same espionage network had targeted 1,295 computers in 103 countries [1223]Security Engineering47Ross Anderson2.
+2.
+ THE SPOOKS– ranging from the Indian embassy in Washington through Associated Press inNew York to the ministries of foreign a↵airs in Thailand, Iran and Laos.
+There followed a series of further reports of Chinese state hacking, from acomplex dispute with Rio Tinto in 2009 over the price of iron ore and a hackof the Melbourne International Film festival in the same year when it showeda ﬁlm about a Uighur leader [1898].
+ In 2011, the Chinese hacked the CIA’scovert communications system, after the Iranians had traced it, and executedabout 30 agents – though that did not become publicly known till later [578].
+The ﬁrst ﬂashbulb moment was a leaked Pentagon report in 2013 that Chinesehackers had stolen some of the secrets of the F35 joint strike ﬁghter, as well asa series of other weapon systems [1379].
+ Meanwhile China and Hong Kong wereamounting for over 80% of all counterfeit goods seized at US ports.
+ The Obamaadministration vowed to make investigations and prosecutions in the theft oftrade secrets a top priority, and the following year ﬁve members of the People’sLiberation Army were indicted in absentia.
+The White House felt compelled to act once more after the June 2015 newsthat the Chinese had hacked the O�ce of Personnel Management (OPM), get-ting access to highly personal data on 22 million current and former federalemployees, ranging from ﬁngerprints to sensitive information from security clear-ance interviews.
+ Sta↵ applying for Top Secret clearances are ordered to divulgeall information that could be used to blackmail them, from teenage drug use tocloseted gay relationships.
+ All sexual partners in the past ﬁve years have to bedeclared for a normal Top Secret clearance; for a Strap clearance (to deal withsignals intelligence material) the candidate even has to report any foreignersthey meet regularly at their church.
+ So this leak a↵ected more than just 22million people.
+ O�cially, this invasive data collection is to mitigate the riskthat intelligence agency sta↵ can be blackmailed.
+ (Cynics supposed it was alsoso that whistleblowers could be discredited.
+) Whatever the motives, putting allsuch information in one place was beyond stupid; it was a real ‘database of ruin’.
+For the Chinese to get all the compromising information on every American witha sensitive government job was jaw-dropping.
+ (Britain screwed up too; in 2008,a navy o�cer lost a laptop containing the personal data of 600,000 people whohad joined the Royal Navy, or tried to [1072].
+) At a summit in September thatyear, Presidents Obama and Xi agreed to refrain from computer-enabled theftof intellectual property for commercial gain8.
+ Nothing was said in public thoughabout military secrets – or the sex lives of federal agents.
+The Chinese attacks of the 2000s used smart people plus simple tools; theattacks on the Tibetans used Russian crimeware as the remote access Trojans.
+The state also co-opted groups of ‘patriotic hackers’, or perhaps used them fordeniability; some analysts noted waves of na¨ıve attacks on western ﬁrms thatwere correlated with Chinese university terms, and wondered whether studentshad been tasked to hack as coursework.
+ The UK police and security servicewarned UK ﬁrms in 2007.
+ By 2009, multiple Chinese probes had been reportedon US electricity ﬁrms, and by 2010, Chinese spear-phishing attacks had been8The Chinese have kept their promise; according to US ﬁrms doing business in China, IP isnow sixth on the list of concerns, down from second in 2014 [704].
+ In any case, the phrase ‘IPtheft’ was always a simpliﬁcation, used to conﬂate the theft of classiﬁed information defencecontractors with the larger issue of compelled technology transfer by other ﬁrms who wantedaccess to Chinese markets and the side-issue of counterfeiting.
+Security Engineering48Ross Anderson2.
+2.
+ THE SPOOKSreported on government targets in the USA, Poland and Belgium [1304].
+ Aswith the Tibetan attacks, these typically used crude tools and had such pooroperational security that it was fairly clear where they came from.
+By 2020 the attacks had become more sophisticated, with a series of ad-vanced persistent threats (APTs) tracked by threat intelligence ﬁrms.
+ A cam-paign to hack the phones of Uighurs involved multiple zero-day attacks, evenon iPhones, that were delivered via compromised Uighur websites [393]; thistargeted not only Uighurs in China but the diaspora too.
+ China also conductsindustrial and commercial espionage, and Western agencies claim they exploitmanaged service providers9.
+ Another approach was attacking software supplychains; a Chinese group variously called Wicked Panda or Barium compromisedsoftware updates from computer maker Asus, a PC cleanup tool and a Koreanremote management tool, as well as three popular computer games, getting itsmalware installed on millions of machines; rather than launching banking trojansor ransomware, it was then used for spying [810].
+ Just as in GCHQ’s OperationSocialist, such indirect strategies give a way to scale attacks in territory whereyou’re not the sovereign.
+ And China was also playing the Socialist game: itcame out in 2019 that someone had hacked at least ten western mobile phonecompanies over the previous seven years and exﬁltrated call data records – andthat the perpetrators appeared to be the APT10 gang, linked to the Chinesemilitary [2017].
+Since 2018 there has been a political row over whether Chinese ﬁrms shouldbe permitted to sell routers and 5g network hardware in NATO countries, withthe Trump administration blacklisting Huawei in May 2019.
+ There had beena previous spat over another Chinese ﬁrm, ZTE; in 2018 GCHQ warned thatZTE equipment “would present risk to UK national security that could not bemitigated e↵ectively or practicably” [1475]10.
+ President Trump banned ZTEfor breaking sanctions on North Korea and Iran, but relented and allowed itsequipment back in the USA subject to security controls11.
+The security controls route had been tried with Huawei, which set up a cen-tre in Oxfordshire in 2010 where GCHQ could study its software as a conditionof the company’s being allowed to sell in the UK.
+ While the analysts did not ﬁndany backdoors, their 2019 report surfaced some scathing criticisms of Huawei’ssoftware engineering practices [931].
+ Huawei had copied a lot of code, couldn’tpatch what they didn’t understand, and no progress was being made in tacklingmany problems despite years of promises.
+ There was an unmanageable num-ber of versions of OpenSSL, including versions that had known vulnerabilitiesand that were not supported: 70 full copies of 4 di↵erent OpenSSL versions,and 304 partial copies of 14 versions.
+Not only could the Chinese hack theHuawei systems; so could anybody.
+ Their equipment had been excluded for9This became public in 2019 with the claim that they had hacked Wipro and used this tocompromise their customers [1093]; but it later emerged that Wipro had been hacked by acrime gang operating for proﬁt.
+10The only router vendor to have actually been caught with a malicious backdoor in itscode is the US company Juniper, which not only used the NSA’s Dual-EC backdoor to makeVPN tra�c exploitable, but did it in such a clumsy way that others could exploit it too – andat least one other party did so [413].
+11This was done as a favour to President Xi, according to former National Security AdviserJohn Bolton, who declared himself ‘appalled’ that the president would interfere in a criminalprosecution [156].
+Security Engineering49Ross Anderson2.
+2.
+ THE SPOOKSsome years from UK backbone routers and from systems used for wiretapping.
+The UK demanded “sustained evidence of improvement across multiple versionsand multiple product ranges” before it will put any more trust in it.
+ A num-ber of countries, including Australia and New Zealand, then banned Huaweiequipment outright, and in 2019 Canada arrested Huawei’s CFO (who is alsoits founder’s daughter) following a US request to extradite her for conspiringto defraud global banks about Huawei’s relationship with a company operatingin Iran.
+ China retaliated by arresting two Canadians, one a diplomat on leave,on spurious espionage charges, and by sentencing two others to death on drugscharges.
+ The USA hit back with a ban on US suppliers selling chips, softwareor support to Huawei.
+ The UK banned the purchase of their telecomms equip-ment from the end of 2020 and said it would remove it from UK networks by2027.
+ Meanwhile, China is helping many less developed countries modernisetheir networks, and this access may help them rival the Five Eyes’ scope in duecourse.
+ Trade policy, industrial policy and cyber-defence strategy have becomeintertwined in a new Cold War.
+Strategically, the question may not be just whether China could use Huaweirouters to wiretap other countries at scale, so much as whether they could useit in time of tension to launch DDoS attacks that would break the Internet bysubverting BGP routing.
+ I discuss this in more detail in the section 21.
+2.
+1.
+ Foryears, China’s doctrine of ‘Peaceful Rise’ meant avoiding conﬂict with other ma-jor powers until they’re strong enough.
+ The overall posture is one of largely de-fensive information warfare, combining pervasive surveillance at home, a walled-garden domestic Internet that is better defended against cyber-attack than any-one else’s, plus considerable and growing capabilities, which are mainly used fordiligent intelligence-gathering in support of national strategic interests.
+ Theyare starting to bully other countries in various ways that sometimes involve on-line operations.
+ In 2016, during a dispute with Vietnam over some islands inthe South China Sea, they hacked the airport systems in Hanoi and Ho ChiMinh City, displaying insulting messages and forcing manual check-in for pas-sengers [1195].
+ In 2020, the EU has denounced China for spreading disruptivefake news about the coronavirus pandemic [1577], and Australia has denouncedcyber-attacks that have happened since it called for an international inquiry intothe pandemic’s origins [935].
+ These information operations displayed a ﬁrst-classovert and covert disinformation capability and followed previous more limitedcampaigns in Hong Kong and Taiwan [564].
+Diplomatic commentators notethat China’s trade policy, although aggressive, is no di↵erent from Japan’s inthe 1970s and not as aggressive as America’s; that the new Cold War is just asmisguided and just as likely to be wasteful and dangerous as the last one; thatChina still upholds the international order more than it disrupts it; and that itupholds it more consistently than the USA has done since WWII [704].
+ China’sexternal propaganda aim is to present itself as a positive socio-economic rolemodel for the world, as it competes for access and inﬂuence and emerges as apeer competitor to the USA and Europe.
+Security Engineering50Ross Anderson2.
+2.
+ THE SPOOKS2.
+2.
+3RussiaRussia, like China, lacks America’s platform advantage and compensates withhacking teams that use spear-phishing and malware.
+ Unlike China, it takes thelow road, acting frequently as a spoiler, trying to disrupt the international order,and sometimes beneﬁting directly via a rise in the price of oil, its main export.
+The historian Timothy Snyder describes Putin’s rise to power and his embraceof oligarchs, orthodox Christianity, homophobia and the fascist ideologue IvanIlyin, especially since rigged elections in 2012.
+ This leaves the Russian state inneed of perpetual struggle against external enemies who threaten the purity ofthe Russian people [1798].
+ Its strategic posture online is di↵erent from China’sin four ways.
+ First, it’s a major centre for cybercrime; underground marketsﬁrst emerged in Russia and the Ukraine in 2003–5, as we’ll discuss in the follow-ing section on cybercrime.
+ Second, although Russia is trying to become moreclosed like China, its domestic Internet is relatively open and intertwined withthe West’s, including major service ﬁrms such as VK and Yandex [605].
+ Third,Russia’s strategy of re-establishing itself as a regional power has been pursuedmuch more aggressively than China’s, with direct military interference in neigh-bours such as Georgia and the Ukraine.
+ These interventions have involved amixed strategy of cyber-attacks plus ‘little green men’ – troops without Russianinsignia on their uniforms – with a political strategy of denial.
+ Fourth, Russiawas humiliated by the USA and Europe when the USSR collapsed in 1989, andstill feels encircled.
+ Since about 2005 its goal has been to undermine the USAand the EU, and to promote authoritarianism and nationalism as an alternativeto the rules-based international order.
+ This has been pursued more forcefullysince 2013; Snyder tells the history [1798].
+ With Brexit, with the emergence ofauthoritarian governments in Hungary, Turkey and Poland, and with author-itarians in coalition governments in Italy, Slovakia and Austria, this strategyappears to be winning.
+Russian cyber-attacks came to prominence in 2007, after Estonia moveda much-hated Soviet-era statue in Tallinn to a less prominent site, and theRussians felt insulted.
+ DDoS attacks on government o�ces, banks and mediacompanies forced Estonia to rate-limit its external Internet access for a fewweeks [692].
+ Russia refused to extradite the perpetrators, most of whom wereRussian, though one ethnic-Russian Estonian teenager was ﬁned.
+ Sceptics saidthat the attacks seemed the work of amateurs and worked because the Estoni-ans hadn’t hardened their systems the way US service providers do.
+ Estonianonetheless appealed to NATO for help, and one outcome was the Tallinn Man-ual, which sets out the law of cyber conﬂict [1664].
+ I’ll discuss this in moredetail in the chapter on electronic and information warfare, in section 23.
+8.
+ Thefollowing year, after the outbreak of a brief war between Russia and Georgia,Russian hackers set up a website with a list of targets in Georgia for Russianpatriots to attack [1990].
+Estonia and Georgia were little more than warm-ups for the Ukraine.
+ Fol-lowing demonstrations in Maidan Square in Kiev against pro-Russian PresidentYanukovich, and an intervention in February 2014 by Russian mercenaries whoshot about a hundred demonstrators, Yanukovich ﬂed.
+ The Russians invadedUkraine on February 24th, annexing Crimea and setting up two puppet statesin the Donbass area of eastern Ukraine.
+ Their tactics combined Russian spe-Security Engineering51Ross Anderson2.
+2.
+ THE SPOOKScial forces in plain uniforms, a welter of propaganda claims of an insurgency byRussian-speaking Ukrainians or of Russia helping defend the population againstUkrainian fascists or of defending Russian purity against homosexuals and Jews;all of this coordinated with a variety of cyber-attacks.
+ For example, in May theRussians hacked the website of the Ukrainian election commission and riggedit to display a message that a nationalist who’d received less than 1% of thevote had won; this was spotted and blocked, but Russian media announced thebogus result anyway [1798].
+The following year, as the conﬂict dragged on, Russia took down 30 elec-tricity substations on three di↵erent distribution systems within half an hour ofeach other, leaving 230,000 people without electricity for several hours.
+ Theyinvolved multiple di↵erent attack vectors that had been implanted over a periodof months, and since they followed a Ukrainian attack on power distribution inCrimea – and switched equipment o↵ when they could have destroyed it instead– seemed to have been intended as a warning [2067].
+ This attack was still tinycompared with the other e↵ects of the conﬂict, which included the shootingdown of a Malaysian Airlines airliner with the loss of all on board; but it wasthe ﬁrst cyber-attack to disrupt mains electricity.
+ Finally on June 27 2017 camethe NotPetya attack – by far the most damaging cyber-attack to date [813].
+The NotPetya worm was initially distributed using the update service forMeDoc, the accounting software used by the great majority of Ukrainian busi-nesses.
+ It then spread laterally in organisations across Windows ﬁle-shares usingthe EternalBlue vulnerability, an NSA exploit with an interesting history.
+ FromMarch 2016, a Chinese gang started using it against targets in Vietnam, HongKong and the Philippines, perhaps as a result of ﬁnding and reverse engineeringit (it’s said that you don’t launch a cyberweapon; you share it).
+ It was leakedby a gang called the ‘Shadow Brokers’ in April 2017, along with other NSAsoftware that the Chinese didn’t deploy, and then used by the Russians in June.
+The NotPetya worm used EternalBlue together with the Mimikatz tool thatrecovers passwords from Windows memory.
+ The worm’s payload pretended tobe ransomware; it encrypted the infected computer’s hard disk and demandeda ransom of $300 in bitcoin.
+ But there was no mechanism to decrypt the ﬁlesof computer owners who paid the ransom, so it was really a destructive service-denial worm.
+ The only way to deal with it was to re-install the operating systemand restore ﬁles from backup.
+The NotPetya attack took down banks, telcos and even the radiation moni-toring systems at the former Chernobyl nuclear plant.
+ What’s more, it spreadfrom the Ukraine to international ﬁrms who had o�ces there.
+The world’slargest container shipping company, Maersk, had to replace most of its comput-ers and compensate customers for late shipments, at a cost of $300m; FedExalso lost $300m, and Mondelez $100m.
+ Mondelez’ insurers refused to pay outon the ground that it was an ‘Act of War’, as the governments of the Ukraine,the USA and the UK all attributed NotPetya to Russian military intelligence,the GRU [1232].
+2016 was marked by the Brexit referendum in the UK and the election ofPresident Trump in the USA, in both of which there was substantial Russianinterference.
+ In the former, the main intervention was ﬁnancial support for theleave campaigns, which were later found to have broken the law by spending tooSecurity Engineering52Ross Anderson2.
+2.
+ THE SPOOKSmuch [1265]; this was backed by intensive campaigning on social media [363].
+ Inthe latter, Russian interference was denounced by President Obama during thecampaign, leading to renewed economic sanctions, and by the US intelligencecommunity afterwards.
+ An inquiry by former FBI director Robert Mueller foundthat Russia interfered very widely via the disinformation and social media cam-paigns run by its Internet Research Agency ‘troll farm’, and by the GRU whichhacked the emails of the Democratic national and campaign committees, mostnotably those of the Clinton campaign chair John Podesta.
+ Some Trump asso-ciates went to jail for various o↵ences.
+As I’ll discuss in section 26.
+4.
+2, it’s hard to assess the e↵ects of such inter-ventions.
+ On the one hand, a report to the US Senate’s Committee on ForeignRelations sets out a story of a persistent Russian policy, since Putin came topower, to undermine the inﬂuence of democratic states and the rules-based in-ternational order, promoting authoritarian governments of both left and right,and causing trouble where it can.
+ It notes that European countries use broaddefensive measures including bipartisan agreements on electoral conduct andraising media literacy among voters; it recommends that these be adopted inthe USA as well [385].
+ On the other hand, Yochai Benkler cautions Democratsagainst believing that Trump’s election was all Russia’s fault; the roots of popu-lar disa↵ection with the political elite are much older and deeper [227].
+ Russia’sinformation war with the West predates Putin; it continues the old USSR’sstrategy of weakening the West by fomenting conﬂict via a variety of nationalliberation movements and terrorist groups (I discuss the information-warfare as-pects in section 23.
+8.
+3).
+ Timothy Snyder places this all in the context of modernRussian history and politics [1798]; his analysis also outlines the playbook fordisruptive information warfare against a democracy.
+ It’s not just about hack-ing substations, but about hacking voters’ minds; about undermining trust ininstitutions and even in facts, exploiting social media and recasting politics asshowbusiness.
+ Putin is a judo player; judo’s about using an opponent’s strengthand momentum to trip them up.
+2.
+2.
+4The restThe rest of the world’s governments have quite a range of cyber capabilities, butcommon themes, including the nature and source of their tools.
+ Middle Easterngovernments were badly shaken by the Arab Spring uprisings, and some eventurned o↵ the Internet for a while, such as Libya in April–July 2010, whenrebels were using Google maps to generate target ﬁles for US, UK and Frenchwarplanes.
+Since then, Arab states have developed strategies that combinespyware and hacking against high-proﬁle targets, through troll farms pumpingout abusive comments in public fora, with physical coercion.
+The operations of the United Arab Emirates were described in 2019 by awhistleblower, Lori Stroud [247].
+ An NSA analyst – and Ed Snowden’s formerboss – she was headhunted by a Maryland contractor in 2014 to work in Dubai asa mercenary, but left after the UAE’s operations started to target Americans.
+The UAE’s main technique was spear-phishing with Windows malware, buttheir most e↵ective tool, called Karma, enabled them to hack the iPhones offoreign statesmen and local dissidents.
+ They also targeted foreigners critical ofSecurity Engineering53Ross Anderson2.
+2.
+ THE SPOOKSthe regime.
+ In one case they social-engineered a UK grad student into installingspyware on his PC on the pretext that it would make his communications hard totrace.
+ The intelligence team consisted of several dozen people, both mercenariesand Emiratis, in a large villa in Dubai.
+ The use of iPhone malware by the UAEgovernment was documented by independent observers [1219].
+In 2018, the government of Saudi Arabia murdered the Washington Postjournalist Jamal Khashoggi in its consulate in Istanbul.
+ The Post campaignedto expose Saudi crown prince Mohammed bin Salman as the man who gave theorder, and in January 2019 the National Enquirer published a special editioncontaining texts showing that the Post’s owner Je↵ Bezos was having an a↵air.
+Bezos pre-empted the Enquirer by announcing that he and his wife were di-vorcing, and hired an investigator to ﬁnd the source of the leak.
+ The Enquirerhad attempted to blackmail Bezos over some photos it had also obtained; itwanted both him and the investigator to declare that the paper hadn’t reliedupon ‘any form of electronic eavesdropping or hacking in their news-gatheringprocess’.
+ Bezos went public instead.
+ According to the investigator, his iPhonehad been hacked by the Saudi Arabian government [199]; the malicious What-sApp message that did the damage was sent from the phone of the Crown Princehimself [1053].
+ The US Justice Department later charged two former Twitteremployees with spying, by disclosing to the Saudis personal account informationof people who criticised their government [1500].
+An even more unpleasant example is Syria, where the industrialisation ofbrutality is a third approach to scaling information collection.
+ Malware attackson dissidents were reported from 2012, and initially used a variety of spear-phishing lures.
+ As the civil war got underway, police who were arresting suspectswould threaten female family members with rape on the spot unless the suspectdisclosed his passwords for mail and social media.
+ They would then spear-phishall his contacts while he was being taken away in the van to the torture chamber.
+This victim-based approach to attack scaling resulted in the compromise ofmany machines not just in Syria but in America and Europe.
+ The campaignsbecame steadily more sophisticated as the war evolved, with false-ﬂag attacks,yet retained a brutal edge with some tools displaying beheading videos [737].
+Thanks to John Scott-Railton and colleagues at Toronto, we have many fur-ther documented examples of online surveillance, computer malware and phoneexploits being used to target dissidents; many in Middle Eastern and Africancountries but also in Mexico and indeed in Hungary [1219].
+ The real issue hereis the ecosystem of companies, mostly in the USA, Europe and Israel, that sup-ply hacking tools to unsavoury states.
+ These tools range from phone malware,though mass-surveillance tools you use on your own network against your owndissidents, to tools that enable you to track and eavesdrop on phones overseasby abusing the signaling system [488].
+ These tools are used by dictators to trackand monitor their enemies in the USA and Europe.
+NGOs have made attempts to push back on this cyber arms trade.
+Inone case NGOs argued that the Syrian government’s ability to purchase mass-surveillance equipment from the German subsidiary of a UK company shouldbe subject to export control, but the UK authorities were unwilling to blockit.
+ GCHQ was determined that if there were going to be bulk surveillance de-vices on President Assad’s network, they should be British devices rather thanSecurity Engineering54Ross Anderson2.
+2.
+ THE SPOOKSUkrainian ones.
+ (I describe this in more detail later in section 26.
+2.
+9.
+) So theethical issues around conventional arms sales persist in the age of cyber; indeedthey can be worse because these tools are used against Americans, Brits andothers who are sitting at home but who are unlucky enough to be on the contactlist of someone an unpleasant government doesn’t like.
+ In the old days, sellingweapons to a far-o↵ dictator didn’t put your own residents in harm’s way; butcyber weapons can have global e↵ects.
+Having been isolated for years by sanctions, Iran has developed an indige-nous cyber capability, drawing on local hacker forums.
+Like Syria, its mainfocus is on intelligence operations, particularly against dissident Iranians, bothat home and overseas.
+ It has also been the target of US and other attacks ofwhich the best known was Stuxnet, after which it traced the CIA’s covert com-munications network and rounded up a number of agents [578].
+ It has launchedboth espionage operations and attacks of its own overseas.
+ An example of theformer was its hack of the Diginotar CA in the Netherlands which enabled itto monitor dissidents’ Gmail; while its Shamoon malware damaged thousandsof PCs at Aramco, Saudi Arabia’s national oil company.
+ The history of Ira-nian cyber capabilities is told by Collin Anderson and Karim Sadjadpour [49].
+Most recently, it attacked Israeli water treatment plants in April 2020; Israelresponded the following month with an attack on the Iranian port of BandarAbbas [229].
+Finally, it’s worth mentioning North Korea.
+ In 2014, after Sony Picturesstarted working on a comedy about a plot to assassinate the North Koreanleader, a hacker group trashed much of Sony’s infrastructure, released embar-rassing emails that caused its top ﬁlm executive Amy Pascal to resign, andleaked some unreleased ﬁlms.
+ This was followed by threats of terrorist attackson movie theatres if the comedy were put on general release.
+ The company putthe ﬁlm on limited release, but when President Obama criticised them for givingin to North Korean blackmail, they put it on full release instead.
+In 2017, North Korea again came to attention after their Wannacry worminfected over 200,000 computers worldwide, encrypting data and demandinga bitcoin ransom – though like NotPetya it didn’t have a means of selectivedecryption, so was really just a destructive worm.
+ It used the NSA Eternal-Blue vulnerability, like NotPetya, but was stopped when a malware researcherdiscovered a kill switch.
+ In the meantime it had disrupted production at car-makers Nissan and Renault and at the Taiwanese chip foundry TSMC, and alsocaused several hospitals in Britain’s National Health Service to close their ac-cident and emergency units.
+ In 2018, the US Department of Justice unsealedan indictment of a North Korean government hacker for both incidents, andalso for a series of electronic bank robberies, including of $81m from the Bankof Bangladesh [1653].
+ In 2019, North Korean agents were further blamed, in aleaked United Nations report, for the theft of over $1bn from cryptocurrencyexchanges [346].
+2.
+2.
+5AttributionIt’s often said that cyber is di↵erent, because attribution is hard.
+ As a generalproposition this is untrue; anonymity online is much harder than you think.
+Security Engineering55Ross Anderson2.
+3.
+ CROOKSEven smart people make mistakes in operational security that give them away,and threat intelligence companies have compiled a lot of data that enable themto attribute even false ﬂag operations with reasonable probability in manycases [180].
+ Yet sometimes it may be true, and people still point to the Cli-mategate a↵air.
+ Several weeks before the 2009 Copenhagen summit on climatechange, someone published over a thousand emails, mostly sent to or from fourclimate scientists at the University of East Anglia, England.
+ Climate scepticsseized on some of them, which discussed how to best present evidence of globalwarming, as evidence of a global conspiracy.
+ O�cial inquiries later establishedthat the emails had been quoted out of context, but the damage had been done.
+People wonder whether the perpetrator could have been the Russians or theSaudis or even an energy company.
+ However one of the more convincing analy-ses suggests that it was an internal leak, or even an accident; only one archiveﬁle was leaked, and its ﬁlename (FOIA2009.
+zip) suggests it may have been pre-pared for a freedom-of-information disclosure in any case.
+ The really interestingthing here may be how the emails were talked up into a conspiracy theory.
+Another possible state action was the Equifax hack.
+ The initial story wasthat on 8th March 2017, Apache warned of a vulnerability in Apache Struts andissued a patch; two days later, a gang started looking for vulnerable systems;on May 13th, they found that Equifax’s dispute portal had not been patched,and got in.
+ The later story, in litigation, was that Equifax had used the defaultusername and password ‘admin’ for the portal [358].
+ Either way, the breach hadbeen preventable; the intruders found a plaintext password ﬁle giving accessto 51 internal database systems, and spent 76 days helping themselves to thepersonal information of at least 145.
+5 million Americans before the intrusionwas reported on July 29th and access blocked the following day.
+ Executives soldstock before they notiﬁed the public on September 7th; Congress was outraged,and the CEO Rick Smith was ﬁred.
+ So far, so ordinary.
+ But no criminal use hasbeen made of any of the stolen information, which led analysts at the time tosuspect that the perpetrator was a nation-state actor seeking personal data onAmericans at scale [1444]; in due course, four members of the Chinese militarywere indicted for it [552].
+In any case, the worlds of intelligence and crime have long been entangled,and in the cyber age they seem to be getting more so.
+ We turn to cybercrimenext.
+2.
+3CrooksCybercrime is now about half of all crime, both by volume and by value, at leastin developed countries.
+ Whether it is slightly more or less than half dependson deﬁnitions (do you include tax fraud now that tax returns are ﬁled online?)and on the questions you ask (do you count harassment and cyber-bullying?)– but even with narrow deﬁnitions, it’s still almost half.
+ Yet the world’s law-enforcement agencies typically spend less than one percent of their budgets onﬁghting it.
+ Until recently, police forces in most jurisdictions did their best toignore it; in the USA, it was dismissed as ‘identity theft’ and counted separately,while in the UK victims were told to complain to their bank instead of the policeSecurity Engineering56Ross Anderson2.
+3.
+ CROOKSfrom 2005–15.
+ The result was that as crime went online, like everything else,the online component wasn’t counted and crime appeared to fall.
+ Eventually,though, the truth emerged in those countries that have started to ask aboutfraud in regular victimisation surveys12.
+Colleagues and I run the Cambridge Cybercrime Centre where we collectand curate data for other researchers to use, ranging from spam and phishthrough malware and botnet command-and-control tra�c to collections of poststo underground crime forums.
+ This section draws on a survey we did in 2019 ofthe costs of cybercrime and how they’ve been changing over time [91].
+Computer fraud has been around since the 1960s, a notable early case beingthe Equity Funding insurance company which from 1964-72 created more than60,000 bogus policies which it sold to reinsurers, creating a special computer sys-tem to keep track of them all.
+ Electronic frauds against payment systems havebeen around since the 1980s, and spam arrived when the Internet was opened toall in the 1990s.
+ Yet early scams were mostly a cottage industry, where individ-uals or small groups collected credit card numbers, then forged cards to use inshops, or used card numbers to get mail-order goods.
+ Modern cybercrime canprobably be dated to 2003–5 when underground markets emerged that enabledcrooks to specialise and get good at their jobs, just as happened in the realeconomy with the Industrial Revolution.
+To make sense of cybercrime, it’s convenient to consider the shared infras-tructure ﬁrst, and then the main types of cybercrime that are conducted forproﬁt.
+ There is a signiﬁcant overlap with the crimes committed by states thatwe considered in the last section, and those committed by individuals againstother individuals that we’ll consider in the next one; but the actors’ motives area useful primary ﬁlter.
+2.
+3.
+1Criminal infrastructureSince about 2005, the emergence of underground markets has led to people spe-cialising as providers of criminal infrastructure, most notably botnet herders,malware writers, spam senders and cashout operators.
+ I will discuss the tech-nology in much greater detail in section 21.
+3; in this section my focus is on theactors and the ecosystem in which they operate.
+ Although this ecosystem con-sists of perhaps a few thousand people with revenues in the tens to low hundredsof millions, they impose costs of many billions on the industry and on society.
+Now that cybercrime has been industrialised, the majority of ‘jobs’ are now inboring roles such as customer support and system administration, including allthe tedious setup work involved in evading law enforcement takedowns [453].
+The ‘ﬁrms’ they work for specialise; the entrepreneurs and technical specialistscan make real money.
+ (What’s more, the cybercrime industry has been boomingduring the coronavirus pandemic.
+)12The USA, the UK, Australia, Belgium and FranceSecurity Engineering57Ross Anderson2.
+3.
+ CROOKS2.
+3.
+1.
+1Botnet herdersThe ﬁrst botnets – networks of compromised computers – may have been seenin 1996 with an attack on the ISP Panix in New York, using compromisedUnix machines in hospitals to conduct a SYN ﬂood attack [368].
+ The next usewas spam, and by 2000 the Earthlink spammer sent over a million phishingemails; its author was sued by Earthlink.
+ Once cyber-criminals started to getorganised, there was a signiﬁcant scale-up.
+We started to see professionallybuilt and maintained botnets that could be rented out by bad guys, whetherspammers, phishermen or others; by 2007 the Cutwail botnet was sending over50 million spams a minute from over a million infected machines [1832].
+ Botswould initially contact a command-and-control server for instructions; thesewould be taken down, or taken over by threat intelligence companies for use assinkholes to monitor infected machines, and to feed lists of them to ISPs andcorporates.
+The spammers’ ﬁrst response was peer-to-peer botnets.
+ In 2007 Storm sud-denly grew to account for 8% of all Windows malware; it infected machinesmostly by malware in email attachments and had them use the eDonkey peer-to-peer network to ﬁnd other infected machines.
+ It was used not just for spambut for DDoS, for pump-and-dump stock scams and for harvesting bank cre-dentials.
+ Defenders got lots of peers to join this network to harvest lists of botaddresses, so the bots could be cleaned up, and by late 2008 Storm had beencut to a tenth of the size.
+ It was followed by Kelihos, a similar botnet that alsostole bitcoins; its creator, a Russian national, was arrested while on holiday inSpain in 2017 and extradited to the USA where he pled guilty in 2018 [661].
+The next criminal innovation arrived with the Conﬁcker botnet: the domaingeneration algorithm (DGA).
+ Conﬁcker was a worm that spread by exploitinga Windows network service vulnerability; it generated 250 domain names everyday, and infected machines would try them all out in the hope that the botmasterhad managed to rent one of them.
+ Defenders started out by simply buying upthe domains, but a later variant generated 50,000 domains a day and an industryworking group made agreements with registrars that these domains would simplybe put beyond use.
+ By 2009 Conﬁcker had grown so large, with maybe tenmillion machines, that it was felt to pose a threat to the largest websites andperhaps even to nation states.
+ As with Storm, its use of randomisation provedto be a two-edged sword; defenders could sit on a subset of the domains andharvest feeds of infected machines.
+ By 2015 the number of infected machineshad fallen to under a million.
+Regardless of whether something can be done to take out the command-and-control system, whether by arresting the botmaster or by technical tricks,the universal ﬁx for botnet infections is to clean up infected machines.
+ Butthis raises many issues of scale and incentives.
+ While AV companies make toolsavailable, and Microsoft supplies patches, many people don’t use them.
+ So longas your infected PC is merely sending occasional spam but works well enoughotherwise, why should you go to the trouble of doing anything? But bandwidthcosts ISPs money, so the next step was that some ISPs, particularly the cablecompanies like Comcast, would identify infected machines and conﬁne theirusers to a ‘walled garden’ until they promised to clean up.
+ By 2019 that hasSecurity Engineering58Ross Anderson2.
+3.
+ CROOKSbecome less common as people now have all sorts of devices on their wiﬁ, manyof which have no user interface; communicating with human users has becomeharder.
+In 2020, we ﬁnd many botnets with a few tens of thousands of machines thatare too small for most defenders to care about, plus some large ones that tendto be multilayer – typically with peer-to-peer mechanisms at the bottom thatenable the footsoldier bots to communicate with a few control nodes, which inturn use a domain generation algorithm to ﬁnd the botmaster.
+ Fragmentingthe footsoldiers into a number of small botnets makes it hard for defenders toinﬁltrate all of them, while the control nodes may be located in places that arehard for defenders to get at.
+ The big money for such botnets in 2020 appearsto be in clickfraud.
+The latest innovation – since October 2016 – is Mirai, a family of botnetsthat exploit IoT devices.
+ The ﬁrst Mirai worm infected CCTV cameras that hadbeen manufactured by Xiaomi and that had a known factory default passwordthat couldn’t be changed.
+ Mirai botnets scan the Internet’s IPv4 address spacefor other vulnerable devices which typically get infected within minutes of beingpowered up.
+ The ﬁrst attack was on DynDNS and took down Twitter for sixhours on the US eastern seaboard.
+ Since then there have been over a thousandvariants, which researchers study to determine what’s changed and to work outwhat countermeasures might be used.
+At any one time, there may be half a dozen large botnet herders.
+ The Miraioperators, for example, seem to be two or three groups that might have involveda few dozen people.
+2.
+3.
+1.
+2Malware devsIn addition to the several hundred software engineers who write malware for theworld’s intelligence agencies and their contractors, there may be hundreds ofpeople writing malware for the criminal market; nobody really knows (thoughwe can monitor tra�c on hacker forums to guess the order of magnitude).
+Within this community there are specialists.
+ Some concentrate on turningvulnerabilities into exploits, a nontrivial task for modern operating systems thatuse stack canaries, ASLR and other techniques we’ll discuss later in section 6.
+4.
+1.
+Others specialise in the remote access Trojans that the exploits install; othersbuild the peer-to-peer and DGA software for resilient command-and-controlcommunications; yet others design specialised payloads for bank fraud.
+ Thehighest-value operations seem to be platforms that are maintained with constantupgrades to cope with the latest countermeasures from the anti-virus companies.
+Within each specialist market segment there are typically a handful of operators,so that when we arrest one of them it makes a di↵erence for a while.
+ Some ofthe providers are based in jurisdictions that don’t extradite their nationals, likeRussia, and Russian crimeware is used not just by Russian state actors but byothers too.
+As Android has taken over from Windows as the most frequently used oper-ating system we’ve seen a rise in Android malware.
+ In China and in countrieswith a lot of second-hand and older phones, this may be software that uses anSecurity Engineering59Ross Anderson2.
+3.
+ CROOKSunpatched vulnerability to root an Android phone; the USA and Europe havelots of unpatched phones (as many OEMs stop o↵ering patches once a phone isno longer on sale) but it’s often just apps that do bad things, such as stealingSMSes used to authenticate banking transactions.
+2.
+3.
+1.
+3Spam sendersSpamming arrived on a small scale when the Internet opened to the public in themid-1990s, and by 2000 we saw the Earthlink spammer making millions fromsending phishing lures.
+ By 2010 spam was costing the world’s ISPs and techcompanies about $1bn a year in countermeasures, but it earned its operatorsperhaps one percent of that.
+ The main beneﬁciaries may have been webmailservices such as Yahoo, Hotmail and Gmail, which can operate better spamﬁlters because of scale; during the 2010s, hundreds of millions of people switchedto using their services.
+Spam is now a highly specialised business, as getting past modern spam ﬁltersrequires a whole toolbox of constantly-changing tricks.
+ If you want to use spamto install ransomware, you’re better o↵ paying an existing service than trying tolearn it all from scratch.
+ Some spam involves industrial-scale email compromise,which can be expensive for the victim; some $350m was knocked o↵ the $4.
+8bnprice at which Yahoo was sold to Verizon after a bulk compromise [771].
+2.
+3.
+1.
+4Bulk account compromiseSome botnets are constantly trying to break into email and other online accountsby trying to guess passwords and password recovery questions.
+ A large emailservice provider might be recovering several tens of thousands of accounts everyday.
+There are peaks, typically when hackers compromise millions of emailaddresses and passwords at one website and then try them out at all the others.
+In 2019, this credential stu�ng still accounts for the largest number of attemptedaccount compromises by volume [1882].
+ Compromised accounts are sold on topeople who exploit them in various ways.
+ Primary email accounts often haverecovery information for other accounts, including bank accounts if the attackeris lucky.
+ They can also be used for scams such as the stranded traveler, wherethe victim emails all their friends saying they’ve been robbed in some foreigncity and asking for urgent ﬁnancial help to pay the hotel bill.
+ If all else fails,compromised email accounts can be used to send spam.
+A variant on the theme is the pay-per-install service, which implants malwareon phones or PCs to order and at scale.
+ This can involve a range of phishinglures in a variety of contexts, from free porn sites that ask you to install a specialviewer, to sports paraphernalia o↵ers and news about topical events.
+ It can alsouse more technical means such as drive-by downloads.
+ Such services are ofteno↵ered by botnets which need them to maintain their own numbers; they mightcharge third party customers $10-15 per thousand machines infected in the USAand Europe, and perhaps $3 for Asia.
+Security Engineering60Ross Anderson2.
+3.
+ CROOKS2.
+3.
+1.
+5Targeted attackersWe’ve seen the emergence of hack-for-hire operators who will try to compromisea speciﬁc target account for a fee, of typically $750 [1882].
+ They will investi-gate the target, make multiple spear-phishing attempts, try password recoveryprocedures, and see if they can break in through related accounts.
+ This contin-ues a tradition of private eyes who traditionally helped in divorce cases and alsostalked celebrities on behalf of red-top newspapers – though with even fewer eth-ical constraints now that services can be purchased anonymously online.
+ JohnScott-Railton and colleagues exposed the workings of Dark Basin, a hack-for-hire company that had targeted critics of ExxonMobil, and also net neutralityadvocates, and traced it to a company in India [1692].
+In recent years, targeted attacks have also been used at scale against smallbusiness owners and the ﬁnance sta↵ of larger ﬁrms in order to carry out variouskinds of payment fraud, as I’ll discuss below in 2.
+3.
+2.
+2.
+3.
+1.
+6Cashout gangsBack in the twentieth century, people who stole credit card numbers would haveto go to the trouble of shopping for goods and then selling them to get moneyout.
+ Nowadays there are specialists who buy compromised bank credentials onunderground markets and exploit them.
+ The prices reveal where the real valuelies in the criminal chain; a combination of credit card number and expiry datesells for under a dollar, and to get into the single dollars you need a CVV, thecardholder’s name and address, and more.
+Cashout techniques change every few years, as paths are discovered throughthe world’s money-laundering controls, and the regulations get tweaked to blockthem.
+ Some cashout ﬁrms organise armies of mules to whom they transfer someof the risk.
+ Back in the mid-2000s, mules could be drug users who would go tostores and buy goods with stolen credit cards; then there was a period whenunwitting mules were recruited by ads promising large earnings to ‘agents’ torepresent foreign companies but who were used to remit stolen funds throughtheir personal bank accounts.
+The laundrymen next used Russian banks inLatvia, to which Russian mules would turn up to withdraw cash.
+ Then LibertyReserve, an unlicensed digital currency based in Costa Rica, was all the rageuntil it was closed down and its founder arrested in 2013.
+ Bitcoin took overfor a while but its popularity with the cybercrime community tailed o↵ as itsprice became more volatile, as the US Department of the Treasury started arm-twisting bitcoin exchanges into identifying their customers.
+As with spam, cashout is a constantly evolving attack-defence game.
+ Wemonitor it and analyse the trends using CrimeBB, a database we’ve assembledof tens of millions of posts in underground hacker forums where cybercriminalsbuy and sell services including cashout [1499].
+ It also appears to favour gangswho can scale up, until they get big enough to attract serious law-enforcementattention: in 2020, one Sergey Medvedev pleaded guilty to inﬂicting more than$568 million in actual losses over the period 2010–15 [1928].
+Security Engineering61Ross Anderson2.
+3.
+ CROOKS2.
+3.
+1.
+7RansomwareOne reason for the decline in cryptocurrency may have been the growth ofransomware, and as the gangs involved in this switched to payment methodsthat are easier for victims to use.
+ By 2016–17, 42% of ransomware encounteredby US victims demanded prepaid vouchers such as Amazon gift cards; 14%demanded wire transfers and only 12% demanded cryptocurrency; a lot of thelow-end ransomware aimed at consumers is now really scareware as it doesn’tactually encrypt ﬁles at all [1742].
+Since 2017, we’ve seen ransomware-as-a-service platforms; the operators who use these platforms are often amateursand can’t decrypt even if you’re willing to pay.
+Meanwhile a number of more professional gangs penetrate systems, installransomware, wait until several days or weeks of backup data have been encryptedand demand substantial sums of bitcoin.
+ This has grown rapidly over 2019–20,with the most high-proﬁle ransomware victims in the USA being public-sectorbodies; several hundred local government bodies and a handful of hospitalshave su↵ered service failures [358].
+ During the pandemic, more hospitals havebeen targeted; the medical school at UCSF paid over $1m [1480].
+ It’s an in-ternational phenomenon, though, and many private-sector ﬁrms fall victim too.
+Ransomware operators have also been threatening large-scale leaks of personaldata to bully victims into paying.
+2.
+3.
+2Attacks on banking and payment systemsAttacks on card payment systems started with lost and stolen cards, with forgeryat scale arriving in the 1980s; the dotcom boom ramped things up further inthe 1990s as many businesses started selling online with little idea of how todetect fraud; and it was card fraud that spawned underground markets in themid-2000s as criminals sought ways to buy and sell stolen card numbers as wellas related equipment and services.
+Another signiﬁcant component is pre-issue fraud, known in the USA as ‘iden-tity theft’ [670], where criminals obtain credit cards, loans and other assets inyour name and leave you to sort out the mess.
+ I write ‘identity theft’ in paren-theses as it’s really just the old-fashioned o↵ence of impersonation.
+ Back in thetwentieth century, if someone went to a bank, pretended to be me, borrowedmoney from them and vanished, then that was the bank’s problem, not mine.
+ Inthe early twenty-ﬁrst, banks took to claiming that it’s your identity that’s beenstolen rather than their money [1727].
+ There is less of that liability dumpingnow, but the FBI still records much cybercrime as ‘identity theft’ which helpskeep it out of the mainstream US crime statistics.
+The card fraud ecosystem is now fairly stable.
+ Surveys in 2011 and 2019show that while card fraud doubled over the decade, the loss fell slightly asa percentage of transaction value [90, 91]; the system has been getting moree�cient as it grows.
+ Many card numbers are harvested in hacking attacks onretailers, which can be very expensive for them once they’ve paid to notifya↵ected customers and reimburse banks for reissued cards.
+ As with the criminalinfrastructure, the total costs may be easily two orders of magnitude greaterthan anything the criminals actually get away with.
+Security Engineering62Ross Anderson2.
+3.
+ CROOKSAttacks on online banking ramped up in 2005 with the arrival of large-scalephishing attacks; emails that seemed to come from banks drove customers toimitation bank websites that stole their passwords.
+ The banks responded withtechniques such as two-factor authentication, or the low-cost substitute of askingfor only a few letters of the password at a time; the crooks’ response, from about2009, has been credential-stealing malware.
+ Zeus and later Trojans lurk on aPC until the user logs on to a bank whose website they recognise; they thenmake payments to mule accounts and hide their activity from the user – theso-called ‘man-in-the-browser attack’.
+ (Some Trojans even connect in real timeto a human operator.
+) The crooks behind the Zeus and later the Dridex bankingmalware were named and indicted by US investigators in December 2019, andaccused of stealing some $100m, but they remain at liberty in Russia [795].
+Other gangs have been broken up and people arrested for such scams, whichcontinue to net in the hundreds of millions to low billions a year worldwide.
+Firms also have to pay attention to business email compromise, where acrook compromises a business email account and tells a customer that theirbank account number has changed; or where the crook impersonates the CEOand orders a ﬁnancial controller to make a payment; and social engineeringattacks by people pretending to be from your bank who talk you into releasinga code to authorise a payment.
+ Most targeted attacks on company paymentsystems can in theory be prevented by the control procedures that most largeﬁrms already have, and so the typical target is a badly-run large ﬁrm, or amedium-sized ﬁrm with enough money to be worth stealing but not enoughcontrol to lock everything down.
+I’ll discuss the technicalities of such frauds in Chapter 12, along with a grow-ing number of crimes that directly a↵ect only banks, their regulators and theirretail customers.
+ I’ll also discuss cryptocurrencies, which facilitate cybercrimesfrom ransomware to stock frauds, in Chapter 20.
+2.
+3.
+3Sectoral cybercrime ecosystemsA number of sectors other than banking have their own established cybercrimescenes.
+ One example is travel fraud.
+ There’s a whole ecosystem of people whosell fraudulently obtained air tickets, which are sometimes simply bought withstolen credit card numbers, sometimes obtained directly by manipulating orhacking the systems of travel agents or airlines, sometimes booked by corruptsta↵ at these ﬁrms, and sometimes scammed from the public directly by stealingtheir air miles.
+ The resulting cut-price tickets are sold directly using spam orthrough various a�liate marketing scams.
+ Some of the passengers who use themto ﬂy know they’re dubious, while others are dupes – which makes it hard to dealwith the problem just by arresting people at the boarding gate.
+ (The scammersalso supply tickets at the last minute, so that the alarms are usually too late.
+)For an account and analysis of travel fraud, see Hutchings [936].
+ An increasingnumber of other business sectors are acquiring their own dark side, and I willtouch on some of them in later chapters.
+Security Engineering63Ross Anderson2.
+3.
+ CROOKS2.
+3.
+4Internal attacksFraud by insiders has been an issue since businesses started hiring people.
+ Em-ployees cheat the ﬁrm, partners cheat each other, and ﬁrms cheat their share-holders.
+ The main defence is bookkeeping.
+ The invention of double-entry book-keeping, of which our earliest records are from the Cairo of a thousand yearsago, enabled businesses to scale up beyond the family that owned them.
+ Thiswhole ecosystem is evolving as technology does, and its design is driven by theBig Four accounting ﬁrms who make demands on their audit clients that inturn drive the development of accounting software and the supporting securitymechanisms.
+ I discuss all this at length in Chapter 12.
+ There are also insideattacks involving whistleblowing, which I discuss below.
+2.
+3.
+5CEO crimesCompanies attack each other, and their customers too.
+ From the 1990s, printervendors have used cryptography to lock their customers in to using proprietaryink cartridges, as I describe in section 24.
+6, while companies selling reﬁlls havebeen breaking the crypto.
+ Games console makers have been playing exactlythe same game with aftermarket vendors.
+ The use of cryptography for acces-sory control is now pervasive, being found even on water ﬁlter cartridges infridges [1071].
+ Many customers ﬁnd this annoying and try to circumvent thecontrols.
+ The US courts decided in the Lexmark v SCC case that this was ﬁne:the printer vendor Lexmark sued SCC, a company that sold clones of its securitychips to independent ink vendors, but lost.
+ So the incumbent can now hire thebest cryptographers they can ﬁnd to lock their products, while the challengercan hire the best cryptanalysts they can ﬁnd to unlock them – and customerscan hack them any way they can.
+Here, the conﬂict is legal and open.
+Aswith state actors, corporates sometimes assemble teams with multiple PhDs,millions of dollars in funding, and capital assets such as electron microscopes13.
+We discuss this in greater detail later in section 24.
+6.
+Not all corporate attacks are conducted as openly.
+ Perhaps the best-knowncovert hack was by Volkswagen on the EU and US emissions testing schemes;diesel engines sold in cars were programmed to run cleanly if they detected thestandard emission test conditions, and e�ciently otherwise.
+ For this, the CEOof VW was ﬁred and indicted in the USA (to which Germany won’t extraditehim), while the CEO of Audi was ﬁred and jailed in Germany [1084].
+VWhas set aside e25bn to cover criminal and civil ﬁnes and compensation.
+ Othercarmakers were cheating too; Daimler was ﬁned e860m in Europe in 2019 [1466],and in 2020 reached a US settlement consisting of a ﬁne of $1.
+5bn from fourgovernment agencies plus a class action of $700m [1856].
+ Settlements for othermanufacturers and other countries are in the pipeline.
+Sometimes products are designed to break whole classes of protection system,an example being the overlay SIM cards described later in Chapter 12.
+ Theseare SIM cards with two sides and only 160 microns thick, which you stick ontop of the SIM card in your phone to provide a second root of trust; they were13Full disclosure: both our hardware lab and our NGO activities have on occasion receivedfunding from such actors.
+Security Engineering64Ross Anderson2.
+3.
+ CROOKSdesigned to enable people in China to defeat the high roaming charges of theearly 2010s.
+ The overlay SIM essentially does a man-in-the-middle attack onthe real SIM, and can be programmed in Javacard.
+ A side-e↵ect is that suchSIMs make it really easy to do some types of bank fraud.
+So when putting together the threat model for your system, stop and thinkwhat capable motivated opponents you might have among your competitors, oramong ﬁrms competing with suppliers on which products you depend.
+ The obvi-ous attacks include industrial espionage, but nowadays it’s much more complexthan that.
+2.
+3.
+6WhistleblowersIntelligence agencies, and secretive ﬁrms, can get obsessive about ‘the insiderthreat’.
+ But in 2018, Barclays Bank’s CEO was ﬁned £642,000 and orderedto repay £500,000 of his bonus for attempting to trace a whistleblower in thebank [698].
+ So let’s turn it round and look at it from the other perspective –that of the whistleblower.
+ Many are trying to do the right thing, often at a fairlymundane level such as reporting a manager who’s getting bribes from suppliersor who is sexually harassing sta↵.
+ In regulated industries such as banking theymay have a legal duty to report wrongdoing and legal immunity against claimsof breach of conﬁdence by their employer.
+ Even then, they often lose becauseof the power imbalance; they get ﬁred and the problem goes on.
+ Many securityengineers think the right countermeasure to leakers is technical, such as data lossprevention systems, but robust mechanisms for sta↵ to report wrongdoing areusually more important.
+ Some organisations, such as banks, police forces andonline services, have mechanisms for reporting crimes by sta↵ but no e↵ectiveprocess for raising ethical concerns about management decisions14.
+But even basic whistleblowing mechanisms are often an afterthought; theytypically lead the complainant to HR rather than to the board’s audit com-mittee.
+ External mechanisms may be little better.
+ One big service ﬁrm rana “Whistle-blowing hotline” for its clients in 2019; but the web page code hastrackers from LinkedIn, Facebook and Google, who could thus identify unhappysta↵ members, and also JavaScript from CDNs, littered with cookies and refer-rers from yet more IT companies.
+ No technically savvy leaker would use sucha service.
+ At the top end of the ecosystem, some newspapers o↵er ways forwhistleblowers to make contact using encrypted email.
+But the mechanismstend to be clunky and the web pages that promote them do not always educatepotential leakers about either the surveillance risks, or the operational securitymeasures that might counter them.
+ I discuss the usability and support issuesaround whistleblowing in more detail in Chapter 25.
+This is mostly a policy problem rather than a technical one.
+ It’s di�cultto design a technical mechanism whereby honest sta↵ can blow the whistle onabuses that have become ingrained in an organisation’s culture, such as pervasivesexual harassment or ﬁnancial misconduct.
+ In most cases, it’s immediately clearwho the whistleblower is, so the critical factor is whether the whistleblower will14Google sta↵ ended up going on strike in 2018 about the handling of sexual harassmentscandals.
+Security Engineering65Ross Anderson2.
+4.
+ GEEKSget external support.
+ For example, will they ever get another job? This isn’tjust a matter of formal legal protection but also of culture.
+ For example, therape conviction of Harvey Weinstein empowered many women to protest aboutsexual harassment and discrimination; hopefully the Black Lives Matter protestswill similarly empower people of colour [31].
+An example where anonymity did help, though, was the UK parliamentaryexpenses scandal of 2008–9.
+ During a long court case about whether the publiccould get access to the expense claims of members of parliament, someone wentto the PC where the records were kept, copied them to a DVD and sold the lotto the Daily Telegraph.
+ The paper published the juicy bits in instalments allthrough May and June, when MPs gave up and published the lot on Parliament’swebsite.
+ Half-a-dozen ministers resigned; seven MPs and peers went to prison;dozens of MPs stood down or lost their seats at the following election; and therewas both mirth and outrage at some of the things charged to the taxpayer.
+ Thewhistleblower may have technically committed a crime, but their action wasclearly in the public interest; now all parliamentary expenses are public, as theyshould have been all along.
+ If a nation’s lawmakers have their hands in the till,what else will clean up the system?Even in the case of Ed Snowden, there should have been a robust way forhim to report unlawful conduct by the NSA to the appropriate arm of gov-ernment, probably a Congressional committee.
+ But he knew that a previouswhistleblower, Bill Binney, had been arrested and harassed after trying to dothat.
+ In hindsight, that aggressive approach was unwise, as President Obama’sNSA review group eventually conceded.
+ At the less exalted level of a commer-cial ﬁrm, if one of your sta↵ is stealing your money, and another wants to tellyou about it, you’d better make that work.
+2.
+4GeeksOur third category of attacker are the people like me – researchers who inves-tigate vulnerabilities and report them so they can be ﬁxed.
+ Academics lookfor new attacks out of curiosity, and get rewarded with professional acclaim –which can lead to promotion for professors and jobs for the students who help us.
+Researchers working for security companies also look for newsworthy exploits;publicity at conferences such as Black Hat can win new customers.
+ Hobby hack-ers break into stu↵ as a challenge, just as people climb mountains or play chess;hacktivists do it to annoy companies they consider to be wicked.
+ Whether onthe right side of the law or not, we tend to be curious introverts who need to feelin control, but accept challenges and look for the ‘rush’.
+ Our reward is oftenfame – whether via academic publications, by winning customers for a securityconsulting business, by winning medals from academic societies or governmentagencies, or even on social media.
+ Sometimes we break stu↵ out of irritation,so we can circumvent something that stops us ﬁxing something we own; andsometimes there’s an element of altruism.
+ For example, people have come to usin the past complaining that their bank cards had been stolen and used to buystu↵, and the banks wouldn’t give them a refund, saying their PIN must havebeen used, when it hadn’t.
+ We looked into some of these cases and discoveredSecurity Engineering66Ross Anderson2.
+5.
+ THE SWAMPthe No-PIN and preplay attacks on chip and PIN systems, which I’ll describein the chapter on banking (the bad guys had actually discovered these attacks,but we replicated them and got justice for some of the victims).
+Security researchers who discovered and reported vulnerabilities to a softwarevendor or system operator used to risk legal threats, as companies sometimesthought this would be cheaper than ﬁxing things.
+ So some researchers tookto disclosing bugs anonymously on mailing lists; but this meant that the badguys could use them at once.
+ By the early 2000s, the IT industry had evolvedpractices of responsible disclosure whereby researchers disclose the bug to themaintainer some months in advance of disclosure.
+Many ﬁrms operate bug-bounty programs that o↵er rewards for vulnerabilities; as a result, independentresearchers can now make serious money selling vulnerabilities, and more thanone assiduous researcher has now earned over $1m doing this.
+ Since the Stuxnetworm, governments have raced to stockpile vulnerabilities, and we now see someﬁrms that buy vulnerabilities from researchers in order to weaponise them, andsell them to cyber-arms suppliers.
+ Once they’re used, they spread, are eventuallyreverse-engineered and patched.
+ I’ll discuss this ecosystem in more detail in thechapters on economics and assurance.
+Some more traditional sectors still haven’t adopted responsible disclosure.
+Volkswagen sued researchers in the universities of Birmingham and Nijmegenwho reverse-engineered some online car theft tools and documented how poortheir remote key entry system was.
+ The company lost, making fools of them-selves and publicising the insecurity of their vehicles (I’ll discuss the technicaldetails in section 4.
+3.
+1 and the policy in section 27.
+5.
+7.
+2).
+ Eventually, as soft-ware permeates everything, software industry ways of working will become morewidespread too.
+ In the meantime, we can expect turbulence.
+ Firms that coverup problems that harm their customers will have to reckon with the possibilitythat either an internal whistleblower, or an external security researcher, willﬁgure out what’s going on, and when that happens there will often be an estab-lished responsible disclosure process to invoke.
+ This will impose costs on ﬁrmsthat fail to align their business models with it.
+2.
+5The SwampOur fourth category is abuse, by which we usually mean o↵ences against theperson rather than against property.
+ These range from cyber-bullying at schoolsall the way to state-sponsored Facebook advertising campaigns that get peopleto swamp legislators with death threats.
+ I’ll deal ﬁrst with o↵ences that scale,including political harassment and child sex abuse material, and then with of-fences that don’t, ranging from school bullying to intimate partner abuse.
+2.
+5.
+1Hacktivism and hate campaignsPropaganda and protest evolved as technology did.
+ Ancient societies had tomake do with epic poetry; cities enabled people to communicate with hundredsof others directly, by making speeches in the forum; and the invention of writingenabled a further scale-up.
+ The spread of printing in the sixteenth century ledSecurity Engineering67Ross Anderson2.
+5.
+ THE SWAMPto wars of religion in the seventeenth, daily newspapers in the eighteenth andmass-market newspapers in the nineteenth.
+ Activists learned to compete forattention in the mass media, and honed their skills as radio and then TV camealong.
+Activism in the Internet age started o↵ with using online media to mobilisepeople to do conventional lobbying, such as writing to legislators; organisationssuch as Indymedia and Avaaz developed expertise at this during the 2000s.
+In 2011, activists such as Wael Ghonim used social media to trigger the ArabSpring, which we discuss in more detail in section 26.
+4.
+1.
+ Since then, govern-ments have started to crack down, and activism has spread into online hatecampaigns and radicalisation.
+Many hate campaigns are covertly funded bygovernments or opposition parties, but by no means all: single-issue campaigngroups are also players.
+ If you can motivate hundreds of people to send angryemails or tweets, then a company or individual on the receiving end can have areal problem.
+ Denial-of-service attacks can interrupt operations while doxxingcan do real brand damage as well as causing distress to executives and sta↵.
+Activists vary in their goals, in their organisational coherence and in theextent to which they’ll break the law.
+There’s a whole spectrum, from thecompletely law-abiding NGOs who get their supporters to email legislators tothe slightly edgy, who may manipulate news by getting bots to click on newsstories, to game the media analytics and make editors pay more attention totheir issue.
+ Then there are whistleblowers who go to respectable newspapers,political partisans who harass people behind the mild anonymity of Twitteraccounts, hackers who break into target ﬁrms and vandalise their websites oreven doxx them.
+ The Climategate scandal, described in 2.
+2.
+5 above, may bean example of doxing by a hacktivist.
+ At the top end, there are the hard-coretypes who end up in jail for terrorist o↵ences.
+During the 1990s, I happily used email and usenet to mobilise people againstsurveillance bills going through the UK parliament, as I’ll describe later in sec-tion 26.
+2.
+7.
+ I found myself on the receiving end of hacktivism in 2003 whenthe Animal Liberation Front targeted my university because of plans to builda monkey house, for primates to be used in research.
+ The online componentconsisted of thousands of emails sent to sta↵ members with distressing imagesof monkeys with wires in their brains; this was an early example of ‘brigading’,where hundreds of people gang up on one target online.
+ We dealt with thatonline attack easily enough by getting their email accounts closed down.
+ Butthey persisted with physical demonstrations and media harassment; our Vice-Chancellor decided to cut her losses, and the monkey house went to Oxfordinstead.
+ Some of the leaders were later jailed for terrorism o↵ences after theyassaulted sta↵ at a local pharmaceutical testing company and placed bombsunder the cars of medical researchers [21].
+Online shaming has become popular as a means of protest.
+ It can be quitespontaneous, with a ﬂash mob of vigilantes forming when an incident goes viral.
+An early example happened in 2005 when a young lady in Seoul failed to clean upafter her dog defecated in a subway carriage.
+ Another passenger photographedthe incident and put it online; within days the ‘dog poo girl’ had been houndedinto hiding, abandoning her university course [418].
+There have been manyother cases since.
+Security Engineering68Ross Anderson2.
+5.
+ THE SWAMPThe power of platforms such as Twitter became evident in Gamergate, astorm sparked by abusive comments about a female game developer made pub-licly by a former boyfriend in August 2014, and cascading into a torrent ofmisogynistic criticism of women in the gaming industry and of feminists whohad criticised the industry’s male-dominated culture.
+ A number of people weredoxxed, SWATted, or hounded from their homes [1932].
+ The harassment wascoordinated on anonymous message boards such as 4Chan and the attackerswould gang up on a particular target – who then also got criticised by main-stream conservative journalists [1130].
+ The movement appeared leaderless andevolved constantly, with one continuing theme being a rant against ‘social jus-tice warriors’.
+ It appears to have contributed to the development of the alt-rightmovement which inﬂuenced the 2016 election two years later.
+A growing appreciation of the power of angry online mobs is leading politi-cians to stir them up, at all levels from local politicians trying to undermine theirrivals to nation states trying to swing rival states’ elections.
+ Angry mobs are anunpleasant enough feature of modern politics in developed countries; in less de-veloped countries things get even worse, with real lynchings in countries such asIndia (where the ruling BJP party has been building a troll army since at least2011 to harrass political opponents and civil-society critics [1637]).
+ Companiesare targeted less frequently, but it does happen.
+ Meanwhile the social-mediacompanies are under pressure to censor online content, and as it’s hard for anAI program to tell the di↵erence between a joke, abuse, a conspiracy theory andinformation warfare by a foreign government, they end up having to hire moreand more moderators.
+ I will return to the law and policy aspects of this in 26.
+4below.
+2.
+5.
+2Child sex abuse materialWhen the Internet came to governments’ attention in the 1990s and they won-dered how to get a handle on it, the ﬁrst thing to be regulated was images ofchild sex abuse (CSA), in the Budapest Convention in 2001.
+ We have little dataon the real prevalence of CSA material as the legal restrictions make it hardfor anyone outside law enforcement to do any research.
+ In many countries, theapproach to CSA material has less focus on actual harm reduction than it de-serves.
+ Indeed, many laws around online sexual o↵ences are badly designed, andseem to be driven more by exploiting outrage than by minimising the numberof victims and the harm they su↵er.
+ CSA may be a case study on how not to doonline regulation because of forensic failures, takedown failures, weaponisationand the law-norm gap.
+The most notorious forensic failure was Britain’s Operation Ore, which Idescribe in more detail in 26.
+5.
+3.
+ Brieﬂy, several thousand men were arrestedon suspicion of CSA o↵ences after their credit card numbers were found onan abuse website, and perhaps half of them turned out to be victims of creditcard fraud.
+ Hundreds of innocent men had their lives ruined.
+ Yet nothing wasdone for the child victims in Brazil and Indonesia, and the authorities are stillnowhere near e�cient at taking down websites that host CSA material.
+ In mostcountries, CSA takedown is a monopoly of either the police, or a regulated bodythat operates under public-sector rules (NCMEC in the USA and the IWF inSecurity Engineering69Ross Anderson2.
+5.
+ THE SWAMPthe UK), and takes from days to weeks; things would go much more quickly ifgovernments were to use the private-sector contractors that banks use to dealwith phishing sites [938].
+ The public-sector monopoly stems from laws in manycountries that make the possession of CSA material a strict-liability o↵ence.
+This not only makes it hard to deal with such material using the usual abusechannels, but also allows it to be weaponised: protesters can send it to targetsand then report them to the police.
+ It also makes it di�cult for parents andteachers to deal sensibly with incidents that arise with teens using dating appsor having remote relationships.
+ The whole thing is a mess, caused by legislatorswanting to talk tough without understanding the technology.
+ (CSA material isnow a signiﬁcant annoyance for some legislators’ sta↵, and also makes journalistsat some newspapers reluctant to make their email addresses public.
+)There is an emerging law-norm gap with the growth in popularity of sextingamong teenagers.
+Like it or not, sending intimate photographs to partners(real and intended) became normal behaviour for teens in many countries whensmartphones arrived in 2008.
+ This was a mere seven years after the Budapestconvention, whose signatories may have failed to imagine that sexual imagesof under-18s could be anything other than abuse.
+ Thanks to the convention,possessing an intimate photo of anyone under 18 can now result in a prisonsentence in any of the 63 countries that have ratiﬁed it.
+ Teens laugh at lecturesfrom schoolteachers to not take or share such photos, but the end result is realharm.
+Kids may be tricked or pressured into sharing photos of themselves,and even if the initial sharing is consensual, the recipient can later use it forblackmail or just pass it round for a laugh.
+ Recipients – even if innocent – arealso committing criminal o↵ences by simply having the photos on their phones,so kids can set up other kids and denounce them.
+ This leads to general issuesof bullying and more speciﬁc issues of intimate partner abuse.
+2.
+5.
+3School and workplace bullyingOnline harassment and bullying are a fact of life in modern societies, not justin schools but in workplaces too, as people jostle for rank, mates and resources.
+From the media stories of teens who kill themselves following online abuse,you might think that cyber-bullying now accounts for most of the problem –at least at school – but the ﬁgures show that it’s less than half.
+ An annualUK survey discloses that about a quarter of children and young people areconstantly bullied (13% verbal, 5% cyber and 3% physical) while about halfare bullied sometimes (24%, 8% and 9% respectively) [565].
+ The only nationalsurvey of all ages of which I’m aware is the French national victimisation survey,which since 2007 has collected data not just on physical crimes such as burglaryand online crimes such as fraud, but on harassment too [1458].
+ This is based onface-to-face interviews with 16,000 households and the 2017 survey reported twomillion cases of threatening behaviour, 7% were made on social networks and afurther 9% by phone.
+ But have social media made this worse? Research suggeststhat the e↵ects of social media use on adolescent well-being are nuanced, smallat best, and contingent on analytic methods [1473].
+Yet there is talk in the media of a rise in teen suicide which some commen-tators link to social media use.
+ Thankfully, the OECD mortality statistics showSecurity Engineering70Ross Anderson2.
+5.
+ THE SWAMPthat this is also untrue: suicides among 15–19 year olds have declined slightlyfrom about 8 to about 7 cases per 100,000 over the period 1990–2015 [1477].
+2.
+5.
+4Intimate relationship abuseJust as I ended the last section by discussing whistleblowers – the insider threatto companies – I’ll end this section with intimate relationship abuse, the insiderthreat to families and individuals.
+ Gamergate may have been a ﬂashbulb exam-ple, but protection from former intimate partners and other family members isa real problem that exists at scale – with about half of all marriages ending indivorce, and not all breakups being amicable.
+ Intimate partner abuse has beensu↵ered by 27% of women and 11% of men.
+ Stalking is not of course limited toformer partners.
+ Celebrities in particular can be stalked by people they’ve nevermet – with occasional tragic outcomes, as in the case of John Lennon.
+ But for-mer partners account for most of it, and law enforcement in most countries havehistorically been reluctant to do anything e↵ective about them.
+ Technology hasmade the victims’ plight worse.
+One subproblem is the publication of non-consensual intimate imagery (NCII),once called ‘revenge porn’ – until California Attorney General Kamala Harrisobjected that this is cyber-exploitation and a crime.
+ Her message got throughto the big service ﬁrms who since 2015 have been taking down such material ondemand from the victims [1690].
+ This followed an earlier report in 2012 whereHarris documented the increasing use of smartphones, online marketplaces andsocial media in forcing vulnerable people into unregulated work including prosti-tution – raising broader questions about how technology can be used to connectwith, and assist, crime victims [866].
+The problems faced by a woman leaving an abusive and controlling husbandare among the hardest in the universe of information security.
+ All the usualadvice is the wrong way round: your opponent knows not just your passwordsbut has such deep contextual knowledge that he can answer all your passwordrecovery questions.
+ There are typically three phases: a physical control phasewhere the abuser has access to your device and may install malware, or evendestroy devices; a high-risk escape phase as you try to ﬁnd a new home, ajob and so on; and a life-apart phase when you might want to shield location,email address and phone numbers to escape harassment, and may have lifelongconcerns.
+ It takes seven escape attempts on average to get to life apart, anddisconnecting from online services can cause other abuse to escalate.
+Afterescape, you may have to restrict childrens’ online activities and sever mutualrelationships; letting your child post anything can leak the school location andlead to the abuser turning up.
+ You may have to change career as it can beimpossible to work as a self-employed professional if you can no longer advertise.
+To support such users, responsible designers should think hard about usabil-ity during times of high stress and high risk; they should allow users to havemultiple accounts; they should design things so that someone reviewing yourhistory should not be able to tell you deleted anything; they should push two-factor authentication, unusual activity notiﬁcations, and incognito mode.
+ Theyshould also think about how a survivor can capture evidence for use in divorceand custody cases and possibly in criminal prosecution, while minimising theSecurity Engineering71Ross Anderson2.
+6.
+ SUMMARYtrauma [1248].
+ But that’s not what we ﬁnd in real life.
+ Many banks don’t reallywant to know about disputes or ﬁnancial exploitation within families.
+ A bigproblem in some countries is stalkerware – apps designed to monitor partners,ex-partners, children or employees.
+ A report from Citizen Lab spells out thepoor information security practices of these apps, how they are marketed ex-plicitly to abusive men, and how they break the law in Europe and Canada;as for the USA and Australia, over half of abusers tracked women using stalk-erware [1495].
+ And then there’s the Absher app, which enables men in SaudiArabia to control their women in ways unacceptable in developed countries; itsavailability in app stores has led to protests against Apple and Google elsewherein the world, but as of 2020 it’s still there.
+Intimate abuse is hard for designers and others to deal with as it’s entan-gled with normal human caregiving between partners, between friends and col-leagues, between parents and young children, and later between children andelderly parents.
+ Many relationships are largely beneﬁcent but with some abu-sive aspects, and participants often don’t agree on which aspects.
+The bestanalysis I know, by Karen Levy and Bruce Schneier, discusses the combinationof multiple motivations, copresence which leads to technical vulnerabilities, andpower dynamics leading to relational vulnerabilities [1154].
+ Technology facil-itates multiple privacy invasions in relationships, ranging from the casual toserious abuse; designers need to be aware that households are not units, devicesare not personal, and the purchaser of a device is not the only user.
+ I expectthat concerns about intimate abuse will expand in the next few years to con-cerns about victims of abuse by friends, teachers and parents, and will be madeever more complex by new forms of home and school automation.
+2.
+6SummaryThe systems you build or operate can be attacked by a wide range of oppo-nents.
+ It’s important to work out who might attack you and how, and it’s alsoimportant to be able to ﬁgure out how you were attacked and by whom.
+ Yoursystems can also be used to attack others, and if you don’t think about this inadvance you may ﬁnd yourself in serious legal or political trouble.
+In this chapter I’ve grouped adversaries under four themes: the spooks, thecrooks, the hackers and the swamp.
+ Not all threat actors are bad: many hack-ers report bugs responsibly and many whistleblowers are public-spirited.
+ (‘Our’spooks are of course considered good while ‘theirs’ are bad; moral valence de-pends on the public and private interests in play.
+) Intelligence and law enforce-ment agencies may use a mix of tra�c data analysis and content sampling whenhunting, and targeted collection for gathering; collection methods range fromlegal coercion via malware to deception.
+ Both spooks and crooks use malwareto establish botnets as infrastructure.
+ Crooks typically use opportunistic col-lection for mass attacks, while for targeted work, spear-phishing is the weaponof choice; intelligence agencies may have fancier tools but use the same basicmethods.
+ There are also cybercrime ecosystems attached to speciﬁc businesssectors; basically, crime will evolve where it can scale.
+ As for the swamp, theweapon of choice is the angry mob, wielded nowadays by states, activist groupsSecurity Engineering72Ross Anderson2.
+7.
+ RESEARCH PROBLEMSand even individual orators.
+ There are many ways in which abuse can scale,and when designing a system you need to work out how crimes against it, orabuse using it, might scale.
+ It’s not enough to think about usability; you needto think about abusability too.
+Personal abuse matters too.
+ Every police o�cer knows that the person whoassaults you or murders you isn’t usually a stranger, but someone you know– maybe another boy in your school class, or your stepfather.
+ This has beenignored by the security research community, perhaps because we’re mostly cleverwhite or Asian boys from stable families in good neighbourhoods.
+If you’re defending a company of any size, you’ll see enough machines on yournetwork getting infected, and you need to know whether they’re just zombies ona botnet or part of a targeted attack.
+ So it’s not enough to rely on patching andantivirus.
+ You need to watch your network and keep good enough logs that whenan infected machine is spotted you can tell whether it’s a kid building a botnetor a targeted attacker who responds to loss of a viewpoint with a scramble todevelop another one.
+ You need to make plans to respond to incidents, so youknow who to call for forensics – and so your CEO isn’t left gasping like a landedﬁsh in front of the TV cameras.
+ You need to think systematically about youressential controls: backup to recover from ransomware, payment procedures toblock business email compromise, and so on.
+ If you’re advising a large companythey should have much of this already, and if it’s a small company you need tohelp them ﬁgure out how to do enough of it.
+The rest of this book will ﬁll in the details.
+2.
+7Research problemsUntil recently, research on cybercrime wasn’t really scientiﬁc.
+ Someone wouldget some data – often under NDA from an anti-virus company – work out somestatistics, write up their thesis, and then go get a job.
+ The data were neveravailable to anyone else who wanted to check their results or try a new type ofanalysis.
+ Since 2015 we’ve been trying to ﬁx that by setting up the CambridgeCybercrime Centre, where we collect masses of data on spam, phish, botnetsand malware as a shared resource for researchers.
+ We’re delighted for otheracademics to use it.
+ If you want to do research on cybercrime, call us.
+We also need something similar for espionage and cyber warfare.
+ Peopletrying to implant malware into control systems and other operational technologyare quite likely to be either state actors, or cyber-arms vendors who sell tostates.
+ The criticisms made by President Eisenhower of the ‘military-industrialcomplex’ apply here in spades.
+ Yet not one of the legacy think-tanks seemsinterested in tracking what’s going on.
+ As a result, nations are more likely tomake strategic miscalculations, which could lead not just to cyber-conﬂict butthe real kinetic variety, too.
+As for research into cyber abuse, there is now some research, but the tech-nologists, the psychologists, the criminologists and the political scientists aren’ttalking to each other enough.
+ There are many issues, from the welfare and rightsof children and young people to our ability to hold fair and free elections.
+ WeSecurity Engineering73Ross Anderson2.
+8.
+ FURTHER READINGneed to engage more technologists with public-policy issues and educate morepolicy people about the realities of technology.
+ We also need to get more womeninvolved, and people from poor communities in both developed and less devel-oped countries, so we have a less narrow perspective on what the real problemsare.
+2.
+8Further ReadingThere’s an enormous literature on the topics discussed in this chapter but it’srather fragmented.
+ A starting point for the Snowden revelations might be GlenGreenwald’s book ‘No Place to Hide’ [816]; for an account of Russian strat-egy and tactics, see the 2018 report to the US Senate’s Committee on ForeignRelations [385]; and for a great introduction to the history of propaganda seeTim Wu’s ‘The Attention Merchants’ [2050].
+ For surveys of cybercrime, see our2012 paper “Measuring the Cost of Cybercrime” [90] and our 2019 follow-up“Measuring the Changing Cost of Cybercrime” [91].
+ Criminologists such as BillChambliss have studied state-organised crime, from piracy and slavery in pre-vious centuries through the more recent smuggling of drugs and weapons byintelligence agencies to torture and assassination; this gives the broader contextwithin which to assess unlawful surveillance.
+ The story of Gamergate is told inZo¨e Quinn’s ‘Crash Override’ [1567].
+ Finally, the tale of Marcus Hutchings, themalware expert who stopped Wannacry, is at [811].
+Security Engineering74Ross Anderson

@@ -1,0 +1,1439 @@
+Chapter 5CryptographyZHQM ZMGM ZMFM– G JULIUS CAESARKXJEY UREBE ZWEHE WRYTU HEYFS KREHE GOYFIWTTTU OLKSY CAJPO BOTEI ZONTX BYBWT GONEYCUZWR GDSON SXBOU YWRHE BAAHY USEDQ– JOHN F KENNEDY5.
+1IntroductionCryptography is where security engineering meets mathematics.
+ It gives us thetools that underlie most modern security protocols.
+ It is the key technology forprotecting distributed systems, yet it is surprisingly hard to do right.
+ As we’vealready seen in Chapter 4, “Protocols,” cryptography has often been used toprotect the wrong things, or to protect them in the wrong way.
+ Unfortunately,the available crypto tools aren’t always very usable.
+But no security engineer can ignore cryptology.
+ A medical friend once toldme that while she was young, she worked overseas in a country where, foreconomic reasons, they’d shortened their medical degrees and concentrated onproducing specialists as quickly as possible.
+ One day, a patient who’d had bothkidneys removed and was awaiting a transplant needed her dialysis shunt redone.
+The surgeon sent the patient back from the theater on the grounds that therewas no urinalysis on ﬁle.
+ It just didn’t occur to him that a patient with nokidneys couldn’t produce any urine.
+Just as a doctor needs to understand physiology as well as surgery, so asecurity engineer needs to be familiar with at least the basics of crypto (andmuch else).
+There are, broadly speaking, three levels at which one can ap-proach crypto.
+The ﬁrst consists of the underlying intuitions; the second ofthe mathematics that we use to clarify these intuitions, provide security proofswhere possible and tidy up the constructions that cause the most confusion; andthe third is the cryptographic engineering – the tools we commonly use, and the1495.
+2.
+ HISTORICAL BACKGROUNDexperience of what can go wrong with them.
+ In this chapter, I assume you haveno training in crypto and set out to explain the basic intuitions.
+ I illustratethem with engineering, and sketch enough of the mathematics to help give youaccess to the literature when you need it.
+ One reason you need some cryptoknow-how is that many common constructions are confusing, and many toolso↵er unsafe defaults.
+ For example, Microsoft’s Crypto API (CAPI) nudges en-gineers to use electronic codebook mode; by the end of this chapter you shouldunderstand what that is, why it’s bad, and what you should do instead.
+Many crypto textbooks assume that their readers are pure maths graduates,so let me start o↵ with non-mathematical deﬁnitions.
+ Cryptography refers tothe science and art of designing ciphers; cryptanalysis to the science and art ofbreaking them; while cryptology, often shortened to just crypto, is the study ofboth.
+ The input to an encryption process is commonly called the plaintext orcleartext, and the output the ciphertext.
+ Thereafter, things get somewhat morecomplicated.
+ There are a number of basic building blocks, such as block ciphers,stream ciphers, and hash functions.
+ Block ciphers may either have one key forboth encryption and decryption, in which case they’re called shared-key (alsosecret-key or symmetric), or have separate keys for encryption and decryption, inwhich case they’re called public-key or asymmetric.
+ A digital signature schemeis a special type of asymmetric crypto primitive.
+I will ﬁrst give some historical examples to illustrate the basic concepts.
+ I’llthen ﬁne-tune deﬁnitions by introducing the security models that cryptologistsuse, including perfect secrecy, concrete security, indistinguishability and therandom oracle model.
+ Finally, I’ll show how the more important cryptographicalgorithms actually work, and how they can be used to protect data.
+ En route,I’ll give examples of how people broke weak ciphers, and weak constructionsusing strong ciphers.
+5.
+2Historical BackgroundSuetonius tells us that Julius Caesar enciphered his dispatches by writing ‘D’ for‘A’, ‘E’ for ‘B’ and so on [1843].
+ When Augustus Caesar ascended the throne,he changed the imperial cipher system so that ‘C’ was now written for ‘A’, ‘D’for ‘B’ etcetera.
+ In modern terminology, we would say that he changed the keyfrom ‘D’ to ‘C’.
+ Remarkably, a similar code was used by Bernardo Provenzano,allegedly the capo di tutti capi of the Sicilian maﬁa, who wrote ‘4’ for ‘a’, ‘5’ for‘b’ and so on.
+ This led directly to his capture by the Italian police in 2006 afterthey intercepted and deciphered some of his messages [1535].
+The Arabs generalised this idea to the monoalphabetic substitution, in whicha keyword is used to permute the cipher alphabet.
+ We will write the plaintextin lower case letters, and the ciphertext in upper case, as shown in Figure 5.
+1:abcdefghijklmnopqrstuvwxyzSECURITYABDFGHJKLMNOPQVWXZFigure 5.
+1 – monoalphabetic substitution cipherSecurity Engineering150Ross Anderson5.
+2.
+ HISTORICAL BACKGROUNDOYAN RWSGKFR AN AH RHTFANY MSOYRM OYSH SMSEAC NCMAKO; but it’s a pen-cil and paper puzzle to break ciphers of this kind.
+ The trick is that some letters,and combinations of letters, are much more common than others; in Englishthe most common letters are e,t,a,i,o,n,s,h,r,d,l,u in that order.
+ Artiﬁcial intel-ligence researchers have experimented with programs to solve monoalphabeticsubstitutions.
+ Using letter and digram (letter pair) frequencies alone, they typ-ically need about 600 letters of ciphertext; smarter strategies such as guessingprobable words can cut this to about 150 letters; and state-of-the-art systemsthat use neural networks and approach the competence of human analysts arealso tested on deciphering ancient scripts such as Ugaritic and Linear B [1194].
+There are basically two ways to make a stronger cipher – the stream cipherand the block cipher.
+ In the former, you make the encryption rule depend ona plaintext symbol’s position in the stream of plaintext symbols, while in thelatter you encrypt several plaintext symbols at once in a block.
+5.
+2.
+1An early stream cipher – the Vigen`ereThis early stream cipher is commonly ascribed to the Frenchman Blaise deVigen`ere, a diplomat who served King Charles IX.
+ It works by adding a keyrepeatedly into the plaintext using the convention that ‘A’ = 0, ‘B’ = 1, .
+.
+.
+, ‘Z’= 25, and addition is carried out modulo 26 – that is, if the result is greaterthan 25, we subtract as many multiples of 26 as are needed to bring it into therange [0, .
+.
+.
+, 25], that is, [A, .
+.
+.
+, Z].
+ Mathematicians write this asC = P + K mod 26So, for example, when we add P (15) to U (20) we get 35, which we reduceto 9 by subtracting 26.
+ 9 corresponds to J, so the encryption of P under the keyU (and of U under the key P) is J, or more simply U + P = J.
+ In this notation,Julius Caesar’s system used a ﬁxed key K = D, while Augustus Caesar’s used K= C and Vigen`ere used a repeating key, also known as a running key.
+ Techniqueswere developed to do this quickly, ranging from printed tables to brass cipherwheels.
+ Whatever the technology, the encryption using a repeated keyword forthe key would look as shown in Figure 5.
+2:PlaintobeornottobethatisthequestionKeyrunrunrunrunrunrunrunrunrunrunCipherKIOVIEEIGKIOVNURNVJNUVKHVMGZIAFigure 5.
+2 – Vigen`ere (polyalphabetic substitution cipher)A number of people appear to have worked out how to solve polyalpha-betic ciphers, from the womaniser Giacomo Casanova to the computing pioneerCharles Babbage.
+ But the ﬁrst published solution was in 1863 by Friedrich Ka-siski, a Prussian infantry o�cer [1020].
+ He noticed that given a long enoughpiece of ciphertext, repeated patterns will appear at multiples of the keywordlength.
+Security Engineering151Ross Anderson5.
+2.
+ HISTORICAL BACKGROUNDIn Figure 5.
+2, for example, we see ‘KIOV’ repeated after nine letters, and‘NU’ after six.
+ Since three divides both six and nine, we might guess a keywordof three letters.
+Then ciphertext letters one, four, seven and so on were allenciphered under the same keyletter; so we can use frequency analysis techniquesto guess the most likely values of this letter, and then repeat the process for theremaining letters of the key.
+5.
+2.
+2The One-time PadOne way to make a stream cipher of this type proof against attacks is for thekey sequence to be as long as the plaintext, and to never repeat.
+ This is knownas the one-time pad and was proposed by Gilbert Vernam during World WarI [1001]; given any ciphertext, and any plaintext of the same length, there’s akey that decrypts the ciphertext to the plaintext.
+ So regardless of the amount ofcomputation opponents can do, they’re none the wiser, as given any ciphertext,all possible plaintexts of that length are equally likely.
+ This system thereforehas perfect secrecy.
+Here’s an example.
+ Suppose you had intercepted a message from a wartimeGerman agent which you knew started with ‘Heil Hitler’, and the ﬁrst ten lettersof ciphertext were DGTYI BWPJA.
+ So the ﬁrst ten letters of the one-time pad werewclnb tdefj, as shown in Figure 5.
+3:PlainheilhitlerKeywclnbtdefjCipherDGTYIBWPJAFigure 5.
+3 – A spy’s messageBut once he’s burnt the piece of silk with his key material, the spy can claimthat he’s actually a member of the underground resistance, and the messageactually said ‘Hang Hitler’.
+ This is also possible, as the key material could justas easily have been wggsb tdefj, as shown in Figure 5.
+4:CipherDGTYIBWPJAKeywggsbtdefjPlainhanghitlerFigure 5.
+4 – What the spy can claim he saidNow we rarely get anything for nothing in cryptology, and the price of theperfect secrecy of the one-time pad is that it fails completely to protect messageintegrity.
+ So if you wanted to get this spy into trouble, you could change theciphertext to DCYTI BWPJA (Figure 5.
+4):CipherDCYTIBWPJAKeywclnbtdefjPlainhanghitlerFigure 5.
+5 – Manipulating the message to entrap the spySecurity Engineering152Ross Anderson5.
+2.
+ HISTORICAL BACKGROUNDLeo Marks’ engaging book on cryptography in the Special Operations Exec-utive in World War II [1224] relates how one-time key material was printed onsilk, which agents could conceal inside their clothing; whenever a key had beenused it was torn o↵ and burnt.
+ In fact, during the war, Claude Shannon provedthat a cipher has perfect secrecy if and only if there are as many possible keysas possible plaintexts, and every key is equally likely; so the one-time pad is theonly kind of system that o↵ers perfect secrecy.
+ He was ﬁnally allowed to publishthis in 1948 [1714, 1715].
+The one-time tape was used for top-level communications by both sides fromlate in World War II, then for strategic communications between NATO allies,and for the US-USSR hotline from 1963.
+ Thousands of machines were producedin total, using paper tapes for key material, until they were eventually replacedby computers from the mid-1980s1.
+ But such cryptography is too expensivefor most applications as it consumes as much key material as there is tra�c.
+It’s more common for stream ciphers to use a pseudorandom number generatorto expand a short key into a long keystream.
+ The data is then encrypted bycombining the keystream, one symbol at a time, with the data.
+ It’s not enoughfor the keystream to appear “random” in the sense of passing the standardstatistical randomness tests: it must also have the property that an opponentwho gets his hands on even quite a lot of keystream symbols should not be ableto predict any more of them.
+An early example was rotor machines, mechanical stream-cipher devices thatproduce a very long sequence of pseudorandom states2 and combine them withplaintext to get ciphertext.
+ These machines were independently invented bya number of people from the 1920s, many of whom tried to sell them to thebanking industry.
+ Banks weren’t in general interested, for reasons we’ll discussbelow, but rotor machines were very widely used by the combatants in WorldWar II to encipher radio tra�c, and the e↵orts made by the Allies to decipherGerman tra�c included the work by Alan Turing and others on Colossus, whichhelped kickstart the computer industry after the war.
+Stream ciphers have been widely used in hardware applications where thenumber of gates had to be minimised to save power.
+ However, block ciphers aremore ﬂexible and are more common in systems being designed now, so let’s lookat them next.
+5.
+2.
+3An early block cipher – PlayfairThe Playfair cipher was invented in 1854 by Sir Charles Wheatstone, a telegraphpioneer who also invented the concertina and the Wheatstone bridge.
+Thereason it’s not called the Wheatstone cipher is that he demonstrated it to BaronPlayfair, a politician; Playfair in turn demonstrated it to Prince Albert and toViscount Palmerston (later Prime Minister), on a napkin after dinner.
+This cipher uses a 5 by 5 grid, in which we place the alphabet, permuted by1Information about the machines can be seen at the Crypto Museum, https://www.
+cryptomuseum.
+com.
+2letters in the case of the Hagelin machine used by the USA, permutations in the case ofthe German Enigma and the British TypexSecurity Engineering153Ross Anderson5.
+2.
+ HISTORICAL BACKGROUNDthe key word, and omitting the letter ‘J’ (see Figure 5.
+6):PALMERSTONBCDFGHIKQUVWXYZFigure 5.
+6 – the Playfair enciphering tableThe plaintext is ﬁrst conditioned by replacing ‘J’ with ‘I’ wherever it occurs,then dividing it into letter pairs, preventing double letters occurring in a pair byseparating them with an ‘x’, and ﬁnally adding a ‘z’ if necessary to complete thelast letter pair.
+ The example Playfair wrote on his napkin was ‘Lord Granville’sletter’ which becomes ‘lo rd gr an vi lx le sl et te rz’.
+It is then enciphered two letters at a time using the following rules:• if the two letters are in the same row or column, they are replaced by thesucceeding letters.
+ For example, ‘am’ enciphers to ‘LE’• otherwise the two letters stand at two of the corners of a rectangle in thetable, and we replace them with the letters at the other two corners ofthis rectangle.
+ For example, ‘lo’ enciphers to ‘MT’.
+We can now encipher our specimen text as follows:Plainlo rd gr an vi lx le sl et te rzCipherMT TB BN ES WH TL MP TA LN NL NVFigure 5.
+7 – example of Playfair encipheringVariants of this cipher were used by the British army as a ﬁeld cipher inWorld War I, and by the Americans and Germans in World War II.
+ It’s asubstantial improvement on Vigen`ere as the statistics that an analyst can collectare of digraphs (letter pairs) rather than single letters, so the distribution is muchﬂatter and more ciphertext is needed for an attack.
+Again, it’s not enough for the output of a block cipher to just look intuitively“random”.
+ Playfair ciphertexts look random; but they have the property that ifyou change a single letter of a plaintext pair, then often only a single letter ofthe ciphertext will change.
+ Thus using the key in Figure 5.
+7, rd enciphers to TBwhile rf enciphers to OB and rg enciphers to NB.
+ One consequence is that givenenough ciphertext, or a few probable words, the table (or an equivalent one)can be reconstructed [740].
+ In fact, the quote at the head of this chapter is aPlayfair-encrypted message sent by the future President Jack Kennedy when hewas a young lieutenant holed up on a small island with ten other survivors afterhis motor torpedo boat had been sunk in a collision with a Japanese destroyer.
+Had the Japanese intercepted it, they might possibly have decrypted it, andhistory could be di↵erent.
+ For a stronger cipher, we will want the e↵ects ofSecurity Engineering154Ross Anderson5.
+2.
+ HISTORICAL BACKGROUNDsmall changes in the cipher’s input to di↵use completely through its output.
+Changing one input bit should, on average, cause half of the output bits tochange.
+ We’ll tighten these ideas up in the next section.
+The security of a block cipher can also be greatly improved by choosing alonger block length than two characters.
+For example, the Data EncryptionStandard (DES), which is widely used in payment systems, has a block length of64 bits and the Advanced Encryption Standard (AES), which has replaced it inmost other applications, has a block length of twice this.
+ I discuss the internaldetails of DES and AES below; for the time being, I’ll just remark that we needmore than just an adequate block size.
+For example, if a bank account number always appears at the same placein a transaction, then it’s likely to produce the same ciphertext every time atransaction involving it is encrypted with the same key.
+ This might allow anopponent to cut and paste parts of two di↵erent ciphertexts in order to pro-duce a valid but unauthorised transaction.
+ Suppose a crook worked for a bank’sphone company, and monitored an enciphered transaction that he knew said“Pay IBM $10,000,000”.
+ He might wire $1,000 to his brother causing the bankcomputer to insert another transaction saying “Pay John Smith $1,000”, inter-cept this instruction, and make up a false instruction from the two ciphertextsthat decrypted as “Pay John Smith $10,000,000”.
+ So unless the cipher block isas large as the message, the ciphertext will contain more than one block andwe’ll need some way of binding the blocks together.
+5.
+2.
+4Hash functionsThe third classical type of cipher is the hash function.
+ This evolved to protectthe integrity and authenticity of messages, where we don’t want someone to beable to manipulate the ciphertext in such a way as to cause a predictable changein the plaintext.
+After the invention of the telegraph in the mid-19th century, banks rapidlybecame its main users and developed systems for transferring money electroni-cally.
+ What’s ‘wired’ is a payment instruction, such as:‘To Lombard Bank, London.
+ Please pay from our account with youno.
+ 1234567890 the sum of £1000 to John Smith of 456 ChestertonRoad, who has an account with HSBC Bank Cambridge no.
+ 3012344567890123, and notify him that this was for “wedding present fromDoreen Smith”.
+ From First Cowboy Bank of Santa Barbara, CA,USA.
+ Charges to be paid by us.
+’Since telegraph messages were relayed from one o�ce to another by humanoperators, it was possible for an operator to manipulate a payment message.
+In the nineteenth century, banks, telegraph companies and shipping com-panies developed code books that could not only protect transactions but alsoshorten them – which was important given the costs of international telegramsat the time.
+ A code book was essentially a block cipher that mapped words orphrases to ﬁxed-length groups of letters or numbers.
+ So “Please pay from ourSecurity Engineering155Ross Anderson5.
+2.
+ HISTORICAL BACKGROUNDaccount with you no.
+” might become ‘AFVCT’.
+ Sometimes the codes were alsoenciphered.
+The banks realised that neither stream ciphers nor code books protect mes-sage authenticity.
+ If, for example, the codeword for ‘1000’ is ‘mauve’ and for‘1,000,000’ is ‘magenta’, then the crooked telegraph clerk who can compare thecoded tra�c with known transactions should be able to ﬁgure this out andsubstitute one for the other.
+The critical innovation, for the banks’ purposes, was to use a code book butto make the coding one-way by adding the code groups together into a numbercalled a test key.
+ (Modern cryptographers would describe it as a hash value ormessage authentication code, terms I’ll deﬁne more carefully later.
+)Here is a simple example.
+ Suppose the bank has a code book with a tableof numbers corresponding to payment amounts as in Figure 5.
+8:0123456789x 100014224087699371350658x 10,00073381546918200296457x 100,00095700954826321473618x 1,000,00053776629401231058794Figure 5.
+8 – a simple test key systemNow in order to authenticate a transaction for £376,514 we might add to-gether 53 (no millions), 54 (300,000), 29 (70,000) and 71 (6,000) ignoring theless signiﬁcant digits.
+ This gives us a test key of 207.
+Most real systems were more complex than this; they usually had tablesfor currency codes, dates and even recipient account numbers.
+ In the bettersystems, the code groups were four digits long rather than two, and in orderto make it harder for an attacker to reconstruct the tables, the test keys werecompressed: a key of ‘7549’ might become ‘23’ by adding the ﬁrst and seconddigits, and the third and fourth digits, ignoring the carry.
+This made such test key systems into one-way functions in that although itwas possible to compute a test from a message, given knowledge of the key, itwas not possible to reverse the process and recover either a message or a keyfrom a single test – the test just did not contain enough information.
+ Indeed,one-way functions had been around since at least the seventeenth century.
+ Thescientist Robert Hooke published in 1678 the sorted anagram ‘ceiiinosssttuu’and revealed two years later that it was derived from ‘Ut tensio sic uis’ – ‘theforce varies as the tension’, or what we now call Hooke’s law for a spring.
+ (Thegoal was to establish priority for the idea while giving him time to do more workon it.
+)Banking test keys are not strong by the standards of modern cryptography.
+Given between a few dozen and a few hundred tested messages, depending onthe design details, a patient analyst could reconstruct enough of the tables toforge a transaction.
+With a few carefully chosen messages inserted into thebanking system by an accomplice, it’s even easier.
+But the banks got awaywith it: test keys worked ﬁne from the late nineteenth century through theSecurity Engineering156Ross Anderson5.
+2.
+ HISTORICAL BACKGROUND1980s.
+ In several years working as a bank security consultant, and listening toelderly auditors’ tales over lunch, I only ever heard of two cases of fraud thatexploited it: one external attempt involving cryptanalysis, which failed becausethe attacker didn’t understand bank procedures, and one successful but smallfraud involving a crooked sta↵ member.
+ I’ll discuss the systems that replacedtest keys in the chapter on Banking and Bookkeeping.
+However, test keys are our historical example of an algebraic function used forauthentication.
+ They have important modern descendants in the authenticationcodes used in the command and control of nuclear weapons, and also withmodern block ciphers.
+ The idea in each case is the same: if you can use a uniquekey to authenticate each message, simple algebra can give you ideal security.
+Suppose you have a message M of arbitrary length and want to compute anauthentication code A of 128 bits long, and the property you want is that nobodyshould be able to ﬁnd a di↵erent message M 0 whose authentication code underthe same key will also be A, unless they know the key, except by a lucky guess forwhich the probability is 2�128.
+ You can simply choose a 128-bit prime numberp and compute A = k1M + k2 (mod p) where the key consists of two 128-bitnumbers k1 and k2.
+This is secure for the same reason the one-time pad is: given any othermessage M 0 you can ﬁnd another key (k01, k02) that authenticates M 0 to A.
+ Sowithout knowledge of the key, the adversary who sees M and A simply hasno information of any use in creating a valid forgery.
+ As there are 256 bits ofkey and only 128 bits of tag, this holds even for an adversary with unlimitedcomputing power: such an adversary can easily ﬁnd the 2128 possible keys foreach pair of message and tag but has no way to choose between them.
+ I’ll discusshow this universal hash function is used with block ciphers below, and how it’sused in nuclear command and control in Part 2.
+5.
+2.
+5Asymmetric primitivesFinally, some modern cryptosystems are asymmetric, in that di↵erent keys areused for encryption and decryption.
+ So, for example, most web sites nowadayshave a certiﬁcate containing a public key with which people can encrypt theirsession using a protocol called TLS; the owner of the web page can decrypt thetra�c using the corresponding private key.
+ We’ll go into the details later.
+There are some pre-computer examples of this too; perhaps the best is thepostal service.
+ You can send me a private message by addressing it to me anddropping it into a post box.
+ Once that’s done, I’m the only person who’ll beable to read it.
+ Of course, many things can go wrong: you might get the wrongaddress for me (whether by error or as a result of deception); the police might geta warrant to open my mail; the letter might be stolen by a dishonest postman;a fraudster might redirect my mail without my knowledge; or a thief mightsteal the letter from my doormat.
+ Similar things can go wrong with public keycryptography: false public keys can be inserted into the system, computers canbe hacked, people can be coerced and so on.
+ We’ll look at these problems inmore detail in later chapters.
+Another asymmetric application of cryptography is the digital signature.
+ TheSecurity Engineering157Ross Anderson5.
+3.
+ SECURITY MODELSidea here is that I can sign a message using a private signature key and thenanybody can check this using my public signature veriﬁcation key.
+ Again, thereare pre-computer analogues in the form of manuscript signatures and seals; andagain, there is a remarkably similar litany of things that can go wrong, bothwith the old way of doing things and with the new.
+5.
+3Security ModelsBefore delving into the detailed design of modern ciphers, I want to look morecarefully at the various types of cipher and the ways in which we can reasonabout their security.
+Security models seek to formalise the idea that a cipher is “good”.
+ We’vealready seen the model of perfect secrecy: given any ciphertext, all possibleplaintexts of that length are equally likely.
+ Similarly, an authentication schemethat uses a key only once can be designed so that the best forgery attack on itis a random guess, whose probability of success can be made as low as we wantby choosing a long enough tag.
+The second model is concrete security, where we want to know how muchactual work an adversary has to do.
+ At the time of writing, it takes the mostpowerful adversary in existence – the community of bitcoin miners, burningabout as much electricity as the state of Denmark – about ten minutes to solvea 68-bit cryptographic puzzle and mine a new block.
+ So an 80-bit key wouldtake them 212 times as long, or about a month; a 128-bit key, the default inmodern systems, is 248 times harder again.
+ So even in 1000 years the probabilityof ﬁnding the right key by chance is 2�35 or one in many billion.
+ In general,a system is (t, ✏)-secure if an adversary working for time t succeeds in breakingthe cipher with probability at most ✏.
+The third model, which many theoreticians now call the standard model, isabout indistinguishability.
+ This enables us to reason about the speciﬁc proper-ties of a cipher we care about.
+ For example, most cipher systems don’t hide thelength of a message, so we can’t deﬁne a cipher to be secure by just requiringthat an adversary not be able to distinguish ciphertexts corresponding to twomessages; we have to be more explicit and require that the adversary not beable to distinguish between two messages M1 and M2 of the same length.
+ Thisis formalised by having the cryptographer and the cryptanalyst play a game inwhich the analyst wins by ﬁnding an e�cient discriminator of something sheshouldn’t be able to discriminate with more than negligible probability.
+ If thecipher doesn’t have perfect security this can be asymptotic, where we typicallywant the e↵ort to grow faster than any polynomial function of a security param-eter n – say the length of the key in bits.
+ A security proof typically consists ofa reduction where we show that if there exists a randomised (i.
+e.
+ probabilistic)algorithm running in time polynomial in n that learns information it shouldn’twith non-negligible probability, then this would give an e�cient discriminatorfor an underlying cryptographic primitive that we already trust.
+ Finally, a con-struction is said to have semantic security if there’s no e�cient distinguisher forthe plaintext regardless of any side information the analyst may have about it;even if she knows all but one bit of it, and even if she can get a decryption of anySecurity Engineering158Ross Anderson5.
+3.
+ SECURITY MODELSother ciphertext, she can’t learn anything more from the target ciphertext.
+ Thisskips over quite a few mathematical details, which you can ﬁnd in a standardtext such as Katz and Lindell [1022].
+The fourth model is the random oracle model, which is not as general as thestandard model but which often leads to more e�cient constructions.
+ We call acryptographic primitive pseudorandom if there’s no e�cient way of distinguish-ing it from a random function of that type, and in particular it passes all thestatistical and other randomness tests we apply.
+ Of course, the cryptographicprimitive will actually be an algorithm, implemented as an array of gates inhardware or a program in software; but the outputs should “look random” inthat they’re indistinguishable from a suitable random oracle given the type andthe number of tests that our model of computation permits.
+Figure 5.
+9: – the random oracleTo visualise a random oracle, we might imagine an elf sitting in a black boxwith a source of physical randomness and some means of storage (see Figure5.
+9) – represented in our picture by the dice and the scroll.
+ The elf will acceptinputs of a certain type, then look in the scroll to see whether this query hasever been answered before.
+ If so, it will give the answer it ﬁnds there; if not, itwill generate an answer at random by throwing the dice, and keep a record forfuture reference.
+ We’ll further assume ﬁnite bandwidth – the elf will only answerso many queries every second.
+ What’s more, our oracle can operate accordingto several di↵erent rules.
+5.
+3.
+1Random functions – hash functionsThe ﬁrst type of random oracle is the random function.
+ A random functionaccepts an input string of any length and outputs a string of ﬁxed length, say nbits long.
+ The same input gives the same output, but the set of outputs appearsrandom.
+ So the elf just has a simple list of inputs and outputs, which growssteadily as it works.
+Security Engineering159Ross Anderson5.
+3.
+ SECURITY MODELSRandom functions are our model for cryptographic hash functions.
+ Thesewere ﬁrst used in computer systems for one-way encryption of passwords in the1960s and have many more uses today.
+ For example, if the police seize yourlaptop, the standard forensic tools will compute checksums on all the ﬁles, toidentify which ﬁles are already known (such as system ﬁles) and which are novel(such as user data).
+ These hash values will change if a ﬁle is corrupted and socan assure the court that the police haven’t tampered with evidence.
+ And if wewant evidence that we possessed a given electronic document by a certain date,we might submit it to an online time-stamping service or have it mined into theBitcoin blockchain.
+ However, if the document is still secret – for example aninvention for which we want to establish a priority date – then we would notupload the whole document, but just the message hash.
+ This is the modernequivalent of Hooke’s anagram that we discussed in section 5.
+2.
+4 above.
+5.
+3.
+1.
+1PropertiesThe ﬁrst main property of a random function is one-wayness.
+ Given knowledgeof an input x we can easily compute the hash value h(x), but it is very di�cultgiven h(x) to ﬁnd x if such an input is not already known.
+ (The elf will only pickoutputs for given inputs, not the other way round.
+) As the output is random,the best an attacker can do to invert a random function is to keep on feeding inmore inputs until he gets lucky; with an n-bit output this will take about 2n�1guesses on average.
+ A pseudorandom function will have the same properties, orthey could be used to distinguish it from a random function, contrary to ourdeﬁnition.
+ So a pseudorandom function will also be a one-way function, providedthere are too many possible outputs for the opponent to guess an input that hasa desired target output by chance.
+ This means choosing n so that the opponentcan’t do anything near 2n computations.
+ If we claim, for example, that SHA256is a pseudorandom function, then we’re saying that there’s no practical way toﬁnd an input that hashes to a given 256-bit value, unless you knew it alreadyand used it to compute that value.
+A second property of pseudorandom functions is that the output will not giveany information at all about even part of the input.
+ So we can get a one-wayencryption of the value x by concatenating it with a secret key k and computingh(x, k).
+ If the hash function isn’t random enough, though, using it for one-way encryption in this manner is asking for trouble.
+ (I’ll discuss an examplelater in section 22.
+2.
+1: the hash function used by many phone companies inthe 1990s and early 2000s to authenticate mobile phone users wasn’t randomenough, which led to attacks.
+)A third property of pseudorandom functions with su�ciently long outputsis that it is hard to ﬁnd collisions, that is, di↵erent messages M1 = M2 withh(M1) = h(M2).
+ Unless the opponent can ﬁnd a shortcut attack (which wouldmean the function wasn’t pseudorandom) then the best way of ﬁnding a collisionis to collect a large set of messages Mi and their corresponding hashes h(Mi),sort the hashes, and look for a match.
+ If the hash function output is an n-bitnumber, so that there are 2n possible hash values, then the number of hashes theenemy will need to compute before he can expect to ﬁnd a match will be aboutthe square root of this, namely 2n/2 hashes.
+ This fact is of huge importance inSecurity Engineering160Ross Anderson5.
+3.
+ SECURITY MODELSsecurity engineering, so let’s look at it more closely.
+5.
+3.
+1.
+2The birthday theoremThe birthday theorem gets its name from the following problem.
+A mathsteacher asks a class of 30 pupils what they think is the probability that twoof them have the same birthday.
+Most pupils intuitively think it’s unlikely,and the maths teacher then asks the pupils to state their birthdays one afteranother.
+ The odds of a match exceed 50% once 23 pupils have been called.
+ Asthis surprises most people, it’s also known as the ‘birthday paradox’.
+The birthday theorem was ﬁrst used in the 1930’s to count ﬁsh, so it’s alsoknown as capture-recapture statistics [1665].
+ Suppose there are N ﬁsh in a lakeand you catch m of them, ring them and throw them back, then when you ﬁrstcatch a ﬁsh you’ve ringed already, m should be ‘about’ the square root of N.
+The intuitive reason why this holds is that once you havepN samples, eachcould potentially match any of the others, so the number of possible matches isaboutpN xpN or N, which is what you need3.
+This theorem has many applications for the security engineer.
+ For example,if we have a biometric system that can authenticate a person’s claim to identitywith a probability of only one in a million that two randomly selected subjectswill be falsely identiﬁed as the same person, this doesn’t mean that we can useit as a reliable means of identiﬁcation in a university with a user population oftwenty thousand sta↵ and students.
+ This is because there will be almost twohundred million possible pairs.
+ In fact, you expect to ﬁnd the ﬁrst collision –the ﬁrst pair of people who can be mistaken for each other by the system –once you have somewhat over a thousand people enrolled.
+ It may well, however,be OK to use it to verify a claimed identity (though many other things can gowrong; see the chapter on Biometrics in Part 2 for a discussion).
+There are some applications where collision-search attacks aren’t a problem,such as in challenge-response protocols where an attacker has to ﬁnd the answerto the challenge just issued, and where you can prevent challenges repeating.
+In identify-friend-or-foe (IFF) systems, for example, common equipment has aresponse length of 48 to 80 bits.
+ You can’t a↵ord much more than that, as itcosts radar accuracy.
+But there are other applications in which collisions are unacceptable.
+ Whenwe design digital signature systems, we typically pass the message M througha cryptographic hash function ﬁrst, and then sign the hash h(M), for a numberof reasons we’ll discuss later.
+ In such an application, if it were possible to ﬁndcollisions with h(M1) = h(M2) but M1 = M2, then a Maﬁa owned bookstore’sweb site might precalculate suitable pairs M1, M2, get you to sign an M1 sayingsomething like “I hereby order a copy of Rubber Fetish volume 7 for $32.
+95” andthen present the signature together with an M2 saying something like “I herebymortgage my house for $75,000 and please send the funds to Maﬁa HoldingsInc.
+, Bermuda.
+”For this reason, hash functions used with digital signature schemes have n3More precisely, the probability that m ﬁsh chosen randomly from N ﬁsh are di↵erent is� = N(N �1) .
+ .
+ .
+ (N �m+1)/Nm which is asymptotically solved by N ' m2/2log(1/�) [1037].
+Security Engineering161Ross Anderson5.
+3.
+ SECURITY MODELSlarge enough to make them collision-free.
+ Historically, the two most commonhash functions have been MD5, which has a 128-bit output and will thus requireat most 264 computations to break, and SHA1 with a 160-bit output and a workfactor for the cryptanalyst of at most 280.
+ However, collision search gives at bestan upper bound on the strength of a hash function, and both these particularfunctions have turned out to be disappointing, with cryptanalytic attacks thatI’ll describe later in section 5.
+6.
+2.
+To sum up: if you need a cryptographic hash function to be collision resis-tant, then you’d better choose a function with an output of at least 256 bits,such as SHA-2 or SHA-3.
+ However if you only need to be sure that nobodywill ﬁnd a second preimage for an existing, externally given hash, then you canperhaps make do with less.
+5.
+3.
+2Random generators – stream ciphersThe second basic cryptographic primitive is the random generator, also knownas a keystream generator or stream cipher.
+ This is also a random function, butit’s the reverse of the hash function in that it has a short input and a longoutput.
+ If we had a good pseudorandom function whose input and output werelong enough, we could turn it into a hash function by throwing away all but afew hundred bits of the output, and turn it into a stream cipher by padding allbut a few hundred bits of the input with a constant and using the output as akeystream.
+It can be used to protect the conﬁdentiality of our backup data as follows:we go to the keystream generator, enter a key, get a long ﬁle of random bits,and exclusive-or it with our plaintext data to get ciphertext, which we thensend to our backup service in the cloud.
+ (This is also called an additive streamcipher as exclusive-or is addition modulo 2.
+) We can think of the elf generatinga random tape of the required length each time he is presented with a new key,giving it to us and keeping a copy on his scroll for reference in case he’s giventhe same input key again.
+ If we need to recover the data, we go back to thegenerator, enter the same key, get the same keystream, and exclusive-or it withour ciphertext to get our plaintext back again.
+ Other people with access to thekeystream generator won’t be able to generate the same keystream unless theyknow the key.
+ Note that this would not give us any guarantee of ﬁle integrity;as we saw in the discussion of the one-time pad, adding a keystream to plaintextcan protect conﬁdentiality, but it can’t detect modiﬁcation of the ﬁle.
+ For that,we might make a hash of the ﬁle and keep that somewhere safe.
+ It may be easierto protect the hash from modiﬁcation than the whole ﬁle.
+One-time pad systems are a close ﬁt for our theoretical model, except in thatthey are used to secure communications across space rather than time: the twocommunicating parties have shared a copy of a keystream in advance.
+ Vernam’soriginal telegraph cipher machine used punched paper tape; Marks describeshow SOE agents’ silken keys were manufactured in Oxford by retired ladiesshu✏ing counters; we’ll discuss modern hardware random number generators inthe chapter on Physical Security.
+A real problem with keystream generators is to prevent the same keystreamSecurity Engineering162Ross Anderson5.
+3.
+ SECURITY MODELSbeing used more than once, whether to encrypt more than one backup tape orto encrypt more than one message sent on a communications channel.
+ DuringWorld War II, the amount of Russian diplomatic tra�c exceeded the quantityof one-time tape they had distributed in advance to their embassies, so it wasreused.
+ But if M1 +K = C1 and M2 +K = C2, then the opponent can combinethe two ciphertexts to get a combination of two messages: C1 � C2 = M1 � M2,and if the messages Mi have enough redundancy then they can be recovered.
+Text messages do in fact contain enough redundancy for much to be recovered;in the case of the Russian tra�c this led to the Venona project in which the USand UK decrypted large amounts of wartime Russian tra�c from 1943 onwardsand broke up a number of Russian spy rings.
+ In the words of one former NSAchief scientist, it became a “two-time tape”.
+To avoid this, the normal engineering practice is to have not just a keybut also a seed (also known as an initialisation vector or IV) so we start thekeystream at a di↵erent place each time.
+ The seed N may be a sequence number,or generated from a protocol in a more complex way.
+ Here, you need to ensurethat both parties synchronise on the right working key even in the presence ofan adversary who may try to get you to reuse old keystream.
+5.
+3.
+3Random permutations – block ciphersThe third type of primitive, and the most important in modern cryptography, isthe block cipher, which we model as a random permutation.
+ Here, the function isinvertible, and the input plaintext and the output ciphertext are of a ﬁxed size.
+With Playfair, both input and output are two characters; with DES, they’reboth bit strings of 64 bits.
+ Whatever the number of symbols and the underlyingalphabet, encryption acts on a block of ﬁxed length.
+ (So if you want to encrypta shorter input, you have to pad it as with the ﬁnal ‘z’ in our Playfair example.
+)We can visualise block encryption as follows.
+ As before, we have an elf in abox with dice and a scroll.
+ This has on the left a column of plaintexts and onthe right a column of ciphertexts.
+ When we ask the elf to encrypt a message, itchecks in the left hand column to see if it has a record of it.
+ If not, it rolls thedice to generate a random ciphertext of the appropriate size (and which doesn’tappear yet in the right hand column of the scroll), and then writes down theplaintext/ciphertext pair in the scroll.
+ If it does ﬁnd a record, it gives us thecorresponding ciphertext from the right hand column.
+When asked to decrypt, the elf does the same, but with the function ofthe columns reversed: he takes the input ciphertext, looks for it on the righthand scroll, and if he ﬁnds it he gives the message with which it was previouslyassociated.
+ If not, he generates a new message at random, notes it down andgives it to us.
+A block cipher is a keyed family of pseudorandom permutations.
+ For eachkey, we have a single permutation that’s independent of all the others.
+ We canthink of each key as corresponding to a di↵erent scroll.
+ The intuitive idea isthat a cipher machine should output the ciphertext given the plaintext and thekey, and output the plaintext given the ciphertext and the key, but given onlythe plaintext and the ciphertext it should output nothing.
+ Furthermore, nobodySecurity Engineering163Ross Anderson5.
+3.
+ SECURITY MODELSshould be able to infer any information about plaintexts or ciphertexts that ithas not yet produced.
+We will write a block cipher using the notation established for encryption inthe chapter on protocols:C = {M}KThe random permutation model also allows us to deﬁne di↵erent types ofattack on block ciphers.
+ In a known plaintext attack, the opponent is just givena number of randomly chosen inputs and outputs from the oracle correspondingto a target key.
+ In a chosen plaintext attack, the opponent is allowed to put acertain number of plaintext queries and get the corresponding ciphertexts.
+ In achosen ciphertext attack he gets to make a number of ciphertext queries.
+ In achosen plaintext/ciphertext attack he is allowed to make queries of either type.
+Finally, in a related key attack he can make queries that will be answered usingkeys related to the target key K, such as K + 1 and K + 2.
+In each case, the objective of the attacker may be either to deduce theanswer to a query he hasn’t already made (a forgery attack), or to recover thekey (unsurprisingly known as a key recovery attack).
+This precision about attacks is important.
+ When someone discovers a vul-nerability in a cryptographic primitive, it may or may not be relevant to yourapplication.
+ Often it won’t be, but will have been hyped by the media – soyou will need to be able to explain clearly to your boss and your customerswhy it’s not a problem.
+ So you have to look carefully to ﬁnd out exactly whatkind of attack has been found, and what the parameters are.
+ For example, theﬁrst major attack announced on the Data Encryption Standard algorithm (dif-ferential cryptanalysis) required 247 chosen plaintexts to recover the key, whilethe next major attack (linear cryptanalysis) improved this to 243 known plain-texts.
+ While these attacks were of huge scientiﬁc importance, their practicalengineering e↵ect was zero, as no practical systems make that much known text(let alone chosen text) available to an attacker.
+ Such impractical attacks areoften referred to as certiﬁcational as they a↵ect the cipher’s security certiﬁcationrather than providing a practical exploit.
+ They can have a commercial e↵ect,though: the attacks on DES undermined conﬁdence and started moving peopleto other ciphers.
+ In some other cases, an attack that started o↵ as certiﬁcationalhas been developed by later ideas into an exploit.
+Which sort of attacks you should be worried about depends on your appli-cation.
+ With a broadcast entertainment system, for example, a hacker can buya decoder, watch a lot of movies and compare them with the enciphered broad-cast signal; so a known-plaintext attack might be the main threat.
+ But there aresurprisingly many applications where chosen-plaintext attacks are possible.
+ Ahistoric example is from World War II, where US analysts learned of Japaneseintentions for an island ‘AF’ which they suspected meant Midway.
+So theyarranged for Midway’s commander to send an unencrypted message reportingproblems with its fresh water condenser, and then intercepted a Japanese reportthat ‘AF is short of water’.
+ Knowing that Midway was the Japanese objective,Admiral Chester Nimitz was waiting for them and sank four Japanese carriers,turning the tide of the war [1001].
+Security Engineering164Ross Anderson5.
+3.
+ SECURITY MODELSThe other attacks are more specialised.
+ Chosen plaintext/ciphertext attacksmay be a worry where the threat is a lunchtime attack: someone who getstemporary access to a cryptographic device while its authorised user is out, andtries out the full range of permitted operations for a while with data of theirchoice.
+ Related-key attacks are a concern where the block cipher is used as abuilding block in the construction of a hash function (which we’ll discuss below).
+To exclude all such attacks, the goal is semantic security, as discussed above;the cipher should not allow the inference of unauthorised information (whetherof plaintexts, ciphertexts or keys) other than with negligible probability.
+5.
+3.
+4Public key encryption and trapdoor one-way per-mutationsA public-key encryption algorithm is a special kind of block cipher in which theelf will perform the encryption corresponding to a particular key for anyone whorequests it, but will do the decryption operation only for the key’s owner.
+ Tocontinue with our analogy, the user might give a secret name to the scroll thatonly she and the elf know, use the elf’s public one-way function to computea hash of this secret name, publish the hash, and instruct the elf to performthe encryption operation for anybody who quotes this hash.
+ This means that aprincipal, say Alice, can publish a key and if Bob wants to, he can now encrypta message and send it to her, even if they have never met.
+ All that is necessaryis that they have access to the oracle.
+The simplest variation is the trapdoor one-way permutation.
+ This is a compu-tation that anyone can perform, but which can be reversed only by someone whoknows a trapdoor such as a secret key.
+ This model is like the ‘one-way function’model of a cryptographic hash function.
+ Let us state it formally nonetheless:a public key encryption primitive consists of a function which given a randominput R will return two keys, KR (the public encryption key) and KR�1 (theprivate decryption key) with the properties that1.
+ Given KR, it is infeasible to compute KR�1 (so it’s not possible to com-pute R either);2.
+ There is an encryption function {.
+ .
+ .
+} which, applied to a message M usingthe encryption key KR, will produce a ciphertext C = {M}KR; and3.
+ There is a decryption function which, applied to a ciphertext C using thedecryption key KR�1, will produce the original message M = {C}KR�1.
+For practical purposes, we will want the oracle to be replicated at both endsof the communications channel, and this means either using tamper-resistanthardware or (more commonly) implementing its functions using mathematicsrather than metal.
+In most real systems, the encryption is randomised, so that every time some-one uses the same public key to encrypt the same message, the answer is di↵er-ent; this is necessary for semantic security, so that an opponent cannot checkwhether a guess of the plaintext of a given ciphertext is correct.
+There areSecurity Engineering165Ross Anderson5.
+3.
+ SECURITY MODELSeven more demanding models than this, for example to analyse security in thecase where the opponent can get ciphertexts of their choice decrypted, with theexception of the target ciphertext.
+ But this will do for now.
+5.
+3.
+5Digital signaturesThe ﬁnal cryptographic primitive we’ll deﬁne here is the digital signature.
+ Thebasic idea is that a signature on a message can be created by only one principal,but checked by anyone.
+ It can thus perform the same function in the electronicworld that ordinary signatures do in the world of paper.
+ Applications includesigning software updates, so that a PC can tell that an update to Windows wasreally produced by Microsoft rather than by a foreign intelligence agency.
+Signature schemes, too, can be deterministic or randomised: in the ﬁrst,computing a signature on a message will always give the same result and inthe second, it will give a di↵erent result.
+ (The latter is more like handwrittensignatures; no two are ever alike but the bank has a means of deciding whethera given specimen is genuine or forged.
+) Also, signature schemes may or maynot support message recovery.
+ If they do, then given the signature, anyone canrecover the message on which it was generated; if they don’t, then the veriﬁerneeds to know or guess the message before they can perform the veriﬁcation.
+Formally, a signature scheme, like a public key encryption scheme, has akeypair generation function which given a random input R will return two keys,�R (the private signing key) and V R (the public signature veriﬁcation key) withthe properties that1.
+ Given the public signature veriﬁcation key V R, it is infeasible to computethe private signing key �R;2.
+ There is a digital signature function which given a message M and a privatesignature key �R, will produce a signature Sig�R{M}; and3.
+ There is a veriﬁcation function which, given a signature Sig�R{M} and thepublic signature veriﬁcation key V R, will output TRUE if the signaturewas computed correctly with �R and otherwise output FALSE.
+Where we don’t need message recovery, we can model a simple digital sig-nature algorithm as a random function that reduces any input message to aone-way hash value of ﬁxed length, followed by a special kind of block cipher inwhich the elf will perform the operation in one direction, known as signature,for only one principal.
+ In the other direction, it will perform veriﬁcation foranybody.
+For this simple scheme, signature veriﬁcation means that the elf (or thesignature veriﬁcation algorithm) only outputs TRUE or FALSE depending onwhether the signature is good.
+ But in a scheme with message recovery, anyonecan input a signature and get back the message corresponding to it.
+ In ourelf model, this means that if the elf has seen the signature before, it will givethe message corresponding to it on the scroll, otherwise it will give a randomvalue (and record the input and the random output as a signature and messageSecurity Engineering166Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMSpair).
+ This is sometimes desirable: when sending short messages over a lowbandwidth channel, it can save space if only the signature has to be sent ratherthan the signature plus the message.
+ An application that uses message recov-ery is machine-printed postage stamps, or indicia: the stamp consists of a 2-dbarcode with a digital signature made by the postal meter and which containsinformation such as the value, the date and the sender’s and recipient’s postcodes.
+ We discuss this at the end of section 16.
+3.
+2.
+In the general case we do not need message recovery; the message to besigned may be of arbitrary length, so we ﬁrst pass it through a hash functionand then sign the hash value.
+ We need the hash function to be not just one-way,but also collision resistant.
+5.
+4Symmetric crypto algorithmsNow that we’ve tidied up the deﬁnitions, we’ll look under the hood to see howthey can be implemented in practice.
+ While most explanations are geared to-wards graduate mathematics students, the presentation I’ll give here is based onone I developed over the years with computer science undergraduates, to helpthe non-specialist grasp the essentials.
+ In fact, even at the research level, mostof cryptography is as much computer science as mathematics: modern attackson ciphers are put together from guessing bits, searching for patterns, sortingpossible results and so on, and require ingenuity and persistence rather thananything particularly highbrow.
+5.
+4.
+1SP-networksClaude Shannon suggested in the 1940s that strong ciphers could be built bycombining substitution with transposition repeatedly.
+ For example, one mightadd some key material to a block of input text, and then shu✏e subsets of theinput, and continue in this way a number of times.
+ He described the propertiesof a cipher as being confusion and di↵usion – adding unknown key values willconfuse an attacker about the value of a plaintext symbol, while di↵usion meansspreading the plaintext information through the ciphertext.
+ Block ciphers needdi↵usion as well as confusion.
+The earliest block ciphers were simple networks which combined substitutionand permutation circuits, and so were called SP-networks [1009].
+ Figure 5.
+10shows an SP-network with sixteen inputs, which we can imagine as the bits ofa sixteen-bit number, and two layers of four-bit invertible substitution boxes(or S-boxes), each of which can be visualised as a lookup table containing somepermutation of the numbers 0 to 15.
+The point of this arrangement is that if we were to implement an arbitrary16 bit to 16 bit function in digital logic, we would need 220 bits of memory– one lookup table of 216 bits for each single output bit.
+ That’s hundreds ofSecurity Engineering167Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMS????????????????S-boxS-boxS-boxS-box????????????????������������������HHHHHHHHHHHHHHHHHHXXXXXXXXXXXXXXXXXXXXXXXX⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠hhhhhhhhhhhhhhhhhh((((((((((((((((((S-boxS-boxS-boxS-box????????????????Figure 5.
+10: – a simple 16-bit SP-network block cipherthousands of gates, while a four bit to four bit function takes only 4 x 24 or 64bits of memory.
+ One might hope that with suitable choices of parameters, thefunction produced by iterating this simple structure would be indistinguishablefrom a random 16 bit to 16 bit function to an opponent who didn’t know thevalue of the key.
+ The key might consist of some choice of a number of four-bit S-boxes, or it might be added at each round to provide confusion and theresulting text fed through the S-boxes to provide di↵usion.
+Three things need to be done to make such a design secure:1.
+ the cipher needs to be “wide” enough2.
+ it needs to have enough rounds, and3.
+ the S-boxes need to be suitably chosen.
+5.
+4.
+1.
+1Block sizeFirst, a block cipher which operated on sixteen bit blocks would be rather lim-ited, as an opponent could just build a dictionary of plaintext and ciphertextblocks as they were observed.
+ The birthday theorem tells us that even if theinput plaintexts were random, he’d expect to ﬁnd a match as soon as he hadseen a few hundred blocks.
+ So a practical block cipher will usually deal withplaintexts and ciphertexts of 64 bits, 128 bits or even more.
+ So if we are usingfour-bit to four-bit S-boxes, we may have 16 of them (for a 64 bit block size) or32 of them (for a 128 bit block size).
+5.
+4.
+1.
+2Number of roundsSecond, we have to have enough rounds.
+ The two rounds in Figure 5.
+10 arecompletely inadequate, as an opponent can deduce the values of the S-boxesby tweaking input bits in suitable patterns.
+ For example, he could hold therightmost 12 bits constant and try tweaking the leftmost four bits, to deducethe values in the top left S-box.
+ (The attack is slightly more complicated thanSecurity Engineering168Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMSthis, as sometimes a tweak in an input bit to an S-box won’t produce a changein any output bit, so we have to change one of its other inputs and tweak again.
+But it is still a basic student exercise.
+)The number of rounds we need depends on the speed with which data di↵usethrough the cipher.
+ In our simple example, di↵usion is very slow because eachoutput bit from one round of S-boxes is connected to only one input bit in thenext round.
+ Instead of having a simple permutation of the wires, it is moree�cient to have a linear transformation in which each input bit in one round isthe exclusive-or of several output bits in the previous round.
+ If the block cipheris to be used for decryption as well as encryption, this linear transformation willhave to be invertible.
+ We’ll see some concrete examples below in the sectionson AES and DES.
+5.
+4.
+1.
+3Choice of S-boxesThe design of the S-boxes also a↵ects the number of rounds required for se-curity, and studying bad choices gives us our entry into the deeper theory ofblock ciphers.
+Suppose that the S-box were the permutation that maps theinputs (0,1,2,.
+.
+.
+,15) to the outputs (5,7,0,2,4,3,1,6,8,10,15,12,9,11,14,13).
+ Thenthe most signiﬁcant bit of the input would come through unchanged as the mostsigniﬁcant bit of the output.
+ If the same S-box were used in both rounds in theabove cipher, then the most signiﬁcant bit of the input would pass through tobecome the most signiﬁcant bit of the output.
+ We certainly couldn’t claim thatour cipher was pseudorandom.
+5.
+4.
+1.
+4Linear CryptanalysisAttacks on real block ciphers are usually harder to spot than in this example,but they use the same ideas.
+ It might turn out that the S-box had the propertythat bit one of the input was equal to bit two plus bit four of the output; morecommonly, there will be linear approximations to an S-box which hold with acertain probability.
+ Linear cryptanalysis [895, 1244] proceeds by collecting anumber of relations such as “bit 2 plus bit 5 of the input to the ﬁrst S-box isequal to bit 1 plus bit 8 of the output, with probability 13/16”, then searching forways to glue them together into an algebraic relation between input bits, outputbits and key bits that holds with a probability di↵erent from one half.
+ If wecan ﬁnd a linear relationship that holds over the whole cipher with probabilityp = 0.
+5+1/M, then according to the sampling theorem in probability theory wecan expect to start recovering keybits once we have about M 2 known texts.
+ Ifthe value of M 2 for the best linear relationship is greater than the total possiblenumber of known texts (namely 2n where the inputs and outputs are n bitswide), then we consider the cipher to be secure against linear cryptanalysis.
+5.
+4.
+1.
+5Di↵erential CryptanalysisDi↵erential Cryptanalysis [245, 895] is similar but is based on the probabilitythat a given change in the input to an S-box will give rise to a certain changein the output.
+ A typical observation on an 8-bit S-box might be that “if weSecurity Engineering169Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMSﬂip input bits 2, 3, and 7 at once, then with probability 11/16 the only outputbits that will ﬂip are 0 and 1”.
+ In fact, with any nonlinear Boolean function,tweaking some combination of input bits will cause some combination of outputbits to change with a probability di↵erent from one half.
+ The analysis procedureis to look at all possible input di↵erence patterns and look for those values �i,�o such that an input change of �i will produce an output change of �o withparticularly high (or low) probability.
+As in linear cryptanalysis, we then search for ways to join things up so thatan input di↵erence which we can feed into the cipher will produce a knownoutput di↵erence with a useful probability over a number of rounds.
+Givenenough chosen inputs, we will see the expected output and be able to makedeductions about the key.
+ As in linear cryptanalysis, it’s common to considerthe cipher to be secure if the number of texts required for an attack is greaterthan the total possible number of di↵erent texts for that key.
+ (We have to becareful of pathological cases, such as if you had a cipher with a 32-bit block anda 128-bit key with a di↵erential attack whose success probability given a singlepair was 2�40.
+ Given a lot of text under a number of keys, we’d eventually solvefor the current key.
+)There are many variations on these two themes.
+ For example, instead oflooking for high probability di↵erences, we can look for di↵erences that can’thappen (or that happen only rarely).
+ This has the charming name of impossiblecryptanalysis, but it is quite deﬁnitely possible against many systems [242]4.
+Block cipher design involves a number of trade-o↵s.
+ For example, we canreduce the per-round information leakage, and thus the required number ofrounds, by designing the rounds carefully.
+ But a complex design might be slowin software, or need a lot of gates in hardware, so using simple rounds but moreof them might have been better.
+ Simple rounds may also be easier to analyse.
+A prudent designer will also use more rounds than are strictly necessary toblock the attacks known today, in order to give some safety margin, as attacksonly ever get better.
+ But while we may be able to show that a cipher resistsall the attacks we know of, and with some safety margin, this says little aboutwhether it will resist novel types of attack.
+ (A general security proof for a blockcipher would appear to imply a result such as P = NP that would revolutionisecomputer science.
+)5.
+4.
+2The Advanced Encryption Standard (AES)The Advanced Encryption Standard (AES) is an algorithm originally knownas Rijndael after its inventors Vincent Rijmen and Joan Daemen [507].
+ It actson 128-bit blocks and can use a key of 128, 192 or 256 bits in length.
+ It isan SP-network; in order to specify it, we need to ﬁx the S-boxes, the lineartransformation between the rounds, and the way in which the key is added intothe computation.
+AES uses a single S-box that acts on a byte input to give a byte output.
+For implementation purposes it can be regarded simply as a lookup table of4This may have been used ﬁrst at Bletchley in World War II where a key insight intobreaking the German Enigma machine was that no letter ever enciphered to itself.
+Security Engineering170Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMS256 bytes; it is actually deﬁned by the equation S(x) = M(1/x) + b over theﬁeld GF(28) where M is a suitably chosen matrix and b is a constant.
+ Thisconstruction gives tight di↵erential and linear bounds.
+The linear transformation is based on arranging the 16 bytes of the valuebeing enciphered in a square and then doing bytewise shu✏ing and mixingoperations.
+ The ﬁrst step is the shu✏e, in which the top row of four bytes isleft unchanged while the second row is shifted one place to the left, the thirdrow by two places and the fourth row by three places.
+ The second step is acolumn-mixing step in which the four bytes in a column are mixed using matrixmultiplication.
+ This is illustrated in Figure 5.
+11, which shows, as an example,how a change in the value of the third byte in the ﬁrst column is propagated.
+The e↵ect of this combination is that a change in the input to the cipher canpotentially a↵ect all of the output after just two rounds – an avalanche e↵ectthat makes both linear and di↵erential attacks harder.
+1234.
+ .
+ .
+1234Shift�row1423Mix�columnFigure 5.
+11: – the AES linear transformation, illustrated by its e↵ect on byte 3of the inputThe key material is added byte by byte after the linear transformation.
+ Thismeans that 16 bytes of key material are needed per round; they are derived fromthe user supplied key material by means of a recurrence relation.
+The algorithm uses 10 rounds with 128-bit keys, 12 rounds with 192-bit keysand 14 rounds with 256-bit keys.
+ These are enough to give practical, but notcertﬁcational, security – as indeed we expected at the time of the AES competi-tion, and as I described in earlier editions of this chapter.
+ The ﬁrst key-recoveryattacks use a technique called biclique cryptanalysis and were discovered in 2009by Andrey Bogdanov, Dmitry Khovratovich, and Christian Rechberger [273];they give only a very small advantage, with complexity now estimated at 2126for 128-bit AES and 2254.
+3 for 256-bit AES, as opposed to 2127 and 2255 forbrute-force search.
+ Faster shortcut attacks are known for the case where wehave related keys.
+ But none of these attacks make any di↵erence in practice,as they require infeasibly large numbers of texts or very special combinations ofrelated keys.
+Should we trust AES? The governments of Russia, China and Japan try toget ﬁrms to use local ciphers instead, and the Japanese o↵ering, Camellia, isfound in a number of crypto libraries alongside AES and another AES competi-tion ﬁnalist, Bruce Schneier’s Twoﬁsh.
+ (Camellia was designed by a team whoseown AES candidate was knocked out at the ﬁrst round.
+) Conspiracy theoristsSecurity Engineering171Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMSnote that the US government picked the weakest of the ﬁve algorithms thatwere ﬁnalists in the AES competition.
+ Well, I was one of the designers of theAES ﬁnalist Serpent [94], which came second in the competition: the winnerRijndael got 86 votes, Serpent 59 votes, Twoﬁsh 31 votes, RC6 23 votes andMARS 13 votes.
+ Serpent has a simple structure that makes it easy to analyse– the structure of Figure 5.
+10, but modiﬁed to be wide enough and to haveenough rounds – and was designed to have a much larger security margin thanRijndael in anticipation of the attacks that have now appeared.
+ Yet the simplefact is that while Serpent is more secure, Rijndael is faster; industry and cryptoresearchers voted for it at the last AES conference, and NIST approved it asthe standard.
+Having been involved in the whole process, and having worked on the analysisand design of shared-key ciphers for much of the 1990s, I have a high level ofconﬁdence that AES is secure against practical attacks based on mathematicalcryptanalysis.
+And even though AES is less secure than Serpent, practicalsecurity is all about implementation, and we now have enormous experience atimplementing AES.
+ Practical attacks include timing analysis and power analysis.
+In the former, the main risk is that an opponent observes cache misses and usesthem to work out the key.
+ In the latter, an opponent uses measurements of thecurrent drawn by the device doing the crypto – think of a bank smartcard thata customer places in a terminal in a Maﬁa-owned shop.
+ I discuss both in detailin Part 2, in the chapter on Emission Security; countermeasures include specialoperations in many CPUs to do AES, which are available precisely because thealgorithm is now a standard.
+ It does not make sense to implement Serpent aswell, ‘just in case AES is broken’: having swappable algorithms is known aspluggable cryptography, yet the risk of a fatal error in the algorithm negotiationprotocol is orders of magnitude greater than the risk that anyone will come upwith a production attack on AES.
+ (We’ll see a number of examples later whereusing multiple algorithms caused something to break horribly.
+)The back story is that, back in the 1970s, the NSA manipulated the choiceand parameters of the previous standard block cipher, the Data EncryptionStandard (DES) in such a way as to deliver a cipher that was good enoughfor US industry at the time, while causing foreign governments to believe itwas insecure, so they used their own weak designs instead.
+ I’ll discuss this inmore detail below, once I’ve described the design of DES.
+ AES seems to havefollowed this playbook; by selecting an algorithm that was only just strongenough mathematically and whose safe implementation requires skill and care,the US government saw to it that ﬁrms in Russia, China, Japan and elsewherewill end up using systems that are less secure because less skill and e↵ort hasbeen invested in the implementation.
+ However, this was probably luck ratherthan Machiavellian cunning: the relevant committee at NIST would have hadto have a lot of courage to disregard the vote and choose another algorithminstead.
+ Oh, and the NSA has since 2005 approved AES with 128-bit keys forprotecting information up to SECRET and with 192-bit or 256-bit keys for TOPSECRET.
+ So I recommend that you use AES instead of GOST, or Camellia,or even Serpent.
+The deﬁnitive speciﬁcation of AES is Federal InformationProcessing Standard 197, and its inventors have written a book describing itsdesign in detail [507].
+Security Engineering172Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMS5.
+4.
+3Feistel ciphersMany block ciphers use a more complex structure, which was invented byFeistel and his team while they were developing the Mark XII IFF in the late1950s and early 1960s.
+ Feistel then moved to IBM and founded a research groupthat produced the Data Encryption Standard (DES) algorithm, which is still amainstay of payment system security.
+A Feistel cipher has the ladder structure shown in Figure 5.
+12.
+ The inputis split up into two blocks, the left half and the right half.
+ A round function f1of the left half is computed and combined with the right half using exclusive-or(binary addition without carry), though in some Feistel ciphers addition withcarry is also used.
+ (We use the notation � for exclusive-or.
+) Then, a function f2of the right half is computed and combined with the left half, and so on.
+ Finally(if the number of rounds is even) the left half and right half are swapped.
+A notation which you may see for the Feistel cipher is (f, g, h, .
+.
+.
+) wheref, g, h, .
+.
+.
+ are the successive round functions.
+ Under this notation, the abovecipher is (f1, f2, .
+.
+.
+f2k�1, f2k).
+ The basic result that enables us to decrypt aFeistel cipher – and indeed the whole point of his design – is that: �1(f1, f2, .
+.
+.
+, f2k�1, f2k) = (f2k, f2k�1, .
+.
+.
+, f2, f1)In other words, to decrypt, we just use the round functions in the reverseorder.
+ Thus the round functions fi do not have to be invertible, and the Feistelstructure lets us turn any one-way function into a block cipher.
+ This means thatwe are less constrained in trying to choose a round function with good di↵usionand confusion properties, and which also satisﬁes any other design constraintssuch as code size, software speed or hardware gate count.
+5.
+4.
+3.
+1The Luby-Racko↵ resultThe key theoretical result on Feistel ciphers was proved by Mike Luby andCharlie Racko↵ in 1988.
+ They showed that if fi were random functions, then (f1, f2, f3) was indistinguishable from a random permutation under chosen-plaintext attack, and this result was soon extended to show that (f1, f2, f3, f4)was indistinguishable under chosen plaintext/ciphertext attack – in other words,it was a pseudorandom permutation.
+ (I omit a number of technicalities.
+)In engineering terms, the e↵ect is that given a really good round function,four rounds of Feistel are enough.
+ So if we have a hash function in which wehave conﬁdence, it is straightforward to construct a block cipher from it: usefour rounds of keyed hash in a Feistel network.
+5.
+4.
+3.
+2DESThe DES algorithm is widely used in banking and other payment applications.
+The ‘killer app’ that got it widely deployed was ATM networks; from thereSecurity Engineering173Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMS??XXXXXXXXXXXXXXXXXXXX⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠⇠�•f2k��?.
+ .
+ .
+??�•f2��?•�f1-- ?Left HalfRight HalfFigure 5.
+12: – the Feistel cipher structureSecurity Engineering174Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMSit spread to prepayment meters, transport tickets and much else.
+ In its classicform, it is a Feistel cipher, with a 64-bit block and 56-bit key.
+ Its round functionoperates on 32-bit half blocks and consists of three operations:• ﬁrst, the block is expanded from 32 bits to 48;• next, 48 bits of round key are mixed in using exclusive-or;• the result is passed through a row of eight S-boxes, each of which takes asix-bit input and provides a four-bit output;• ﬁnally, the bits of the output are permuted according to a ﬁxed pattern.
+The e↵ect of the expansion, key mixing and S-boxes is shown in Figure 5.
+13:Si – 1Si + 1Key added�in here• • •�• • •�SiFigure 5.
+13: – the DES round functionThe round keys are derived from the user-supplied key by using each userkey bit in twelve di↵erent rounds according to a slightly irregular pattern.
+ Afull speciﬁcation of DES is given in [1397].
+DES was introduced in 1974 and immediately caused controversy.
+ The mosttelling criticism was that the key is too short.
+ Someone who wants to ﬁnd a56 bit key using brute force, that is by trying all possible keys, will have atotal exhaust time of 256 encryptions and an average solution time of half that,namely 255 encryptions.
+ Whit Di�e and Martin Hellman argued in 1977 thata DES keysearch machine could be built with a million chips, each testing amillion keys a second; as a million is about 220, this would take on average 215seconds, or a bit over 9 hours, to ﬁnd the key.
+ They argued that such a machinecould be built for $20 million in 1977 [557].
+ IBM, whose scientists invented DES,retorted that they would charge the US government $200 million to build sucha machine.
+ (In hindsight, both were right.
+)During the 1980’s, there were persistent rumors of DES keysearch machinesbeing built by various intelligence agencies, but the ﬁrst successful public key-search attack took place in 1997.
+ In a distributed e↵ort organised over the net,14,000 PCs took more than four months to ﬁnd the key to a challenge.
+ In 1998,the Electronic Frontier Foundation (EFF) built a DES keysearch machine calledDeep Crack for under $250,000, which broke a DES challenge in 3 days.
+ It con-tained 1,536 chips run at 40MHz, each chip containing 24 search units whichSecurity Engineering175Ross Anderson5.
+4.
+ SYMMETRIC CRYPTO ALGORITHMSeach took 16 cycles to do a test decrypt.
+ The search rate was thus 2.
+5 milliontest decryptions per second per search unit, or 60 million keys per second perchip.
+ The design of the cracker is public and can be found at [619].
+ By 2006,Sandeep Kumar and colleagues at the universities of Bochum and Kiel built amachine using 120 FPGAs and costing $10,000, which could break DES in 7days on average [1108].
+ A modern botnet with 100,000 machines would take afew hours.
+ So the key length of single DES is now inadequate.
+Another criticism of DES was that, since IBM kept its design principles secretat the request of the US government, perhaps there was a ‘trapdoor’ which wouldgive them easy access.
+ However, the design principles were published in 1992after di↵erential cryptanalysis was invented and published [473].
+ The story wasthat IBM had discovered these techniques in 1972, and the US National SecurityAgency (NSA) even earlier.
+ IBM kept the design details secret at the NSA’srequest.
+ We’ll discuss the political aspects of all this in 26.
+2.
+7.
+1.
+We now have a fairly thorough analysis of DES.
+ The best known shortcutattack, that is, a cryptanalytic attack involving less computation than keysearch,is a linear attack using 242 known texts.
+ DES would be secure with more than20 rounds, but for practical purposes its security is limited by its keylength.
+ Idon’t know of any real applications where an attacker might get hold of even240 known texts.
+ So the known shortcut attacks are not an issue.
+ However, itsvulnerability to keysearch makes single DES unusable in most applications.
+ Aswith AES, there are also attacks based on timing analysis and power analysis.
+The usual way of dealing with the DES key length problem is to use thealgorithm multiple times with di↵erent keys.
+ Banking networks have largelymoved to triple-DES, a standard since 1999 [1397].
+ Triple-DES does an encryp-tion, then a decryption, and then a further encryption, all with independentkeys.
+ Formally:3DES(k0, k1, k2; M) = DES(k2; DES�1(k1; DES(k0; M)))By setting the three keys equal, you get the same result as a single DESencryption, thus giving a backwards compatibility mode with legacy equipment.
+(Some banking systems use two-key triple-DES which sets k2 = k0; this gives anintermediate step between single and triple DES.
+) Most new systems use AESas the default choice, but many banking systems are committed to using blockciphers with an eight-byte block, because of the message formats used in themany protocols by which ATMs, point-of-sale terminals and bank networks talkto each other, and because of the use of block ciphers to generate and protectcustomer PINs (which I discuss in the chapter on Banking and Bookkeeping).
+Triple DES is a perfectly serviceable block cipher for such purposes for theforeseeable future.
+Another way of preventing keysearch (and making power analysis harder) iswhitening.
+ In addition to the 56-bit key, say k0, we choose two 64-bit whiteningkeys k1 and k2, xor’ing the ﬁrst with the plaintext before encryption and thesecond with the output of the encryption to get the ciphertext afterwards.
+ Thiscomposite cipher is known as DESX.
+ Formally,DESX(k0, k1, k2; M) = DES(k0; M � k1) � k2Security Engineering176Ross Anderson5.
+5.
+ MODES OF OPERATIONIt can be shown that, on reasonable assumptions, DESX has the propertiesyou’d expect; it inherits the di↵erential strength of DES but its resistance tokeysearch is increased by the amount of the whitening [1047].
+ Whitened blockciphers are used in some applications, most speciﬁcally in the XTS mode ofoperation which I discuss below.
+ Nowadays, it’s usually used with AES, andAESX is deﬁned similarly, with the whitening keys used to make each blockencryption operation unique – as we shall see below in section 5.
+5.
+7.
+5.
+5Modes of OperationA common failure is that cryptographic libraries enable or even encourage de-velopers to use an inappropriate mode of operation.
+ This speciﬁes how a blockcipher with a ﬁxed block size (8 bytes for DES, 16 for AES) can be extended toprocess messages of arbitrary length.
+There are several standard modes of operation for using a block cipher onmultiple blocks [1404].
+ It is vital to understand them, so you can choose theright one for the job, especially as some common tools provide a weak one bydefault.
+ This weak mode is electronic code book (ECB) mode, which we discussnext.
+5.
+5.
+1How not to use a block cipherIn electronic code book mode, we just encrypt each succeeding block of plaintextwith our block cipher to get ciphertext, as with the Playfair example above.
+ Thisis adequate for protocols using single blocks such as challenge-response and somekey management tasks; it’s also used to encrypt PINs in cash machine systems.
+But if we use it to encrypt redundant data the patterns will show through,giving an opponent information about the plaintext.
+ For example, ﬁgure 5.
+14shows what happens to a cartoon image when encrypted using DES in ECBmode.
+ Repeated blocks of plaintext all encrypt to the same ciphertext, leavingthe image quite recognisable.
+In one popular corporate email system from the last century, the encryptionused was DES ECB with the key derived from an eight-character password.
+ Ifyou looked at a ciphertext generated by this system, you saw that a certain blockwas far more common than the others – the one corresponding to a plaintext ofnulls.
+ This gave one of the simplest attacks ever on a ﬁelded DES encryptionsystem: just encrypt a null block with each password in a dictionary and sortthe answers.
+ You can now break at sight any ciphertext whose password wasone of those in your dictionary.
+In addition, using ECB mode to encrypt messages of more than one blocklength which require authenticity – such as bank payment messages – is par-ticularly foolish, as it opens you to a cut and splice attack along the blockboundaries.
+ For example, if a bank message said “Please pay account numberX the sum Y , and their reference number is Z” then an attacker might initiatea payment designed so that some of the digits of X are replaced with some ofthe digits of Z.
+Security Engineering177Ross Anderson5.
+5.
+ MODES OF OPERATION(a) Plaintext(b) ECB ciphertextFigure 5.
+14: The Linux penguin, in clear and ECB encrypted (from Wikipedia,derived from images created by Larry Ewing).
+5.
+5.
+2Cipher block chainingMost commercial applications which encrypt more than one block used touse cipher block chaining, or CBC, mode.
+ Like ECB, this was one of the originalmodes of operation standardised with DES.
+ In it, we exclusive-or the previousblock of ciphertext to the current block of plaintext before encryption (see Fig-ure 5.
+15).
+This mode disguises patterns in the plaintext: the encryption of each blockdepends on all the previous blocks.
+ The input initialisation vector (IV) ensuresthat stereotyped plaintext message headers won’t leak information by encryptingto identical ciphertexts, just as with a stream cipher.
+However, an opponent who knows some of the plaintext may be able to cutand splice a message (or parts of several messages encrypted under the samekey).
+ In fact, if an error is inserted into the ciphertext, it will a↵ect only twoblocks of plaintext on decryption, so if there isn’t any integrity protection on theplaintext, an enemy can insert two-block garbles of random data at locationsof their choice.
+ For that reason, CBC encryption usually has to be used with aseparate authentication code.
+More subtle things can go wrong, too; systems have to pad the plaintext toa multiple of the block size, and if a server that decrypts a message and ﬁndsincorrect padding signals this fact, whether by returning an ‘invalid padding’message or just taking longer to respond, then this opens a padding oracle attackin which the attacker tweaks input ciphertexts, one byte at a time, watches theerror messages, and ends up being able to decrypt whole messages.
+ This wasdiscovered by Serge Vaudenay in 2002; variants of it were used against SSL,IPSEC and TLS as late as 2016 [1949].
+Security Engineering178Ross Anderson5.
+5.
+ MODES OF OPERATION???•••EKEKEK???���???---IVP1P2P3C1C2C3.
+.
+.
+Figure 5.
+15: – Cipher Block Chaining (CBC) mode5.
+5.
+3Counter encryptionFeedback modes of block cipher encryption are falling from fashion, and notjust because of cryptographic issues.
+ They are hard to parallelise.
+ With CBC,a whole block of the cipher must be computed between each block input andeach block output.
+ This can be inconvenient in high-speed applications, suchas protecting tra�c on backbone links.
+ As silicon is cheap, we would ratherpipeline our encryption chip, so that it encrypts a new block (or generates anew block of keystream) in as few clock ticks as possible.
+The simplest solution is to use AES as a stream cipher.
+We generate akeystream by encrypting a counter starting at an initialisation vector: Ki ={IV + i}K, thus expanding the key K into a long stream of blocks Ki ofkeystream, which is typically combined with the blocks of a message Mi us-ing exclusive-or to give ciphertext Ci = Mi � Ki.
+Additive stream ciphers have two systemic vulnerabilities, as we noted insection 5.
+2.
+2 above.
+ The ﬁrst is an attack in depth: if the same keystream isused twice, then the xor of the two ciphertexts is the xor of the two plaintexts,from which plaintext can often be deduced, as with Venona.
+ The second is thatthey fail to protect message integrity.
+ Suppose that a stream cipher were usedto encipher fund transfer messages.
+ These messages are highly structured; youmight know, for example, that bytes 37–42 contain the sum being transferred.
+You could then cause the data tra�c from a local bank to go via your computer,for example by an SS7 exploit.
+You go into the bank and send $500 to anaccomplice.
+ The ciphertext Ci = Mi � Ki, duly arrives in your machine.
+ Youknow Mi for bytes 37–42, so you can recover Ki and construct a modiﬁedmessage which instructs the receiving bank to pay not $500 but $500,000! Thisis an example of an attack in depth; it is the price not just of the perfect secrecywe get from the one-time pad, but of much more humble stream ciphers, too.
+Security Engineering179Ross Anderson5.
+5.
+ MODES OF OPERATIONThe usual way of dealing with this is to add an authentication code, and themost common standard uses a technique called Galois counter mode, which Idescribe later.
+5.
+5.
+4Legacy stream cipher modesYou may ﬁnd two old stream-cipher modes of operation, output feedback mode(OFB) and less frequently ciphertext feedback mode (CFB).
+Output feedback mode consists of repeatedly encrypting an initial value andusing this as a keystream in a stream cipher.
+ Writing IV for the initializationvector, we will have K1 = {IV }K and Ki = {IV }K(i�1).
+ However an n-bitblock cipher in OFB mode will typically have a cycle length of 2n/2 blocks, afterwhich the birthday theorem will see to it that we loop back to the IV.
+ So we mayhave a cycle-length problem if we use a 64-bit block cipher such as triple-DES ona high-speed link: once we’ve called a little over 232 pseudorandom 64-bit values,the odds favour a match.
+ (In CBC mode, too, the birthday theorem ensures thatafter about 2n/2 blocks, we will start to see repeats.
+) Counter mode encryption,however, has a guaranteed cycle length of 2n rather than 2n/2, and as we notedabove is easy to parallelise.
+ Despite this OFB is still used, as counter mode onlybecame a NIST standard in 2002.
+Cipher feedback mode is another kind of stream cipher, designed for usein radio systems that have to resist jamming.
+It was designed to be self-synchronizing, in that even if we get a burst error and drop a few bits, thesystem will recover synchronization after one block length.
+ This is achieved byusing our block cipher to encrypt the last n bits of ciphertext, adding the lastoutput bit to the next plaintext bit, and shifting the ciphertext along one bit.
+But this costs one block cipher operation per bit and has very bad error ampliﬁ-cation properties; nowadays people tend to use dedicated link layer protocols forsynchronization and error correction rather than trying to combine them withthe cryptography at the tra�c layer.
+5.
+5.
+5Message Authentication CodeAnother o�cial mode of operation of a block cipher is not used to encipher data,but to protect its integrity and authenticity.
+ This is the message authenticationcode, or MAC.
+ To compute a MAC on a message using a block cipher, we encryptit using CBC mode and throw away all the output ciphertext blocks except thelast one; this last block is the MAC.
+ (The intermediate results are kept secretin order to prevent splicing attacks.
+)This construction makes the MAC depend on all the plaintext blocks as wellas on the key.
+ It is secure provided the message length is ﬁxed; Mihir Bellare,Joe Kilian and Philip Rogaway proved that any attack on a MAC under thesecircumstances would give an attack on the underlying block cipher [211].
+If the message length is variable, you have to ensure that a MAC computedon one string can’t be used as the IV for computing a MAC on a di↵erent string,so that an opponent can’t cheat by getting a MAC on the composition of the twoSecurity Engineering180Ross Anderson5.
+5.
+ MODES OF OPERATIONstrings.
+ In order to ﬁx this problem, NIST has standardised CMAC, in whicha variant of the key is xor-ed in before the last encryption [1405].
+ (CMAC isbased on a proposal by Tetsu Iwata and Kaoru Kurosawa [965].
+) You may seelegacy systems in which the MAC consists of only half of the last output block,with the other half thrown away, or used in other mechanisms.
+There are other possible constructions of MACs: the most common one isHMAC, which uses a hash function with a key; we’ll describe it in section 5.
+6.
+2.
+5.
+5.
+6Galois Counter ModeThe above modes were all developed for DES in the 1970s and 1980s (althoughcounter mode only became an o�cial US government standard in 2002).
+ Theyare not e�cient for bulk encryption where you need to protect integrity as wellas conﬁdentiality; if you use either CBC mode or counter mode to encrypt yourdata and a CBC-MAC or CMAC to protect its integrity, then you invoke theblock cipher twice for each block of data you process, and the operation cannotbe parallelised.
+The modern approach is to use a mode of operation designed for authenti-cated encryption.
+ Galois Counter Mode (GCM) has taken over as the defaultsince being approved by NIST in 2007 [1407].
+ It uses only one invocation ofthe block cipher per block of text, and it’s parallelisable so you can get highthroughput on fast data links with low cost and low latency.
+Encryption isperformed in a variant of counter mode; the resulting ciphertexts are also usedas coe�cients of a polynomial which is evaluated at a key-dependent point overa Galois ﬁeld of 2128 elements to give an authenticator tag.
+ The tag compu-tation is a universal hash function of the kind I described in section 5.
+2.
+4 andis provably secure so long as keys are never reused.
+ The supplied key is usedalong with a random IV to generate both a unique message key and a uniqueauthenticator key.
+ The output is thus a ciphertext of the same length as theplaintext, plus an IV and a tag of typically 128 bits each.
+GCM also has an interesting incremental property: a new authenticator andciphertext can be calculated with an amount of e↵ort proportional to the numberof bits that were changed.
+ GCM was invented by David McGrew and JohnViega of Cisco; their goal was to create an e�cient authenticated encryptionmode suitable for use in high-performance network hardware [1268].
+ GCM is thesensible default for authenticated encryption of bulk content.
+ (There’s an earliercomposite mode, CCM, which you’ll ﬁnd used in Bluetooth 4.
+0 and later; thiscombines counter mode with CBC-MAC, so it costs about twice as much e↵ortto compute, and cannot be parallelised or recomputed incrementally [1406].
+)5.
+5.
+7XTSGCM and other authenticated encryption modes expand the plaintext by addinga message key and an authenticator tag.
+ This is very inconvenient in applicationssuch as hard disk encryption, where we prefer a mode of operation that preservesplaintext length.
+Disk encryption systems used to use CBC with the sectornumber providing an IV, but since Windows 10, Microsoft has been using a newSecurity Engineering181Ross Anderson5.
+6.
+ HASH FUNCTIONS?��E-Mi•hi�1hiFigure 5.
+16: – feedforward mode (hash function)mode of operation, XTS-AES, inspired by GCM and standardised in 2007.
+ Thisis a codebook mode but with the plaintext whitened by a tweak key derived fromthe disk sector.
+ Formally, the message Mi encrypted with the key K at at blockj isAESX(KTj, K, KTj; M)where the tweak key KTj is derived by encrypting the IV using a di↵erentkey and then multiplying it repeatedly with a suitable constant so as to givea di↵erent whitener for each block.
+ This means that if an attacker swaps twoencrypted blocks, all 256 bits will decrypt to randomly wrong values.
+ You stillneed higher-layer mechanisms to detect ciphertext manipulation, but simplechecksums will be su�cient.
+5.
+6Hash FunctionsIn section 5.
+4.
+3.
+1 I showed how the Luby-Racko↵ theorem enables us to constructa block cipher from a hash function.
+It’s also possible to construct a hashfunction from a block cipher5.
+ The trick is to feed the message blocks one ata time to the key input of our block cipher, and use it to update a hash value(which starts o↵ at say H0 = 0).
+ In order to make this operation non-invertible,we add feedforward: the (i � 1)st hash value is exclusive or’ed with the outputof round i.
+ This Davies-Meyer construction gives our ﬁnal mode of operationof a block cipher (Figure 5.
+16).
+5In fact, we can also construct hash functions and block ciphers from stream ciphers – so,subject to some caveats I’ll discuss in the next section, given any one of these three primitiveswe can construct the other two.
+Security Engineering182Ross Anderson5.
+6.
+ HASH FUNCTIONSThe birthday theorem makes another appearance here, in that if a hashfunction h is built using an n bit block cipher, it is possible to ﬁnd two messagesM1 = M2 with h(M1) = h(M2) with about 2n/2 e↵ort (hash slightly more thanthat many messages Mi and look for a match).
+ So a 64 bit block cipher is notadequate, as forging a message would cost of the order of 232 messages, which isjust too easy.
+ A 128-bit cipher such as AES used to be just about adequate, andin fact the AACS content protection mechanism in Blu-ray DVDs used ‘AES-H’,the hash function derived from AES in this way.
+5.
+6.
+1Common hash functionsThe hash functions most commonly used through the 1990s and 2000s evolvedas variants of a block cipher with a 512 bit key and a block size increasing from128 to 512 bits.
+ The ﬁrst two were designed by Ron Rivest and the others bythe NSA:• MD4 has three rounds and a 128 bit hash value, and a collision was foundfor it in 1998 [568];• MD5 has four rounds and a 128 bit hash value, and a collision was foundfor it in 2004 [1979, 1981];• SHA-1, released in 1995, has ﬁve rounds and a 160 bit hash value.
+ Acollision was found in 2017 [1828], and a more powerful version of theattack in 2020 [1146];• SHA-2, which replaced it in 2002, comes in 256-bit and 512-bit versions(called SHA256 and SHA512) plus a number of variants.
+The block ciphers underlying these hash functions are similar: their roundfunction is a complicated mixture of the register operations available on 32 bitprocessors [1667].
+ Cryptanalysis has advanced steadily.
+ MD4 was broken byHans Dobbertin in 1998 [568]; MD5 was broken by Xiaoyun Wang and hercolleagues in 2004 [1979, 1981]; collisions can now be found easily, even betweenstrings containing meaningful text and adhering to message formats such asthose used for digital certiﬁcates.
+ Wang seriously dented SHA-1 the followingyear, providing an algorithm to ﬁnd collisions in only 269 steps [1980]; it nowtakes about 260 computations.
+ In February 2017, scientists from Amsterdamand Google published one, to prove the point and help persuade people to moveto stronger hash functions such as SHA-2 [1828] (and from earlier versions ofTLS to TLS 1.
+3).
+In 2020, Ga¨etan Leurent and Thomas Peyrin developedan improved attack that computes chosen-preﬁx collisions, enabling certiﬁcateforgery at a cost of several tens of thousands of dollars [1146].
+In 2007, the US National Institute of Standards and Technology (NIST)organised a competition to ﬁnd a replacement hash function family [1409].
+ Thewinner, Keccak, has a quite di↵erent internal structure, and was standardisedas SHA-3 in 2015.
+ So we now have a choice of SHA-2 and SHA-3 as standardhash functions.
+Security Engineering183Ross Anderson5.
+6.
+ HASH FUNCTIONSA lot of deployed systems still use hash functions such as MD5 for whichthere’s an easy collision-search algorithm.
+ Whether a collision will break anygiven application can be a complex question.
+ I already mentioned forensic sys-tems, which keep hashes of ﬁles on seized computers, to reassure the court thatthe police didn’t tamper with the evidence; a hash collision would merely signalthat someone had been trying to tamper, whether the police or the defendant,and trigger a more careful investigation.
+ If bank systems actually took a mes-sage composed by a customer saying ‘Pay X the sum Y ’, hashed it and signedit, then a crook could ﬁnd two messages ‘Pay X the sum Y ’ and ‘Pay X thesum Z’ that hashed to the same value, get one signed, and swap it for the other.
+But bank systems don’t work like that.
+ They typically use MACs rather thandigital signatures on actual transactions, and logs are kept by all the parties toa transaction, so it’s not easy to sneak in one of a colliding pair.
+ And in bothcases you’d probably have to ﬁnd a preimage of an existing hash value, whichis a much harder cryptanalytic task than ﬁnding a collision.
+5.
+6.
+2Hash function applications – HMAC, commitmentsand updatingBut even though there may be few applications where a collision-ﬁnding algo-rithm could let a bad guy to steal real money today, the existence of a vulner-ability can still undermine a system’s value.
+ Some people doing forensic workcontinue to use MD5, as they’ve used it for years, and its collisions don’t giveuseful attacks.
+This is probably a mistake.
+In 2005, a motorist accused ofspeeding in Sydney, Australia was acquitted after the New South Wales Roadsand Tra�c Authority failed to ﬁnd an expert to testify that MD5 was securein this application.
+ The judge was “not satisﬁed beyond reasonable doubt thatthe photograph [had] not been altered since it was taken” and acquitted themotorist; his strange ruling was upheld on appeal the following year [1432].
+ Soeven if a vulnerability doesn’t present an engineering threat, it can still presenta certiﬁcational threat.
+Hash functions have many other uses.
+ One of them is to compute MACs.
+ Ana¨ıve method would be to hash the message with a key: MACk(M) = h(k, M).
+However the accepted way of doing this, called HMAC, uses an extra step inwhich the result of this computation is hashed again.
+ The two hashing opera-tions are done using variants of the key, derived by exclusive-or’ing them withtwo di↵erent constants.
+ Thus HMACk(M) = h(k � B, h(k � A, M)).
+ A is con-structed by repeating the byte 0x36 as often as necessary, and B similarly fromthe byte 0x5C.
+ If a hash function is on the weak side, this construction can makeexploitable collisions harder to ﬁnd [1089].
+ HMAC is now FIPS 198-1.
+Another use of hash functions is to make commitments that are to be revealedlater.
+ For example, I might wish to timestamp a digital document in order toestablish intellectual priority, but not reveal the contents yet.
+ In that case, Ican publish a hash of the document, or send it to a commercial timestampingservice, or have it mined into the Bitcoin blockchain.
+ Later, when I reveal thedocument, the timestamp on its hash establishes that I had written it by then.
+Again, an algorithm that generates colliding pairs doesn’t break this, as youhave to have the pair to hand when you do the timestamp.
+Security Engineering184Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESMerkle trees hash a large number of inputs to a single hash output.
+ Theinputs are hashed to values that form the leaves of a tree; each non-leaf nodecontains the hash of all the hashes at its child nodes, so the hash at the rootis a hash of all the values at the leaves.
+ This is a fast way to hash a largedata structure; it’s used in code signing, where you may not want to wait forall of an application’s ﬁles to have their signatures checked before you open it.
+It’s also widely used in blockchain applications; in fact, a blockchain is just aMerkle tree.
+ It was invented by Ralph Merkle, who ﬁrst proposed it to calculatea short hash of a large ﬁle of public keys [1296], particularly for systems wherepublic keys are used only once.
+ For example, a Lamport digital signature canbe constructed from a hash function: you create a private key of 512 random256-bit values ki and publish the veriﬁcation key V as their Merkle tree hash.
+Then to sign h = SHA256(M) you would reveal k2i if the i-th bit of h is zero,and otherwise reveal k2i+1.
+ This is secure if the hash function is, but has thedrawback that each key can be used only once.
+Merkle saw that you couldgenerate a series of private keys by encrypting a counter with a master secretkey, and then use a tree to hash the resulting public keys.
+ However, for mostpurposes, people use signature algorithms based on number theory, which I’lldescribe in the next section.
+One security-protocol use of hash functions is worth a mention: key updat-ing and autokeying.
+ Key updating means that two or more principals who sharea key pass it through a one-way hash function at agreed times: Ki = h(Ki�1).
+The point is that if an attacker compromises one of their systems and steals thekey, he only gets the current key and is unable to decrypt back tra�c.
+ The chainof compromise is broken by the hash function’s one-wayness.
+ This property isalso known as backward security.
+ A variant is autokeying where the principalsupdate a key by hashing it with the messages they have exchanged since the lastkey change: Ki+1 = h(Ki, Mi1, Mi2, .
+ .
+ .
+).
+ If an attacker now compromises oneof their systems and steals the key, then as soon as they exchange a messagewhich he can’t observe or guess, security will be recovered; again, the chainof compromise is broken.
+ This property is known as forward security.
+ It wasﬁrst used in banking in EFT payment terminals in Australia [207, 209].
+ Theuse of asymmetric cryptography allows a slightly stronger form of forward se-curity, namely that as soon as a compromised terminal exchanges a messagewith an uncompromised one which the opponent doesn’t control, security canbe recovered even if the message is in plain sight.
+ I’ll describe how this worksnext.
+5.
+7Asymmetric crypto primitivesThe commonly used building blocks in asymmetric cryptography, public-keyencryption and digital signature are based on number theory.
+ I’ll give a briefoverview here, and look in more detail at some of the mechanisms in Part IIwhen I discuss applications.
+The basic idea is to make the security of the cipher depend on the di�cultyof solving a mathematical problem that’s known to be hard, in the sense that alot of people have tried to solve it and failed.
+ The two problems used in almostSecurity Engineering185Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESall real systems are factorization and discrete logarithm.
+5.
+7.
+1Cryptography based on factoringThe prime numbers are the positive whole numbers with no proper divisors:the only numbers that divide a prime number are 1 and the number itself.
+By deﬁnition, 1 is not prime; so the primes are {2, 3, 5, 7, 11, .
+.
+.
+}.
+Thefundamental theorem of arithmetic states that each natural number greater than1 factors into prime numbers in a way that is unique up to the order of thefactors.
+ It is easy to ﬁnd prime numbers and multiply them together to givea composite number, but much harder to resolve a composite number into itsfactors.
+ And lots of smart people have tried really hard since we started usingcryptography based on factoring.
+ The largest composite product of two largerandom primes to have been factorized in 2020 was RSA-250, an 829-bit number(250 decimal digits).
+ This took the equivalent of 2700 years’ work on a single2.
+2GHz core; the previous record, RSA-240 in 2019, had taken the equivalent of900 years [301].
+ It is possible for factoring to be done surreptitiously, perhapsusing a botnet; in 2001, when the state of the art was factoring 512-bit numbers,such a challenge was set in Simon Singh’s ‘Code Book’ and solved by ﬁve Swedishstudents using several hundred computers to which they had access [43].
+ As for1024-bit numbers, I expect the NSA can factor them already, and I noted in thesecond edition that ‘an extrapolation of the history of factoring records suggeststhe ﬁrst factorization will be published in 2018.
+’ Moore’s law is slowing down,and we’re a year late.
+ Anyway, organisations that want keys to remain securefor many years are already using 2048-bit numbers at least.
+The algorithm commonly used to do public-key encryption and digital sig-natures based on factoring is RSA, named after its inventors Ron Rivest, AdiShamir and Len Adleman.
+ It uses Fermat’s little theorem, which states that forall primes p not dividing a, ap�1 ⌘ 1 (mod p) (proof: take the set {1, 2, .
+.
+.
+,p � 1} and multiply each of them modulo p by a, then cancel out (p � 1)! eachside).
+ For a general integer n, a�(n) ⌘ 1 (mod p) where Euler’s function �(n)is the number of positive integers less than n with which it has no divisor incommon (the proof is similar).
+ So if n is the product of two primes pq then�(n) = (p � 1)(q � 1).
+In RSA, the encryption key is a modulus N which is hard to factor (takeN = pq for two large randomly chosen primes p and q, say of 1024 bits each)plus a public exponent e that has no common factors with either p � 1 or q � 1.
+The private key is the factors p and q, which are kept secret.
+ Where M is themessage and C is the ciphertext, encryption is deﬁned byC ⌘ M e(mod N)Decryption is the reverse operation:M ⌘epC(mod N)Whoever knows the private key – the factors p and q of N – can easilycalculateepC(mod N).
+As �(N) = (p � 1)(q � 1) and e has no commonSecurity Engineering186Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESfactors with �(N), the key’s owner can ﬁnd a number d such that de ⌘ 1(mod �(N)) – she ﬁnds the value of d separately modulo p � 1 and q � 1, andcombines the answers.
+epC (mod N) is now computed as Cd (mod N), anddecryption works because of Fermat’s theorem:Cd ⌘ {M e}d ⌘ M ed ⌘ M 1+k�(N) ⌘ M.
+M k�(N) ⌘ M.
+1 ⌘ M(mod N)Similarly, the owner of a private key can operate on a message with it toproduce a signatureSigd(M) ⌘ M d(mod N)and this signature can be veriﬁed by raising it to the power e mod N (thus,using e and N as the public signature veriﬁcation key) and checking that themessage M is recovered:M ⌘ (Sigd(M))e(mod N)Neither RSA encryption nor signature is safe to use on its own.
+ The reasonis that, as encryption is an algebraic process, it preserves certain algebraic prop-erties.
+ For example, if we have a relation such as M1M2 = M3 that holds amongplaintexts, then the same relationship will hold among ciphertexts C1C2 = C3and signatures Sig1Sig2 = Sig3.
+ This property is known as a multiplicative ho-momorphism; a homomorphism is a function that preserves some mathematicalstructure.
+ The homomorphic nature of raw RSA means that it doesn’t meet therandom oracle model deﬁnitions of public key encryption or signature.
+Another general problem with public-key encryption is that if the plaintextsare drawn from a small set, such as ‘attack’ or ‘retreat’, and the encryptionprocess is deterministic (as RSA is), then an attacker might just precomputethe possible ciphertexts and recognise them when they appear.
+With RSA,it’s also dangerous to use a small exponent e to encrypt the same messageto multiple recipients, as this can lead to an algebraic attack.
+To stop theguessing attack, the low-exponent attack and attacks based on homomorphism,it’s sensible to add in some randomness, and some redundancy, into a plaintextblock before encrypting it.
+ Every time we encrypt the same short message, say‘attack’, we want to get a completely di↵erent ciphertext, and for these to beindistinguishable from each other as well as from the ciphertexts for ‘retreat’.
+And there are good ways and bad ways of doing this.
+Crypto theoreticians have wrestled for decades to analyse all the things thatcan go wrong with asymmetric cryptography, and to ﬁnd ways to tidy it up.
+Shaﬁ Goldwasser and Silvio Micali came up with formal models of probabilisticencryption in which we add randomness to the encryption process, and semanticsecurity, which we mentioned already; in this context it means that an attackercannot get any information at all about a plaintext M that was encrypted toa ciphertext C, even if he is allowed to request the decryption of any otherciphertext C0 not equal to C [777].
+ In other words, we want the encryption toresist chosen-ciphertext attack as well as chosen-plaintext attack.
+ There are aSecurity Engineering187Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESnumber of constructions that give semantic security, but they tend to be tooungainly for practical use.
+The usual real-world solution is optimal asymmetric encryption padding(OAEP), where we concatenate the message M with a random nonce N, anduse a hash function h to combine them:C1 = M � h(N)C2 = N � h(C1)In e↵ect, this is a two-round Feistel cipher that uses h as its round function.
+The result, the combination C1, C2, is then encrypted with RSA and sent.
+ Therecipient then computes N as C2 � h(C1) and recovers M as C1 � h(N) [212].
+This was eventually proven to be secure.
+There are a number of public-keycryptography standards; PKCS #1 describes OAEP [993].
+ These block a wholelot of attacks that were discovered in the 20th century and about which peoplehave mostly forgotten, such as the fact that an opponent can detect if youencrypt the same message with two di↵erent RSA keys.
+ In fact, one of the thingswe learned in the 1990s was that randomisation helps make crypto protocolsmore robust against all sorts of attacks, and not just the mathematical ones.
+Side-channel attacks and even physical probing of devices take a lot more work.
+With signatures, things are slightly simpler.
+ In general, it’s often enough tojust hash the message before applying the private key: Sigd = [h(M)]d (modN); PKCS #7 describes simple mechanisms for signing a message digest [1008].
+However, in some applications one might wish to include further data in thesignature block, such as a timestamp, or some randomness to make side-channelattacks harder.
+Many of the things that have gone wrong with real implementations have todo with side channels and error handling.
+ One spectacular example was whenDaniel Bleichenbacher found a way to break the RSA implementation in SSLv 3.
+0 by sending suitably chosen ciphertexts to the victim and observing anyresulting error messages.
+If he could learn from the target whether a givenc, when decrypted as cd (mod n), corresponds to a PKCS #1 message, thenhe could use this to decrypt or sign messages [264].
+ There have been manymore side-channel attacks on common public-key implementations, typically viameasuring the precise time taken to decrypt.
+ RSA is also mathematically fragile;you can break it using homomorphisms, or if you have the same ciphertextencrypted under too many di↵erent small keys, or if the message is too short,or if two messages are related by a known polynomial, or in several other edgecases.
+ Errors in computation can also give a result that’s correct modulo onefactor of the modulus and wrong modulo the other, enabling the modulus to befactored; errors can be inserted tactically, by interfering with the crypto device,or strategically, for example by the chipmaker arranging for one particular valueof a 64-bit multiply to be computed incorrectly.
+ Yet other attacks have involvedstack overﬂows, whether by sending the attack code in as keys, or as paddingin poorly-implemented standards.
+Security Engineering188Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVES5.
+7.
+2Cryptography based on discrete logarithmsWhile RSA was the ﬁrst public-key encryption algorithm deployed in the SSLand SSH protocols, the most popular public-key algorithms now are based ondiscrete logarithms.
+ There are a number of ﬂavors, some using normal modulararithmetic while others use elliptic curves.
+ I’ll explain the normal case ﬁrst.
+A primitive root modulo p is a number whose powers generate all the nonzeronumbers mod p; for example, when working modulo 7 we ﬁnd that 52 = 25 whichreduces to 4 (modulo 7), then we can compute 53 as 52 ⇥ 5 or 4 ⇥ 5 which is 20,which reduces to 6 (modulo 7), and so on, as in Figure 5.
+17:51= 5(mod 7)52 =25⌘ 4(mod 7)53 ⌘4 x 5⌘ 6(mod 7)54 ⌘6 x 5⌘ 2(mod 7)55 ⌘2 x 5⌘ 3(mod 7)56 ⌘3 x 5⌘ 1(mod 7)Figure 5.
+17 – example of discrete logarithm calculationsThus 5 is a primitive root modulo 7.
+ This means that given any y, we canalways solve the equation y = 5x (mod 7); x is then called the discrete logarithmof y modulo 7.
+ Small examples like this can be solved by inspection, but for alarge random prime number p, we do not know how to do this e�ciently.
+ Sothe mapping f : x ! gx (mod p) is a one-way function, with the additionalproperties that f(x + y) = f(x)f(y) and f(nx) = f(x)n.
+ In other words, it is aone-way homomorphism.
+ As such, it can be used to construct digital signatureand public key encryption algorithms.
+5.
+7.
+2.
+1One-way commutative encryptionImagine we’re back in ancient Rome, that Anthony wants to send a secret toBrutus, and the only communications channel available is an untrustworthycourier (say, a slave belonging to Caesar).
+ Anthony can take the message, putit in a box, padlock it, and get the courier to take it to Brutus.
+ Brutus couldthen put his own padlock on it too, and have it taken back to Anthony.
+ He inturn would remove his padlock, and have it taken back to Brutus, who wouldnow at last open it.
+Exactly the same can be done using a suitable encryption function thatcommutes, that is, has the property that {{M}KA}KB = {{M}KB}KA.
+ Alicecan take the message M and encrypt it with her key KA to get {M}KA whichshe sends to Bob.
+ Bob encrypts it again with his key KB getting {{M}KA}KB.
+But the commutativity property means that this is just {{M}KB}KA, so Alicecan decrypt it using her key KA getting {M}KB.
+ She sends this to Bob and hecan decrypt it with KB, ﬁnally recovering the message M.
+How can a suitable commutative encryption be implemented? The one-timepad does indeed commute, but is not suitable here.
+ Suppose Alice chooses arandom key xA and sends Bob M � xA while Bob returns M � xB and Aliceﬁnally sends him M � xA � xB, then an attacker can simply exclusive-or theseSecurity Engineering189Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESthree messages together; as X � X = 0 for all X, the two values of xA and xBboth cancel out, leaving the plaintext M.
+The discrete logarithm problem comes to the rescue.
+If the discrete logproblem based on a primitive root modulo p is hard, then we can use discreteexponentiation as our encryption function.
+For example, Alice encodes hermessage as the primitive root g, chooses a random number xA, calculates gxAmodulo p and sends it, together with p, to Bob.
+ Bob likewise chooses a randomnumber xB and forms gxAxB modulo p, which he passes back to Alice.
+ Alicecan now remove her exponentiation: using Fermat’s theorem, she calculatesgxB = (gxAxB)(p�xA)(mod p) and sends it to Bob.
+ Bob can now remove hisexponentiation, too, and so ﬁnally gets hold of g.
+ The security of this schemedepends on the di�culty of the discrete logarithm problem.
+ In practice, it canbe tricky to encode a message as a primitive root; but there’s a simpler way toachieve the same e↵ect.
+5.
+7.
+2.
+2Di�e-Hellman key establishmentThe ﬁrst public-key encryption scheme to be published, by Whitﬁeld Di�e andMartin Hellman in 1976, has a ﬁxed primitive root g and uses gxAxB modulo pas the key to a shared-key encryption system.
+ The values xA and xB can bethe private keys of the two parties.
+Let’s walk through this.
+ The prime p and generator g are common to allusers.
+Alice chooses a secret random number xA, calculates yA = gxA andpublishes it opposite her name in the company phone book.
+Bob does thesame, choosing a random number xB and publishing yB = gxB.
+ In order tocommunicate with Bob, Alice fetches yB from the phone book, forms yBxAwhich is just gxAxB, and uses this to encrypt the message to Bob.
+ On receivingit, Bob looks up Alice’s public key yA and forms yAxB which is also equal togxAxB, so he can decrypt her message.
+Alternatively, Alice and Bob can use transient keys, and get a mechanismfor providing forward security.
+ As before, let the prime p and generator g becommon to all users.
+ Alice chooses a random number RA, calculates gRA andsends it to Bob; Bob does the same, choosing a random number RB and sendinggRB to Alice; they then both form gRARB, which they use as a session key (seeFigure 5.
+19).
+A ! B :gRA(mod p)B ! A :gRB(mod p)A ! B :{M}gRARBFigure 5.
+18 – the Di�e-Hellman key exchange protocolAlice and Bob can now use the session key gRARB to encrypt a conversation.
+If they used transient keys, rather than long-lived ones, they have managedto create a shared secret ‘out of nothing’.
+ Even if an opponent had inspectedboth their machines before this protocol was started, and knew all their storedprivate keys, then provided some basic conditions were met (e.
+g.
+, that their ran-dom number generators were not predictable and no malware was left behind)Security Engineering190Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESthe opponent could still not eavesdrop on their tra�c.
+ This is the strong ver-sion of the forward security property to which I referred in section 5.
+6.
+2.
+ Theopponent can’t work forward from knowledge of previous keys which he mighthave obtained.
+ Provided that Alice and Bob both destroy the shared secretafter use, they will also have backward security: an opponent who gets access totheir equipment subsequently cannot work backward to break their old tra�c.
+In what follows, we may write the Di�e-Hellman key derived from RA and RBas DH(RA, RB) when we don’t have to be explicit about which group we’reworking in and don’t need to write out explicitly which is the private key RAand which is the public key gRA.
+Slightly more work is needed to provide a full solution.
+ Some care is neededwhen choosing the parameters p and g; we can infer from the Snowden disclo-sures, for example, that the NSA can solve the discrete logarithm problem forcommonly-used 1024-bit prime numbers6.
+ And there are several other detailswhich depend on whether we want properties such as forward security.
+But this protocol has a small problem: although Alice and Bob end up witha session key, neither of them has any real idea who they share it with.
+Suppose that in our padlock protocol Caesar had just ordered his slave tobring the box to him instead, and placed his own padlock on it next to An-thony’s.
+ The slave takes the box back to Anthony, who removes his padlock,and brings the box back to Caesar who opens it.
+ Caesar can even run two in-stances of the protocol, pretending to Anthony that he’s Brutus and to Brutusthat he’s Anthony.
+ One ﬁx is for Anthony and Brutus to apply their seals totheir locks.
+With the Di�e-Hellman protocol, the same idea leads to a middlepersonattack.
+Charlie intercepts Alice’s message to Bob and replies to it; at thesame time, he initiates a key exchange with Bob, pretending to be Alice.
+ Heends up with a key DH(RA, RC) which he shares with Alice, and another keyDH(RB, RC) which he shares with Bob.
+ So long as he continues to sit in themiddle of the network and translate the messages between them, they may havea hard time detecting that their communications are compromised.
+ The usualsolution is to authenticate transient keys, and there are various possibilities.
+In the STU-2 telephone, which is now obsolete but which you can see in theNSA museum at Fort Meade, the two principals would read out an eight-digithash of the key they had generated and check that they had the same valuebefore starting to discuss classiﬁed matters.
+ Something similar is implementedin Bluetooth versions 4 and later, but is complicated by the many versions thatthe protocol has evolved to support devices with di↵erent user interfaces.
+ Theprotocol has su↵ered from multiple attacks, most recently the key negotiationof Bluetooth (KNOB) attack, which allows a middleperson to force one-bytekeys that are easily brute forced; all devices produced before 2018 are vulnera-ble [123].
+ The standard allows for key lengths between one and sixteen bytes;6The likely discrete log algorithm, NFS, involves a large computation for each prime numberfollowed by a smaller computation for each discrete log modulo that prime number.
+ The openrecord is 795 bits, which took 3,100 core-years in 2019 [?], using a version of NFS that’s threetimes more e�cient than ten years ago.
+ There have been persistent rumours of a further NSAimprovement and in any case the agency can throw a lot more horsepower at an importantcalculation.
+Security Engineering191Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESas the keylength negotiation is performed in the clear, an attacker can force thelength to the lower limit.
+ All standards-compliant chips are vulnerable; thismay be yet more of the toxic waste from the Crypto Wars, which I discuss insection 26.
+2.
+7.
+ Earlier versions of Bluetooth are more like the ‘just-works’ modeof the HomePlug protocol described in section 14.
+3.
+3.
+3 in that they were princi-pally designed to help you set up a pairing key with the right device in a benignenvironment, rather than defending against a sophisticated attack in a hostileone.
+ The more modern ones appear to be better, but it’s really just theatre.
+So many things go wrong: protocols that will generate or accept very weakkeys and thus give only the appearance of protection; programs that leak keysvia side channels such as the length of time they take to decrypt; and soft-ware vulnerabilities leading to stack overﬂows and other hacks.
+ If you’re imple-menting public-key cryptography you need to consult up-to-date standards, useproperly accredited toolkits, and get someone knowledgeable to evaluate whatyou’ve done.
+ And please don’t write the actual crypto code on your own – doingit properly requires a lot of di↵erent skills, from computational number theoryto side-channel analysis and formal methods.
+ Even using good crypto librariesgives you plenty of opportunities to shoot your foot o↵.
+5.
+7.
+2.
+3ElGamal digital signature and DSASuppose that the base p and the generator g are public values chosen in somesuitable way, and that each user who wishes to sign messages has a privatesigning key X with a public signature veriﬁcation key Y = gX.
+ An ElGamalsignature scheme works as follows.
+ Choose a message key k at random, andform r = gk (mod p).
+ Now form the signature s using a linear equation in k, r,the message M and the private key X.
+ There are a number of equations thatwill do; the one that happens to be used in ElGamal signatures isrX + sk = MSo s is computed as s = (M � rX)/k; this is done modulo �(p).
+ When bothsides are passed through our one-way homomorphism f(x) = gx mod p we get:grXgsk ⌘ gMorY rrs ⌘ gMAn ElGamal signature on the message M consists of the values r and s, andthe recipient can verify it using the above equation.
+A few more details need to be ﬁxed up to get a functional digital signaturescheme.
+ As before, bad choices of p and g can weaken the algorithm.
+ We willalso want to hash the message M using a hash function so that we can signmessages of arbitrary length, and so that an opponent can’t use the algorithm’salgebraic structure to forge signatures on messages that were never signed.
+ Hav-ing attended to these details and applied one or two optimisations, we get theSecurity Engineering192Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESDigital Signature Algorithm (DSA) which is a US standard and widely used ingovernment applications.
+DSA assumes a prime p of typically 2048 bits7, a prime q of 256 bits dividing(p � 1), an element g of order q in the integers modulo p, a secret signing key xand a public veriﬁcation key y = gx.
+ The signature on a message M, Sigx(M),is (r, s) wherer ⌘ (gk(mod p))(mod q)s ⌘ (h(M) � xr)/k(mod q)The hash function used by default is SHA2568.
+DSA is the classic example of a randomised digital signature scheme withoutmessage recovery.
+The most commonly-used version nowadays is ECDSA, avariant based on elliptic curves, which we’ll discuss now – this is for examplethe standard for cryptocurrency and increasingly also for certiﬁcates in banksmartcards.
+5.
+7.
+3Elliptic curve cryptographyDiscrete logarithms and their analogues exist in many other mathematical struc-tures.
+ Elliptic curve cryptography uses discrete logarithms on an elliptic curve– a curve given by an equation like y2 = x3 + ax + b.
+ These curves have theproperty that you can deﬁne an addition operation on them and the resultingMordell group can be used for cryptography.
+ The algebra gets a bit complex andthis book isn’t the place to set it out9.
+ However, elliptic curve cryptosystemsare interesting for at least two reasons.
+First is performance; they give versions of the familiar primitives such asDi�e-Hellmann key exchange and the Digital Signature Algorithm that use lesscomputation, and also have shorter variables; both are welcome in constrainedenvironments.
+ Elliptic curve cryptography is used in applications from the latestversions of EMV payment cards to Bitcoin.
+Second, some elliptic curves have a bilinear pairing which Dan Boneh andMatt Franklin used to construct cryptosystems where your public key is yourname [286].
+ Recall that in RSA and Di�e-Hellmann, the user chose his privatekey and then computed a corresponding public key.
+ In a so-called identity-basedcryptosystem, you choose your identity then go to a central authority that issuesyou with a private key corresponding to that identity.
+ There is a global public7In the 1990s p could be in the range 512–1024 bits and q 160 bits; this was changedto 1023–1024 bits in 2001 [1402] and 1024–3072 bits in 2009, with q in the range 160–256bits [1403].
+8The default sizes of p are chosen to be 2048 bits and q 256 bits in order to equalisethe work factors of the two best known cryptanalytic attacks, namely the number ﬁeld sievewhose running speed depends on the size of p and Pollard’s rho which depends on the sizeof q.
+ Larger sizes can be chosen if you’re anxious about Moore’s law or about progress inalgorithms.
+9See Katz and Lindell [1022] for an introduction.
+Security Engineering193Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESkey, with which anyone can encrypt a message to your identity; you can decryptthis using your private key.
+ Earlier, Adi Shamir had discovered identity-basedsignature schemes that allow you to sign messages using a private key so thatanyone can verify the signature against your name [1704].
+ In both cases, yourprivate key is computed by the central authority using a system-wide privatekey known only to itself.
+Identity-based primitives have been used in a fewspecialist systems: in Zcash for the payment privacy mechanisms, and in a UKgovernment key-management protocol called Mikey-Sakke.
+ Computing people’sprivate keys from their email addresses or other identiﬁers may seem a neathack, but it can be expensive when government departments are reorganisedor renamed [115].
+ Most organisations and applications use ordinary public-keysystems with certiﬁcation of public keys, which I’ll discuss next.
+5.
+7.
+4Certiﬁcation authoritiesNow that we can do public-key encryption and digital signature, we need somemechanism to bind users to keys.
+ The approach proposed by Di�e and Hellmanwhen they invented digital signatures was to have a directory of the public keysof a system’s authorised users, like a phone book.
+ A more common solution,due to Loren Kohnfelder, is for a certiﬁcation authority (CA) to sign the users’public encryption keys or their signature veriﬁcation keys giving certiﬁcates thatcontain a user’s name, one or more of their public keys, and attributes such asauthorisations.
+ The CA might be run by the local system administrator; but itis most commonly a third party service such as Verisign whose business is to signpublic keys after doing some due diligence about whether they are controlled bythe principals named in them.
+A certiﬁcate might be described symbolically asCA = SigKS(TS, L, A, KA, VA)(5.
+1)where TS is the certiﬁcate’s starting date and time, L is the length of timefor which it is valid, A is the user’s name, KA is her public encryption key, andVA is her public signature veriﬁcation key.
+ In this way, only the administrator’spublic signature veriﬁcation key needs to be communicated to all principals ina trustworthy manner.
+Certiﬁcation is hard, for a whole lot of reasons.
+ Naming is hard, for starters;we discuss this in the following chapter on Distributed Systems.
+ But often namesaren’t really what the protocol has to establish, as in the real world it’s oftenabout authorisation rather than authentication.
+ Government systems are oftenabout establishing not just a user’s name or role but their security clearancelevel.
+ In banking systems, it’s about your balance, your available credit and yourauthority to spend it.
+ In commercial systems, it’s often about linking remoteusers to role-based access control.
+ In user-facing systems, there is a tendencyto dump on the customer as many of the compliance costs as possible [524].
+There are many other things that can go wrong with certiﬁcation at the level ofsystems engineering.
+ At the level of politics, there are hundreds of certiﬁcationauthorities in a typical browser, they are all more or less equally trusted, andSecurity Engineering194Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESmany nation states can coerce at least one of them10.
+ The revocation of badcertiﬁcates is usually ﬂaky, if it works at all.
+ There will be much more on thesetopics later.
+ With these warnings, it’s time to look at the most commonly usedpublic key protocol, TLS.
+5.
+7.
+5TLSI remarked above that a server could publish a public key KS and any webbrowser could then send a message M containing a credit card number to itencrypted using KS: {M}KS.
+ This is in essence what the TLS protocol (thenknown as SSL) was designed to do, at the start of e-commerce.
+ It was devel-oped by Paul Kocher and Taher ElGamal in 1995 to support encryption andauthentication in both directions, so that both http requests and responses canbe protected against both eavesdropping and manipulation.
+ It’s the protocolthat’s activated when you see the padlock on your browser toolbar.
+Here is a simpliﬁed description of the basic version of the protocol in TLSv1:1.
+ the client sends the server a client hello message that contains its nameC, a transaction serial number C#, and a random nonce NC;2.
+ the server replies with a server hello message that contains its name S, atransaction serial number S#, a random nonce NS, and a certiﬁcate CScontaining its public key KS.
+ The client now checks the certiﬁcate CS,and if need be checks the key that signed it in another certiﬁcate, and soon back to a root certiﬁcate issued by a company such as Verisign andstored in the browser;3.
+ the client sends a key exchange message containing a pre-master-secret key,K0, encrypted under the server public key KS.
+ It also sends a ﬁnishedmessage with a message authentication code (MAC) computed on all themessages to date.
+ The key for this MAC is the master-secret, K1.
+ Thiskey is computed by hashing the pre-master-secret key with the noncessent by the client and server: K1 = h(K0, NC, NS).
+From this pointonward, all the tra�c is encrypted; we’ll write this as {.
+.
+.
+}KCS in theclient-server direction and {.
+.
+.
+}KSC from the server to the client.
+ Thesekeys are generated in turn by hashing the nonces with K1.
+4.
+ The server also sends a ﬁnished message with a MAC computed on all themessages to date.
+ It then ﬁnally starts sending the data.
+10The few that can’t, try to cheat.
+ In 2011 Iran hacked the CA Diginotar, and in 2019Kazakhstan forced its citizens to add a local police certiﬁcate to their browser.
+ In both casesthe browser vendors pushed back fast and hard: Diginotar failed after it was blacklisted, whilethe Kazakh cert was blocked even if its citizens installed it manually.
+ This of course raisesissues of sovereignty.
+Security Engineering195Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESC ! S :C, C#, NCS ! C :S, S#, NS, CSC ! S :{K0}KSC ! S :{finished, MAC(K1, everythingtodate)}KCSS ! C :{finished, MAC(K1, everythingtodate)}KSC, {data}KSCOnce a client and server have established a pre-master-secret, no more public-key operations are needed as further master secrets can be obtained by hashingit with new nonces.
+5.
+7.
+5.
+1TLS usesThe full protocol is more complex than this, and has gone through a numberof versions.
+It has supported a number of di↵erent ciphersuites, initially sothat export versions of software could be limited to 40 bit keys – a conditionof export licensing that was imposed for many years by the US government.
+This led to downgrade attacks where a middleperson could force the use ofweak keys.
+ Other ciphersuites support signed Di�e-Hellman key exchanges fortransient keys, to provide forward and backward secrecy.
+ TLS also has optionsfor bidirectional authentication so that if the client also has a certiﬁcate, thiscan be checked by the server.
+ In addition, the working keys KCS and KSCcan contain separate subkeys for encryption and authentication, as is needed forlegacy modes of operation such as CBC plus CBC MAC.
+As well as being used to encrypt web tra�c, TLS has also been available asan authentication option in Windows from Windows 2000 onwards; you can useit instead of Kerberos for authentication on corporate networks.
+ I will describeits use in more detail in the chapter on network attack and defence.
+5.
+7.
+5.
+2TLS securityAlthough early versions of SSL had a number of bugs [1973], SSL 3.
+0 and laterappear to be sound; the version after SSL 3.
+0 was renamed TLS 1.
+0.
+ It wasformally veriﬁed by Larry Paulson in 1998, so we know that the idealised versionof the protocol doesn’t have any bugs [1502].
+However, in the more than twenty years since then, there have been overa dozen serious attacks.
+ Even in 1998, Daniel Bleichenbacher came up withthe ﬁrst of a number of attacks based on measuring the time it takes a serverto decrypt, or the error messages it returns in response to carefully-craftedprotocol responses [264].
+TLS 1.
+1 appeared in 2006 with protection againstexploits of CBC encryption and of padding errors; TLS 1.
+2 followed two yearslater, upgrading the hash function to SHA256 and supporting authenticatedencryption; and meanwhile there were a number of patches dealing with variousattacks that had emerged.
+ Many of these patches were rather inelegant becauseof the di�culty of changing a widely-used protocol; it’s di�cult to change boththe server and client ends at once, as any client still has to interact with millionsof servers, many running outdated software, and most websites want to be ableto deal with browsers of all ages and on all sorts of devices.
+ This has beendealt with by the big service ﬁrms changing their browsers to reject obsoleteSecurity Engineering196Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESciphersuites, and to add features like strict transport security (STS) whereby awebsite can instruct browsers to only interact with it using https in future (toprevent downgrade attacks).
+ The browser ﬁrms have also mandated a numberof other supporting measures, from shorter certiﬁcate lifetimes to certiﬁcatetransparency, which we’ll discuss in the chapter on network attack and defence.
+5.
+7.
+5.
+3TLS 1.
+3The most recent major upgrade to the core protocol, TLS 1.
+3, was approvedby the IETF in January 2019 after two years of discussion.
+It has droppedbackwards compatibility in order to end support for many old ciphers, andmade it mandatory to establish end-to-end forward secrecy by means of a Di�e-Hellman key exchange at the start of each session.
+ This has caused controversywith the banking industry, which routinely intercepts encrypted sessions in orderto do monitoring for compliance purposes.
+ This will no longer be possible, sobanks will have to bear the legal discomfort of using obsolete encryption orthe ﬁnancial cost of redeveloping systems to monitor compliance at endpointsinstead11.
+5.
+7.
+6Other public-key protocolsDozens of other public-key protocols have found wide use, including the follow-ing, most of which we’ll discuss in detail later.
+ Here I’ll brieﬂy mention codesigning, PGP and QUIC.
+5.
+7.
+6.
+1Code signingCode signing was introduced in the 1990s when people started downloadingsoftware rather than getting it on diskettes.
+ It is now used very widely to assurethe provenance of software.
+ You might think that having a public signature-veriﬁcation key in your software so that version N can verify an update toversion N + 1 would be a simple application of public-key cryptography butthis is far from the case.
+Many platforms sign their operating-system code,including updates, to prevent persistent malware; the mechanisms often involvetrusted hardware such as TPMs and I’ll discuss them in the next chapter insection 6.
+2.
+5.
+ Some platforms, such as the iPhone, will only run signed code;this not only assures the provenance of software but enables platform ownersto monetise apps, as I will discuss in section 22.
+3.
+2; games consoles are similar.
+As some users go to great lengths to jailbreak their devices, such platformstypically have trustworthy hardware to store the veriﬁcation keys.
+ Where thatisn’t available, veriﬁcation may be done using code that is obfuscated to makeit harder for malware (or customers) to tamper with it; this is a constant armsrace, which I discuss in section 24.
+3.
+3.
+ As for the signing key, the developermay keep it in a hardware security module, which is expensive and breaks insubtle ways discussed in section 20.
+5; there may be a chain of trust going backa commercial CA, but then have to worry about legal coercion by government11The COVID-19 pandemic has given some respite: Microsoft had been due to removesupport for legacy versions of TLS in spring 2020 but has delayed this.
+Security Engineering197Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVESagencies, which I discuss in section 26.
+2.
+7; you might even implement your ownCA for peace of mind.
+ In short, code signing isn’t quite as easy as it looks,particularly when the user is the enemy.
+5.
+7.
+6.
+2PGP/GPGDuring the ‘Crypto Wars’ in the 1990s, cyber-activists fought governments forthe right to encrypt email, while governments pushed for laws restricting encryp-tion; I’ll discuss the history and politics in section 26.
+2.
+7.
+ The crypto activistPhil Zimmermann wrote an open-source encryption product Pretty Good Pri-vacy (PGP) and circumvented U.
+S.
+ export controls by publishing the sourcecode in a paper book, which could be posted, scanned and compiled.
+ Alongwith later compatible products such as GPG, it has become fairly widely usedamong geeks.
+ For example, sysadmins, Computer Emergency Response Teams(CERTs) and malware researchers use it to share information about attacks andvulnerabilities.
+ It has also been built into customised phones sold to criminalgangs to support messaging; I’ll discuss this later in section 25.
+4.
+1.
+PGP has a number of features but, in its most basic form, each user generatesprivate/public keypairs manually and shares public keys with contacts.
+ Thereare command-line options to sign a message with your signature key and/orencrypt it using the public key of each of the intended recipients.
+ Manual keymanagement avoids the need for a CA that can be cracked or coerced.
+ Manythings were learned from the deployment and use of PGP during the 1990s.
+ AsI described in section 3.
+2.
+1, Alma Whitten and Doug Tygar wrote the seminalpaper on security usability by assessing whether motivated but cryptologicallyunsophisticated users could understand it well enough to drive the programsafely.
+ Only four of twelve subjects were able to correctly send encrypted emailto the other subjects, and every subject made at least one signiﬁcant error.
+5.
+7.
+6.
+3QUICQUIC is a new UDP-based protocol designed by Google and promoted as analternative to TLS that allows quicker session establishment and thus cuttinglatency in the ad auctions that happen as pages load; sessions can persist aspeople move between access points.
+ This is achieved by a cookie that holds theclient’s last IP address, encrypted by the server.
+ It appeared in Chrome in 2013and now has about 7% of Internet tra�c; it’s acquired a vigorous standardi-sation community.
+ Google claims it reduces search latency 8% and YouTubebu↵er time 18%.
+ Independent evaluation suggests that the beneﬁt is mostlyon the desktop rather than mobile [1007], and there’s a privacy concern as theserver can use an individual public key for each client, and use this for tracking.
+As a general principle, one should be wary of corporate attempts to replace openstandards with proprietary ones, whether IBM’s EBCDIC coding standard ofthe 1950s and SNA in the 1970s, or Microsoft’s attempts to ‘embrace and ex-tend’ both mail standards and security protocols since the 1990s, or Facebook’spromotion of Internet access in Africa that kept users largely within its walledgarden.
+ I’ll discuss the monopolistic tendencies of our industry at greater lengthin Chapter 8.
+Security Engineering198Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVES5.
+7.
+7Special-purpose primitivesResearchers have invented a large number of public-key and signature primitiveswith special properties.
+ Two that have so far appeared in real products arethreshold cryptography and blind signatures.
+Threshold crypto is a mechanism whereby a signing key, or a decryption key,can be split up among n principals so that any k out of n can sign a message(or decrypt).
+For k = n the construction is easy.
+With RSA, for example,you can split up the private key d as d = d1 + d2 + .
+ .
+ .
+ + dn.
+For k < nit’s slightly more complex (but not much – you use the Lagrange interpolationformula) [554].
+ Threshold signatures were ﬁrst used in systems where a numberof servers process transactions independently and vote independently on theoutcome; they have more recently been used to implement business rules oncryptocurrency wallets such as ‘a payment must be authorised by any two ofthe seven company directors’.
+Blind signatures are a way of making a signature on a message withoutknowing what the message is.
+ For example, if we are using RSA, I can take arandom number R, form ReM (mod n), and give it to the signer who computes(ReM)d = R.
+M d (mod n).
+ When he gives this back to me, I can divide out R toget the signature M d.
+ Now you might ask why on earth someone would want tosign a document without knowing its contents, but there are some applications.
+The ﬁrst was in digital cash; you might want to be able to issue anonymouspayment tokens to customers, and the earliest idea, due to David Chaum, wasa way to sign ‘digital coins’ without knowing their serial numbers [411].
+Abank might agree to honour for $10 any string M with a unique serial numberand a speciﬁed form of redundancy, bearing a signature that veriﬁed as correctusing the public key (e, n).
+ The blind signature protocol ensures a customercan get a bank to sign a coin without the banker knowing its serial number,and it was used in prototype road toll systems.
+ The e↵ect is that the digitalcash can be anonymous for the spender.
+ The main problem with digital cashwas to detect people who spend the same coin twice, and this was eventuallyﬁxed using blockchains or other ledger mechanisms, as I discuss in section 20.
+7.
+Digital cash failed to take o↵ because neither banks nor governments reallywant payments to be anonymous: anti-money-laundering regulations since 9/11restrict anonymous payment services to small amounts, while both banks andbitcoin miners like to collect transaction fees.
+Anonymous digital credentials are now used in attestation: the TPM chipon your PC motherboard might prove something about the software runningon your machine without identifying you.
+ Unfortunately, this led to designsfor attestation in SGX (and its AMD equivalent) which mean that a singlecompromised device breaks the whole ecosystem.
+ Anonymous signatures arealso found in prototype systems for conducting electronic elections, to which Iwill return in section 25.
+5.
+Security Engineering199Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVES5.
+7.
+8How strong are asymmetric cryptographic primi-tives?In order to provide the same level of protection as a symmetric block cipher,asymmetric cryptographic primitives generally require at least twice the blocklength.
+ Elliptic curve systems appear to achieve this bound; a 256-bit ellipticscheme could be about as hard to break as a 128-bit block cipher with a 128-bitkey; and the only public-key encryption schemes used in the NSA’s Suite B ofmilitary algorithms are 384-bit elliptic curve systems.
+ The traditional schemes,based on factoring and discrete log, now require 3072-bit keys to protect materialat Top Secret, as there are shortcut attack algorithms such as the number ﬁeldsieve.
+ As a result, elliptic curve cryptosystems are faster.
+When I wrote the ﬁrst edition of this book in 2000, the number ﬁeld sievehad been used to attack keys up to 512 bits, a task comparable in di�culty tokeysearch on 56-bit DES keys; by the time I rewrote this chapter for the secondedition in 2007, 64-bit symmetric keys had been brute-forced, and the 663-bitchallenge number RSA-200 had been factored.
+ By the third edition in 2019,bitcoin miners are ﬁnding 68-bit hash collisions every ten minutes, RSA-768 hasbeen factored and Ed Snowden has as good as told us that the NSA can dodiscrete logs for a 1024-bit prime modulus.
+There has been much research into quantum computers – devices that per-form a large number of computations simultaneously using superposed quantumstates.
+ Peter Shor has shown that if a su�ciently large quantum computer couldbe built, then both factoring and discrete logarithm computations will becomeeasy [1725].
+ So far only very small quantum devices have been built; althoughthere are occasional claims of ‘quantum supremacy’ – of a quantum computerperforming a task su�ciently faster than a conventional one to convince us thatquantum superposition or entanglement is doing any real work – they seem tolead nowhere.
+ I am sceptical (as are many physicists) about whether the tech-nology will ever threaten real systems.
+ I am even more sceptical about the valueof quantum cryptography; it may be able to re-key a line encryption device thatuses AES for bulk encryption, but we already know how to do that.
+What’s more, I ﬁnd the security proofs o↵ered for entanglement-based quan-tum cryptography to be unconvincing [311].
+ Theoretical physics has been stucksince the early 1970s when Gerard ’t Hooft completed the Standard Model byproving the renormalisability of Yang-Mills.
+ Since then, a series of ideas havecome and gone, such as string theory [2032].
+ Quantum information theory isthe latest enthusiasm.
+Its proponents talk up the mystery of the Bell tests,which are supposed to demonstrate that physics cannot be simultaneously localand causal.
+ But alternative interpretations such as ’t Hooft’s cellular automa-ton model [916] and Grisha Volovik’s superﬂuid model [1967] suggest that theBell tests merely demonstrate the existence of long-range order in the quantumvacuum, like the order parameter of a superﬂuid.
+ And there are now classicalmechanical experiments that demonstrate the quantum-mechanical propertiesrelevant to the Bell tests [1557].
+ When I point out such loopholes in the proofsclaimed for quantum cryptosystems, the proponents’ only answer appears to bepersonal abuse.
+Personally I think it more likely that a major challenge to public-key cryp-Security Engineering200Ross Anderson5.
+7.
+ ASYMMETRIC CRYPTO PRIMITIVEStography would come in the form of a better algorithm for computing discretelogarithms on elliptic curves.
+ These curves have a lot of structure; they arestudied intensively by some of the world’s smartest pure mathematicians; bet-ter discrete-log algorithms for curves of small characteristic were discovered in2013 [168]; and the NSA is apparently moving away from using elliptic-curvecrypto.
+If quantum computers ever work, we have other ‘post-quantum’ algorithmsready to go for which quantum computers give no obvious advantage.
+ In 2020,NIST began the third round of public review of submissions for the Post-Quantum Cryptography Standardization Process.
+ The 65 initial submissionshave been cut to 15 through two rounds of review12.
+ One or more algorithms willnow be chosen and standardised, so ciphersuites using them could be droppedinto protocols such as TLS as upgrades.
+ Many protocols in use could even beredesigned to use variants on Kerberos.
+ If elliptic logarithms become easy, wehave these resources and can also fall back to discrete logs in prime ﬁelds, orto RSA.
+ But if elliptic logs become easy, bitcoins will become trivial to forge,and the cryptocurrency ecosystem would probably collapse, putting an end tothe immensely wasteful mining operations I describe in section 20.
+7.
+ So mathe-maticians who care about the future of the planet might do worse than to thinkabout the elliptic logarithm problem.
+5.
+7.
+9What else goes wrongVery few attacks on systems nowadays involve cryptanalysis in the sense of amathematical attack on the encryption algorithm or key.
+ There have indeedbeen attacks on systems designed in the 20th century, mostly involving keysthat were kept too short by export-control rules, clueless designs or both.
+ Ialready discussed in section 4.
+3.
+1 how weak crypto has facilitated a wave ofcar theft, as all the devices used for remote key entry were defeated one afteranother in 2005–15.
+ In later chapters, I give examples of how the crypto warsand their export control rules resulted in attacks on door locks (section 13.
+2.
+5),mobile phones (section 22.
+2.
+1) and copyright enforcement (section 24.
+2.
+5).
+Most attacks nowadays exploit the implementation.
+ In chapter 2, I men-tioned the scandal of NIST standardising a complicated random number gen-erator based on elliptic curves that turned out to contain an NSA backdoor;see section 2.
+2.
+1.
+5.
+ Poor random number generators have led to many otherfailures: RSA keys with common factors [1140], predictable seeds for discretelogs [1676], etc.
+ These vulnerabilities have continued; thanks to the Internet ofThings, the proportion of RSA certs one can ﬁnd out there on the Internet thatshare a common factor with other RSA keys has actually risen between 2012and 2020; 1 in 172 IoT certs are trivially vulnerable [1046].
+Many of the practical attacks on cryptographic implementations that haveforced signiﬁcant changes over the past 20 years have exploited side channelssuch as timing and power analysis; I devote Chapter 19 to these.
+12One of them, the McEliece cryptosystem, has been around since 1978; we’ve had digitalsignatures based on hash functions for about as long, and some of us used them in the 1990sto avoid paying patent royalties on RSA.
+Security Engineering201Ross Anderson5.
+8.
+ SUMMARYIn Chapter 20, I’ll discuss a number of systems that use public-key mech-anisms in intricate ways to get interesting emergent properties, including theSignal messaging protocol, the TOR anonymity system, and cryptocurrencies.
+I’ll also look at the crypto aspects of SGX enclaves.
+ These also have interestingfailure modes, some but not all of them relating to side channels.
+In Chapter 21, I’ll discuss protocols used in network infrastructure such asDKIM, DNSSec versus DNS over HTTP, and SSH.
+5.
+8SummaryMany ciphers fail because they’re used badly, so the security engineer needs aclear idea of what di↵erent types of cipher do.
+ This can be tackled at di↵erentlevels; one is at the level of crypto theory, where we can talk about the randomoracle model, the concrete model and the semantic security model, and hopefullyavoid using weak modes of operation and other constructions.
+ The next level isthat of the design of individual ciphers, such as AES, or the number-theoreticmechanisms that underlie public-key cryptosystems and digital signature mech-anisms.
+ These also have their own specialised ﬁelds of mathematics, namelyblock cipher cryptanalysis and computational number theory.
+ The next levelinvolves implementation badness, which is much more intractable and messy.
+This involves dealing with timing, error handling, power consumption and allsorts of other grubby details, and is where modern cryptosystems tend to breakin practice.
+Peering under the hood of real systems, we’ve discussed how block ciphersfor symmetric key applications can be constructed by the careful combination ofsubstitutions and permutations; for asymmetric applications such as public keyencryption and digital signature one uses number theory.
+ In both cases, thereis quite a large body of mathematics.
+ Other kinds of ciphers – stream ciphersand hash functions – can be constructed from block ciphers by using them insuitable modes of operation.
+ These have di↵erent error propagation, patternconcealment and integrity protection properties.
+ A lot of systems fail becausepopular crypto libraries encourage programmers to use inappropriate modes ofoperation by exposing unsafe defaults.
+ Never use ECB mode unless you reallyunderstand what you’re doing.
+There are many other things that can go wrong, from side channel attacks topoor random number generators.
+ In particular, it is surprisingly hard to buildsystems that are robust even when components fail (or are encouraged to) andwhere the cryptographic mechanisms are well integrated with other measuressuch as access control and physical security.
+ I’ll return to this repeatedly inlater chapters.
+The moral is: Don’t roll your own! Don’t design your own protocols, oryour own ciphers; and don’t write your own crypto code unless you absolutelyhave to.
+ If you do, then you not only need to read this book (and then read itagain, carefully); you need to read up the relevant specialist material, speak toexperts, and have capable motivated people try to break it.
+ At the very least,you need to get your work peer-reviewed.
+ Designing crypto is a bit like jugglingSecurity Engineering202Ross Anderson5.
+8.
+ SUMMARYchainsaws; it’s just too easy to make fatal errors.
+Research ProblemsThere are many active threads in cryptography research.
+ Many of them arewhere crypto meets a particular branch of mathematics (number theory, alge-braic geometry, complexity theory, combinatorics, graph theory, and informationtheory).
+ The empirical end of the business is concerned with designing prim-itives for encryption, signature and composite operations, and which performreasonably well on available platforms.
+ The two meet in the study of subjectsranging from cryptanalysis, to the search for primitives that combine provablesecurity properties with decent performance.
+The best way to get a ﬂavor of what’s going on at the theoretical end ofthings is to read the last few years’ proceedings of research conferences suchas Crypto, Eurocrypt and Asiacrypt; work on cipher design appears at FastSoftware Encryption; attacks on implementations often appear at CHES; whileattacks on how crypto gets used in systems can be found in the top systemssecurity conferences such as IEEE Security and Privacy, CCS and Usenix.
+Further ReadingThe classic papers by Whit Di�e and Martin Hellman [556] and by Ron Rivest,Adi Shamir and Len Adleman [1607] are the closest to required reading in thissubject.
+ Bruce Schneier’s Applied Cryptography [1667] covers a lot of ground at alevel a non-mathematician can understand, and got crypto code out there in the1990s despite US export control laws, but is now slightly dated.
+ Alfred Menezes,Paul van Oorshot and Scott Vanstone’s Handbook of Applied Cryptography [1289]is one reference book on the mathematical detail.
+ Katz and Lindell is the bookwe get our students to read for the math.
+ It gives an introduction to the standardcrypto theory plus the number theory you need for public-key crypto (includingelliptic curves and index calculus) but is also dated: they don’t mention GCM,for example [1022].
+There are many more specialist books.
+ The bible on di↵erential cryptanalysisis by its inventors Eli Biham and Adi Shamir [245], while a good short tuto-rial on linear and di↵erential cryptanalysis was written by Howard Heys [895].
+Doug Stinson’s textbook has another detailed explanation of linear cryptanal-ysis [1829]; and the modern theory of block ciphers can be traced through thepapers in the Fast Software Encryption conference series.
+ The original book onmodes of operation is by Carl Meyer and Steve Matyas [1301].
+ Neal Koblitzhas a good basic introduction to the mathematics behind public key cryp-tography [1060]; and the number ﬁeld sieve is described by Arjen and HenrikLenstra [1141].
+ For the practical attacks on TLS over the past twenty years, seethe survey paper by Christopher Meyer and Joerg Schwenk [1302] as well as thechapter on Side Channels later in this book.
+If you want to work through the mathematical detail of theoretical cryptol-ogy, there’s an recent graduate textbook by Dan Boneh and Victor Shoup [287].
+Security Engineering203Ross Anderson5.
+8.
+ SUMMARYA less thorough but more readable introduction to randomness and algorithmsis in [835].
+ Research at the theoretical end of cryptology is found at the FOCS,STOC, Crypto, Eurocrypt and Asiacrypt conferences.
+The history of cryptology is fascinating, and so many old problems keepon recurring.
+ The standard work is Kahn [1001]; there are also compilationsof historical articles from Cryptologia [531, 529, 530] as well as several bookson the history of cryptology in World War II by Kahn, Marks, Welchman andothers [438, 1002, 1224, 2007].
+ The NSA Museum at Fort George Meade, Md.
+,is also worth a visit, but perhaps the best is the museum at Bletchley Park inEngland.
+Finally, no chapter that introduces public key encryption would be completewithout a mention that, under the name of ‘non-secret encryption,’ it was ﬁrstdiscovered by James Ellis in about 1969.
+ However, as Ellis worked for GCHQ,his work remained classiﬁed.
+ The RSA algorithm was then invented by Cli↵ordCocks, and also kept secret.
+This story is told in [625].
+One e↵ect of thesecrecy was that their work was not used: although it was motivated by theexpense of Army key distribution, Britain’s Ministry of Defence did not startbuilding electronic key distribution systems for its main networks until 1992.
+And the classiﬁed community did not pre-invent digital signatures; they remainthe achievement of Whit Di�e and Martin Hellman.
+Security Engineering204Ross Anderson

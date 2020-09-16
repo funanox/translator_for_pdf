@@ -1,0 +1,551 @@
+Chapter 19Side ChannelsThe hum of either army stilly sounds,That the ﬁxed sentinels almost receiveThe secret whispers of each others’ watch;Fire answers ﬁre, and through their paly ﬂamesEach battle sees the other’s umber’d face.
+– WILLIAM SHAKESPEARE, KING HENRY V, ACT IVOptimisation consists of taking something that works, and replacingit with something that almost works but is cheaper.
+– Roger Needham19.
+1IntroductionElectronic devices such as computers and phones leak information in all sorts ofways.
+ A side channel is where information leaks accidentally via some mediumthat was not designed or intended for communication; a covert channel is wherethe leak is deliberate.
+ Side channel attacks are everywhere, and 3–4 of themhave caused multi-billion dollar losses.
+1.
+ First, there are conducted or radiated electromagnetic signals, which cancompromise information locally and occasionally at longer ranges.
+ These‘Tempest’ attacks led NATO governments to spend billions of dollars ayear on shielding equipment, starting in the 1960s.
+ After the end of theCold War, people started to realise that there had usually been nobodylistening.
+2.
+ Second, side channels leak data between tasks on a single device, or be-tween devices that are closely coupled; these can exploit both power andtiming information, and also contention for shared system resources.
+ Thediscovery of Di↵erential Power Analysis in the late 1990s held up the de-ployment of smartcards in banking and elsewhere by 2–3 years once it wasrealised that all the cards then on sale were vulnerable.
+58219.
+2.
+ EMISSION SECURITY3.
+ The third multibillion-dollar incident started in January 2018 with the an-nouncement of the ‘Spectre’ and ‘Meltdown’ attacks, which exploit spec-ulative execution to enable one process on a CPU to snoop on another,for example to steal its cryptographic keys.
+ This will probably force theredesign of all superscalar CPUs over 2020–5.
+4.
+ There are attacks that exploit shared local physical resources, such as whena phone listens to keystrokes entered on a nearby keyboard, or indeed ona keyboard on its own touch screen – whether that sensing is done withmicrophones, the accelerometer and gyro, or even the camera.
+ Anotherexample is that a laser pulse can create a click on a microphone, so avoice command can be given to a home assistant through a window.
+ Sofar, none of the side-channel attacks on phones and other IoT devices hasscaled up to have major impact – but there are ever more of them.
+5.
+ Finally, there are attacks that exploit shared social resources.
+ An exampleis identifying someone in a supposedly anonymous dataset from patternsof communications, location history or even just knowing when they wenton holiday.
+ This has led to many poor policy decisions and much wishfulthinking around whether personal data can be anonymised su�cientlyto escape privacy law.
+ There have been both scandalous data leaks, andcomplaints that data should be made more available for research and otheruses.
+ It’s hard to put a dollar value on this, but it is signiﬁcant in ﬁeldssuch as medical research, as we discussed in chapter 11.
+We have known about side channels for years but have consistently underesti-mated the importance of some, while spending unreasonable sums on defendingagainst others.
+ A security engineer who wants to protect systems long-termwithout either overlooking real and scalable threats, or wasting money chasingshadows, needs to understand the basics.
+19.
+2Emission securityEmission security, or Emsec, is about preventing attacks using compromisingemanations, namely conducted or radiated electromagnetic signals.
+ It’s mostlymilitary organizations that worry about Tempest, where the stray RF emittedby computers and other electronic equipment is picked up by an opponent andused to reconstruct the data being processed.
+ It has become an issue for votingmachines too, after a Dutch group found they could tell at a distance whichparty a voter had selected on a voting machine, and attacks have also beendemonstrated on automatic teller machines (though these don’t really scale).
+Both active and passive emission security measures are closely related toelectromagnetic compatibility (EMC) and radio frequency interference (RFI),which can disrupt systems accidentally, as well as electromagnetic pulse (EMP)weapons, which disrupt them deliberately.
+ (I discuss these in more detail in thechapter on electronic warfare.
+) As more and more everyday devices get hookedup to wireless networks, and as devices acquire more sensors, all these problems– RFI/EMC, side channels and electronic warfare threats – may get worse.
+Security Engineering583Ross Anderson19.
+2.
+ EMISSION SECURITY19.
+2.
+1HistoryCrosstalk between telephone wires was well known to the 19th century tele-phony pioneers, whose two-wire circuits were stacked on tiers of crosstrees onsupporting poles.
+ They learned to cross the wires over at intervals to make eachcircuit a twisted pair.
+ Crosstalk ﬁrst came to the attention of the military in1884–85, and the ﬁrst known combat exploit was in 1914.
+ Field telephone wireswere laid to connect units bogged down in the mud of Flanders, and often ranfor miles, parallel to enemy trenches a few hundred yards away.
+ An early WWIphone circuit was a single-core insulated cable which used earth return in orderto halve the cable’s weight and bulk.
+ It was soon discovered that earth leakagecaused crosstalk, including messages from the enemy side.
+ Listening posts werequickly established and protective measures were introduced, including the useof twisted-pair cable.
+ By 1915, valve ampliﬁers had extended the earth leakagelistening range to 100 yards for telephony and 300 yards for Morse code.
+ Peoplefound that the tangle of abandoned telegraph wire in no-man’s land providedsuch a good communications channel, and leaked so much tra�c, that clearingit away become a task for which lives were spent.
+ By 1916, earth return circuitshad been abolished within 3000 yards of the front [1380].
+The intelligence community discovered side-channel attacks on cryptographicequipment around World War 2, when Bell sold the US government a mixer toadd one-time tapes to telegraph tra�c and discovered plaintext leaking outin ciphertext.
+Through the 1950s, both the USA and the UK struggled tosuppress electromagnetic and acoustic emanations from their own cipher ma-chines; from 1957 there was a machine, the KW-27, which was ‘reasonably wellprotected’ against Tempest emissions.
+ In 1960, after the UK Prime Ministerordered surveillance on the French embassy during negotiations about joiningthe European Economic Community, his security service’s scientists noticed thatthe enciphered tra�c from the embassy carried a faint plaintext signal, and con-structed equipment to recover it.
+ By the 1960s, NATO started work on Tempeststandards; America and Britain gave their European allies selective and incom-plete security advice, so they could continue to spy on them.
+ Meanwhile theRussians developed serious proﬁciency at exploiting spurious emissions and spiedon all of them.
+ When the Americans and British realised this, they used manualone-time pads as a stopgap for tra�c at Secret and above, then started puttingcrypto equipment in shielded rooms in vulnerable embassies [600].
+ There was abrief public reference to the possibility that computer data might leak in RandCorporation reports by Willis Ware in 1967 and 1970 [1985, 1986].
+ After that,emission security became a classiﬁed topic, with secret NATO standards set by1980 that were only declassiﬁed in 2000.
+Meanwhile the stray RF leaking from the local oscillator signals in domestictelevision sets was being targeted by direction-ﬁnding equipment in ‘TV detectorvans’ in Britain, where TV owners must pay an annual license fee to supportpublic broadcast services.
+ The fact that computer data might also leak cameto public attention in 1985 when Wim van Eck, a Dutch researcher, publishedan article describing how to reconstruct the picture on a VDU at a distanceusing a modiﬁed TV set [601].
+ The story of the leaky French cipher machinewas leaked by the security service whistleblower Peter Wright in 1987 [2047].
+Published research in emission security and related topics took o↵ in the 1990s,Security Engineering584Ross Anderson19.
+2.
+ EMISSION SECURITYas I’ll discuss shortly.
+19.
+2.
+2Technical Surveillance and CountermeasuresBefore we dive into the details of Tempest attacks, it is worth noting that thesimplest and most widespread attacks that use the electromagnetic spectrumare not those exploiting unintended RF emissions of innocuous equipment, butwhere a listening device is introduced by the attacker, or (more recently) whena target’s device is compromised by malware.
+ No matter how well it is pro-tected by encryption and access controls while in transit or storage, most highlyconﬁdential information comes into being either as speech or as keystrokes on alaptop or phone.
+ If it can be captured by the opponent at this stage, then nosubsequent protective measures are likely to help very much.
+An extraordinary range of bugs is available on the market:• At the low end, a few tens of dollars will buy a simple radio microphonethat you can stick under a table when visiting the target.
+ Battery life isthe main constraint on these devices.
+ They typically have a range of onlya few hundred yards, and a lifetime of days to weeks.
+• At the next step up are devices that draw their power from the mains, atelephone cable or some other external electricity supply, and so can lastindeﬁnitely.
+ As a historical example, the UK Security Service got entry tothe Egyptian embassy in London during the Suez crisis and modiﬁed thetelephone to listen in when the clerk was entering the day’s key settingsinto the cipher machine [600].
+ Some modern equivalents clip into a key-board cable and look like a connector; others look like electrical adaptorsbut send audio and video back to their owner.
+ Police covert-entry teamsinstall such bugs in the homes and cars of serious crime suspects.
+ Mostnow use mobile-phone technology: they can be seen as custom handsetsthat listen and watch when called.
+• One exotic device, on show at the NSA Museum in Fort Meade, was pre-sented to the US ambassador in Moscow in 1946 by a class of schoolchil-dren.
+ It was a wooden replica of the Great Seal of the United States, andthe ambassador hung it on the wall of the o�ce in his residence.
+ In 1952,it was discovered to contain a resonant cavity that acted as a microphonewhen illuminated by microwaves from outside the building, and retrans-mitted the conversations that took place in his o�ce.
+ Right up to theend of the Cold War, embassies in Moscow were regularly irradiated withmicrowaves, so variants of the technique presumably remained in use.
+• Bugs are also implanted in equipment.
+ In 1984, sixteen bugs were dis-covered in IBM Selectric typewriters in the US embassy in Moscow; eachstored eight key presses and then transmitted them in a single burst.
+There have been many keyloggers designed and ﬁelded since then in key-boards and keyboard cables, using a wide variety of sensors and side chan-nels [1331].
+Security Engineering585Ross Anderson19.
+2.
+ EMISSION SECURITY• Laser microphones work by shining a laser beam at a reﬂective or partiallyreﬂective surface, such as a window pane, in the room where the targetconversation is taking place.
+ The sound waves induce vibration in thesurface which modulates the reﬂected light, and this can be picked up anddecoded at a distance.
+• However it’s now possible that the bulk of surveillance worldwide is doneby creepware – by software installed on the target’s phone either remotelyby a skilled attacker, or by a coercive or manipulative family member, orsometimes even as a condition of employment.
+An expert in technical surveillance countermeasures (TSCM) will have awhole bag of tools to provide protection against such attacks.
+• The better surveillance receivers sweep the radio spectrum from about 10KHz to 3 GHz every few tens of seconds, and look for signals that can’tbe explained as broadcast, police, air tra�c control and so on.
+ Direct-sequence spread spectrum can be spotted from its power spectrum, andfrequency hoppers will typically be observed at di↵erent frequencies onsuccessive sweeps.
+ Burst transmission does better.
+ But the e↵ectivenessof surveillance receivers is limited by the bugs that use the same frequenciesand protocols as legitimate mobile phones.
+ Many organizations tried toforbid the use of mobiles, but most have given up; even the Royal Navyeventually had to allow sailors to keep their phones on board ship as toomany of them left.
+• The nonlinear junction detector can ﬁnd hidden devices at close range.
+ Itbroadcasts a weak radio signal and listens for odd harmonics, generatedwhen the transistors, diodes and other nonlinear junctions in the equip-ment rectify the signal.
+ However, if the bug has been planted in or nearlegitimate equipment, then the nonlinear junction detector is not muchhelp.
+ There are also expensive bugs designed not to re-radiate at all.
+• Breaking the line of sight, such as by planting trees around your laboratory,can be e↵ective against laser microphones but is often impractical.
+• It’s possible to detect hidden wireless cameras that just use the normalbuilding wiﬁ by their tra�c patterns, and researchers have developed appsfor this purpose [415].
+• Some facilities have shielded rooms, so that even if bugs are introducedtheir signals can’t be heard outside [132].
+ In NATO countries, Top Secretmaterial is supposed to be kept in a secure compartmented informationfacility (SCIF) that has both physical security and acoustic shielding, andis swept regularly for bugs; a SCIF may have electromagnetic shielding tooif a threat assessment suggests that capable motivated opponents mightget close enough.
+ Shielded rooms are required in the UK for researchersto access sensitive personal data held by government, such as tax records.
+There are vendors who sell prefabricated rooms with acoustic and electro-magnetic shielding.
+ But this is harder than it looks.
+ A new US embassySecurity Engineering586Ross Anderson19.
+3.
+ PASSIVE ATTACKSbuilding in Moscow had to be abandoned after large numbers of micro-phones were found in the structure, and Britain’s counterintelligence ser-vice decided to tear down and rebuild a large part of a new headquartersbuilding, at a cost of about $50m, after an employee of one of the buildingcontractors was found to have past associations with the Provisional IRA.
+• After the Obama administration kicked out three dozen Russian diplomatsfor eavesdropping on US o�cials’ mobile phones, it was reported that theRussians had even picked up conversations in unshielded SCIFs by hackingo�cials’ phones [579].
+Technological developments are steadily making life easier for the buggerand harder for the defender.
+As more and more devices acquire intelligenceand short-range radio or infrared communications – as the ‘Internet of Things’becomes the ‘Internet of Targets’ – there is ever more scope for attacks viaequipment that’s already there rather than stu↵ that needs to emplaced for thepurpose.
+ It’s not just that your laptop, tablet or mobile phone might be runningcreepware that records audio and uploads it later.
+ The NSA banned Furby toysin its buildings, as the Furby remembers (and randomly repeats) things said inits presence.
+ The Cayla talking doll was banned in Germany as strangers coulduse it to listen to a child remotely, and speak to them too.
+But there are many more subtle ways in which existing electronic equipmentcan be exploited.
+19.
+3Passive attacksWe’ll ﬁrst consider passive attacks, that is, attacks in which the opponent ex-ploits electromagnetic signals that are presented to him without any e↵ort onhis part to create them.
+ I’ll exclude optical signals for now, and discuss themalong with acoustic attacks later.
+Broadly speaking, there are two categories of electromagnetic attack.
+ Thesignal can either be conducted over some kind of circuit (such as a power lineor phone line), or it may be radiated as radio frequency energy.
+These arereferred to by the military as ‘Hijack’ and ‘Tempest’ respectively.
+They arenot mutually exclusive; RF threats often have a conducted component.
+Forexample, radio signals emitted by a computer can be picked up by the powermain and conducted into nearby buildings.
+19.
+3.
+1Leakage through power and signal cablesEvery hardware engineer knows that high-frequency signals leak everywhere andyou need to work hard to stop them causing problems.
+ Conducted informationleakage can be suppressed by careful design, with power supplies and signalcables suitably ﬁltered.
+ But civilian equipment only needs to be well-enoughshielded that it doesn’t interfere with radio and TV; it’s a much harder task toprevent any exploitable leak of information.
+Security Engineering587Ross Anderson19.
+3.
+ PASSIVE ATTACKSIn military parlance, red equipment (carrying conﬁdential data) has to beisolated by ﬁlters and shields from black equipment (that can send signals di-rectly to the outside world).
+ Equipment with both red and black connections,such as cipher machines, is tricky to get right, and shielded equipment tends tobe available only in small quantities, made for government markets.
+ But thecosts don’t stop there.
+ The operations room at an air base can have hundreds ofcables leading from it; ﬁltering them all, and imposing strict conﬁguration man-agement to preserve red/black separation, can cost millions.
+ The contractorsare expensive, as the sta↵ all need clearances – the NATO standard SDIP-20for emission security (formerly AMSG 720B) is classiﬁed.
+19.
+3.
+2Leakage through RF signalsWhen I ﬁrst learned to program in 1972 at the Glasgow Schools’ Computer Cen-tre, we had an IBM 1401 with a 1.
+5 MHz clock.
+ A radio tuned to this frequencyin the machine room would emit a loud whistle, which varied depending onthe data being processed.
+ Some people used this as a debugging aid.
+ A schoolcolleague had a better idea: he wrote a set of subroutines of di↵erent lengthsso that by calling them in sequence, the computer could play a tune.
+ It neveroccurred to us that this could be used for mischief as well as fun.
+Moving now to more modern equipment, the VDUs used as monitors untilthe early 2000s naturally emit a TV signal – a VHF or UHF radio signal modu-lated with the image currently being displayed.
+ The beam current is modulatedwith the video signal, which contains many harmonics of the dot rate, some ofwhich resonate with metal components and radiate better than others.
+ Given abroadband receiver, these emissions can be picked up and reconstituted as video.
+Wim van Eck discovered this and made it public in 1985 [601]; equipment de-sign is discussed in his paper and in much more detail in [1105].
+ Contrary topopular belief, the more modern ﬂat displays are also generally easy to snoopon; a typical laptop has a serial line going through the hinge from the systemunit to the display and this carries the video signal (Figure 19.
+1).
+Other researchers started to experiment with snooping on everything fromfax machines through shielded RS-232 cables to ethernet [534, 1796].
+Hans-Georg Wolf demonstrated a Tempest attack that could recover card and PINdata from a cash machine at a distance of eight meters [1095].
+ Most businesssectors just ignored the problem, as countermeasures such as shielding and jam-ming are di�cult and expensive to do properly [143].
+ The military’s expertiseand equipment remained classiﬁed and unavailable outside the defence world.
+Finally, in October 2006, a Dutch group opposed to electronic voting machinesdemonstrated that the machine used to collect 90% of the election ballots inthe Netherlands could be eavesdropped from a distance of several tens of me-ters [785].
+ This led to a Dutch government requirement that voting equipmentbe Tempest-tested to a level of ‘Zone 1 - 12dB’.
+The zone system works as follows.
+ Equipment certiﬁed as Zone 0 shouldnot emit any signals that are exploitable at a distance of one meter; it shouldprotect data from electronic eavesdropping even if the opponent is in the nextroom, and the wall is something ﬂimsy like plasterboard.
+ Zone 1 equipmentshould be safe from opponents at a distance of 20 meters, so the Dutch ‘Zone 1Security Engineering588Ross Anderson19.
+3.
+ PASSIVE ATTACKS350 MHz, 50 MHz BW, 12 frames (160 ms) averagedµV10121416182022Figure 19.
+1: – RF signal from a Toshiba laptop reconstructed several roomsaway, through three plasterboard walls (courtesy of Markus Kuhn [1104]).
+- 12dB’ criterion means that a voting machine should not leak any data on whatvote was cast to an eavesdropper 5 meters away.
+ Zone 2 and Zone 3 mean 120and 1200 meters respectively.
+ Technical details of zoning were brieﬂy publishedby the Germans in 2007, as [343].
+ This document was then withdrawn, perhapsbecause the Americans objected.
+ But everything in it was already in the publicdomain except the zone limit curves, which are worst-case relative attenuationsbetween distances of 20m, 120m and 1200m from a small dipole or loop antenna,taking into account the di↵erence between nearﬁeld and farﬁeld dropo↵.
+ Anycompetent RF engineer can reverse engineer the rest of it.
+The zone system has come into wide governmental use since the end of theCold War slashed military budgets.
+ Governments faced up to the fact that thereare almost no attacks, except on high-value targets to which an opponent canget really close, such as diplomatic missions.
+ The Snowden papers revealed thatthe US’s principal Tempest target was the UN diplomatic missions in New York,and even there, such techniques were only used against the handful of nationswhose computers couldn’t be compromised using malware.
+Governments realised they had been wasting billions on shielding everything,and cost cuts forced them to use commercial o↵-the-shelf (COTS) equipment foralmost everything.
+ COTS equipment tends to be zone 2 when tested, with someparticularly noisy pieces of kit in zone 3.
+ By knowing which equipment radiateswhat, you can keep your most sensitive data on equipment furthest from thefacility perimeter, and shield stu↵ only when you really have to.
+ Zoning hasgreatly cut the costs of emission security.
+Markus Kuhn and I developed a lower-cost protection technology, called ‘SoftTempest’, which was deployed for a while in some products, from email encryp-Security Engineering589Ross Anderson19.
+3.
+ PASSIVE ATTACKStion programs to Dutch voting machines [1105].
+ It uses software techniques toﬁlter or mask the information-bearing electromagnetic emanations from a com-puter system.
+ We discovered that most of the information-bearing RF energyfrom a VDU was concentrated in the top of the spectrum, so we removed thetop 30% of the Fourier transform of a standard font by convolving it with asuitable low-pass ﬁlter (see Figures 19.
+3 and 19.
+4).
+Figure 19.
+3 – normal textFigure 19.
+4 – text low-pass ﬁlteredThis has an almost imperceptible e↵ect on the screen contents as seen bythe user.
+ Figures 19.
+5 and 19.
+6 display photographs of the screen with the twovideo signals from Figures 19.
+3 and 19.
+4.
+Figure 19.
+5 – screen, normal text Figure 19.
+6 – screen, ﬁltered textHowever, the di↵erence in the emitted RF is dramatic, as illustrated in thephotographs in Figures 19.
+7 and 19.
+8.
+ These show the potentially compromisingemanations, as seen by a Tempest monitoring receiver.
+Using Soft Tempest techniques on VDUs translated to a di↵erence of azone [108].
+Less can be done for modern ﬂat screens, but for some devices,there may still be useful gains to be had.
+Figure 19.
+7 – page of normal text Figure 19.
+8 – page of ﬁltered textHowever, the attacker can use active as well as passive techniques.
+Thephenomenon we observed with the IBM 1401 – that a suitable program wouldturn a computer into a radio broadcast transmitter – is easy to reimplementon a modern computer.
+ Figures 19.
+9 and 19.
+10 show what the screen on a PClooks like when the video signal is an RF carrier at 2 MHz, modulated with puretones of 300 and 1200 Hz.
+Security Engineering590Ross Anderson19.
+3.
+ PASSIVE ATTACKSFigure 19.
+9 – 300 Hz AM signalFigure 19.
+10 – 1200 Hz AM signalUsing such tricks, malware can infect a machine that’s air-gapped from theInternet and exﬁltrate data to a radio receiver hidden nearby [1105].
+ And theintelligence community knew this: there had been a report of the CIA us-ing software-based RF exploits in economic espionage in a TV documentaryin 1995 [1062].
+ Material declassiﬁed by the NSA in response to a FOIA re-quest [986] revealed that the codeword Teapot refers to“the investigation, study,and control of intentional compromising emanations (i.
+e.
+, those that are hostilelyinduced or provoked) from telecommunications and automated information sys-tems equipment.
+” The possibility of malware is one reason why Tempest testinginvolves not just listening passively to the device under test, but injecting intoit signals that simulate the worst-case attack in which the opponent has used asoftware exploit to take over the device and tries to set up a covert channel [252].
+The ﬁnal class of classical Emsec attacks is the exploitation of RF emana-tions that are accidentally induced by nearby RF sources, called Nonstop bythe US military [132].
+ If equipment processing sensitive data is used near a mo-bile phone, then the phone’s transmitter may induce currents in the equipmentthat get modulated with sensitive data by the nonlinear junction e↵ect and re-radiated.
+ For this reason, it used to be forbidden to use a mobile phone within5 meters of classiﬁed equipment.
+ Nonstop attacks are also the main Emsec con-cern for ships and aircraft; here, an attacker who can get close enough to do apassive Tempest attack can probably do much more serious harm than eaves-dropping, but as military ships and aircraft often carry very powerful radios andradars, one must be careful that their signals don’t get modulated accidentallywith something useful to the enemy.
+ In one case, Soviet spy ships were foundto be listening to US military data in Guam from outside the 3-mile limit.
+19.
+3.
+3What goes wrongAs Ed Snowden conﬁrmed, the Emsec threats to embassies in hostile countriesare real.
+ The UK embassy in one hostile Arab country used to be on the sec-ond ﬂoor of an o�ce block whose ﬁrst and third ﬂoors were occupied by theMukhabarat, the local secret police; if that’s what you get given as diplomaticpremises, then shielding all electronic equipment (except that used for decep-tion) will be part of the solution.
+ It won’t be all of it; your cleaning sta↵ willbe in the pay of the Mukhabarat so they will helpfully loosen your equipment’sSecurity Engineering591Ross Anderson19.
+4.
+ ATTACKS BETWEEN AND WITHIN COMPUTERSTempest gaskets, just as they change the batteries in the room bugs.
+As for the defensive side of things, there was a scandal in April 2007 when itemerged that Lockheed Martin had ignored Tempest standards when installingequipment in US Coast Guard vessels.
+ Documents were left on the web siteof the Coast Guard’s Deepwater project and ended up on an activist website,cryptome.
+org, which was closed down for a while.
+ The documents tell a storynot just of emission security defects – wrong cable types, violations of cableseparation rules, incorrect grounding, missing ﬁlters, red/black violations, andso on – but of a more generally botched job.
+ The ships also had hull cracks,outdoor radios that were not waterproof, a security CCTV installation that didnot provide the speciﬁed 360 degree coverage, and much more [501].
+ This ledto a Congressional inquiry.
+ The documents provide some insight into Tempestand Nonstop accreditation procedures.
+The most recent development has been Tempest attacks on smartphones.
+Such devices do not have a design requirement to withstand a capable motivatedopponent sitting in the next room with decent radio equipment; so it should havebeen no surprise when, in 2015, Gabriel Goller and Georg Sigl described how togo about extracting private keys from smartphones at a distance using passiveRF monitoring [778].
+ The main di�culty with such attacks is that a phone’sclock frequency typically varies with workload; if this frequency can somehow beﬁxed (e.
+g.
+ by malware) then attacks become much easier – in fact, they reduceto a standard timing attack, of a kind I will now describe.
+19.
+4Attacks between and within computersIn the chapter on multilevel security, I remarked that Butler Lampson pointedout in 1973 covert channels may allow a process at high to signal down tolow [1125].
+ As a simple example, the high process can keep some shared resourcebusy at time ti to signal that the i-th bit of a secret key is 1.
+ If a machine isshared between high and low, and resources are not allocated in ﬁxed slices,then the high process can signal by ﬁlling up the disk drive, or by using a lot ofCPU cycles (some people call the former case a storage channel and the latter atiming channel, though in practice they can often be converted into each other).
+There are many others such as sequential process IDs, shared ﬁle locks and lastaccess times on ﬁles – reimplementing all of these in a multilevel secure wayis an enormous task.
+ It’s also possible to limit the covert channel capacity byintroducing noise.
+ Some machines have had randomised system clocks for thispurpose.
+ But some covert channel capacity almost always remains [808].
+In classical multilevel-secure systems, it was considered a good result to getcovert channel bandwidth down to one bit per second.
+ This would make it hardto leak many Top Secret satellite images, but of course it would be trivial toleak a 256-bit crypto key.
+ This is one of the reasons the NSA was traditionallysuspicious of crypto in software.
+ And covert channels are even harder to analyseand block in distributed systems where the software can initiate communicationson the network.
+ DNS supports covert channels, for example, which are hardto block because of the service’s legitimate use, but which have been used bymalware to exﬁltrate credit card numbers [1371].
+Such channels have easilySecurity Engineering592Ross Anderson19.
+4.
+ ATTACKS BETWEEN AND WITHIN COMPUTERSenough bandwidth to smuggle out crypto keys.
+In the mid-1990s, side-channel research was invigorated by the discovery ofnovel attacks on smartcards and other crypto implementations.
+19.
+4.
+1Timing analysisIn 1996, Paul Kocher showed that many implementations of public-key algo-rithms such as RSA and DSA leaked key information through the amount oftime they took [1064].
+When doing exponentiation, software typically stepsthrough the secret exponent one bit at a time, and if the next bit is a one itdoes a multiply.
+ Paul’s idea was to guess the exponent one bit at a time, workthrough the consequences of this guess for the timing measurements, and see ifit reduced their variance.
+ This clever signal-processing technique was steadilyreﬁned.
+ By 2003, David Brumley and Dan Boneh implemented a timing attackagainst Apache using OpenSSL, and showed how to extract the private key froma remote server by timing about a million decryptions [330].
+ Some implemen-tations of public-key algorithms use blinding to prevent such attacks (OpenSSLdid o↵er it as an option, but Apache didn’t use it).
+ In fact, there was a wholeseries of timing attacks on SSL/TLS; despite this protocol’s having been provensecure in the late 1990s, there has been about one attack a year since on itsimplementation, mostly using side channels.
+Symmetric-key block ciphers are vulnerable too.
+ John Kelsey, Bruce Schneier,David Wagner and Chris Hall had pointed out in 1998 that Rijndael, the algo-rithm that later became AES, is vulnerable to timing attacks based on cachemisses [1034].
+ The attacker can verify guesses about the output of the ﬁrst roundof the cipher by predicting whether the guessed value would cause a cache misson S-box lookup, and verifying this against observation.
+ A number of researchersimproved this attack steadily since then, and a na¨ıve implementation of AEScan be broken by observing a few hundred encryptions [1489, 232, 1483].
+ Manycrypto libraries and toolkits are vulnerable; you need to work out whether theyare an issue for your application and if so what you’re going to do.
+ And it’snot just the algorithms that leak; protocol and implementation features such aspadding and error handling leak secrets too.
+19.
+4.
+2Power analysisTiming attacks can work from a distance, but if you can get up close to thetarget equipment, there’s a lot more you can do.
+ Smartcard makers were awarefrom the 1980s that information could leak through the power line and patentedvarious defences; by the early 1990s, it appears to have been known to pay-TVhackers and to some government agencies that information could be gatheredby simply measuring the current a card drew.
+ Known as power analysis or railnoise analysis, this may involve as little as inserting a resistor in the ground lineand connecting a digital storage scope across it to observe the device’s currentdraw.
+ An example of such a power trace can be seen in Figure 19.
+11.
+ Thisshows how a password can be extracted from a microcontroller by guessing it abyte at a time and looking for a di↵erent power trace when the correct byte isSecurity Engineering593Ross Anderson19.
+4.
+ ATTACKS BETWEEN AND WITHIN COMPUTERSguessed.
+00.
+10.
+20.
+30.
+40.
+50.
+60.
+70.
+80.
+91−5051015µsmA  wrong inputscorrect inputdifferenceFigure 19.
+11: plot of the current measured during 256 single attempts to guessthe ﬁrst byte of a service password stored in the microcontroller at the heart ofa car immobilizer (courtesy of Markus Kuhn and Sergei Skorobogatov).
+Di↵erent instructions have quite di↵erent power proﬁles, and, as you cansee, the power consumption also depends on the data being processed.
+ Themain data-dependent contribution in many circumstances is from the bus drivertransistors, which are quite large (see the top of Figure 18.
+7).
+ Depending on thedesign, the current may vary by several hundred microamps over a period of sev-eral hundred nanoseconds for each bit of the bus whose state is changed [1298].
+Thus the Hamming weight of the di↵erence between each data byte and thepreceding byte on the bus (the transition count) is visible to an attacker.
+ Insome devices, the Hamming weight of each data byte is available too [1303].
+EEPROM reads and writes can give even stronger signals.
+If a wrong PINguess leads to a PIN-retry counter being decremented, this may cause a sharpincrease in current draw as a charge pump prepares to write memory (at thispoint, an attacker might even reset the card and try another PIN).
+The e↵ect of this leakage is not limited to password extraction.
+ An attackerwho understands (or guesses) how a cipher is implemented can obtain signiﬁcantinformation about the card’s secrets and in many cases deduce the value of thekey in use.
+ This was brought forcefully to the industry’s attention in 1998 byPaul Kocher, when he adapted the signal-processing ideas developed for timingattacks into an e�cient technique to extract the key bits used in a block ciphersuch as DES from a collection of power traces, without knowing any implemen-tation details of the card software [1065].
+ This technique, known as di↵erentialSecurity Engineering594Ross Anderson19.
+4.
+ ATTACKS BETWEEN AND WITHIN COMPUTERSpower analysis, involves partitioning a set of power traces into subsets, thencomputing the di↵erence of the averages of these subsets.
+ If the subsets arecorrelated with information of interest, the di↵erence should be nonzero [1067].
+As a concrete example, the attacker might collect several hundred traces oftransactions with a target card, for which either the plaintext or the ciphertextis known.
+They then guess some of the cipher’s internal state.
+In the caseof DES, each round of the cipher has eight table look-ups in which six bits ofthe current input are xor’ed with six bits of key, and then used to look up afour-bit output from an S-box.
+ So if it’s the ciphertext to which the attackerhas access, they will guess the six input bits to an S-box in the last round.
+ Thepower traces are then sorted into two sets based on this guess and synchronized.
+Average traces are then computed and compared.
+ The di↵erence between thetwo average traces is called a di↵erential trace.
+The process is repeated for each of the 64 possible six-bit inputs to the targetS-box.
+ The correct input value – which separates the power traces into two setseach with a di↵erent S-box output value – will typically give a di↵erential tracewith a noticeable peak.
+ Wrong guesses, however, give randomly-sorted traces,so the di↵erential trace looks like random noise.
+ In this way, the six keybitsthat go to the S-box in question can be found, followed by the others used inthe last round of the cipher.
+ In the case of DES, this gives 48 of the 56 keybits,so the remainder can be found trivially.
+The industry had not anticipated this attack, and all smartcards then onthe market appeared vulnerable [1065].
+ As it is a noninvasive attack, it canbe carried out by modiﬁed terminal equipment against a bank card carriedby an unsuspecting customer.
+ So once the attacker has taken the trouble tounderstand a card and design a Trojan terminal, a large number of cards maybe compromised at little marginal cost.
+Paul’s discovery held up the deployment of smartcards in banking for two orthree years while people worked on defences.
+ In fact, his company had patentedmany of the best ones, and ended up licensing them to most crypto vendors.
+Some work at the protocol level; for example, the EMV protocol for bank cardsmandates (from version 4.
+1) that the key used to compute the MAC on a trans-action be a session key derived from an on-card master key by encrypting acounter.
+ In this way, no two ciphertexts visible outside the card are ever gener-ated using the same key.
+ Other defences include randomised clocking, to maketrace alignment harder, and masking, where you introduce some o↵sets in eachround and recalculate the S-boxes to compensate for them.
+ This way, the im-plementation of the cipher changes every time it’s invoked.
+ With public-keyalgorithms, there are even stronger arguments for masking, because they alsohelp mitigate fault attacks, which I’ll discuss below.
+ The more expensive cardshave dedicated crypto engines for modular multiplication and for DES/AES.
+Testing a device for DPA resistance is not straightforward; there is a discussionby Paul Kocher at [1066] and a 2011 survey article that discusses the practical-ities of attack and defence at [1067].
+There are many variants on the theme.
+ Attacks based on cache misses canmeasure power as well as the time taken to encrypt, as a miss activates a lotof circuitry to read nonvolatile memory; you can’t stop cache attacks on AESSecurity Engineering595Ross Anderson19.
+4.
+ ATTACKS BETWEEN AND WITHIN COMPUTERSjust by using a timer to ensure that each encryption takes the same numberof clock cycles.
+ Another variant is to use di↵erent sensors: David Samyde andJean-Jacques Quisquater created electromagnetic analysis, in which they movea tiny pickup coil over the surface of the chip to pick up local signals rather thanrelying simply on the whole device’s current draw [1568].
+ And, as I noted in thelast chapter, DPA can be combined with optical probing; Sergei Skorobogatov’soptically-enhanced position-locked power analysis uses a laser to illuminate asingle target transistor for half of the test runs, giving access not just to aHamming weight of a computation, but a single targeted bit [1771].
+A spectacular demonstration of power analysis arrived in 2016 when EyalRonen, Colin Oˆa˘A´ZFlynn, Adi Shamir and Achi-Or Weingarten demonstrateda worm that could take over Philips Hue lamps, after they developed an im-proved power-analysis attack to retrieve the AES key that these lamps used toauthenticate ﬁrmware updates [1614].
+ Philips had made several other mistakes:relying on a single AES key, present in millions of low-cost devices, to protectupdates, using the same key for CBC and MAC, and having two bugs in thelight link protocol they used.
+ As updates could propagate by ZigBee, malwarecould spread in a chain reaction from one lamp to the next; the authors showedthat in a city such as Paris, there were enough lamps for such a chain reactionto be self-sustaining, like nuclear ﬁssion.
+The state of the art in 2019 is probably the template attack where the attackerstudies a device’s current draw closely for the instructions of interest and buildsa multivariate Gaussian distribution giving the probability distribution for anobserved trace given the instruction, the operands, the results and the state.
+For details, see for example Marios Choudary and Markus Kuhn [419].
+ It is alsopossible to use special hardware tools to capture a power trace with less noise,a signiﬁcant factor in power analysis [1783].
+19.
+4.
+3Glitching and di↵erential fault analysisIn 1996 Markus Kuhn and I reported that many smartcards could be brokenby inserting transients, or glitches, in their power or clock lines [106].
+Forexample, one smartcard used in early banking applications had the feature thatan unacceptably high clock frequency only triggered a reset after a number ofcycles, so that transients would be less likely to cause false alarms.
+ You couldreplace a single clock pulse with two much narrower pulses without causing areset, but forcing the processor to execute a NOP instead of the instruction itwas supposed to execute.
+ This gives rise to a selective code execution attackwhere the attacker can step over jump instructions to bypass access controls, orconstruct his own program out of gadgets found in the card’s own code.
+The following year, Dan Boneh, Richard DeMillo and Richard Lipton noticedthat a number of public key cryptographic algorithms break horribly if a randomerror can be induced [285].
+ For example, when doing an RSA signature the secretcomputation S = h(m)d (mod pq) is carried out mod p, then mod q, and theresults are then combined, as this is much faster.
+ But if the card returns adefective signature Sp which is correct modulo p but incorrect modulo q, thenwe will haveSecurity Engineering596Ross Anderson19.
+4.
+ ATTACKS BETWEEN AND WITHIN COMPUTERSp = gcd(pq, Sep � h(m))which breaks the system at once.
+Also in 1997, Eli Biham and Adi Shamir pointed out that if we can set agiven bit of memory to zero (or one), and we know where in memory a key iskept, we can ﬁnd out the key by just doing an encryption, zeroising the leadingbit, doing another encryption and seeing if the result’s di↵erent, then zeroisingthe next bit and so on [246].
+ Optical probing turned out to be just the toolfor this [1648], and using a laser to set key bits to zero one at a time has nowbecome a routine reverse-engineering technique.
+Glitches induced by lasers are not limited to attacks on chips.
+ It turns outthat if you ﬁre a laser at a MEMS microphone, as used in phones and in voice-controlled digital assistants such as Google Home and Amazon Alexa, it recordsa click.
+ Kevin Fu and colleagues found that by modulating a laser pointer withspoken commands, they could activate such devices from tens of meters away– so they could order Alexa to unlock a house’s front door by shining a laserpointer through the window from the garden [1844].
+Many real-world attacks now use a combination of active and passive meth-ods.
+ In section 19.
+3 above, I discussed optically enhanced position-locked poweranalysis, which uses a laser to partially ionise a target transistor during poweranalysis.
+ And you can use a power glitch to greatly increase the optical emis-sions from a chip for a short period of time, in order to distinguish speciﬁcmemory writes, as I discussed in section 18.
+5.
+5.
+19.
+4.
+4Rowhammer, CLKscrew and PlundervoltOne very serious chip-level side channel is when DRAM memory contents canleak into adjacent rows.
+ In 2014, Yoongu Kim and colleagues at CMU found thatDRAM manufactured in 2012 and 2013 was vulnerable to disturbance errors;repeatedly accessing a row in a modern DRAM chip causes bit ﬂips in physically-adjacent rows at consistently predictable bit locations, an attack now known asRowhammer [1048].
+ The following year, Mark Seaborn and Thomas Dullienfound how this hardware fault could be exploited by application code to gainkernel privileges [1694].
+ By the year after that, Kaveh Razavi and colleagueshad shown how to use the technique to replace a strong public key with aweak one – with the e↵ect that one virtual machine could attack a co-hostedtarget machine by subverting its OpenSSH public-key authentication, and alsocompromise the software update mechanism by forging GPG signatures fromtrusted keys [1587].
+ The vulnerable type of DRAM is still in such wide useand the attacks can target so many di↵erent software mechanisms, that theymay be around for some time.
+ The ﬁrst generation of hardware mitigation fromvendors includes target row refresh (TRR) where the DRAM chip controllerrefreshes rows to block the most common hammering patterns; Pietro Frigo andcolleagues built a fuzzer to analyse 42 chips with TRR defences, and found otherpatterns that gave attacks on 13 of them [725].
+ And in 2020, Andrew Kwongand colleagues found that the mechanism could be used to read as well as write;Security Engineering597Ross Anderson19.
+4.
+ ATTACKS BETWEEN AND WITHIN COMPUTERSan attacker can exploit the dependence between Rowhammer-induced bit ﬂipsand the bits in adjacent rows to deduce those bits – and what’s more, this workseven when ECC memory detects and corrects each bit ﬂip [1114].
+CPUs are also vulnerable to hardware fault injection, using dynamic scalingof frequency and voltage.
+ To save power, many modern CPUs change frequencyin response to load, and scale the voltage appropriately.
+ In 2017 Adrian Tang,Simha Sethumadhavan, and Sal Stolfo discovered the CLKscrew attack, wherethey overclocked the Arm processor on a Nexus 6 to defeat TrustZone, extractingcrypto keys and escalating privilege [1858].
+ In 2019, Kit Murdock and colleaguesdiscovered Plundervolt: here an undocumented voltage scaling interface in IntelCore processors is exploited to cause an undervoltage that induces faults inmultiply and AES-NI operations that allow RSA and AES keys to be extractedusing fault analysis, as well as mistakes in pointer arithmetic that leak arbitrarymemory contents from SGX exclaves [1366].
+Although Arm and Intel released microcode patches for CLKscrew and Plun-dervolt, we may expect other CPU attacks of the same genre.
+ Rowhammer /RAMBleed attacks remain an issue.
+ In the long term, hardware security will re-quire more defensive design.
+ This will not be trivial: just increasing the DRAMrefresh rate increases device power consumption, as would less aggressive fre-quency scaling.
+ Two of the scientists who discovered Rowhammer, Onur Mutluand Jeremie Kim, suggest that when the memory controller closes a row, then itrefreshes the adjacent rows with a probability tuned to the dependability of thechip [1369].
+ This may in turn add more complexity at the system level.
+ Giventhat ever more side channels will lurk in new chip technologies as ﬁrms pushdevices ever closer to the boundaries set by physics, a more principled approachis needed to semiconductor security.
+ Chip vendors are learning the hard waythat they need to involve good security engineers at design time, rather thanjust hoping to patch stu↵ later.
+ When failures emerge at the level of a popularsemiconductor process, or a widely-used CPU, remediation is expensive.
+19.
+4.
+5Meltdown, Spectre and other enclave side channelsThe latest tsunami to hit the chipmakers (and indeed the whole informationsecurity world) is a family of attacks based on CPU microarchitecture.
+ Thestory starts in 2005, when Colin Percival found that AES cache misses could beused by an attacker to observe an encryption operation in another hyperthreadon the same Intel CPU; by pulling data into the L1 cache, then measuring amoment later how long it takes to access the same data, you can see whetheryour data were evicted by the other hyperthread [1508].
+ Two years later, OnurAcıi¸cmez, ¸Cetin Kaya Ko¸c and Jean-Pierre Seifert invented branch predictionanalysis (BPA).
+ Modern high-performance CPUs have a superscalar architecturein which the CPU no longer fetches and executes one instruction at a time,but has a pipeline that fetches as many as a dozen instructions ahead, andtries to predict which branch the code will take.
+ BPA enabled a spy threadto extract a secret key from a parallel crypto thread by observing the CPU’sbranch-prediction state; a misprediction imposed a penalty of 20 cycles at thetime; in the best circumstances, an RSA private key could be extracted fromobserving a single signature [13].
+ Others explored other cache behaviour; inSecurity Engineering598Ross Anderson19.
+4.
+ ATTACKS BETWEEN AND WITHIN COMPUTERS2015, Fangfei Liu, Yuval Yarom and colleagues showed that the L3 cache gavepractical prime and probe cross-core attacks that enabled the recovery of GPGprivate keys [1176].
+By 2017, the Cachezoom attack allowed an attacker toextract keys from SGX enclaves [1328].
+The most recent such attack is theMembuster attack by Dayeol Lee and colleagues, which uses OS privilege toinduce cache misses that leak data [1134].
+ (Intel’s response has been simply todeclare such attacks to be out of scope.
+) This was a ﬁeld in which, over morethan a decade of work, many ideas came together; the CPU vendors should havebeen paying more attention.
+The most impactful attacks were Meltdown and Spectre, disclosed in early2018.
+ They both exploit speculative memory reads, and build on the previouswork on prime-and-probe, branch prediction and cache side-channels.
+ They areso serious that both Intel and Arm announced that they will redesign their CPUsto block them; but that will take years, and in the meantime software mitigations(where available) may cause a 15% performance hit with some workloads, andoccasional reboots.
+ Given that the world’s data centres consume perhaps 3% ofall electric power, this is potentially a big deal.
+Meltdown creates a race condition between memory access and privilegechecking, and reads out forbidden memory via a cache side channel.
+ It wasdiscovered independently by multiple researchers who disclosed their ﬁndingsresponsibly to the chip makers and then consolidated their results [1172].
+ Thechip makers spent much of 2017 working secretly on bug ﬁxes.
+Spectre was disclosed at the same time, having also been discovered by manyof the same teams.
+ It’s actually a (growing) family of vulnerabilities exploitingthe branch prediction logic that is a special case of speculative execution.
+ Thislogic tries to guess which code path will be taken after a conditional jump, androgue software can train it to mispredict.
+ The CPU will then fetch instructionsthat will never be executed, and if some of these perform forbidden operations –such as when a user program reads protected kernel memory – then the protectedpages may be fetched from cache.
+ Even if they are never read – so the access-control check is never done – this gives a reliable timing side-channel that enablesan attacker to observe crypto key material [1069].
+ In short, even if a CPU’sexecution is formally correct, all sorts of lower-level optimisations can make thetiming depend on secret data, and a whole series of Spectre variants have comealong to exploit this.
+ While Meltdown reads a target process’s data directly,Spectre tricks the target process into revealing its data via side-channels.
+The Spectre family of attacks keeps on growing; shortly after Spectre was an-nounced, researchers discovered a variant called Foreshadow that cracks many ofthe features on Intel processors that Spectre didn’t, including SGX and systemmanagement mode [338].
+ The 2019 security conferences brought a whole seriesof other attacks that exploit subtle microarchitectural features: Zombieload,Fallout, Smotherspectre and RAMBleed to name but four, while 2020 broughtLoad Value Injection, which combines ideas from Meltdown and Spectre [339],and CrossTalk, which enables one core in a CPU to attack another [1570].
+ Prettywell all CPUs now use branch prediction – except the tiniest – and have becomeso complex that there are lots of side channels.
+ Finding them at design time isn’teasy, as the tools the chipmakers developed for verifying their designs merelycheck that the logic gives the right answer – not how long it takes.
+ The reasonSecurity Engineering599Ross Anderson19.
+5.
+ ENVIRONMENTAL SIDE CHANNELSthey’re now being found is that the formerly sleepy backwater of microarchi-tectural covert channels suddenly became the hottest topic in security research,and hundreds of bright research students are suddenly looking hard.
+ Fixingeverything they ﬁnd will take years, and given the nature of the technology Idoubt that everything will ever be ﬁxed.
+ Arm, for example, has introduced newbarrier instructions CSDB, SSBB and PSSBB.
+ After CSDB appears in code, forexample, no instruction may be speculatively executed using predicted data orstate [131].
+ There’s also a new data ﬁeld CVS2 from v8.
+5A onwards to indicatethe presence of mitigations against adversarial prediction training.
+ It will takeperhaps four years to get this all into silicon, and several more for the neces-sary support to appear in software toolchains – and longer still for programmersto learn to use it all.
+ Many programmers won’t bother, and many managers’reaction to such wicked and complex problems will be denial.
+So, during the 2020s, any crypto that you do on CPUs that also run untrust-worthy processes is potentially at risk.
+ Quite possibly all CPUs of any size willacquire cryptoprocessors, with hardware engines that do AES, ECDH, ECDSAand so on in constant time.
+ (But that then opens up several new cans of worms,as we’ll discuss in the chapter on Advanced Cryptographic Engineering.
+)19.
+5Environmental side channelsThe past twenty years have seen a host of side-channel attacks that exploit hu-man behaviour and the environment of the device.
+ Such attacks exploit acous-tics, optics, device motion and combinations too; once attackers ﬁgure out howto recover text from the sound of someone typing, they can apply the same tech-niques to keystroke timings observed by other means, such as on the networkor by measuring device motion.
+19.
+5.
+1Acoustic side-channelsAcoustic security has a long history in terms of preventing people or deviceseavesdropping on sensitive conversations, as I mentioned in section 19.
+2.
+2.
+ Asfor listening to machines, the ﬁrst case may have been during the Suez crisisin 1956, when the British ﬁgured out the settings of the Egyptian embassy’sHagelin cipher machine using a phone bug.
+ There was later a ‘folk rumour’that the agencies were able to tell what someone was typing on the old IBMSelectric typewriter by just recording the sound they made, and that data couldbe recovered from the noise made by dot matrix printers [323].
+ It later turnedout that the KGB had indeed bugged IBM typewriters in the US embassy inMoscow from 1976 to 1984, though they used magnetic bugs rather than micro-phones [790].
+In 2001, Dawn Song, David Wagner and Xuqing Tian showed that the timingof keystrokes contained enough information for an opponent to recover a lot ofinformation merely by observing tra�c encrypted under SSH.
+ As each keystrokeis sent in a separate packet when SSH is used in interactive mode, encryptedpacket timing gives precise inter-keystroke timing and even a simple hiddenMarkov model gives about one bit of information per keystroke pair about theSecurity Engineering600Ross Anderson19.
+5.
+ ENVIRONMENTAL SIDE CHANNELScontent; they noted that this would enable an attacker about a factor of 50advantage in guessing a password whose encrypted value he’d observed [1803].
+In 2004, Dmitri Asonov and Rakesh Agrawal showed that the di↵erent keyson a computer keyboard made su�ciently di↵erent sounds.
+ They trained a neu-ral network to recognise the clicks made by key presses on a target keyboard andconcluded that someone’s typing could be picked up from acoustic emanationswith an error rate of only a few percent [136].
+ In 2005, Li Zhuang, Feng Zhou,and Doug Tygar combined these threads to come up with an even more powerfulattack.
+ Given a recording of someone typing text in English for about ten min-utes on an unknown keyboard, they recognised the individual keys, then usedthe inter-keypress times and the known statistics of English to ﬁgure out whichkey was which.
+ Thus they could decode text from a recording of a keyboard towhich they had never had access [2072].
+ Other researchers quickly joined in; bythe following year, Yigael Berger, Avishai Wool, and Arie Yeredor had shownthat with improved signal-processing algorithms, acoustic reconstruction couldbe made much more e�cient [228].
+Others took acoustic analysis down to a much lower level: Eran Tromerand Adi Shamir showed that keys leak via the acoustic emanations from a PC,generated mostly at frequencies above 10KHz by capacitors on the mother-board [1908].
+The deep neural network revolution that began in 2012 enabled much moreinformation to be wrung out of such signals, and by 2016 Alberto Compagnoand colleagues had shown that if you type while talking to someone over Skype,they can reconstruct a lot of what you’re typing [464].
+ Also in 2016, MengyuanLi and colleagues had shown that when you type on a smartphone, your ﬁngermotions interfere with the RF signal in ways that change the multipath be-haviour on wiﬁ enough to modulate the channel state information; this enablesa rogue wiﬁ hotspot to infer keystroke information [1162].
+ By 2017, Ilia Shu-mailov had ﬁgured out how one app on a mobile phone could recover passwordsand PINs typed into another app by listening to the taps on the screen, using thetwo microphones in the device [1731].
+ Such time-di↵erence-of-arrival (TDOA)processing had previously been the domain of sophisticated electronic-warfarekit; here was an application in your pocket, and that would enable a rogueapp to steal your online banking password, even despite the protection avail-able if the password entry mechanism is implemented in the Trusted ExecutionEnvironment, so malware cannot tap it directly.
+19.
+5.
+2Optical side-channelsTurning now to optics, there are obvious optical side-channels such as shouldersurﬁng, where someone watches your PIN over your shoulder at an ATM andthen picks your pocket; ATM crime gangs have also used CCTV cameras inshop ceilings above a PIN entry device, and even in furniture vans parked nextto a cash machine.
+ And now that everyone has a camera in their pocket and a3-d printer in their den, physical keys are easy to duplicate – even by someonewatching at a distance.
+ But there is much, much more.
+Have you ever looked across a city at night, and seen someone working lateSecurity Engineering601Ross Anderson19.
+5.
+ ENVIRONMENTAL SIDE CHANNELSin their o�ce, their face and shirt lit up by the di↵use reﬂected glow from theircomputer monitor? Did you ever stop to wonder whether any information mightbe recovered from the glow? In 2002 Markus Kuhn showed that the answer was‘pretty well everything’: he hooked up a high-performance photomultiplier tubeto an oscilloscope, and found that the light from the blue and green phosphorsused in common VDU tubes decays after a few microseconds.
+As a result,the di↵use reﬂected glow contains much of the screen information, encoded inthe time domain.
+Thus, given a telescope, a photomultiplier tube and suit-able image-processing software, it was possible to read the computer screen atwhich a banker was looking by decoding the light scattered from his face or hisshirt [1103].
+ (According to Ed Snowden, this was one of the techniques the NSAused to spy on foreign embassies, and went under the code-name ‘Ocean’.
+)The next headline was from Joe Loughry and David Umphress, who looked atthe LED status indicators found on the data serial lines of PCs, modems, routersand other communications equipment.
+ They found that a signiﬁcant number ofthem were transmitting the serial data optically: 11 out of 12 modems tested,2 out of 7 routers, and one data storage device.
+ The designers were just drivingthe tell-tale light o↵ the serial data line, without stopping to realise that theLED had su�cient bandwidth to transmit the data to a waiting telescope [1189].
+The latest discovery, by Ben Nassi and colleagues in 2020, is the lamphonechannel.
+ Speech or music in a room induces vibration in a hanging lightbulb,which can be read from across the street using a telescope and a suitable pho-todiode [1387].
+ Unlike a laser microphone that picks up sound from a window,this is entirely passive, and the direction is less sensitive.
+19.
+5.
+3Other side-channelsThermal covert channels arrived in 2006, when Steven Murdoch discovered thata typical computer’s clock skew, which can be measured remotely, showed di-urnal variation, and realised this was a function of ambient temperature.
+ Hisexperiments showed that unless a machine’s owner takes countermeasures, any-one who can extract accurate timestamps from it can measure its CPU load;and this raises the question of whether an attacker can ﬁnd where in the worlda hidden machine is located.
+ The longitude comes from the time zone, and thelatitude (more slowly) from the seasons.
+ So hiding behind an anonymity servicesuch as Tor might not be as easy as it looks [1356, 1358].
+It had long been known that oily ﬁngerprint residues can compromise ﬁn-gerprint scanners, as we discuss in the chapter on biometrics.
+ However theyalso leave traces on touchscreens, and after these started being used on phones,Adam Aviv documented the smudge attack: these residues are a very e↵ec-tive way of breaking the pattern lock commonly used on Android devices [145].
+(Smudges also help guess the PINs used on all sorts of touchscreen devices –even your Tesla.
+)Adam also developed the use of the smartphone’s accelerometer as a side-channel, ﬁnding that the phone’s rocking motion as the user typed would revealsigniﬁcant information.
+ Even in uncontrolled settings, while users were walk-ing, his model could classify 20% of PINs and 40% of unlock patterns within 5Security Engineering602Ross Anderson19.
+6.
+ SOCIAL SIDE CHANNELSattempts [146].
+ The accelerometer had already been used by Philip Marquardtand others to decode the vibrations from a nearby conventional computer key-board [1229].
+ Liang Cai and Hao Chen then studied using both the accelerom-eter and gyro, ﬁnding that the latter was more e↵ective, and allowed a 4-digitPIN to be guessed about 80 times better than by chance [365].
+ Laurent Simonand I then played with turning the camera into a virtual gyroscope, as the phonetilts when you tap in a PIN; we found that camera plus microphone was just asgood as the gyro for keystroke inference [1756].
+ Gesture typing also leaks; textentered into one app can be read by others, although this is a technical sidechannel that exploits shared interrupt state [1759].
+The arrival of the Apple watch in 2015 inspired more people to study smart-watch side channels; by the end of the year, Xiangyu Liu and colleagues hadshown that a smartwatch not only allows you to do the accelerometer inferenceattacks on smartphone PIN entry, but also to reconstruct text typed at a normalkeyboard – though if you wear it on your left wrist you get more accuracy withthe left-hand letters [1177].
+Are these side channels a big deal? The answer appears to be ‘not yet’.
+ JoelReardon and colleagues studied 88,000 apps from the Google Play Store andreported in 2019 that while over 12,000 had the means to exploit side channelsto observe other apps or system data, or to communicate in ways that theyshouldn’t, only 61 actually did so [1588].
+ However, the security engineer mustremain aware that as we move to devices such as smartphones with a rich setof sensors, we get a rich set of side channels that make it ever more di�cult toconﬁne information to speciﬁc apps and contexts.
+ As we move to a world withgazillions of smart objects, the number and type of side channels will multiply.
+We might expect this to give us a nasty surprise one day.
+19.
+6Social side channelsMany side channels occur at the application layer, and are often overlooked.
+One classic example is an increase in pizza deliveries to the Pentagon leakingthe fact of a forthcoming military operation.
+ A more subtle example is thatpersonal health information derived from visits to genitourinary medicine clinicsis considered specially sensitive in the UK, and can’t be shared with the GPunless the patient consents.
+ In one case, a woman’s visit to a GUM clinic leakedwhen the insurer failed to recall her for a smear test that her GP knew wasdue [1310].
+ The insurer knew that a smear test had been done already by theclinic, and didn’t want to pay twice.
+I’ve already discussed such issues at length in the chapter on Inference Con-trol and don’t propose to duplicate that discussion here.
+ I’ll merely note thatthis is also a high-impact family of side channels.
+ Policymakers and the techindustry have both pretended for years to believe that de-identiﬁcation of sen-sitive data such as medical records makes it non-sensitive and thus suitable tobe treated as an industrial raw material.
+ This is emphatically not the case, asone scandal after another has brought home – leading among other things tothe EU General Data Protection Regulation.
+Security Engineering603Ross Anderson19.
+7.
+ SUMMARYSocial side channels also play a role on the philosophical side of technologypolicy debates; for example, Helen Nissenbaum has gone so far as to deﬁneprivacy as ‘contextual integrity’.
+ Most privacy failures that do real harm resultfrom information from one context (such as the clinic) ending up in another(such as a newspaper).
+ Ubiquitous devices with complex side channels are notthe only issue; the mass collection of data that’s used for advertising withoute↵ective opt-outs leads to much more leakage.
+I’ll discuss this later in thechapter on ‘Surveillance or Privacy?’19.
+7SummarySide-channel attacks include a whole range of threats in which the security ofsystems can be subverted by compromising emanations, whether from uninten-tional radio frequency or conducted electromagnetic signals, to leakage throughshared computational state, to the wide range of sensors found in modern mo-bile phones and other consumer devices and to leakage via social context too.
+Side channel leakage is a huge topic and it will get more complex still as we getsoftware and sensors in just about everything.
+ Which side channels pose a realthreat will of course depend on the application, and most of them will remainof academic interest most of the time.
+ But occasionally, they’ll bite.
+ So thesecurity engineer needs to be aware of the risks.
+Research ProblemsMany of the research papers in the top security conferences in 2019 are aboutside channels, particularly side-channel attacks on processors that undermineaccess controls and enclaves, and side-channel attacks on security chips thatenable TPMs or payment cards to be defeated.
+ Back in 2015, the emphasis wason side-channel attacks on phones, smart watches and other physical devices.
+Social side-channels continue to be of interest and drive research into privacy.
+Side-channel vulnerabilities are becoming ubiquitous as systems get morecomplex.
+ More complex supply chains made bug ﬁxes harder, and sometimesvulnerabilities just won’t be ﬁxed as it would cost too much in terms of per-formance, e↵ort or cash.
+ Attacks become easier as techniques are honed andsoftware gets passed around.
+This applies to classical Tempest attacks too,as software radios – radios that digitize a signal at the intermediate frequencystage and do all the subsequent processing in software – are no longer an ex-pensive military curiosity [1117] but are now ubiquitous in cellular radio basestations, GPS receivers, IoT devices, and even hobbyists’ bedrooms.
+ The ex-plosion of interest in machine learning is bound to have an e↵ect, improvingattacks everywhere from Tempest through power analysis to the exploitation ofsocial channels.
+ It’s hard to predict which side channels will scale up to becomeanother billion-dollar issue, but it’s a good bet that some of them will.
+Security Engineering604Ross Anderson19.
+7.
+ SUMMARYFurther ReadingA recent history of Tempest by David Easter tells of the Cold War strugglesbetween Russia, the USA, the UK and their European allies [600].
+ The classicvan Eck article [601] is still worth a read, and our work on Soft Tempest, Teapotand related topics can be found in [1105].
+ For power analysis, see the papersby Paul Kocher [1065] and Thomas Messergues [1298].
+ For timing and poweranalysis, the original papers by Paul Kocher and his colleagues are the classicreferences [1064, 1065]; there’s a textbook by Stefan Mangard, Elisabeth Oswaldand Thomas Popp that covers all the major aspects [1214], while Paul Kocher’s2011 survey paper, “Introduction to di↵erential power analysis” explains theengineering detail of both attack and defence [1067].
+ A 2020 survey by MarkRandolph and William Diehl covers more recent work [1576].
+To keep up with progress in timing and power attacks on security chips,you really need to follow the current research literature, as attack techniquesimprove all the time.
+ For example, in November 2019, Daniel Moghimi, BerkSunar, Thomas Eisenbarth and Nadia Henninger found timing attacks on aTPM made by STM that had been certiﬁed secure to Common Criteria EAL4+and on a virtual TPM in Intel CPUs, enabling them to extract ECDSA keys;the latter case led to a real attack on a VPN product [1329].
+ More than twentyyears after timing attacks came along, you still can’t rely on either certiﬁedproducts or big brand names to withstand them.
+Attacks on mainstream computer hardware are still developing quickly.
+ Forattacks on memory, see the 2019 survey paper on Rowhammer by Onur Mutluand Jeremie Kim [1369].
+As for attacks on CPUs exploiting speculative ex-ecution, the Meltdown and Spectre attacks attracted so much publicity thatmicroarchitectural security turned overnight from a backwater into one of thehottest research areas in the ﬁeld.
+ For years the CPU designers (and almosteveryone else) had assumed that if hardware had been veriﬁed, then it did whatit said in the manual, so there was no point looking for bugs.
+ Now we know thatthe veriﬁcation tools had nothing to say about side channels, there are hundredsof smart people beating up on CPUs.
+ The bug reports just keep on coming, andCPUs have meanwhile got so complex that it may take years before we get somestability.
+ The best starting point in 2019 is probably the survey paper by Clau-dio Canella and colleagues at the Usenix Security Symposium [380].
+ Claudioand colleagues have also broken the ﬁrst-generation Meltdown mitigations withan attack called EchoLoad [381].
+Security Engineering605Ross Anderson
