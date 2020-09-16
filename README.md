@@ -1,0 +1,2 @@
+# translator_for_pdf
+英語のpdfを日本語のwordに変換するアプリ
