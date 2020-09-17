@@ -1,575 +1,590 @@
-Chapter 4ProtocolsIt is impossible to foresee the consequences of being clever.
-– CHRISTOPHER STRACHEYIf it’s provably secure, it probably isn’t.
-– LARS KNUDSEN4.
-1IntroductionPasswords are just one example of a more general concept, the security protocol.
-If security engineering has a core theme, it may be the study of security proto-cols.
- They specify the steps that principals use to establish trust relationships.
-They are where the cryptography and the access controls meet; they are thetools we use to link up human users with remote machines, to synchronise se-curity contexts, and to regulate key applications such as payment.
- We’ve comeacross a few protocols already, including challenge-response authentication andKerberos.
- In this chapter, I’ll dig down into the details, and give many examplesof how protocols fail.
-A typical security system consists of a number of principals such as people,companies, phones, computers and card readers, which communicate using avariety of channels including ﬁbre, wiﬁ, the cellular network, bluetooth, infrared,and by carrying data on physical devices such as bank cards and transporttickets.
- The security protocols are the rules that govern these communications.
-They are designed so that the system will survive malicious acts such as peopletelling lies on the phone, hostile governments jamming radio, or forgers alteringthe data on train tickets.
- Protection against all possible attacks is often tooexpensive, so protocol designs make assumptions about threats.
- For example,when we get a user to log on by entering a password into a machine, we implicitlyassume that she can enter it into the right machine.
- In the old days of hard-wired terminals in the workplace, this was reasonable; now that people log onto websites over the Internet, it is much less obvious.
- Evaluating a protocolthus involves two questions: ﬁrst, is the threat model realistic? Second, doesthe protocol deal with it?1254.
-2.
- PASSWORD EAVESDROPPING RISKSProtocols may be very simple, such as swiping a badge through a readerto enter a building.
-They often involve interaction, and are not necessarilytechnical.
- For example, when we order a bottle of ﬁne wine in a restaurant, thestandard protocol is that the wine waiter o↵ers us the menu (so that we see theprices but our guests don’t); they bring the bottle, so we can check the label,the seal and the temperature; they open it so we can taste it; and then serveit.
- This has evolved to provide some privacy (our guests don’t learn the price),some integrity (we can be sure we got the right bottle and that it wasn’t reﬁlledwith cheap plonk) and non-repudiation (we can’t complain afterwards that thewine was o↵).
- Matt Blaze gives other non-technical protocol examples fromticket inspection, aviation security and voting in [260].
- Traditional protocolslike these often evolved over decades or centuries to meet social expectations aswell as technical threats.
-At the technical end of things, protocols get a lot more complex, and theydon’t always get better.
- As the car industry moved from metal keys to electronickeys with buttons you press, theft fell, since the new keys were harder to copy.
-But the move to keyless entry has seen car crime rise again, as the bad guysﬁgured out how to build relay devices that would make a key seem closer tothe car than it actually was.
- Another security upgrade that’s turned out to betricky is the move from magnetic-strip cards to smartcards.
- Europe made thismove in the late 2000s while the USA is only catching up in the late 2010s.
-Fraud against cards issued in Europe actually went up for several years; clonesof European cards were used in magnetic-strip cash machines in the USA, asthe two systems’ protection mechanisms didn’t quite mesh.
- And there was aprotocol failure that let a thief use a stolen chipcard in a store even if he didn’tknow the PIN, which took the banks several years to ﬁx.
-So we need to look systematically at security protocols and how they fail.
-4.
-2Password Eavesdropping RisksPasswords and PINs are still the foundation for much of computer security, asthe main mechanism used to authenticate humans to machines.
- We discussedtheir usability in the last chapter; now let’s consider the kinds of technical attackwe have to block when designing protocols that operate between one machineand another.
-Remote key entry is a good place to start.
- The early systems, such as theremote control used to open your garage or to unlock cars manufactured up tothe mid-1990’s, just broadcast a serial number.
- The attack that killed them wasthe ‘grabber’, a device that would record a code and replay it later.
- The ﬁrstgrabbers, seemingly from Taiwan, arrived on the market in about 1995; thieveswould lurk in parking lots or outside a target’s house, record the signal used tolock the car and then replay it once the owner had gone1.
-1With garage doors it’s even worse.
- A common chip is the Princeton PT2262, which uses12 tri-state pins to encode 312 or 531,441 address codes.
- However implementers often don’tread the data sheet carefully enough to understand tri-state inputs and treat them as binaryinstead, getting 212.
- Many of them only use eight inputs, as the other four are on the otherside of the chip.
- And as the chip has no retry-lockout logic, an attacker can cycle throughSecurity Engineering126Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONThe ﬁrst countermeasure was to use separate codes for lock and unlock.
-But the thief can lurk outside your house and record the unlock code beforeyou drive away in the morning, and then come back at night and help himself.
-Second, sixteen-bit passwords are too short.
- Occasionally people found theycould unlock the wrong car by mistake, or even set the alarm on a car whoseowner didn’t know he had one [308].
- And by the mid-1990’s, devices appearedthat could try all possible codes one after the other.
- A code will be found onaverage after about 215 tries, and at ten per second that takes under an hour.
-A thief operating in a parking lot with a hundred vehicles within range wouldbe rewarded in less than a minute with a car helpfully ﬂashing its lights.
-The next countermeasure was to double the length of the password from 16to 32 bits.
- The manufacturers proudly advertised ‘over 4 billion codes’.
- Butthis only showed they hadn’t really understood the problem.
- There were stillonly one or two codes for each car, and grabbers still worked ﬁne.
-Using a serial number as a password has a further vulnerability: lots ofpeople have access to it.
- In the case of a car, this might mean all the dealersta↵, and perhaps the state motor vehicle registration agency.
- Some burglaralarms have also used serial numbers as master passwords, and here it’s evenworse: when a bank buys a burglar alarm, the serial number may appear on theorder, the delivery note and the invoice.
- And banks don’t like sending someoneout to buy something for cash.
-Simple passwords are sometimes the appropriate technology.
- For example,a monthly season ticket for our local swimming pool simply has a barcode.
- I’msure I could make a passable forgery, but as the turnstile attendants get to knowthe ‘regulars’, there’s no need for anything more expensive.
- For things that areonline, however, static passwords are hazardous; the Mirai botnet got going byrecruiting wiﬁ-connected CCTV cameras which had a password that couldn’t bechanged.
- And for things people want to steal, like cars, we also need somethingbetter.
- This brings us to cryptographic authentication protocols.
-4.
-3Who goes there? – simple authenticationA simple modern authentication device is the token that some multistorey park-ing garages give subscribers to raise the barrier.
- The token has a single button;when you press it, it ﬁrst transmits its serial number and then sends an au-thentication block consisting of the same serial number, followed by a randomnumber, all encrypted using a key unique to the device, and sent to the garagebarrier (typically by radio at 434MHz, though infrared is also used).
- We willpostpone discussion of how to encrypt data to the next chapter, and simplywrite {X}K for the message X encrypted under the key K.
-Then the protocol between the access token and the parking garage can bewritten as:T �! G : T, {T, N}KTthe combinations quickly and open your garage door after 27 attempts on average.
- Twelveyears after I noted these problems in the second edition of this book, the chip has not beenwithdrawn.
- It’s now also sold for home security systems and for the remote control of toys.
-Security Engineering127Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONThis is standard protocol notation, so we’ll take it slowly.
-The token T sends a message to the garage G consisting of its name Tfollowed by the encrypted value of T concatenated with N, where N stands for‘number used once’, or nonce.
- Everything within the braces is encrypted, andthe encryption binds T and N together as well as obscuring their values.
- Thepurpose of the nonce is to assure the recipient that the message is fresh, that is,it is not a replay of an old message.
- Veriﬁcation is simple: the garage reads T,gets the corresponding key KT, deciphers the rest of the message, checks thatthe nonce N has not been seen before, and ﬁnally that the plaintext containsT.
-One reason many people get confused is that to the left of the colon, Tidentiﬁes one of the principals (the token that represents the subscriber) whereasto the right it means the name (that is, the unique device number) of the token.
-Another is that once we start discussing attacks on protocols, we may ﬁnd that amessage intended for one principal was intercepted and played back by another.
-So you might think of the T �! G to the left of the colon as a hint as to whatthe protocol designer had in mind.
-A nonce can be anything that guarantees the freshness of a message.
- It canbe a random number, a counter, a random challenge received from a third party,or even a timestamp.
- There are subtle di↵erences between them, such as in thelevel of resistance they o↵er to various kinds of replay attack, and the waysin which they increase system cost and complexity.
- In very low-cost systems,random numbers and counters predominate as it’s cheaper to communicate inone direction only, and cheap devices usually don’t have clocks.
-Key management in such devices can be very simple.
- In a typical garagetoken product, each token’s key is just its unique device number encrypted undera global master key KM known to the garage:KT = {T}KMThis is known as key diversiﬁcation or key derivation.
- It’s a common wayof implementing access tokens, and is widely used in smartcards too.
- The goalis that someone who compromises a token by drilling into it and extractingthe key cannot masquerade as any other token; all he can do is make a copyof one particular subscriber’s token.
- In order to do a complete break of thesystem, and extract the master key that would enable him to pretend to beany of the system’s users, an attacker has to compromise the central server atthe garage (which might protect this key in a tamper-resistant smartcard orhardware security module).
-But there is still room for error.
- A common failure mode is for the serialnumbers – whether unique device numbers or protocol counters – not to belong enough, so that someone occasionally ﬁnds that their remote control worksfor another car in the car park as well.
- This can be masked by cryptography.
-Having 128-bit keys doesn’t help if the key is derived by encrypting a 16-bitdevice number, or by taking a 16-bit key and repeating it eight times.
- In eithercase, there are only 216 possible keys, and that’s unlikely to be enough even ifSecurity Engineering128Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONthey appear to be random2.
-Protocol vulnerabilities usually give rise to more, and simpler, attacks thancryptographic weaknesses do.
- An example comes from the world of prepaymentutility meters.
- Over a million households in the UK, plus over 400 million indeveloping countries, have an electricity or gas meter that accepts encryptedtokens: the householder buys a magic number and types it into the meter,which then dispenses the purchased quantity of energy.
- One early meter thatwas widely used in South Africa checked only that the nonce was di↵erent fromlast time.
- So the customer could charge their meter indeﬁnitely by buying twolow-value power tickets and then feeding them in one after the other; given twovalid codes A and B, the series ABABAB.
-.
-.
- was seen as valid [93].
-So the question of whether to use a random number or a counter is not aseasy as it looks.
- If you use random numbers, the lock has to remember a lotof past codes.
- There’s the valet attack, where someone with temporary access,such as a valet parking attendant, records some access codes and replays themlater to steal your car.
- In addition, someone might rent a car, record enoughunlock codes, and then go back later to the rental lot to steal it.
- Providingenough nonvolatile memory to remember thousands of old codes might add afew cents to the cost of your lock.
-If you opt for counters, the problem is synchronization.
- The key might beused for more than one lock; it may also be activated repeatedly by accident(I once took an experimental token home where it was gnawed by my dogs).
-So you need a way to recover after the counter has been incremented hundredsor possibly even thousands of times.
- One common product uses a sixteen bitcounter, and allows access when the deciphered counter value is the last validcode incremented by no more than sixteen.
- To cope with cases where the tokenhas been used more than sixteen times elsewhere (or gnawed by a family pet),the lock will open on a second press provided that the counter value has beenincremented between 17 and 32,767 times since a valid code was entered (thecounter rolls over so that 0 is the successor of 65,535).
- This is ﬁne in manyapplications, but a thief who can get six well-chosen access codes – say for values0, 1, 20,000, 20,001, 40,000 and 40,001 – can break the system completely.
- Inyour application, would you be worried about that?So designing even a simple token authentication mechanism is not as easyas it looks, and if you assume that your product will only attract low-gradeadversaries, this assumption might fail over time.
-An example is accessorycontrol.
- Many printer companies embed authentication mechanisms in printersto ensure that genuine toner cartridges are used.
- If a competitor’s product isloaded instead, the printer may quietly downgrade from 1200 dpi to 300 dpi, orsimply refuse to work at all.
- All sorts of other industries are getting in on the act,from scientiﬁc instruments to games consoles.
- The cryptographic mechanismsused to support this started o↵ in the 1990s being fairly rudimentary, as vendorsthought that any competitor who circumvented them on an industrial scale couldbe sued or even jailed under copyright law.
- But then a judge found, in the caseLexmark v SCC, that while a vendor had the right to hire the best cryptographerthey could ﬁnd to lock their customers in, a competitor also had the right to2We’ll go into this in more detail in section 5.
-3.
-1.
-2 where we discuss the birthday theoremin probability theory.
-Security Engineering129Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONhire the best cryptanalyst they could ﬁnd to set them free to buy accessoriesfrom elsewhere.
- This set o↵ a serious arms race, which we’ll meet from time totime in later chapters.
- Here I’ll just remark that security isn’t always a goodthing.
- Security mechanisms are used to support many business models, wherethey’re typically stopping the device’s owner doing things she wants to ratherthan protecting her from the bad guys.
- The e↵ect may be contrary to publicpolicy; one example is cellphone locking, which results in hundreds of millionsof handsets ending up in landﬁlls each year, with toxic heavy metals as well asthe embedded carbon cost.
-4.
-3.
-1Challenge and responseSince 1995, all cars sold in Europe were required to have a ‘cryptographicallyenabled immobiliser’ and by 2010, most cars had remote-controlled door un-locking too, though most also have a fallback metal key so you can still get intoyour car even if the key fob battery is ﬂat.
- The engine immobiliser is harderto bypass using physical means and uses a two-pass challenge-response protocolto authorise engine start.
- As the car key is inserted into the steering lock, theengine controller sends a challenge consisting of a random n-bit number to thekey using short-range radio.
- The car key computes a response by encryptingthe challenge; this is often done by a separate RFID chip that’s powered by theincoming radio signal and so keeps on working even if the battery is ﬂat.
- Thefrequency is low (125kHz) so the car can power the transponder directly, andthe exchange is also relatively immune to a noisy RF environment.
-Writing E for the engine controller, T for the transponder in the car key,K for the cryptographic key shared between the transponder and the enginecontroller, and N for the random challenge, the protocol may look somethinglike:E �! T :NT �! E :T, {T, N}KThis is sound in theory, but implementations of security mechanisms oftenfail the ﬁrst two or three times people try it.
-Between 2005 and 2015, all the main remote key entry and immobilisersystems were broken, whether by security researchers, car thieves or both.
- Theattacks involved a combination of protocol errors, peer key management, weakciphers, and short keys mandated by export control laws.
-The ﬁrst to fall was TI’s DST transponder chip, which was used by at leasttwo large car makers and was also the basis of the SpeedPass toll paymentsystem.
- Stephen Bono and colleagues found in 2005 that it used a block ci-pher with a 40-bit key, which could be calculated by brute force from just tworesponses [297].
- This was one side-e↵ect of US cryptography export controls,which I discuss in 26.
-2.
-7.
-1.
-From 2010, Ford, Toyota and Hyundai adopteda successor product, the DST80.
- The DST80 was broken in turn in 2020 byLennert Wouters and colleagues, who found that as well as side-channel attackson the chip, there are serious implementation problems with key management:Hyundai keys have only 24 bits of entropy, while Toyota keys are derived fromSecurity Engineering130Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONthe device serial number that an attacker can read (Tesla was also vulnerable butunlike the older ﬁrms it could ﬁx the problem with a software upgrade) [2048].
-Next was Keeloq, which was used for garage door openers as well as by somecar makers; in 2007, Eli Biham and others found that given an hour’s access toa token they could collect enough data to recover the key [243].
- Worse, in sometypes of car, there is also a protocol bug, in that the key diversiﬁcation usedexclusive-or: KT = T � KM.
- So you can rent a car of the type you want tosteal and work out the key for any other car of that type.
-Also in 2007, someone published the Philips Hitag 2 cipher, which also hada 48-bit secret key.
- But this cipher is also weak, and as it was attacked byvarious cryptanalysts, the time needed to extract a key fell from days to hoursto minutes.
- By 2016, attacks took 8 authentication attempts and a minute ofcomputation on a laptop; they worked against cars from all the French andItalian makers, along with Nissan, Mitsubishi and Chevrolet [748].
-The last to fall was the Megamos Crypto transponder, used by Volkswagenand others.
- Car locksmithing tools appeared on the market from 2008, whichincluded the Megamos cipher and were reverse engineered by researchers fromBirmingham and Nijmegen – Roel Verdult, Flavio Garcia and Barı¸s Ege – whocracked it [1952].
- Although it has a 96-bit secret key, the e↵ective key lengthis only 49 bits, about the same as Hitag 2.
- Volkswagen got an injunction inthe High Court in London to stop them presenting their work at Usenix 2013,claiming that their trade secrets had been violated.
- The researchers resisted,arguing that the locksmithing tool supplier had extracted the secrets.
- Aftertwo years of argument, the case settled without admission of liability on eitherside.
- Closer study then threw up a number of further problems.
- There’s also aprotocol attack as an adversary can rewrite each 16-bit word of the 96-bit key,one after another, and search for the key 16 bits at a time; this reduces the timeneeded for an attack from days to minutes [1953].
-Key management was pervasively bad.
- A number of Volkswagen implemen-tations did not diversify keys across cars and transponders, but used a ﬁxedglobal master key for millions of cars at a time.
- Up till 2009, this used a ciphercalled AUT64 to generate device keys; thereafter they moved to a stronger ci-pher called XTEA but kept on using global master keys, which were found in23 models from the Volkswagen-Audi group up till 2016 [748]3.
-It’s easy to ﬁnd out if a car is vulnerable: just try to buy a spare key.
- Ifthe locksmith companies have ﬁgured out how to duplicate the key, your localgarage will sell you a spare for a few bucks.
- We have a spare key for my wife’s2005 Lexus, bought by the previous owner.
- But when we lost one of the keysfor my 2012 Mercedes, we had to go to a main dealer, pay over £200, showmy passport and the car log book, have the mechanic photograph the vehicleidentiﬁcation number on the chassis, send it all o↵ to Mercedes and wait for3There are some applications where universal master keys are inevitable, such as in com-municating with a heart pacemaker – where a cardiologist may need to tweak the pacemakerof any patient who walks in, regardless of where it was ﬁrst ﬁtted, and regardless of whetherthe network’s up – so the vendor puts the same key in all its equipment.
-Another exam-ple is the subscriber smartcard in a satellite-TV set-top box, which we’ll discuss later.
- Butthey often result in a break-once-run-anywhere (BORA) attack.
- To install universal masterkeys in valuable assets like cars in a way that facilitated theft and without even using propertamper-resistant chips to protect them was an egregious error.
-Security Engineering131Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONa week.
-We saw in Chapter 3 that the hard part of designing a passwordsystem was recovering from compromise without the recovery mechanism itselfbecoming either a vulnerability or a nuisance.
- Exactly the same applies here!But the worst was still to come: passive keyless entry systems (PKES).
-Challenge-response seemed so good that car vendors started using it with justa push button on the dashboard to start the car, rather than with a metal key.
-Then they increased the radio frequency to extend the range, so that it workednot just for short-range authentication once the driver was sitting in the car,but as a keyless entry mechanism.
- The marketing pitch was that so long asyou keep the key in your pocket or handbag you don’t have to worry about it;the car will unlock when you walk up to it, lock as you walk away, and startautomatically when you touch the controls.
- What’s not to like?Well, now you don’t have to press a button to unlock your car, it’s easy forthieves to use devices that amplify or relay the signals.
- The thief sneaks up toyour front door with one relay while leaving the other next to your car.
- If youleft your keys on the table in the hall, the car door opens and away he goes.
-Even if the car is immobilised he can still steal your stu↵.
- And after many yearsof falling car thefts, the statistics surged in 2017 with 56% more vehicles stolenin the UK, followed by a further 9% in 2018 [823]4.
-The takeaway message is that the attempt since about 1990 to use cryp-tography to make cars harder to steal had some initial success, as immobilisersmade cars harder to steal and insurance premiums fell.
- It has since backﬁred,as the politicians and then the marketing people got in the way.
- The politicianssaid it would be disastrous for law enforcement if people were allowed to usecryptography they couldn’t crack, even for stopping car theft.
- Then the immo-biliser vendors’ marketing people wanted proprietary algorithms to lock in thecar companies, whose own marketing people wanted passive keyless entry as itseemed cool.
-What can we do? Well, at least two car makers have put an accelerometerin the key fob, so it won’t work unless the key is moving.
- One of our friendsleft her key on the car seat while carrying her child indoors, and got locked out.
-The local police advise us to use old-fashioned metal steering-wheel locks; ourresidents’ association recommends keeping keys in a biscuit tin.
- As for me, webought such a car but found that the keyless entry was simply too ﬂaky; mywife got stranded in a supermarket car park when it just wouldn’t work at all.
-So we took that car back, and got a second-hand one with a proper push-buttonremote lock.
- There are now chips using AES from NXP, Atmel and TI – ofwhich the Atmel is open source with an open protocol stack.
-However crypto by itself can’t ﬁx relay attacks; the proper ﬁx is a new radioprotocol based on ultrawideband (UWB) with intrinsic ranging, which measuresthe distance from the key fob to the car with a precision of 10cm up to a range of150m.
- This is fairly complex to do properly, and the design of the new 802.
-15.
-4zEnhanced Impulse Radio is described by Srdjan Capkun and colleagues [1764];4To be fair this was not due solely to relay attacks, as about half of the high-value theftsseem to involve connecting a car theft kit to the onboard diagnostic port under the glove box.
-As it happens, the authentication protocols used on the CAN bus inside the vehicle are alsovulnerable in a number of ways [891].
- Updating these protocols will take many years becauseof the huge industry investment.
-Security Engineering132Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONthe ﬁrst chip became available in 2019, and it will ship in cars from 2020.
- Suchchips have the potential to replace both the Bluetooth and NFC protocols, butthey might not all be compatible; there’s a low-rate pulse (LRP) mode that hasan open design, and a high-rate pulse (HRP) variant that’s partly proprietary.
-Were I advising a car startup, LRP would be my starting point.
-Locks are not the only application of challenge-response protocols.
- In HTTPDigest Authentication, a web server challenges a client or proxy, with whom itshares a password, by sending it a nonce.
- The response consists of the hashof the nonce, the password, and the requested URI [715].
-This provides amechanism that’s not vulnerable to password snooping.
- It’s used, for example,to authenticate clients and servers in SIP, the protocol for Voice-Over-IP (VOIP)telephony.
- It’s much better than sending a password in the clear, but like keylessentry it su↵ers from middleperson attacks (the beneﬁciaries are the spooks).
-4.
-3.
-2Two-factor authenticationThe most visible use of challenge-response is probably in two-factor authentica-tion.
- Many organizations issue their sta↵ with password generators to let themlog on to corporate computer systems, and many banks give similar devices tocustomers.
- They may look like little calculators (and some even work as such)but their main function is as follows.
- When you want to log in, you are presentedwith a random nonce of maybe seven digits.
- You key this into your passwordgenerator, together with a PIN of maybe four digits.
- The device encrypts theseeleven digits using a secret key shared with the corporate security server, anddisplays the ﬁrst seven digits of the result.
- You enter these seven digits as yourpassword.
- This protocol is illustrated in Figure 4.
-1.
- If you had a password gen-erator with the right secret key, and you entered the PIN right, and you typedin the result correctly, then you get in.
-Formally, with S for the server, P for the password generator, PIN for theuser’s Personal Identiﬁcation Number, U for the user and N for the nonce:S �! U :NU �! P :N, PINP �! U :{N, PIN}KU �! S :{N, PIN}KThese devices appeared from the early 1980s and caught on ﬁrst with phonecompanies, then in the 1990s with banks for use by sta↵.
- There are simpliﬁedversions that don’t have a keyboard, but just generate new access codes byencrypting a counter or a clock.
- And they work; the US Defense Departmentannounced in 2007 that an authentication system based on the DoD CommonAccess Card had cut network intrusions by 46% in the previous year [320].
-This was just when crooks started phishing bank customers at scale, so manybanks adopted the technology.
- One of my banks gives me a small calculator thatgenerates a new code for each logon, and also allows me to authenticate newpayees by using the last four digits of their account number in place of thechallenge.
-My other bank uses the Chip Authentication Program (CAP), aSecurity Engineering133Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONN?.
- .
- .
- .
- .
- N?N, PIN KFigure 4.
-1: – password generator usecalculator in which I can insert my bank card to do the crypto.
-But this still isn’t foolproof.
- In the second edition of this book, I noted‘someone who takes your bank card from you at knifepoint can now verify thatyou’ve told them the right PIN’, and this now happens.
- I also noted that ‘oncelots of banks use one-time passwords, the phishermen will just rewrite theirscripts to do real-time man-in-the-middle attacks’ and this has also becomewidespread.
- To see how such attacks work, let’s look at a military example.
-4.
-3.
-3The MIG-in-the-middle attackThe ﬁrst use of challenge-response authentication protocols was probably in themilitary, with ‘identify-friend-or-foe’ (IFF) systems.
- The ever-increasing speedsof warplanes in the 1930s and 1940s, together with the invention of the jet engine,radar and rocketry, made it ever more di�cult for air defence forces to tell theirown craft apart from the enemy’s.
- This led to a risk of pilots shooting downtheir colleagues by mistake and drove the development of automatic systems toprevent this.
- These were ﬁrst ﬁelded in World War II, and enabled an airplaneilluminated by radar to broadcast an identifying number to signal friendly intent.
-In 1952, this system was adopted to identify civil aircraft to air tra�c controllersand, worried about the loss of security once it became widely used, the US AirForce started a research program to incorporate cryptographic protection inthe system.
- Nowadays, the typical air defense system sends random challengeswith its radar signals, and friendly aircraft can identify themselves with correctresponses.
-It’s tricky to design a good IFF system.
- One of the problems is illustratedby the following story, which I heard from an o�cer in the South African AirForce (SAAF).
- After it was published in the ﬁrst edition of this book, the storySecurity Engineering134Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONwas disputed – as I’ll discuss below.
- Be that as it may, similar games have beenplayed with other electronic warfare systems since World War 2.
- The ‘MIG-in-the-middle’ story has since become part of the folklore, and it nicely illustrateshow attacks can be carried out in real time on challenge-response protocols.
-In the late 1980’s, South African troops were ﬁghting a war in northernNamibia and southern Angola.
- Their goals were to keep Namibia under whiterule, and impose a client government (UNITA) on Angola.
- Because the SouthAfrican Defence Force consisted largely of conscripts from a small white pop-ulation, it was important to limit casualties, so most South African soldiersremained in Namibia on policing duties while the ﬁghting to the north was doneby UNITA troops.
- The role of the SAAF was twofold: to provide tactical sup-port to UNITA by bombing targets in Angola, and to ensure that the Angolansand their Cuban allies did not return the compliment in Namibia.
-N?N?ANGOLANAMIBIASAAFMIGN?N KSAAFN KN KFigure 4.
-2: – the MIG-in-the middle attackSuddenly, the Cubans broke through the South African air defenses andcarried out a bombing raid on a South African camp in northern Namibia,killing a number of white conscripts.
- This proof that their air supremacy hadbeen lost helped the Pretoria government decide to hand over Namibia to theSecurity Engineering135Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATIONinsurgents – itself a huge step on the road to majority rule in South Africaseveral years later.
- The raid may also have been the last successful militaryoperation ever carried out by Soviet bloc forces.
-Some years afterwards, a SAAF o�cer told me how the Cubans had pulledit o↵.
- Several MIGs had loitered in southern Angola, just north of the SouthAfrican air defense belt, until a ﬂight of SAAF Impala bombers raided a tar-get in Angola.
- Then the MIGs turned sharply and ﬂew openly through theSAAF’s air defenses, which sent IFF challenges.
- The MIGs relayed them to theAngolan air defense batteries, which transmitted them at a SAAF bomber; theresponses were relayed back to the MIGs, who retransmitted them and wereallowed through – as in Figure 4.
-2.
- According to my informant, this shockedthe general sta↵ in Pretoria.
- Being not only outfought by black opponents, butactually outsmarted, was not consistent with the world view they had held uptill then.
-After this tale was published in the ﬁrst edition of my book, I was contactedby a former o�cer in SA Communications Security Agency who disputed thestory’s details.
- He said that their IFF equipment did not use cryptography yet atthe time of the Angolan war, and was always switched o↵ over enemy territory.
-Thus, he said, any electronic trickery must have been of a more primitive kind.
-However, others tell me that ‘Mig-in-the-middle’ tricks were signiﬁcant in Korea,Vietnam and various Middle Eastern conﬂicts.
-In any case, the tale gives us another illustration of the man-in-the-middleattack.
- The relay attack against cars is another example.
- It also works againstpassword calculators: the phishing site invites the mark to log on and simul-taneously opens a logon session with his bank.
- The bank sends a challenge;the phisherman relays this to the mark, who uses his device to respond to it;the phisherman relays the response to the bank, and the bank now accepts thephisherman as the mark.
-Stopping a middleperson attack is harder than it looks, and may involve mul-tiple layers of defence.
- Banks typically look for a known machine, a password,a second factor such as an authentication code from a CAP reader, and a riskassessment of the transaction.
- For high-risk transactions, such as adding a newpayee to an account, both my banks demand that I compute an authenticationcode on the payee account number.
- But they only authenticate the last fourdigits, because of usability.
- If it takes two minutes and the entry of dozens ofdigits to make a payment, then a lot of customers will get digits wrong, give up,and then either call the call center or get annoyed and bank elsewhere.
- Also, thebad guys may be able to exploit any fallback mechanisms, perhaps by spooﬁngcustomers into calling phone numbers that run a middleperson attack betweenthe customer and the call center.
- I’ll discuss all this further in the chapter onBanking and Bookkeeping.
-We will come across such attacks again and again in applications rangingfrom Internet security protocols to Bluetooth.
- They even apply in gaming.
- Asthe mathematician John Conway once remarked, it’s easy to get at least a drawagainst a grandmaster at postal chess: just play two grandmasters at once, oneas white and the other as black, and relay the moves between them!Security Engineering136Ross Anderson4.
-3.
- WHO GOES THERE? – SIMPLE AUTHENTICATION4.
-3.
-4Reﬂection AttacksFurther interesting problems arise when two principals have to identify eachother.
- Suppose that a challenge-response IFF system designed to prevent anti-aircraft gunners attacking friendly aircraft had to be deployed in a ﬁghter-bomber too.
- Now suppose that the air force simply installed one of their airgunners’ challenge units in each aircraft and connected it to the ﬁre-controlradar.
-But now when a ﬁghter challenges an enemy bomber, the bomber might justreﬂect the challenge back to the ﬁghter’s wingman, get a correct response, andthen send that back as its own response:F �! B:NB �! F 0:NF 0 �! B:{N}KB �! F:{N}KThere are a number of ways of stopping this, such as including the namesof the two parties in the exchange.
- In the above example, we might require afriendly bomber to reply to the challenge:F �! B : Nwith a response such as:B �! F : {B, N}KThus a reﬂected response {F 0, N} from the wingman F 0 could be detected5.
-This serves to illustrate the subtlety of the trust assumptions that underlieauthentication.
- If you send out a challenge N and receive, within 20 millisec-onds, a response {N}K, then – since light can travel a bit under 3,730 miles in20 ms – you know that there is someone with the key K within 2000 miles.
- Butthat’s all you know.
- If you can be sure that the response was not computedusing your own equipment, you now know that there is someone else with thekey K within two thousand miles.
- If you make the further assumption that allcopies of the key K are securely held in equipment which may be trusted tooperate properly, and you see {B, N}K, you might be justiﬁed in deducing thatthe aircraft with callsign B is within 2000 miles.
- A careful analysis of trustassumptions and their consequences is at the heart of security protocol design.
-By now you might think that we understand all the protocol design aspectsof IFF.
- But we’ve omitted one of the most important problems – and one whichthe designers of early IFF systems didn’t anticipate.
- As radar is passive thereturns are weak, while IFF is active and so the signal from an IFF transmitterwill usually be audible at a much greater range than the same aircraft’s radarreturn.
-The Allies learned this the hard way; in January 1944, decrypts of5And don’t forget: you also have to check that the intruder didn’t just reﬂect your ownchallenge back at you.
- You must be able to remember or recognise your own messages!Security Engineering137Ross Anderson4.
-4.
- MANIPULATING THE MESSAGEEnigma messages revealed that the Germans were plotting British and Americanbombers at twice the normal radar range by interrogating their IFF.
- So moremodern systems authenticate the challenge as well as the response.
- The NATOmode XII, for example, has a 32 bit encrypted challenge, and a di↵erent validchallenge is generated for every interrogation signal, of which there are typically250 per second.
- Theoretically there is no need to switch o↵ over enemy territory,but in practice an enemy who can record valid challenges can replay them aspart of an attack.
- Relays are made di�cult in mode XII using directionalityand time-of-ﬂight.
-Other IFF design problems include the di�culties posed by neutrals, errorrates in dense operational environments, how to deal with equipment failure,how to manage keys, and how to cope with multinational coalitions.
- I’ll return toIFF in Chapter 23.
- For now, the spurious-challenge problem serves to reinforcean important point: that the correctness of a security protocol depends on theassumptions made about the requirements.
- A protocol that can protect againstone kind of attack (being shot down by your own side) but which increases theexposure to an even more likely attack (being shot down by the other side)might not help.
- In fact, the spurious-challenge problem became so serious inWorld War II that some experts advocated abandoning IFF altogether, ratherthan taking the risk that one bomber pilot in a formation of hundreds wouldignore orders and leave his IFF switched on while over enemy territory.
-4.
-4Manipulating the MessageWe’ve now seen a number of middleperson attacks that reﬂect or spoof the in-formation used to authenticate a participant.
- However, there are more complexattacks where the attacker doesn’t just impersonate someone, but manipulatesthe message content.
-One example we saw already is the prepayment meter that remembers onlythe last ticket it saw, so it can be recharged without limit by copying in thecodes from two tickets A and B one after another: ABABAB.
-.
-.
-.
- Another iswhen dishonest cabbies insert pulse generators in the cable that connects theirtaximeter to a sensor in their taxi’s gearbox.
- The sensor sends pulses as the propshaft turns, which lets the meter work out how far the taxi has gone.
- A piratedevice can insert extra pulses, making the taxi appear to have gone further.
- Atruck driver who wants to drive faster or further than regulations allow can usea similar device to discard some pulses, so he seems to have been driving moreslowly or not at all.
- We’ll discuss such attacks in the chapter on ‘MonitoringSystems’, in section 14.
-3.
-As well as monitoring systems, control systems often need to be hardenedagainst message-manipulation attacks.
- The Intelsat satellites used for interna-tional telephone and data tra�c have mechanisms to prevent a command beingaccepted twice – otherwise an attacker could replay control tra�c and repeat-edly order the same maneuver to be carried out until the satellite ran out offuel [1526].
- We will see lots of examples of protocol attacks involving messagemanipulation in later chapters on speciﬁc applications.
-Security Engineering138Ross Anderson4.
-5.
- CHANGING THE ENVIRONMENT4.
-5Changing the EnvironmentA common cause of protocol failure is that the environment changes, so thatthe design assumptions no longer hold and the security protocols cannot copewith the new threats.
-A nice example comes from the world of cash machine fraud.
- In 1993, Hol-land su↵ered an epidemic of ‘phantom withdrawals’; there was much controversyin the press, with the banks claiming that their systems were secure while manypeople wrote in to the papers claiming to have been cheated.
- Eventually thebanks noticed that many of the victims had used their bank cards at a certainﬁlling station near Utrecht.
- This was staked out and one of the sta↵ was ar-rested.
- It turned out that he had tapped the line from the card reader to thePC that controlled it; his tap recorded the magnetic stripe details from theircards while he used his eyeballs to capture their PINs [54].
- Exactly the samefraud happened in the UK after the move to ‘chip and PIN’ smartcards in themid-2000s; a gang wiretapped perhaps 200 ﬁlling stations, collected card datafrom the wire, observed the PINs using CCTV cameras, then made up thou-sands of magnetic-strip clone cards that were used in countries whose ATMs stillused magnetic strip technology.
- At our local ﬁlling station, over 200 customerssuddenly found that their cards had been used in ATMs in Thailand.
-Why had the system been designed so badly, and why did the design errorpersist for over a decade through a major technology change? Well, when thestandards for managing magnetic stripe cards and PINs were developed in theearly 1980’s by organizations such as IBM and VISA, the engineers had madetwo assumptions.
- The ﬁrst was that the contents of the magnetic strip – the cardnumber, version number and expiration date – were not secret, while the PINwas [1301].
- (The analogy used was that the magnetic strip was your name andthe PIN your password.
-) The second assumption was that bank card equipmentwould only be operated in trustworthy environments, such as in a physicallyrobust automatic teller machine, or by a bank clerk at a teller station.
- So it was‘clearly’ only necessary to encrypt the PIN, on its way from the PIN pad to theserver; the magnetic strip data could be sent in clear from the card reader.
-Both of these assumptions had changed by 1993.
- An epidemic of card forgery,mostly in the Far East in the late 1980’s, drove banks to introduce authenti-cation codes on the magnetic strips.
- Also, the commercial success of the bankcard industry led banks in many countries to extend the use of debit cardsfrom ATMs to terminals in all manner of shops.
- The combination of these twoenvironmental changes destroyed the assumptions behind the original systemarchitecture.
- Instead of putting a card whose magnetic strip contained no secu-rity data into a trusted machine, people were putting a card with clear securitydata into an untrusted machine.
- These changes had come about so gradually,and over such a long period, that the industry didn’t see the problem coming.
-4.
-6Chosen Protocol AttacksGovernments keen to push ID cards have tried to get them used for many othertransactions; some want a single card to be used for ID, banking and evenSecurity Engineering139Ross Anderson4.
-6.
- CHOSEN PROTOCOL ATTACKStransport ticketing.
- Singapore went so far as to experiment with a bank cardthat doubled as military ID.
- This introduced some interesting new risks: if aNavy captain tries to withdraw some cash from an ATM after a good dinner andforgets his PIN, will he be unable to take his ship to sea until Monday morningwhen they open the bank and give him his card back?Some ﬁrms are pushing multifunction authentication devices that could beused in a wide range of transactions to save you having to carry around dozensof di↵erent cards and keys.
- A more realistic view of the future may be thatpeople’s phones will be used for most private-sector authentication functions.
-But this too may not be as simple as it looks.
- The idea behind the ‘ChosenProtocol Attack’ is that given a target protocol, you design a new protocol thatwill attack it if the users can be inveigled into reusing the same token or cryptokey.
- So how might the Maﬁa design a protocol to attack the authentication ofbank transactions?Here’s one approach.
- It used to be common for people visiting a porn websiteto be asked for ‘proof of age,’ which usually involves giving a credit card number,whether to the site itself or to an age checking service.
- If smartphones are usedto authenticate everything, it would be natural for the porn site to ask thecustomer to authenticate a random challenge as proof of age.
- A porn site mightthen mount a ‘Maﬁa-in-the-middle’ attack as shown in Figure 4.
-3.
- They waituntil an unsuspecting customer visits their site, then order something resellable(such as gold coins) from a dealer, playing the role of the coin dealer’s customer.
-When the coin dealer sends them the transaction data for authentication, theyrelay it through their porn site to the waiting customer.
- The poor man OKs it,the Maﬁa gets the gold coins, and when thousands of people suddenly complainabout the huge charges to their cards at the end of the month, the porn site hasvanished – along with the gold [1032].
-sigK  XPicture 143!Mafia porn�siteCustomerBuy 10 gold coinsProve your ageSign ‘X’�by signing ‘X’�BANKsigK  XFigure 4.
-3: – the Maﬁa-in-the-middle attackIn the 1990s a vulnerability of this kind found its way into internationalstandards: the standards for digital signature and authentication could be runback-to-back in this way.
- It has since been shown that many protocols, thoughsecure in themselves, can be broken if their users can be inveigled into reusingthe same keys in other applications [1032].
- This is why, if we’re going to useour phones to authenticate everything, it will be really important to keep thebanking apps and the porn apps separate.
- That will be the subject of our nextchapter, on Access Control.
-In general, using crypto keys (or other authentication mechanisms) in morethan one application is dangerous, while letting other people bootstrap theirSecurity Engineering140Ross Anderson4.
-7.
- MANAGING ENCRYPTION KEYSown application security o↵ yours can be downright foolish.
- The classic case iswhere a bank relies for two-factor authentication on sending SMSes to customersas authentication codes.
-As I discussed in section 3.
-4.
-1, the bad guys havelearned to attack that system by SIM-swap fraud – pretending to the phonecompany that they’re the target, claiming to have lost their phone, and gettinga replacement SIM card.
-4.
-7Managing encryption keysThe examples of security protocols that we’ve discussed so far are mostly aboutauthenticating a principal’s name, or application data such as the impulsesdriving a taximeter.
- There is one further class of authentication protocols thatis very important – the protocols used to manage cryptographic keys.
-4.
-7.
-1The resurrecting ducklingIn the Internet of Things, keys can sometimes be managed directly and physi-cally, by local setup and a policy of trust-on-ﬁrst-use or TOFU.
-Vehicles provided an early example.
- I mentioned above that crooked taxidrivers used to put interruptors in the cable from their car’s gearbox sensorto the taximeter, to add additional mileage.
- The same problem happened inreverse with tachographs, the devices used by trucks to monitor drivers’ hoursand speed.
- When tachographs went digital in the late 1990s, we decided toencrypt the pulse train from the sensor.
- But how could keys be managed? Thesolution was that whenever a new tachograph is powered up after a factoryreset, it trusts the ﬁrst crypto key it receives over the sensor cable.
- I’ll discussthis further in section 14.
-3.
-A second example is Homeplug AV, the standard used to encrypt data com-munications over domestic power lines, and widely used in LAN extenders.
- Inthe default, ‘just-works’ mode, a new Homeplug device trusts the ﬁrst key itsees; and if your new wiﬁ extender mates with the neighbour’s wiﬁ instead,you just press the reset button and try again.
- There is also a ‘secure mode’where you open a browser to the network management node and manually en-ter a crypto key printed on the device packaging, but when we designed theHomeplug protocol we realised that most people have no reason to bother withthat.
-The TOFU approach is also known as the ‘resurrecting duckling’ after ananalysis that Frank Stajano and I did in the context of the tachograph work.
-The idea is that when a baby duckling hatches, it imprints on the ﬁrst thing itsees that moves and quacks, even if this is the farmer – who can end up beingfollowed everywhere by a duck that thinks he’s mummy.
- If such false imprintinghappens with an electronic device, you need a way to kill it and resurrect it intoa newborn state – which the reset button does [1819].
-Security Engineering141Ross Anderson4.
-7.
- MANAGING ENCRYPTION KEYS4.
-7.
-2Remote key managementThe more common, and interesting, case is the management of keys in remotedevices.
- The basic technology was developed from the late 1970s to managekeys in distributed computer systems, with cash machines being an early ap-plication.
- In this section we’ll discuss shared-key protocols such as Kerberos,leaving public-key protocols such as TLS and SSH until after we’ve discussedpublic-key cryptology in Chapter 5.
-The basic idea behind key-distribution protocols is that where two principalswant to communicate, they may use a trusted third party to introduce them.
-It’s customary to give them human names in order to avoid getting lost in toomuch algebra.
-So we will call the two communicating principals ‘Alice’ and‘Bob’, and the trusted third party ‘Sam’.
- Alice, Bob and Sam are likely to beprograms running on di↵erent devices.
- (For example, in a protocol to let a cardealer mate a replacement key with a car, Alice might be the car, Bob the keyand Sam the car maker.
-)A simple authentication protocol could run as follows.
-1.
- Alice ﬁrst calls Sam and asks for a key for communicating with Bob.
-2.
- Sam responds by sending Alice a pair of certiﬁcates.
- Each contains a copyof a key, the ﬁrst encrypted so only Alice can read it, and the secondencrypted so only Bob can read it.
-3.
- Alice then calls Bob and presents the second certiﬁcate as her introduction.
-Each of them decrypts the appropriate certiﬁcate under the key they sharewith Sam and thereby gets access to the new key.
- Alice can now use thekey to send encrypted messages to Bob, and to receive messages from himin return.
-We’ve seen that replay attacks are a known problem, so in order that bothBob and Alice can check that the certiﬁcates are fresh, Sam may include atimestamp in each of them.
- If certiﬁcates never expire, there might be seriousproblems dealing with users whose privileges have been revoked.
-Using our protocol notation, we could describe this asA ! S :A, BS ! A :{A, B, KAB, T}KAS, {A, B, KAB, T}KBSA ! B :{A, B, KAB, T}KBS, {M}KABExpanding the notation, Alice calls Sam and says she’d like to talk to Bob.
-Sam makes up a message consisting of Alice’s name, Bob’s name, a session keyfor them to use, and a timestamp.
- He encrypts all this under the key he shareswith Alice, and he encrypts another copy of it under the key he shares withBob.
- He gives both ciphertexts to Alice.
- Alice retrieves the session key fromthe ciphertext that was encrypted to her, and passes on to Bob the ciphertextencrypted for him.
- She now sends him whatever message she wanted to send,encrypted using this session key.
-Security Engineering142Ross Anderson4.
-7.
- MANAGING ENCRYPTION KEYS4.
-7.
-3The Needham-Schroeder protocolMany things can go wrong, and here is a famous historical example.
-Manyexisting key distribution protocols are derived from the Needham-Schroederprotocol, which appeared in 1978 [1426].
- It is somewhat similar to the above,but uses nonces rather than timestamps.
- It runs as follows:Message 1A ! S :A, B, NAMessage 2S ! A :{NA, B, KAB, {KAB, A}KBS}KASMessage 3A ! B :{KAB, A}KBSMessage 4B ! A :{NB}KABMessage 5A ! B :{NB � 1}KABHere Alice takes the initiative, and tells Sam: ‘I’m Alice, I want to talkto Bob, and my random nonce is NA.
-’ Sam provides her with a session key,encrypted using the key she shares with him.
-This ciphertext also containsher nonce so she can conﬁrm it’s not a replay.
- He also gives her a certiﬁcate toconvey this key to Bob.
- She passes it to Bob, who then does a challenge-responseto check that she is present and alert.
-There is a subtle problem with this protocol – Bob has to assume that thekey KAB he receives from Sam (via Alice) is fresh.
- This is not necessarily so:Alice could have waited a year between steps 2 and 3.
- In many applications thismay not be important; it might even help Alice to cache keys against possibleserver failures.
- But if an opponent – say Charlie – ever got hold of Alice’s key,he could use it to set up session keys with many other principals.
- And if Aliceever got ﬁred, then Sam had better have a list of everyone in the ﬁrm to whomhe issued a key for communicating with her, to tell them not to believe it anymore.
- In other words, revocation is a problem: Sam may have to keep completelogs of everything he’s ever done, and these logs would grow in size forever unlessthe principals’ names expired at some ﬁxed time in the future.
-Almost 40 years later, this example is still controversial.
- The simplistic viewis that Needham and Schroeder just got it wrong; the view argued by SusanPancho and Dieter Gollmann (for which I have some sympathy) is that thisis a protocol failure brought on by shifting assumptions [780, 1491].
- 1978 wasa kinder, gentler world; computer security then concerned itself with keeping‘bad guys’ out, while nowadays we expect the ‘enemy’ to be among the usersof our system.
- The Needham-Schroeder paper assumed that all principals be-have themselves, and that all attacks came from outsiders [1426].
- Under thoseassumptions, the protocol remains sound.
-4.
-7.
-4KerberosThe most important practical derivative of the Needham-Schroeder protocol isKerberos, a distributed access control system that originated at MIT and is nowone of the standard network authentication tools [1826].
- It has become part ofthe basic mechanics of authentication for both Windows and Linux, particularlywhen machines share resources over a local area network.
- Instead of a singletrusted third party, Kerberos has two kinds: authentication servers to whichSecurity Engineering143Ross Anderson4.
-7.
- MANAGING ENCRYPTION KEYSusers log on, and ticket granting servers which give them tickets allowing accessto various resources such as ﬁles.
- This enables scalable access management.
- Ina university, for example, one might manage students through their colleges orhalls of residence but manage ﬁle servers by departments; in a company, thepersonnel people might register users to the payroll system while departmentaladministrators manage resources such as servers and printers.
-First, Alice logs on to the authentication server using a password.
- The clientsoftware in her PC fetches a ticket from this server that is encrypted under herpassword and that contains a session key KAS.
- Assuming she gets the passwordright, she now controls KAS and to get access to a resource B controlled by theticket granting server S, the following protocol takes place.
- Its outcome is akey KAB with timestamp TS and lifetime L, which will be used to authenticateAlice’s subsequent tra�c with that resource:A ! S :A, BS ! A :{TS, L, KAB, B, {TS, L, KAB, A}KBS}KASA ! B :{TS, L, KAB, A}KBS, {A, TA}KABB ! A :{TA + 1}KABTranslating this into English: Alice asks the ticket granting server for accessto B.
- If this is permissible, the ticket {TS, L, KAB, A}KBS is created containinga suitable key KAB and given to Alice to use.
- She also gets a copy of the key in aform readable by her, namely encrypted under KAS.
- She now veriﬁes the ticketby sending a timestamp TA to the resource, which conﬁrms it’s alive by sendingback the timestamp incremented by one (this shows it was able to decrypt theticket correctly and extract the key KAB).
-The revocation issue with the Needham-Schroeder protocol has been ﬁxedby introducing timestamps rather than random nonces.
- But, as in most of life,we get little in security for free.
- There is now a new vulnerability, namely thatthe clocks on our various clients and servers might get out of sync; they mighteven be desynchronized deliberately as part of a more complex attack.
-What’s more, Kerberos is a trusted third-party (TTP) protocol in that S istrusted: if the police turn up with a warrant, they can get Sam to turn overthe keys and read the tra�c.
- Protocols with this feature were favoured duringthe ‘crypto wars’ of the 1990s, as I will discuss in section 26.
-2.
-7.
- Protocols thatinvolve no or less trust in a third party generally use public-key cryptography,which I describe in the next chapter.
-A rather similar protocol to Kerberos is OAuth, a mechanism to allow securedelegation.
- For example, if you log into Doodle using Google and allow Doo-dle to update your Google calendar, Doodle’s website redirects you to Google,which gets you to log in (or relies on a master cookie from a previous login)and asks you for consent for Doodle to write to your calendar.
- Doodle thengives you an access token for the calendar service [863].
- I mentioned in sec-tion 3.
-4.
-9.
-3 that this poses a cross-site phishing risk.
- OAuth was not designedfor user authentication, and access tokens are not strongly bound to clients.
- It’sa complex framework within which delegation mechanisms can be built, withboth short-term and long-term access tokens; the details are tied up with howcookies and web redirects operate and optimised to enable servers to be state-Security Engineering144Ross Anderson4.
-8.
- DESIGN ASSURANCEless, so they scale well for modern web services.
- In the example above, you wantto be able to revoke Doodle’s access at Google, so behind the scenes Doodle onlygets short-lived access tokens.
- Because of this complexity, the OpenID Connectprotocol is a ‘proﬁle’ of OAuth which ties down the details for the case wherethe only service required is authentication.
- OpenID Connect is what you usewhen you log into your newspaper using your Google or Facebook account.
-4.
-7.
-5Practical key managementSo we can use a protocol like Kerberos to set up and manage working keysbetween users given that each user shares one or more long-term keys witha server that acts as a key distribution centre.
- But there may be encryptedpasswords for tens of thousands of sta↵ and keys for large numbers of devicestoo.
- That’s a lot of key material.
- How is it to be managed?Key management is a complex and di�cult business and is often got wrongbecause it’s left as an afterthought.
- You need to sit down and think about howmany keys are needed, how they’re to be generated, how long they need to re-main in service and how they’ll eventually be destroyed.
- There is a much longerlist of concerns – many of them articulated in the Federal Information Process-ing Standard for key management [1408].
- And things go wrong as applicationsevolve; it’s important to provide headroom to support next year’s functionality.
-It’s also important to support recovery from security failure.
- Yet there are nostandard ways of doing either.
-Public-key cryptography, which I’ll discuss in Chapter 5, can simplify thekey-management task slightly.
- In banking the usual answer is to use dedicatedcryptographic processors called hardware security modules, which I’ll describein detail later.
- Both of these introduce further complexities though, and evenmore subtle ways of getting things wrong.
-4.
-8Design assuranceSubtle di�culties of the kind we have seen above, and the many ways in whichprotection properties depend on subtle assumptions that may be misunderstood,have led researchers to apply formal methods to protocols.
- The goal of thisexercise was originally to decide whether a protocol was right or wrong: itshould either be proved correct, or an attack should be exhibited.
- We often ﬁndthat the process helps clarify the assumptions that underlie a given protocol.
-There are several di↵erent approaches to verifying the correctness of proto-cols.
- One of the best known is the logic of belief, or BAN logic, named after itsinventors Burrows, Abadi and Needham [357].
- It reasons about what a principalmight reasonably believe having seen certain messages, timestamps and so on.
-Other researchers have applied mainstream formal methods such as CSP andveriﬁcation tools such as Isabelle.
-Some history exists of ﬂaws being found in protocols that had been provedcorrect using formal methods; I described an example in Chapter 3 of the secondedition, of how the BAN logic was used to verify a bank card used for stored-Security Engineering145Ross Anderson4.
-9.
- SUMMARYvalue payments.
- That’s still used in Germany as the ‘Geldkarte’ but elsewhereits use has died out (it was Net1 in South Africa, Proton in Belgium, Moneoin France and a VISA product called COPAC).
- I’ve therefore decided to dropthe gory details from this edition; the second edition is free online, so you candownload and read the details.
-Formal methods can be an excellent way of ﬁnding bugs in security protocoldesigns as they force the designer to make everything explicit and thus confrontdi�cult design choices that might otherwise be fudged.
- But they have theirlimitations, too.
-We often ﬁnd bugs in veriﬁed protocols; they’re just not in the part that weveriﬁed.
- For example, Larry Paulson veriﬁed the SSL/TLS protocol using hisIsabelle theorem prover in 1998, and about one security bug has been found everyyear since then.
- These have not been ﬂaws in the basic design but exploitedadditional features that had been added later, and implementation issues suchas timing attacks, which we’ll discuss later.
- In this case there was no failure ofthe formal method; that simply told the attackers where they needn’t botherlooking.
-For these reasons, people have explored alternative ways of assuring the de-sign of authentication protocols, including the idea of protocol robustness.
- Justas structured programming techniques aim to ensure that software is designedmethodically and nothing of importance is left out, so robust protocol design islargely about explicitness.
- Robustness principles include that the interpretationof a protocol should depend only on its content, not its context; so everything ofimportance (such as principals’ names) should be stated explicitly in the mes-sages.
- It should not be possible to interpret data in more than one way; so themessage formats need to make clear what’s a name, what’s an address, what’sa timestamp, and so on; string formats have to be unambiguous and it shouldbe impossible to use the protocol itself to mount attacks on the software thathandles it, such as by bu↵er overﬂows.
- There are other issues concerning thefreshness provided by counters, timestamps and random challenges, and on theway encryption is used.
- If the protocol uses public key cryptography or digi-tal signature mechanisms, there are more subtle attacks and further robustnessissues, which we’ll start to tackle in the next chapter.
- To whet your appetite,randomness in protocol often helps robustness at other layers, since it makesit harder to do a whole range of attacks – from those based on mathematicalcryptanalysis through those that exploit side-channels such as power consump-tion and timing to physical attacks that involve microprobes or lasers.
-4.
-9SummaryPasswords are just one example of a more general concept, the security protocol.
-Protocols specify the steps that principals use to establish trust relationships ina system, such as authenticating a claim to identity, demonstrating ownership ofa credential, or establishing a claim on a resource.
- Cryptographic authenticationprotocols are used for a wide range of purposes, from basic entity authenticationto providing infrastructure for distributed systems that allows trust to be takenfrom where it exists to where it is needed.
- Security protocols are ﬁelded in allSecurity Engineering146Ross Anderson4.
-9.
- SUMMARYsorts of systems from remote car door locks through military IFF systems toauthentication in distributed computer systems.
-Protocols are surprisingly di�cult to get right.
- They can su↵er from a num-ber of problems, including middleperson attacks, modiﬁcation attacks, reﬂectionattacks, and replay attacks.
- These threats can interact with implementationvulnerabilities and poor cryptography.
- Using mathematical techniques to verifythe correctness of protocols can help, but it won’t catch all the bugs.
- Some ofthe most pernicious failures are caused by creeping changes in the environmentfor which a protocol was designed, so that the protection it gives is no longerrelevant.
-The upshot is that attacks are still found frequently on protocolsthat we’ve been using for years, and sometimes even on protocols for which wethought we had a security proof.
- Failures have real consequences, including therise in car crime worldwide since car makers started adopting passive keylessentry systems without stopping to think about relay attacks.
- Please don’t de-sign your own protocols; get a specialist to help, and ensure that your design ispublished for thorough peer review by the research community.
- Even specialistsget the ﬁrst versions of a protocol wrong (I have, more than once).
- It’s a lotcheaper to ﬁx the bugs before the protocol is actually deployed, both in termsof cash and in terms of reputation.
-Research ProblemsAt several times during the past 30 years, some people have thought that pro-tocols had been ‘done’ and that we should turn to new research topics.
- Theyhave been repeatedly proved wrong by the emergence of new applications witha new crop of errors and attacks to be explored.
- Formal methods blossomedin the early 1990s, then key management protocols; during the mid-1990’s theﬂood of proposals for electronic commerce mechanisms kept us busy.
-Since2000, one strand of protocol research has acquired an economic ﬂavour as se-curity mechanisms are used more and more to support business models; thedesigner’s ‘enemy’ is often a commercial competitor, or even the customer.
- An-other has applied protocol analysis tools to look at the security of applicationprogramming interfaces (APIs), a topic to which I’ll return later.
-Much protocol research is problem-driven, but there are still deep questions.
-How much can we get out of formal methods, for example? And how do wemanage the tension between the principle that robust protocols are generallythose in which everything is completely speciﬁed and checked and the systemengineering principle that a good speciﬁcation should not overconstrain the im-plementer?Further ReadingResearch papers on security protocols are scattered fairly widely throughout theliterature.
- For the historical background you might read the original Needham-Schroeder paper [1426], the Burrows-Abadi-Needham authentication logic [357],papers on protocol robustness [2, 112] and a survey paper by Anderson andSecurity Engineering147Ross Anderson4.
-9.
- SUMMARYNeedham [113].
- Beyond that, there are many papers scattered around a widerange of conferences; you might also start by studying the protocols used in aspeciﬁc application area, such as payments, which we cover in more detail inPart 2.
- As for remote key entry and other security issues around cars, a goodstarting point is a tech report by Charlie Miller and Chris Valasek on how tohack a Jeep Cherokee [1316].
-Security Engineering148Ross Anderson
+Chapter 4 Protocols
+It is impossible to foresee the consequences of being clever. 
+– CHRISTOPHER STRACHEY
+
+If it’s provably secure, it probably isn’t. 
+– LARS KNUDSEN
+
+
+4.1 Introduction
+Passwords are just one example of a more general concept, the security protocol. 
+If security engineering has a core theme, it may be the study of security proto- cols. 
+They specify the steps that principals use to establish trust relationships. 
+They are where the cryptography and the access controls meet; they are the tools we use to link up human users with remote machines, to synchronise se- curity contexts, and to regulate key applications such as payment. 
+We’ve come across a few protocols already, including challenge-response authentication and Kerberos. 
+In this chapter, I’ll dig down into the details, and give many examples of how protocols fail. 
+A typical security system consists of a number of principals such as people, companies, phones, computers and card readers, which communicate using a variety of channels including ﬁbre, wiﬁ, the cellular network, bluetooth, infrared, and by carrying data on physical devices such as bank cards and transport tickets. 
+The security protocols are the rules that govern these communications. 
+They are designed so that the system will survive malicious acts such as people telling lies on the phone, hostile governments jamming radio, or forgers altering the data on train tickets. 
+Protection against all possible attacks is often too expensive, so protocol designs make assumptions about threats. 
+For example, when we get a user to log on by entering a password into a machine, we implicitly assume that she can enter it into the right machine. 
+In the old days of hard- wired terminals in the workplace, this was reasonable; now that people log on to websites over the Internet, it is much less obvious. 
+Evaluating a protocol thus involves two questions: ﬁrst, is the threat model realistic?
+ Second, does the protocol deal with it?
+ Protocols may be very simple, such as swiping a badge through a reader to enter a building. 
+They often involve interaction, and are not necessarily technical. 
+For example, when we order a bottle of ﬁne wine in a restaurant, the standard protocol is that the wine waiter offers us the menu (so that we see the prices but our guests don’t)
+; they bring the bottle, so we can check the label, the seal and the temperature; they open it so we can taste it; and then serve it. 
+This has evolved to provide some privacy (our guests don’t learn the price)
+, some integrity (we can be sure we got the right bottle and that it wasn’t reﬁlled with cheap plonk)
+ and non-repudiation (we can’t complain afterwards that the wine was off)
+. 
+Matt Blaze gives other non-technical protocol examples from ticket inspection, aviation security and voting in [260]. 
+Traditional protocols like these often evolved over decades or centuries to meet social expectations as well as technical threats. 
+At the technical end of things, protocols get a lot more complex, and they don’t always get better. 
+As the car industry moved from metal keys to electronic keys with buttons you press, theft fell, since the new keys were harder to copy. 
+But the move to keyless entry has seen car crime rise again, as the bad guys ﬁgured out how to build relay devices that would make a key seem closer to the car than it actually was. 
+Another security upgrade that’s turned out to be tricky is the move from magnetic-strip cards to smartcards. 
+Europe made this move in the late 2000s while the USA is only catching up in the late 2010s. 
+Fraud against cards issued in Europe actually went up for several years; clones of European cards were used in magnetic-strip cash machines in the USA, as the two systems’ protection mechanisms didn’t quite mesh. 
+And there was a protocol failure that let a thief use a stolen chipcard in a store even if he didn’t know the PIN, which took the banks several years to ﬁx. 
+So we need to look systematically at security protocols and how they fail. 
+
+4.2 Password Eavesdropping Risks
+Passwords and PINs are still the foundation for much of computer security, as the main mechanism used to authenticate humans to machines. 
+We discussed their usability in the last chapter; now let’s consider the kinds of technical attack we have to block when designing protocols that operate between one machine and another. 
+Remote key entry is a good place to start. 
+The early systems, such as the remote control used to open your garage or to unlock cars manufactured up to the mid-1990’s, just broadcast a serial number. 
+The attack that killed them was the ‘grabber’, a device that would record a code and replay it later. 
+The ﬁrst grabbers, seemingly from Taiwan, arrived on the market in about 1995; thieves would lurk in parking lots or outside a target’s house, record the signal used to lock the car and then replay it once the owner had gone1. 
+1With garage doors it’s even worse. 
+A common chip is the Princeton PT2262, which uses 12 tri-state pins to encode 312 or 531,441 address codes. 
+However implementers often don’t read the data sheet carefully enough to understand tri-state inputs and treat them as binary instead, getting 212. 
+Many of them only use eight inputs, as the other four are on the other side of the chip. 
+And as the chip has no retry-lockout logic, an attacker can cycle through 4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION The ﬁrst countermeasure was to use separate codes for lock and unlock. 
+But the thief can lurk outside your house and record the unlock code before you drive away in the morning, and then come back at night and help himself. 
+Second, sixteen-bit passwords are too short. 
+Occasionally people found they could unlock the wrong car by mistake, or even set the alarm on a car whose owner didn’t know he had one [308]. 
+And by the mid-1990’s, devices appeared that could try all possible codes one after the other. 
+A code will be found on average after about 215 tries, and at ten per second that takes under an hour. 
+A thief operating in a parking lot with a hundred vehicles within range would be rewarded in less than a minute with a car helpfully ﬂashing its lights. 
+The next countermeasure was to double the length of the password from 16 to 32 bits. 
+The manufacturers proudly advertised ‘over 4 billion codes’. 
+But this only showed they hadn’t really understood the problem. 
+There were still only one or two codes for each car, and grabbers still worked ﬁne. 
+Using a serial number as a password has a further vulnerability: lots of people have access to it. 
+In the case of a car, this might mean all the dealer staff, and perhaps the state motor vehicle registration agency. 
+Some burglar alarms have also used serial numbers as master passwords, and here it’s even worse: when a bank buys a burglar alarm, the serial number may appear on the order, the delivery note and the invoice. 
+And banks don’t like sending someone out to buy something for cash. 
+Simple passwords are sometimes the appropriate technology. 
+For example, a monthly season ticket for our local swimming pool simply has a barcode. 
+I’m sure I could make a passable forgery, but as the turnstile attendants get to know the ‘regulars’, there’s no need for anything more expensive. 
+For things that are online, however, static passwords are hazardous; the Mirai botnet got going by recruiting wiﬁ-connected CCTV cameras which had a password that couldn’t be changed. 
+And for things people want to steal, like cars, we also need something better. 
+This brings us to cryptographic authentication protocols. 
+
+4.3 Who goes there? – simple authentication
+A simple modern authentication device is the token that some multistorey park- ing garages give subscribers to raise the barrier. 
+The token has a single button; when you press it, it ﬁrst transmits its serial number and then sends an au- thentication block consisting of the same serial number, followed by a random number, all encrypted using a key unique to the device, and sent to the garage barrier (typically by radio at 434MHz, though infrared is also used)
+. 
+We will postpone discussion of how to encrypt data to the next chapter, and simply write {X}K for the message X encrypted under the key K. 
+Then the protocol between the access token and the parking garage can be written as: T ffi! G : T, {T, N}KT the combinations quickly and open your garage door after 27 attempts on average. 
+Twelve years after I noted these problems in the second edition of this book, the chip has not been withdrawn. 
+It’s now also sold for home security systems and for the remote control of toys. 
+4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION This is standard protocol notation, so we’ll take it slowly. 
+The token T sends a message to the garage G consisting of its name T followed by the encrypted value of T concatenated with N, where N stands for ‘number used once’, or nonce. 
+Everything within the braces is encrypted, and the encryption binds T and N together as well as obscuring their values. 
+The purpose of the nonce is to assure the recipient that the message is fresh, that is, it is not a replay of an old message. 
+Veriﬁcation is simple: the garage reads T, gets the corresponding key KT, deciphers the rest of the message, checks that the nonce N has not been seen before, and ﬁnally that the plaintext contains T. 
+One reason many people get confused is that to the left of the colon, T identiﬁes one of the principals (the token that represents the subscriber)
+ whereas to the right it means the name (that is, the unique device number)
+ of the token. 
+Another is that once we start discussing attacks on protocols, we may ﬁnd that a message intended for one principal was intercepted and played back by another. 
+So you might think of the T ffi! G to the left of the colon as a hint as to what the protocol designer had in mind. 
+A nonce can be anything that guarantees the freshness of a message. 
+It can be a random number, a counter, a random challenge received from a third party, or even a timestamp. 
+There are subtle differences between them, such as in the level of resistance they offer to various kinds of replay attack, and the ways in which they increase system cost and complexity. 
+In very low-cost systems, random numbers and counters predominate as it’s cheaper to communicate in one direction only, and cheap devices usually don’t have clocks. 
+Key management in such devices can be very simple. 
+In a typical garage token product, each token’s key is just its unique device number encrypted under a global master key KM known to the garage: KT = {T}KM This is known as key diversiﬁcation or key derivation. 
+It’s a common way of implementing access tokens, and is widely used in smartcards too. 
+The goal is that someone who compromises a token by drilling into it and extracting the key cannot masquerade as any other token; all he can do is make a copy of one particular subscriber’s token. 
+In order to do a complete break of the system, and extract the master key that would enable him to pretend to be any of the system’s users, an attacker has to compromise the central server at the garage (which might protect this key in a tamper-resistant smartcard or hardware security module)
+. 
+But there is still room for error. 
+A common failure mode is for the serial numbers – whether unique device numbers or protocol counters – not to be long enough, so that someone occasionally ﬁnds that their remote control works for another car in the car park as well. 
+This can be masked by cryptography. 
+Having 128-bit keys doesn’t help if the key is derived by encrypting a 16-bit device number, or by taking a 16-bit key and repeating it eight times. 
+In either case, there are only 216 possible keys, and that’s unlikely to be enough even if 4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION they appear to be random2. 
+Protocol vulnerabilities usually give rise to more, and simpler, attacks than cryptographic weaknesses do. 
+An example comes from the world of prepayment utility meters. 
+Over a million households in the UK, plus over 400 million in developing countries, have an electricity or gas meter that accepts encrypted tokens: the householder buys a magic number and types it into the meter, which then dispenses the purchased quantity of energy. 
+One early meter that was widely used in South Africa checked only that the nonce was different from last time. 
+So the customer could charge their meter indeﬁnitely by buying two low-value power tickets and then feeding them in one after the other; given two valid codes A and B, the series ABABAB... 
+was seen as valid [93]. 
+So the question of whether to use a random number or a counter is not as easy as it looks. 
+If you use random numbers, the lock has to remember a lot of past codes. 
+There’s the valet attack, where someone with temporary access, such as a valet parking attendant, records some access codes and replays them later to steal your car. 
+In addition, someone might rent a car, record enough unlock codes, and then go back later to the rental lot to steal it. 
+Providing enough nonvolatile memory to remember thousands of old codes might add a few cents to the cost of your lock. 
+If you opt for counters, the problem is synchronization. 
+The key might be used for more than one lock; it may also be activated repeatedly by accident (I once took an experimental token home where it was gnawed by my dogs)
+. 
+So you need a way to recover after the counter has been incremented hundreds or possibly even thousands of times. 
+One common product uses a sixteen bit counter, and allows access when the deciphered counter value is the last valid code incremented by no more than sixteen. 
+To cope with cases where the token has been used more than sixteen times elsewhere (or gnawed by a family pet)
+, the lock will open on a second press provided that the counter value has been incremented between 17 and 32,767 times since a valid code was entered (the counter rolls over so that 0 is the successor of 65,535)
+. 
+This is ﬁne in many applications, but a thief who can get six well-chosen access codes – say for values 0, 1, 20,000, 20,001, 40,000 and 40,001 – can break the system completely. 
+In your application, would you be worried about that?
+ So designing even a simple token authentication mechanism is not as easy as it looks, and if you assume that your product will only attract low-grade adversaries, this assumption might fail over time. 
+An example is accessory control. 
+Many printer companies embed authentication mechanisms in printers to ensure that genuine toner cartridges are used. 
+If a competitor’s product is loaded instead, the printer may quietly downgrade from 1200 dpi to 300 dpi, or simply refuse to work at all. 
+All sorts of other industries are getting in on the act, from scientiﬁc instruments to games consoles. 
+The cryptographic mechanisms used to support this started off in the 1990s being fairly rudimentary, as vendors thought that any competitor who circumvented them on an industrial scale could be sued or even jailed under copyright law. 
+But then a judge found, in the case Lexmark v SCC, that while a vendor had the right to hire the best cryptographer they could ﬁnd to lock their customers in, a competitor also had the right to 2We’ll go into this in more detail in section 5.3.1.2 where we discuss the birthday theorem in probability theory. 
+4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION hire the best cryptanalyst they could ﬁnd to set them free to buy accessories from elsewhere. 
+This set off a serious arms race, which we’ll meet from time to time in later chapters. 
+Here I’ll just remark that security isn’t always a good thing. 
+Security mechanisms are used to support many business models, where they’re typically stopping the device’s owner doing things she wants to rather than protecting her from the bad guys. 
+The effect may be contrary to public policy; one example is cellphone locking, which results in hundreds of millions of handsets ending up in landﬁlls each year, with toxic heavy metals as well as the embedded carbon cost. 
+
+4.3.1 Challenge and response
+Since 1995, all cars sold in Europe were required to have a ‘cryptographically enabled immobiliser’ and by 2010, most cars had remote-controlled door un- locking too, though most also have a fallback metal key so you can still get into your car even if the key fob battery is ﬂat. 
+The engine immobiliser is harder to bypass using physical means and uses a two-pass challenge-response protocol to authorise engine start. 
+As the car key is inserted into the steering lock, the engine controller sends a challenge consisting of a random n-bit number to the key using short-range radio. 
+The car key computes a response by encrypting the challenge; this is often done by a separate RFID chip that’s powered by the incoming radio signal and so keeps on working even if the battery is ﬂat. 
+The frequency is low (125kHz)
+ so the car can power the transponder directly, and the exchange is also relatively immune to a noisy RF environment. 
+Writing E for the engine controller, T for the transponder in the car key, K for the cryptographic key shared between the transponder and the engine controller, and N for the random challenge, the protocol may look something like: E ffi! T : N T ffi! E : T, {T, N}K This is sound in theory, but implementations of security mechanisms often fail the ﬁrst two or three times people try it. 
+Between 2005 and 2015, all the main remote key entry and immobiliser systems were broken, whether by security researchers, car thieves or both. 
+The attacks involved a combination of protocol errors, peer key management, weak ciphers, and short keys mandated by export control laws. 
+The ﬁrst to fall was TI’s DST transponder chip, which was used by at least two large car makers and was also the basis of the SpeedPass toll payment system. 
+Stephen Bono and colleagues found in 2005 that it used a block ci- pher with a 40-bit key, which could be calculated by brute force from just two responses [297]. 
+This was one side-effect of US cryptography export controls, which I discuss in 26.2.7.1. 
+From 2010, Ford, Toyota and Hyundai adopted a successor product, the DST80. 
+The DST80 was broken in turn in 2020 by Lennert Wouters and colleagues, who found that as well as side-channel attacks on the chip, there are serious implementation problems with key management: Hyundai keys have only 24 bits of entropy, while Toyota keys are derived from 4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION the device serial number that an attacker can read (Tesla was also vulnerable but unlike the older ﬁrms it could ﬁx the problem with a software upgrade)
+ [2048]. 
+Next was Keeloq, which was used for garage door openers as well as by some car makers; in 2007, Eli Biham and others found that given an hour’s access to a token they could collect enough data to recover the key [243]. 
+Worse, in some types of car, there is also a protocol bug, in that the key diversiﬁcation used exclusive-or: KT = T ffi KM. 
+So you can rent a car of the type you want to steal and work out the key for any other car of that type. 
+Also in 2007, someone published the Philips Hitag 2 cipher, which also had a 48-bit secret key. 
+But this cipher is also weak, and as it was attacked by various cryptanalysts, the time needed to extract a key fell from days to hours to minutes. 
+By 2016, attacks took 8 authentication attempts and a minute of computation on a laptop; they worked against cars from all the French and Italian makers, along with Nissan, Mitsubishi and Chevrolet [748]. 
+The last to fall was the Megamos Crypto transponder, used by Volkswagen and others. 
+Car locksmithing tools appeared on the market from 2008, which included the Megamos cipher and were reverse engineered by researchers from Birmingham and Nijmegen – Roel Verdult, Flavio Garcia and Barı¸s Ege – who cracked it [1952]. 
+Although it has a 96-bit secret key, the effective key length is only 49 bits, about the same as Hitag 2. 
+Volkswagen got an injunction in the High Court in London to stop them presenting their work at Usenix 2013, claiming that their trade secrets had been violated. 
+The researchers resisted, arguing that the locksmithing tool supplier had extracted the secrets. 
+After two years of argument, the case settled without admission of liability on either side. 
+Closer study then threw up a number of further problems. 
+There’s also a protocol attack as an adversary can rewrite each 16-bit word of the 96-bit key, one after another, and search for the key 16 bits at a time; this reduces the time needed for an attack from days to minutes [1953]. 
+Key management was pervasively bad. 
+A number of Volkswagen implemen- tations did not diversify keys across cars and transponders, but used a ﬁxed global master key for millions of cars at a time. 
+Up till 2009, this used a cipher called AUT64 to generate device keys; thereafter they moved to a stronger ci- pher called XTEA but kept on using global master keys, which were found in 23 models from the Volkswagen-Audi group up till 2016 [748]3. 
+It’s easy to ﬁnd out if a car is vulnerable: just try to buy a spare key. 
+If the locksmith companies have ﬁgured out how to duplicate the key, your local garage will sell you a spare for a few bucks. 
+We have a spare key for my wife’s 2005 Lexus, bought by the previous owner. 
+But when we lost one of the keys for my 2012 Mercedes, we had to go to a main dealer, pay over £200, show my passport and the car log book, have the mechanic photograph the vehicle identiﬁcation number on the chassis, send it all off to Mercedes and wait for 3There are some applications where universal master keys are inevitable, such as in com- municating with a heart pacemaker – where a cardiologist may need to tweak the pacemaker of any patient who walks in, regardless of where it was ﬁrst ﬁtted, and regardless of whether the network’s up – so the vendor puts the same key in all its equipment. 
+Another exam- ple is the subscriber smartcard in a satellite-TV set-top box, which we’ll discuss later. 
+But they often result in a break-once-run-anywhere (BORA)
+ attack. 
+To install universal master keys in valuable assets like cars in a way that facilitated theft and without even using proper tamper-resistant chips to protect them was an egregious error. 
+4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION a week. 
+We saw in Chapter 3 that the hard part of designing a password system was recovering from compromise without the recovery mechanism itself becoming either a vulnerability or a nuisance. 
+Exactly the same applies here! But the worst was still to come: passive keyless entry systems (PKES)
+. 
+Challenge-response seemed so good that car vendors started using it with just a push button on the dashboard to start the car, rather than with a metal key. 
+Then they increased the radio frequency to extend the range, so that it worked not just for short-range authentication once the driver was sitting in the car, but as a keyless entry mechanism. 
+The marketing pitch was that so long as you keep the key in your pocket or handbag you don’t have to worry about it; the car will unlock when you walk up to it, lock as you walk away, and start automatically when you touch the controls. 
+What’s not to like?
+ Well, now you don’t have to press a button to unlock your car, it’s easy for thieves to use devices that amplify or relay the signals. 
+The thief sneaks up to your front door with one relay while leaving the other next to your car. 
+If you left your keys on the table in the hall, the car door opens and away he goes. 
+Even if the car is immobilised he can still steal your stuff. 
+And after many years of falling car thefts, the statistics surged in 2017 with 56% more vehicles stolen in the UK, followed by a further 9% in 2018 [823]4. 
+The takeaway message is that the attempt since about 1990 to use cryp- tography to make cars harder to steal had some initial success, as immobilisers made cars harder to steal and insurance premiums fell. 
+It has since backﬁred, as the politicians and then the marketing people got in the way. 
+The politicians said it would be disastrous for law enforcement if people were allowed to use cryptography they couldn’t crack, even for stopping car theft. 
+Then the immo- biliser vendors’ marketing people wanted proprietary algorithms to lock in the car companies, whose own marketing people wanted passive keyless entry as it seemed cool. 
+What can we do?
+ Well, at least two car makers have put an accelerometer in the key fob, so it won’t work unless the key is moving. 
+One of our friends left her key on the car seat while carrying her child indoors, and got locked out. 
+The local police advise us to use old-fashioned metal steering-wheel locks; our residents’ association recommends keeping keys in a biscuit tin. 
+As for me, we bought such a car but found that the keyless entry was simply too ﬂaky; my wife got stranded in a supermarket car park when it just wouldn’t work at all. 
+So we took that car back, and got a second-hand one with a proper push-button remote lock. 
+There are now chips using AES from NXP, Atmel and TI – of which the Atmel is open source with an open protocol stack. 
+However crypto by itself can’t ﬁx relay attacks; the proper ﬁx is a new radio protocol based on ultrawideband (UWB)
+ with intrinsic ranging, which measures the distance from the key fob to the car with a precision of 10cm up to a range of 150m. 
+This is fairly complex to do properly, and the design of the new 802.15.4z Enhanced Impulse Radio is described by Srdjan Capkun and colleagues [1764]; 4To be fair this was not due solely to relay attacks, as about half of the high-value thefts seem to involve connecting a car theft kit to the onboard diagnostic port under the glove box. 
+As it happens, the authentication protocols used on the CAN bus inside the vehicle are also vulnerable in a number of ways [891]. 
+Updating these protocols will take many years because of the huge industry investment. 
+4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION the ﬁrst chip became available in 2019, and it will ship in cars from 2020. 
+Such chips have the potential to replace both the Bluetooth and NFC protocols, but they might not all be compatible; there’s a low-rate pulse (LRP)
+ mode that has an open design, and a high-rate pulse (HRP)
+ variant that’s partly proprietary. 
+Were I advising a car startup, LRP would be my starting point. 
+Locks are not the only application of challenge-response protocols. 
+In HTTP Digest Authentication, a web server challenges a client or proxy, with whom it shares a password, by sending it a nonce. 
+The response consists of the hash of the nonce, the password, and the requested URI [715]. 
+This provides a mechanism that’s not vulnerable to password snooping. 
+It’s used, for example, to authenticate clients and servers in SIP, the protocol for Voice-Over-IP (VOIP)
+ telephony. 
+It’s much better than sending a password in the clear, but like keyless entry it suffers from middleperson attacks (the beneﬁciaries are the spooks)
+. 
+
+4.3.2 Two-factor authentication
+The most visible use of challenge-response is probably in two-factor authentica- tion. 
+Many organizations issue their staff with password generators to let them log on to corporate computer systems, and many banks give similar devices to customers. 
+They may look like little calculators (and some even work as such)
+ but their main function is as follows. 
+When you want to log in, you are presented with a random nonce of maybe seven digits. 
+You key this into your password generator, together with a PIN of maybe four digits. 
+The device encrypts these eleven digits using a secret key shared with the corporate security server, and displays the ﬁrst seven digits of the result. 
+You enter these seven digits as your password. 
+This protocol is illustrated in Figure 4.1. 
+If you had a password gen- erator with the right secret key, and you entered the PIN right, and you typed in the result correctly, then you get in. 
+Formally, with S for the server, P for the password generator, PIN for the user’s Personal Identiﬁcation Number, U for the user and N for the nonce: S ffi! U : N U ffi! P : N, PIN P ffi! U : {N, PIN}K U ffi! S : {N, PIN}K These devices appeared from the early 1980s and caught on ﬁrst with phone companies, then in the 1990s with banks for use by staff. 
+There are simpliﬁed versions that don’t have a keyboard, but just generate new access codes by encrypting a counter or a clock. 
+And they work; the US Defense Department announced in 2007 that an authentication system based on the DoD Common Access Card had cut network intrusions by 46% in the previous year [320]. 
+This was just when crooks started phishing bank customers at scale, so many banks adopted the technology. 
+One of my banks gives me a small calculator that generates a new code for each logon, and also allows me to authenticate new payees by using the last four digits of their account number in place of the challenge. 
+My other bank uses the Chip Authentication Program (CAP)
+, a 4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION N?
+ . 
+. 
+. 
+. 
+. 
+ N?
+ N, PIN K Figure 4.1: – password generator use calculator in which I can insert my bank card to do the crypto. 
+But this still isn’t foolproof. 
+In the second edition of this book, I noted ‘someone who takes your bank card from you at knifepoint can now verify that you’ve told them the right PIN’, and this now happens. 
+I also noted that ‘once lots of banks use one-time passwords, the phishermen will just rewrite their scripts to do real-time man-in-the-middle attacks’ and this has also become widespread. 
+To see how such attacks work, let’s look at a military example. 
+
+4.3.3 The MIG-in-the-middle attack
+The ﬁrst use of challenge-response authentication protocols was probably in the military, with ‘identify-friend-or-foe’ (IFF)
+ systems. 
+The ever-increasing speeds of warplanes in the 1930s and 1940s, together with the invention of the jet engine, radar and rocketry, made it ever more difficult for air defence forces to tell their own craft apart from the enemy’s. 
+This led to a risk of pilots shooting down their colleagues by mistake and drove the development of automatic systems to prevent this. 
+These were ﬁrst ﬁelded in World War II, and enabled an airplane illuminated by radar to broadcast an identifying number to signal friendly intent. 
+In 1952, this system was adopted to identify civil aircraft to air traffic controllers and, worried about the loss of security once it became widely used, the US Air Force started a research program to incorporate cryptographic protection in the system. 
+Nowadays, the typical air defense system sends random challenges with its radar signals, and friendly aircraft can identify themselves with correct responses. 
+It’s tricky to design a good IFF system. 
+One of the problems is illustrated by the following story, which I heard from an officer in the South African Air Force (SAAF)
+. 
+After it was published in the ﬁrst edition of this book, the story 4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION was disputed – as I’ll discuss below. 
+Be that as it may, similar games have been played with other electronic warfare systems since World War 2. 
+The ‘MIG-in- the-middle’ story has since become part of the folklore, and it nicely illustrates how attacks can be carried out in real time on challenge-response protocols. 
+In the late 1980’s, South African troops were ﬁghting a war in northern Namibia and southern Angola. 
+Their goals were to keep Namibia under white rule, and impose a client government (UNITA)
+ on Angola. 
+Because the South African Defence Force consisted largely of conscripts from a small white pop- ulation, it was important to limit casualties, so most South African soldiers remained in Namibia on policing duties while the ﬁghting to the north was done by UNITA troops. 
+The role of the SAAF was twofold: to provide tactical sup- port to UNITA by bombing targets in Angola, and to ensure that the Angolans and their Cuban allies did not return the compliment in Namibia. 
+N?
+ N?
+ ANGOLA NAMIBIA SAAF MIG N?
+ N K SAAF N K N K Figure 4.2: – the MIG-in-the middle attack Suddenly, the Cubans broke through the South African air defenses and carried out a bombing raid on a South African camp in northern Namibia, killing a number of white conscripts. 
+This proof that their air supremacy had been lost helped the Pretoria government decide to hand over Namibia to the 4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION insurgents – itself a huge step on the road to majority rule in South Africa several years later. 
+The raid may also have been the last successful military operation ever carried out by Soviet bloc forces. 
+Some years afterwards, a SAAF officer told me how the Cubans had pulled it off. 
+Several MIGs had loitered in southern Angola, just north of the South African air defense belt, until a ﬂight of SAAF Impala bombers raided a tar- get in Angola. 
+Then the MIGs turned sharply and ﬂew openly through the SAAF’s air defenses, which sent IFF challenges. 
+The MIGs relayed them to the Angolan air defense batteries, which transmitted them at a SAAF bomber; the responses were relayed back to the MIGs, who retransmitted them and were allowed through – as in Figure 4.2. 
+According to my informant, this shocked the general staff in Pretoria. 
+Being not only outfought by black opponents, but actually outsmarted, was not consistent with the world view they had held up till then. 
+After this tale was published in the ﬁrst edition of my book, I was contacted by a former officer in SA Communications Security Agency who disputed the story’s details. 
+He said that their IFF equipment did not use cryptography yet at the time of the Angolan war, and was always switched off over enemy territory. 
+Thus, he said, any electronic trickery must have been of a more primitive kind. 
+However, others tell me that ‘Mig-in-the-middle’ tricks were signiﬁcant in Korea, Vietnam and various Middle Eastern conﬂicts. 
+In any case, the tale gives us another illustration of the man-in-the-middle attack. 
+The relay attack against cars is another example. 
+It also works against password calculators: the phishing site invites the mark to log on and simul- taneously opens a logon session with his bank. 
+The bank sends a challenge; the phisherman relays this to the mark, who uses his device to respond to it; the phisherman relays the response to the bank, and the bank now accepts the phisherman as the mark. 
+Stopping a middleperson attack is harder than it looks, and may involve mul- tiple layers of defence. 
+Banks typically look for a known machine, a password, a second factor such as an authentication code from a CAP reader, and a risk assessment of the transaction. 
+For high-risk transactions, such as adding a new payee to an account, both my banks demand that I compute an authentication code on the payee account number. 
+But they only authenticate the last four digits, because of usability. 
+If it takes two minutes and the entry of dozens of digits to make a payment, then a lot of customers will get digits wrong, give up, and then either call the call center or get annoyed and bank elsewhere. 
+Also, the bad guys may be able to exploit any fallback mechanisms, perhaps by spooﬁng customers into calling phone numbers that run a middleperson attack between the customer and the call center. 
+I’ll discuss all this further in the chapter on Banking and Bookkeeping. 
+We will come across such attacks again and again in applications ranging from Internet security protocols to Bluetooth. 
+They even apply in gaming. 
+As the mathematician John Conway once remarked, it’s easy to get at least a draw against a grandmaster at postal chess: just play two grandmasters at once, one as white and the other as black, and relay the moves between them! 4.3. 
+WHO GOES THERE?
+ – SIMPLE AUTHENTICATION 
+4.3.4 Reﬂection Attacks
+Further interesting problems arise when two principals have to identify each other. 
+Suppose that a challenge-response IFF system designed to prevent anti- aircraft gunners attacking friendly aircraft had to be deployed in a ﬁghter- bomber too. 
+Now suppose that the air force simply installed one of their air gunners’ challenge units in each aircraft and connected it to the ﬁre-control radar. 
+But now when a ﬁghter challenges an enemy bomber, the bomber might just reﬂect the challenge back to the ﬁghter’s wingman, get a correct response, and then send that back as its own response: F ffi! B : N B ffi! F 0 : N F 0 ffi! B : {N}K B ffi! F : {N}K There are a number of ways of stopping this, such as including the names of the two parties in the exchange. 
+In the above example, we might require a friendly bomber to reply to the challenge: F ffi! B : N with a response such as: B ffi! F : {B, N}K Thus a reﬂected response {F 0, N} from the wingman F 0 could be detected5. 
+This serves to illustrate the subtlety of the trust assumptions that underlie authentication. 
+If you send out a challenge N and receive, within 20 millisec- onds, a response {N}K, then – since light can travel a bit under 3,730 miles in 20 ms – you know that there is someone with the key K within 2000 miles. 
+But that’s all you know. 
+If you can be sure that the response was not computed using your own equipment, you now know that there is someone else with the key K within two thousand miles. 
+If you make the further assumption that all copies of the key K are securely held in equipment which may be trusted to operate properly, and you see {B, N}K, you might be justiﬁed in deducing that the aircraft with callsign B is within 2000 miles. 
+A careful analysis of trust assumptions and their consequences is at the heart of security protocol design. 
+By now you might think that we understand all the protocol design aspects of IFF. 
+But we’ve omitted one of the most important problems – and one which the designers of early IFF systems didn’t anticipate. 
+As radar is passive the returns are weak, while IFF is active and so the signal from an IFF transmitter will usually be audible at a much greater range than the same aircraft’s radar return. 
+The Allies learned this the hard way; in January 1944, decrypts of 5And don’t forget: you also have to check that the intruder didn’t just reﬂect your own challenge back at you. 
+You must be able to remember or recognise your own messages! Enigma messages revealed that the Germans were plotting British and American bombers at twice the normal radar range by interrogating their IFF. 
+So more modern systems authenticate the challenge as well as the response. 
+The NATO mode XII, for example, has a 32 bit encrypted challenge, and a different valid challenge is generated for every interrogation signal, of which there are typically 250 per second. 
+Theoretically there is no need to switch off over enemy territory, but in practice an enemy who can record valid challenges can replay them as part of an attack. 
+Relays are made difficult in mode XII using directionality and time-of-ﬂight. 
+Other IFF design problems include the difficulties posed by neutrals, error rates in dense operational environments, how to deal with equipment failure, how to manage keys, and how to cope with multinational coalitions. 
+I’ll return to IFF in Chapter 23. 
+For now, the spurious-challenge problem serves to reinforce an important point: that the correctness of a security protocol depends on the assumptions made about the requirements. 
+A protocol that can protect against one kind of attack (being shot down by your own side)
+ but which increases the exposure to an even more likely attack (being shot down by the other side)
+ might not help. 
+In fact, the spurious-challenge problem became so serious in World War II that some experts advocated abandoning IFF altogether, rather than taking the risk that one bomber pilot in a formation of hundreds would ignore orders and leave his IFF switched on while over enemy territory. 
+
+4.4 Manipulating the Message
+We’ve now seen a number of middleperson attacks that reﬂect or spoof the in- formation used to authenticate a participant. 
+However, there are more complex attacks where the attacker doesn’t just impersonate someone, but manipulates the message content. 
+One example we saw already is the prepayment meter that remembers only the last ticket it saw, so it can be recharged without limit by copying in the codes from two tickets A and B one after another: ABABAB.... 
+Another is when dishonest cabbies insert pulse generators in the cable that connects their taximeter to a sensor in their taxi’s gearbox. 
+The sensor sends pulses as the prop shaft turns, which lets the meter work out how far the taxi has gone. 
+A pirate device can insert extra pulses, making the taxi appear to have gone further. 
+A truck driver who wants to drive faster or further than regulations allow can use a similar device to discard some pulses, so he seems to have been driving more slowly or not at all. 
+We’ll discuss such attacks in the chapter on ‘Monitoring Systems’, in section 14.3. 
+As well as monitoring systems, control systems often need to be hardened against message-manipulation attacks. 
+The Intelsat satellites used for interna- tional telephone and data traffic have mechanisms to prevent a command being accepted twice – otherwise an attacker could replay control traffic and repeat- edly order the same maneuver to be carried out until the satellite ran out of fuel [1526]. 
+We will see lots of examples of protocol attacks involving message manipulation in later chapters on speciﬁc applications. 
+
+4.5 Changing the Environment
+A common cause of protocol failure is that the environment changes, so that the design assumptions no longer hold and the security protocols cannot cope with the new threats. 
+A nice example comes from the world of cash machine fraud. 
+In 1993, Hol- land suffered an epidemic of ‘phantom withdrawals’; there was much controversy in the press, with the banks claiming that their systems were secure while many people wrote in to the papers claiming to have been cheated. 
+Eventually the banks noticed that many of the victims had used their bank cards at a certain ﬁlling station near Utrecht. 
+This was staked out and one of the staff was ar- rested. 
+It turned out that he had tapped the line from the card reader to the PC that controlled it; his tap recorded the magnetic stripe details from their cards while he used his eyeballs to capture their PINs [54]. 
+Exactly the same fraud happened in the UK after the move to ‘chip and PIN’ smartcards in the mid-2000s; a gang wiretapped perhaps 200 ﬁlling stations, collected card data from the wire, observed the PINs using CCTV cameras, then made up thou- sands of magnetic-strip clone cards that were used in countries whose ATMs still used magnetic strip technology. 
+At our local ﬁlling station, over 200 customers suddenly found that their cards had been used in ATMs in Thailand. 
+Why had the system been designed so badly, and why did the design error persist for over a decade through a major technology change?
+ Well, when the standards for managing magnetic stripe cards and PINs were developed in the early 1980’s by organizations such as IBM and VISA, the engineers had made two assumptions. 
+The ﬁrst was that the contents of the magnetic strip – the card number, version number and expiration date – were not secret, while the PIN was [1301]. 
+(The analogy used was that the magnetic strip was your name and the PIN your password.)
+ The second assumption was that bank card equipment would only be operated in trustworthy environments, such as in a physically robust automatic teller machine, or by a bank clerk at a teller station. 
+So it was ‘clearly’ only necessary to encrypt the PIN, on its way from the PIN pad to the server; the magnetic strip data could be sent in clear from the card reader. 
+Both of these assumptions had changed by 1993. 
+An epidemic of card forgery, mostly in the Far East in the late 1980’s, drove banks to introduce authenti- cation codes on the magnetic strips. 
+Also, the commercial success of the bank card industry led banks in many countries to extend the use of debit cards from ATMs to terminals in all manner of shops. 
+The combination of these two environmental changes destroyed the assumptions behind the original system architecture. 
+Instead of putting a card whose magnetic strip contained no secu- rity data into a trusted machine, people were putting a card with clear security data into an untrusted machine. 
+These changes had come about so gradually, and over such a long period, that the industry didn’t see the problem coming. 
+
+4.6 Chosen Protocol Attacks
+Governments keen to push ID cards have tried to get them used for many other transactions; some want a single card to be used for ID, banking and even transport ticketing. 
+Singapore went so far as to experiment with a bank card that doubled as military ID. 
+This introduced some interesting new risks: if a Navy captain tries to withdraw some cash from an ATM after a good dinner and forgets his PIN, will he be unable to take his ship to sea until Monday morning when they open the bank and give him his card back?
+ Some ﬁrms are pushing multifunction authentication devices that could be used in a wide range of transactions to save you having to carry around dozens of different cards and keys. 
+A more realistic view of the future may be that people’s phones will be used for most private-sector authentication functions. 
+But this too may not be as simple as it looks. 
+The idea behind the ‘Chosen Protocol Attack’ is that given a target protocol, you design a new protocol that will attack it if the users can be inveigled into reusing the same token or crypto key. 
+So how might the Maﬁa design a protocol to attack the authentication of bank transactions?
+ Here’s one approach. 
+It used to be common for people visiting a porn website to be asked for ‘proof of age,’ which usually involves giving a credit card number, whether to the site itself or to an age checking service. 
+If smartphones are used to authenticate everything, it would be natural for the porn site to ask the customer to authenticate a random challenge as proof of age. 
+A porn site might then mount a ‘Maﬁa-in-the-middle’ attack as shown in Figure 4.3. 
+They wait until an unsuspecting customer visits their site, then order something resellable (such as gold coins)
+ from a dealer, playing the role of the coin dealer’s customer. 
+When the coin dealer sends them the transaction data for authentication, they relay it through their porn site to the waiting customer. 
+The poor man OKs it, the Maﬁa gets the gold coins, and when thousands of people suddenly complain about the huge charges to their cards at the end of the month, the porn site has vanished – along with the gold [1032]. 
+sigK  X Picture 143! Mafia pornffi site Customer Buy 10 gold coins Prove your age Sign ‘X’ffi by signing ‘X’ffi BANK sigK  X Figure 4.3: – the Maﬁa-in-the-middle attack In the 1990s a vulnerability of this kind found its way into international standards: the standards for digital signature and authentication could be run back-to-back in this way. 
+It has since been shown that many protocols, though secure in themselves, can be broken if their users can be inveigled into reusing the same keys in other applications [1032]. 
+This is why, if we’re going to use our phones to authenticate everything, it will be really important to keep the banking apps and the porn apps separate. 
+That will be the subject of our next chapter, on Access Control. 
+In general, using crypto keys (or other authentication mechanisms)
+ in more than one application is dangerous, while letting other people bootstrap their own application security off yours can be downright foolish. 
+The classic case is where a bank relies for two-factor authentication on sending SMSes to customers as authentication codes. 
+As I discussed in section 3.4.1, the bad guys have learned to attack that system by SIM-swap fraud – pretending to the phone company that they’re the target, claiming to have lost their phone, and getting a replacement SIM card. 
+
+4.7 Managing encryption keys
+The examples of security protocols that we’ve discussed so far are mostly about authenticating a principal’s name, or application data such as the impulses driving a taximeter. 
+There is one further class of authentication protocols that is very important – the protocols used to manage cryptographic keys. 
+
+4.7.1 The resurrecting duckling
+In the Internet of Things, keys can sometimes be managed directly and physi- cally, by local setup and a policy of trust-on-ﬁrst-use or TOFU. 
+Vehicles provided an early example. 
+I mentioned above that crooked taxi drivers used to put interruptors in the cable from their car’s gearbox sensor to the taximeter, to add additional mileage. 
+The same problem happened in reverse with tachographs, the devices used by trucks to monitor drivers’ hours and speed. 
+When tachographs went digital in the late 1990s, we decided to encrypt the pulse train from the sensor. 
+But how could keys be managed?
+ The solution was that whenever a new tachograph is powered up after a factory reset, it trusts the ﬁrst crypto key it receives over the sensor cable. 
+I’ll discuss this further in section 14.3. 
+A second example is Homeplug AV, the standard used to encrypt data com- munications over domestic power lines, and widely used in LAN extenders. 
+In the default, ‘just-works’ mode, a new Homeplug device trusts the ﬁrst key it sees; and if your new wiﬁ extender mates with the neighbour’s wiﬁ instead, you just press the reset button and try again. 
+There is also a ‘secure mode’ where you open a browser to the network management node and manually en- ter a crypto key printed on the device packaging, but when we designed the Homeplug protocol we realised that most people have no reason to bother with that. 
+The TOFU approach is also known as the ‘resurrecting duckling’ after an analysis that Frank Stajano and I did in the context of the tachograph work. 
+The idea is that when a baby duckling hatches, it imprints on the ﬁrst thing it sees that moves and quacks, even if this is the farmer – who can end up being followed everywhere by a duck that thinks he’s mummy. 
+If such false imprinting happens with an electronic device, you need a way to kill it and resurrect it into a newborn state – which the reset button does [1819]. 
+
+4.7.2 Remote key management
+The more common, and interesting, case is the management of keys in remote devices. 
+The basic technology was developed from the late 1970s to manage keys in distributed computer systems, with cash machines being an early ap- plication. 
+In this section we’ll discuss shared-key protocols such as Kerberos, leaving public-key protocols such as TLS and SSH until after we’ve discussed public-key cryptology in Chapter 5. 
+The basic idea behind key-distribution protocols is that where two principals want to communicate, they may use a trusted third party to introduce them. 
+It’s customary to give them human names in order to avoid getting lost in too much algebra. 
+So we will call the two communicating principals ‘Alice’ and ‘Bob’, and the trusted third party ‘Sam’. 
+Alice, Bob and Sam are likely to be programs running on different devices. 
+(For example, in a protocol to let a car dealer mate a replacement key with a car, Alice might be the car, Bob the key and Sam the car maker.)
+ A simple authentication protocol could run as follows. 
+1. 
+Alice ﬁrst calls Sam and asks for a key for communicating with Bob. 
+2. 
+Sam responds by sending Alice a pair of certiﬁcates. 
+Each contains a copy of a key, the ﬁrst encrypted so only Alice can read it, and the second encrypted so only Bob can read it. 
+3. 
+Alice then calls Bob and presents the second certiﬁcate as her introduction. 
+Each of them decrypts the appropriate certiﬁcate under the key they share with Sam and thereby gets access to the new key. 
+Alice can now use the key to send encrypted messages to Bob, and to receive messages from him in return. 
+We’ve seen that replay attacks are a known problem, so in order that both Bob and Alice can check that the certiﬁcates are fresh, Sam may include a timestamp in each of them. 
+If certiﬁcates never expire, there might be serious problems dealing with users whose privileges have been revoked. 
+Using our protocol notation, we could describe this as A ! S : A, B S ! A : {A, B, KAB, T}KAS, {A, B, KAB, T}KBS A ! B : {A, B, KAB, T}KBS, {M}KAB Expanding the notation, Alice calls Sam and says she’d like to talk to Bob. 
+Sam makes up a message consisting of Alice’s name, Bob’s name, a session key for them to use, and a timestamp. 
+He encrypts all this under the key he shares with Alice, and he encrypts another copy of it under the key he shares with Bob. 
+He gives both ciphertexts to Alice. 
+Alice retrieves the session key from the ciphertext that was encrypted to her, and passes on to Bob the ciphertext encrypted for him. 
+She now sends him whatever message she wanted to send, encrypted using this session key. 
+
+4.7.3 The Needham-Schroeder protocol
+Many things can go wrong, and here is a famous historical example. 
+Many existing key distribution protocols are derived from the Needham-Schroeder protocol, which appeared in 1978 [1426]. 
+It is somewhat similar to the above, but uses nonces rather than timestamps. 
+It runs as follows: Message 1 A ! S : A, B, NA Message 2 S ! A : {NA, B, KAB, {KAB, A}KBS}KAS Message 3 A ! B : {KAB, A}KBS Message 4 B ! A : {NB}KAB Message 5 A ! B : {NB ffi 1}KAB Here Alice takes the initiative, and tells Sam: ‘I’m Alice, I want to talk to Bob, and my random nonce is NA.’ Sam provides her with a session key, encrypted using the key she shares with him. 
+This ciphertext also contains her nonce so she can conﬁrm it’s not a replay. 
+He also gives her a certiﬁcate to convey this key to Bob. 
+She passes it to Bob, who then does a challenge-response to check that she is present and alert. 
+There is a subtle problem with this protocol – Bob has to assume that the key KAB he receives from Sam (via Alice)
+ is fresh. 
+This is not necessarily so: Alice could have waited a year between steps 2 and 3. 
+In many applications this may not be important; it might even help Alice to cache keys against possible server failures. 
+But if an opponent – say Charlie – ever got hold of Alice’s key, he could use it to set up session keys with many other principals. 
+And if Alice ever got ﬁred, then Sam had better have a list of everyone in the ﬁrm to whom he issued a key for communicating with her, to tell them not to believe it any more. 
+In other words, revocation is a problem: Sam may have to keep complete logs of everything he’s ever done, and these logs would grow in size forever unless the principals’ names expired at some ﬁxed time in the future. 
+Almost 40 years later, this example is still controversial. 
+The simplistic view is that Needham and Schroeder just got it wrong; the view argued by Susan Pancho and Dieter Gollmann (for which I have some sympathy)
+ is that this is a protocol failure brought on by shifting assumptions [780, 1491]. 
+1978 was a kinder, gentler world; computer security then concerned itself with keeping ‘bad guys’ out, while nowadays we expect the ‘enemy’ to be among the users of our system. 
+The Needham-Schroeder paper assumed that all principals be- have themselves, and that all attacks came from outsiders [1426]. 
+Under those assumptions, the protocol remains sound. 
+
+4.7.4 Kerberos
+The most important practical derivative of the Needham-Schroeder protocol is Kerberos, a distributed access control system that originated at MIT and is now one of the standard network authentication tools [1826]. 
+It has become part of the basic mechanics of authentication for both Windows and Linux, particularly when machines share resources over a local area network. 
+Instead of a single trusted third party, Kerberos has two kinds: authentication servers to which users log on, and ticket granting servers which give them tickets allowing access to various resources such as ﬁles. 
+This enables scalable access management. 
+In a university, for example, one might manage students through their colleges or halls of residence but manage ﬁle servers by departments; in a company, the personnel people might register users to the payroll system while departmental administrators manage resources such as servers and printers. 
+First, Alice logs on to the authentication server using a password. 
+The client software in her PC fetches a ticket from this server that is encrypted under her password and that contains a session key KAS. 
+Assuming she gets the password right, she now controls KAS and to get access to a resource B controlled by the ticket granting server S, the following protocol takes place. 
+Its outcome is a key KAB with timestamp TS and lifetime L, which will be used to authenticate Alice’s subsequent traffic with that resource: A ! S : A, B S ! A : {TS, L, KAB, B, {TS, L, KAB, A}KBS}KAS A ! B : {TS, L, KAB, A}KBS, {A, TA}KAB B ! A : {TA + 1}KAB Translating this into English: Alice asks the ticket granting server for access to B. 
+If this is permissible, the ticket {TS, L, KAB, A}KBS is created containing a suitable key KAB and given to Alice to use. 
+She also gets a copy of the key in a form readable by her, namely encrypted under KAS. 
+She now veriﬁes the ticket by sending a timestamp TA to the resource, which conﬁrms it’s alive by sending back the timestamp incremented by one (this shows it was able to decrypt the ticket correctly and extract the key KAB)
+. 
+The revocation issue with the Needham-Schroeder protocol has been ﬁxed by introducing timestamps rather than random nonces. 
+But, as in most of life, we get little in security for free. 
+There is now a new vulnerability, namely that the clocks on our various clients and servers might get out of sync; they might even be desynchronized deliberately as part of a more complex attack. 
+What’s more, Kerberos is a trusted third-party (TTP)
+ protocol in that S is trusted: if the police turn up with a warrant, they can get Sam to turn over the keys and read the traffic. 
+Protocols with this feature were favoured during the ‘crypto wars’ of the 1990s, as I will discuss in section 26.2.7. 
+Protocols that involve no or less trust in a third party generally use public-key cryptography, which I describe in the next chapter. 
+A rather similar protocol to Kerberos is OAuth, a mechanism to allow secure delegation. 
+For example, if you log into Doodle using Google and allow Doo- dle to update your Google calendar, Doodle’s website redirects you to Google, which gets you to log in (or relies on a master cookie from a previous login)
+ and asks you for consent for Doodle to write to your calendar. 
+Doodle then gives you an access token for the calendar service [863]. 
+I mentioned in sec- tion 3.4.9.3 that this poses a cross-site phishing risk. 
+OAuth was not designed for user authentication, and access tokens are not strongly bound to clients. 
+It’s a complex framework within which delegation mechanisms can be built, with both short-term and long-term access tokens; the details are tied up with how cookies and web redirects operate and optimised to enable servers to be state- less, so they scale well for modern web services. 
+In the example above, you want to be able to revoke Doodle’s access at Google, so behind the scenes Doodle only gets short-lived access tokens. 
+Because of this complexity, the OpenID Connect protocol is a ‘proﬁle’ of OAuth which ties down the details for the case where the only service required is authentication. 
+OpenID Connect is what you use when you log into your newspaper using your Google or Facebook account. 
+
+4.7.5 Practical key management
+So we can use a protocol like Kerberos to set up and manage working keys between users given that each user shares one or more long-term keys with a server that acts as a key distribution centre. 
+But there may be encrypted passwords for tens of thousands of staff and keys for large numbers of devices too. 
+That’s a lot of key material. 
+How is it to be managed?
+ Key management is a complex and difficult business and is often got wrong because it’s left as an afterthought. 
+You need to sit down and think about how many keys are needed, how they’re to be generated, how long they need to re- main in service and how they’ll eventually be destroyed. 
+There is a much longer list of concerns – many of them articulated in the Federal Information Process- ing Standard for key management [1408]. 
+And things go wrong as applications evolve; it’s important to provide headroom to support next year’s functionality. 
+It’s also important to support recovery from security failure. 
+Yet there are no standard ways of doing either. 
+Public-key cryptography, which I’ll discuss in Chapter 5, can simplify the key-management task slightly. 
+In banking the usual answer is to use dedicated cryptographic processors called hardware security modules, which I’ll describe in detail later. 
+Both of these introduce further complexities though, and even more subtle ways of getting things wrong. 
+
+4.8 Design assurance
+Subtle difficulties of the kind we have seen above, and the many ways in which protection properties depend on subtle assumptions that may be misunderstood, have led researchers to apply formal methods to protocols. 
+The goal of this exercise was originally to decide whether a protocol was right or wrong: it should either be proved correct, or an attack should be exhibited. 
+We often ﬁnd that the process helps clarify the assumptions that underlie a given protocol. 
+There are several different approaches to verifying the correctness of proto- cols. 
+One of the best known is the logic of belief, or BAN logic, named after its inventors Burrows, Abadi and Needham [357]. 
+It reasons about what a principal might reasonably believe having seen certain messages, timestamps and so on. 
+Other researchers have applied mainstream formal methods such as CSP and veriﬁcation tools such as Isabelle. 
+Some history exists of ﬂaws being found in protocols that had been proved correct using formal methods; I described an example in Chapter 3 of the second edition, of how the BAN logic was used to verify a bank card used for stored- value payments. 
+That’s still used in Germany as the ‘Geldkarte’ but elsewhere its use has died out (it was Net1 in South Africa, Proton in Belgium, Moneo in France and a VISA product called COPAC)
+. 
+I’ve therefore decided to drop the gory details from this edition; the second edition is free online, so you can download and read the details. 
+Formal methods can be an excellent way of ﬁnding bugs in security protocol designs as they force the designer to make everything explicit and thus confront difficult design choices that might otherwise be fudged. 
+But they have their limitations, too. 
+We often ﬁnd bugs in veriﬁed protocols; they’re just not in the part that we veriﬁed. 
+For example, Larry Paulson veriﬁed the SSL/TLS protocol using his Isabelle theorem prover in 1998, and about one security bug has been found every year since then. 
+These have not been ﬂaws in the basic design but exploited additional features that had been added later, and implementation issues such as timing attacks, which we’ll discuss later. 
+In this case there was no failure of the formal method; that simply told the attackers where they needn’t bother looking. 
+For these reasons, people have explored alternative ways of assuring the de- sign of authentication protocols, including the idea of protocol robustness. 
+Just as structured programming techniques aim to ensure that software is designed methodically and nothing of importance is left out, so robust protocol design is largely about explicitness. 
+Robustness principles include that the interpretation of a protocol should depend only on its content, not its context; so everything of importance (such as principals’ names)
+ should be stated explicitly in the mes- sages. 
+It should not be possible to interpret data in more than one way; so the message formats need to make clear what’s a name, what’s an address, what’s a timestamp, and so on; string formats have to be unambiguous and it should be impossible to use the protocol itself to mount attacks on the software that handles it, such as by buffer overﬂows. 
+There are other issues concerning the freshness provided by counters, timestamps and random challenges, and on the way encryption is used. 
+If the protocol uses public key cryptography or digi- tal signature mechanisms, there are more subtle attacks and further robustness issues, which we’ll start to tackle in the next chapter. 
+To whet your appetite, randomness in protocol often helps robustness at other layers, since it makes it harder to do a whole range of attacks – from those based on mathematical cryptanalysis through those that exploit side-channels such as power consump- tion and timing to physical attacks that involve microprobes or lasers. 
+
+4.9 Summary
+Passwords are just one example of a more general concept, the security protocol. 
+Protocols specify the steps that principals use to establish trust relationships in a system, such as authenticating a claim to identity, demonstrating ownership of a credential, or establishing a claim on a resource. 
+Cryptographic authentication protocols are used for a wide range of purposes, from basic entity authentication to providing infrastructure for distributed systems that allows trust to be taken from where it exists to where it is needed. 
+Security protocols are ﬁelded in all sorts of systems from remote car door locks through military IFF systems to authentication in distributed computer systems. 
+Protocols are surprisingly difficult to get right. 
+They can suffer from a num- ber of problems, including middleperson attacks, modiﬁcation attacks, reﬂection attacks, and replay attacks. 
+These threats can interact with implementation vulnerabilities and poor cryptography. 
+Using mathematical techniques to verify the correctness of protocols can help, but it won’t catch all the bugs. 
+Some of the most pernicious failures are caused by creeping changes in the environment for which a protocol was designed, so that the protection it gives is no longer relevant. 
+The upshot is that attacks are still found frequently on protocols that we’ve been using for years, and sometimes even on protocols for which we thought we had a security proof. 
+Failures have real consequences, including the rise in car crime worldwide since car makers started adopting passive keyless entry systems without stopping to think about relay attacks. 
+Please don’t de- sign your own protocols; get a specialist to help, and ensure that your design is published for thorough peer review by the research community. 
+Even specialists get the ﬁrst versions of a protocol wrong (I have, more than once)
+. 
+It’s a lot cheaper to ﬁx the bugs before the protocol is actually deployed, both in terms of cash and in terms of reputation. 
+Research Problems At several times during the past 30 years, some people have thought that pro- tocols had been ‘done’ and that we should turn to new research topics. 
+They have been repeatedly proved wrong by the emergence of new applications with a new crop of errors and attacks to be explored. 
+Formal methods blossomed in the early 1990s, then key management protocols; during the mid-1990’s the ﬂood of proposals for electronic commerce mechanisms kept us busy. 
+Since 2000, one strand of protocol research has acquired an economic ﬂavour as se- curity mechanisms are used more and more to support business models; the designer’s ‘enemy’ is often a commercial competitor, or even the customer. 
+An- other has applied protocol analysis tools to look at the security of application programming interfaces (APIs)
+, a topic to which I’ll return later. 
+Much protocol research is problem-driven, but there are still deep questions. 
+How much can we get out of formal methods, for example?
+ And how do we manage the tension between the principle that robust protocols are generally those in which everything is completely speciﬁed and checked and the system engineering principle that a good speciﬁcation should not overconstrain the im- plementer?
+ Further Reading Research papers on security protocols are scattered fairly widely throughout the literature. 
+For the historical background you might read the original Needham- Schroeder paper [1426], the Burrows-Abadi-Needham authentication logic [357], papers on protocol robustness [2, 112] and a survey paper by Anderson and Needham [113]. 
+Beyond that, there are many papers scattered around a wide range of conferences; you might also start by studying the protocols used in a speciﬁc application area, such as payments, which we cover in more detail in Part 2. 
+As for remote key entry and other security issues around cars, a good starting point is a tech report by Charlie Miller and Chris Valasek on how to hack a Jeep Cherokee [1316]. 
