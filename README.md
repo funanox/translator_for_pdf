@@ -1,19 +1,16 @@
 # translator_for_pdf
-英語のpdfを日本語のwordに変換して出力するアプリ
+英語のpdfをwordに変換して出力するアプリ
  
 # About
 "translator_for_pdf"の実行ステップ
 
-1. PDFをダウンロード (anderson/)
-2. PDFからテキストを抽出
-3. テキストの整形(temp/)
-4. テキストのGoogle翻訳
-5. Word(.docx)形式への出力(anderson-ja/)
+1. PDFをダウンロード
+2. PDFをWordに変換（リガチャの修正にも対応）
 
 各実行ステップとプログラムの関係
 
 * 1 - download.py
-* 2,3,4,5 - translate.py
+* 2 - pdf2word-ex.py
  
 # Requirement
 実行時の環境
@@ -36,10 +33,18 @@ pip install -r requirements.txt
 ```bash
 # Downloading pdf data from https://www.cl.cam.ac.uk/~rja14/book.html
 python3 src/download.py
-# Translate pdf file
-python3 src/translate.py
+# Convert PDF to Word
+python3 src/pdf2word-ex.py
 ```
 # Note
+バグの修正
+* 元のPDFのスタイルを維持するように外部pipを利用
+
+方針の変換により翻訳ではなく、まずはPDFをそのスタイルを維持したままWordに変換した。
+DeepLを使えばWordファイルごと翻訳してくれるので現時点ではこれで十分なはず。
+
+(2020/09/19)
+
 バグの修正
 * リガチャ（ff,ffi）の修正
 * チャプター、章番号の表示の修正
