@@ -10,8 +10,8 @@ from googletrans import Translator
 from tqdm import tqdm
 
 input_path = os.path.join(os.path.dirname(__file__), "../anderson/")
-output_path = os.path.join(os.path.dirname(__file__), "../anderson-ja/")
-temp = os.path.join(os.path.dirname(__file__), "../temp/")
+output_path = os.path.join(os.path.dirname(__file__), "../old/anderson-JA_old/")
+temp = os.path.join(os.path.dirname(__file__), "../old/temp_old/")
 
 
 def remove_temp(temp, debug=False):
