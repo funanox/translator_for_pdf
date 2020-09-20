@@ -3,11 +3,10 @@ import os
 import re
 
 from docx import Document
-from pdf2docx import parse
+from docx.shared import Pt
 
-input_path = os.path.join(os.path.dirname(__file__), "../anderson/")
-temp_path = os.path.join(os.path.dirname(__file__), "../temp/")
-output_path = os.path.join(os.path.dirname(__file__), "../anderson-word-EN_debug/")
+word_path = os.path.join(os.path.dirname(__file__), "../pdf2docx/")
+output_path = os.path.join(os.path.dirname(__file__), "../anderson-word-EN/")
 
 
 def get_filename(pdf_path):
@@ -15,66 +14,66 @@ def get_filename(pdf_path):
 
 
 def modify_doc(document):
-    # ヘッダー
-    def is_header(text):
-        text = text.replace("\n", "")
-        if re.search(r"Preface to the Third Edition$", text) is not None:
+    # チャプター
+    def is_chapter(text):
+        # チャプター数
+        if text.font.size == Pt(20.5):
             return True
-        if re.match(r"\t?\d{1,2}\.\d+\.(\s|[A-Z]|\?|-)+", text) is not None:
-            return True
-        return False
-
-    # フッター（その１）
-    def is_footer(text):
-        text = text.replace("\n", "")
-        if re.fullmatch(r"(\t)*\d{1,3}", text) is not None:
-            return True
-        if re.fullmatch(r"Security Engineering(\t)+\d{1,3}(\t)+Ross Anderson", text) is not None:
+        # チャプタータイトル
+        if text.font.size == Pt(24.5):
             return True
         return False
 
-    def remove_footer(table):
-        # フッター（その２）
-        def is_footer2(text):
-            text = text.replace("\n", "")
-            if re.fullmatch(r"\t\d{1,3}", text) is not None:
-                return True
-            if re.fullmatch(r"\tRoss Anderson", text) is not None:
-                return True
-            if re.fullmatch(r"\tSecurity Engineering", text) is not None:
-                return True
-            return False
+    # 章番号
+    def is_title(inline):
+        text = ""
+        for i in range(len(inline)):
+            text += inline[i].text
+        text = text.replace("\n", "")
+        if re.search("^\d{1,2}(\.\d)+(\s|\t)+", text) is not None:
+            return True
+        return False
 
-        try:
-            for row in table.rows:
-                for cell in row.cells:
-                    for paragraph in cell.paragraphs:
-                        if is_footer2(paragraph.text):
-                            paragraph.text = paragraph.text.replace(paragraph.text, "\n")
+    # リガチャ
+    ligatures = {u"\ufb03": u"\u0066\u0066\u0069", u"\u21b5": u"\u0066\u0066", u"\u270f": u"\u0066\u0066\u006c", u"\ufb01": u"\u0066\u0069"}
 
-        except Exception as e:
-            pass
+    def remove_ligature(text):
+        for key in ligatures.keys():
+            if key in text:
+                text = text.replace(key, ligatures[key])
+        if "o ces" in text:
+            text = text.replace("o ces", "offices")
+        if "O ce365" in text:
+            text = text.replace("O ce365", "Office365")
+        return text
 
-    ligatures = {u"\ufffd": u"\u0066\u0066\u0069", u"\u21B5": u"\u0066\u0066", u"\u270f": u"\u0066\u0066\u006c"}
+    # 改行
+    def remove_lf(text):
+        if "- " in text:
+            text = text.replace("- ","")
+        return text
+
     for paragraph in document.paragraphs:
-        # ヘッダー
-        if is_header(paragraph.text):
-            paragraph.text = paragraph.text.replace(paragraph.text, "\n")
-        # フッター（その１）
-        if is_footer(paragraph.text):
-            paragraph.text = paragraph.text.replace(paragraph.text, "\n")
         # 各パラグラフのインライン処理
         inline = paragraph.runs
+
+        # 章番号
+        if is_title(inline):
+            for i in range(len(inline)):
+                inline[i].bold = True
+            continue
+
         for i in range(len(inline)):
             text = inline[i].text
-            # リガチャ
-            for key in ligatures.keys():
-                if key in text:
-                    text = text.replace(key, ligatures[key])
+            # チャプター・章番号の検知
+            if is_chapter(inline[i]):
+                inline[i].bold = True
+                continue
+            # リガチャの削除
+            text = remove_ligature(text)
+            # 改行の削除
+            text = remove_lf(text)
             inline[i].text = text
-    # フッター（その２）
-    for table in document.tables:
-        remove_footer(table)
 
     return document
 
@@ -83,25 +82,16 @@ if __name__ == '__main__':
     if not os.path.isdir(output_path):
         os.mkdir(output_path)
 
-    # PDFをWordに変換
-    pdf_paths = glob.glob(input_path + "*.pdf")
-    for pdf_path in pdf_paths:
-        filename = get_filename(pdf_path)
-        if filename == "SEv3-ch5-7sep":
-            continue
-        docx_temp_path = temp_path + filename + "_before_" + ".docx"
-        if os.path.isfile(docx_temp_path):
-            print('{} : Already PDF2WORD !!'.format(filename))
-            continue
-        # convert pdf to docx
-        parse(pdf_path, docx_temp_path)
+    # PDFからWordへの変換
+    # URL : https://document.online-convert.com/convert/pdf-to-docx
+    # pdf2docx/に保存済み
 
     # Wordファイルの整形
-    word_paths = glob.glob(temp_path + "*.docx")
-    for word_path in word_paths:
-        filename = get_filename(word_path).replace("_before_", "")
+    word_files = glob.glob(word_path + "*.docx")
+    for word_file in word_files:
+        filename = get_filename(word_file)
         print(filename)
-        document = Document(word_path)
+        document = Document(word_file)
         document = modify_doc(document)
         docx_path = output_path + filename + ".docx"
         document.save(docx_path)

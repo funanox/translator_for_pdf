@@ -14,7 +14,6 @@ hyperframe==5.2.0
 idna==2.10
 immutables==0.14
 lxml==4.5.2
-pdf2docx==0.4.2
 PyMuPDF==1.17.7
 python-docx==0.8.10
 requests==2.24.0
